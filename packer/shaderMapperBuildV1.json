@@ -14,9 +14,11 @@
       {
         "type": "shell",
         "inline": [
-          "sudo apt install apache2 php ola chromium-browser -y",
+          "sudo apt update",
+          "sudo apt install git apache2 php ola chromium-browser -y",
+          "git clone https://github.com/mshortMob/ShaderMapper.git",
           "echo 'ShaderMapper Install Comlete!' "
         ]
       }
-    ]
-  }
+    ] 
+  } 
