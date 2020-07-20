@@ -1,0 +1,18 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+uniform float mousey;
+uniform float mousex;
+varying vec2 vUv;
+uniform sampler2D colorTexture;
+uniform sampler2D colorTexture2;
+
+void main()	{
+	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(mousey))  ) * vUv;
+	float red = abs( sin( position.x + time / .75) );
+	float green = abs( sin( position.x + 3.14/2. + time / .75 ) );
+	float blue = abs( sin( position.x + 3.14/5.5 + time / .75 ) );
+	vec3 mask = texture2D( colorTexture, vUv ).rgb;
+	gl_FragColor = vec4( blue*0., 1.2*(green-abs(mousex)), 2.0*blue, mask.r );
+}

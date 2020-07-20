@@ -1,0 +1,143 @@
+<html>
+	<head>
+		<title>DMX Editor</title>
+		<style>
+			body{
+			    margin:0px;
+				background-color:black;
+			}	
+			textarea{
+				z-index:100;
+				position:absolute;
+				background-color: grey;
+				border-color: #515151;
+				border-width:4;
+				border-top-width:8;
+				border-left-width:8;
+				border-right-width:8;
+				font-size: 14px;
+				wrap: off;
+				white-space: nowrap;
+                width:100%; 
+                height:100%; 
+                padding-top:2%;
+                padding-left:2%;
+                resize: none; 
+                z-index: 0;
+                outline: none;
+            }
+		</style>
+	</head>
+	<body>
+
+		<textarea wrap="soft" id="textbox1"></textarea>
+
+		<script src="../dependancies/dat.gui.min.js"></script>
+		<script>
+
+            init();
+            function init(){
+				dmxRecordingString="";
+                numberOfPatterns=-1;
+                addControls();
+                getNumberOfPatterns();
+                setTimeout(function(){
+                    loadSelectedPattern();
+                },500);
+            }
+
+            function  loadSelectedPattern(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=pixelPatterns/pattern"+parseInt(globalController.patternToEdit)+".txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+                    document.getElementById('textbox1').value=xmlhttp.response;
+				}
+            }
+
+            function saveState(){
+				var requestBody=document.getElementById('textbox1').value;
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=pixelPatterns/pattern"+parseInt(globalController.patternToEdit)+".txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+			}
+
+            function addControls(){
+				globalController  = {
+					patternToEdit:1,
+					Universe:2,
+				}
+				gui = new dat.GUI();
+                gui.width=260;
+				gui.add(globalController, "patternToEdit", 0, 10, 1 ).onChange(function(){globalController.patternToEdit=parseInt(globalController.patternToEdit);loadSelectedPattern(); });		
+                gui.add({ 'Record Input':function(){ recordDMX(0); }},'Record Input');
+				gui.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
+				gui.add({ 'Save As New Preset':function(){ addNewPattern() }},'Save As New Preset');
+                gui.add({ 'Back to Main':function(){ window.location.replace("http://"+location.hostname+"/index.html"); }},'Back to Main');
+									
+			}
+
+            function getNumberOfPatterns(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=pixelPatterns/numberOfPatterns.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+                    numberOfPatterns=parseInt(xmlhttp.response);
+                    console.log("get number of patterns: "+numberOfPatterns)
+                    gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].__max=numberOfPatterns;
+                    gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].updateDisplay()
+				}
+            }
+
+            function addNewPattern(){
+
+                numberOfPatterns=numberOfPatterns+1;
+                console.log("set number of patterns: "+numberOfPatterns)
+				var requestBody=numberOfPatterns.toString();
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=pixelPatterns/numberOfPatterns.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+
+				var xmlhttp2=new XMLHttpRequest();
+				xmlhttp2.open("GET", "../php/read.php?fn=pixelPatterns/pattern"+parseInt(globalController.patternToEdit)+".txt", true);
+				xmlhttp2.send();
+				xmlhttp2.onload = function(e){
+                    console.log("loading copy buffer");
+                    var requestBody3=xmlhttp2.response;
+                    var xmlhttp3=new XMLHttpRequest();
+                    xmlhttp3.open("POST", "../php/write.php?fn=pixelPatterns/pattern"+parseInt(numberOfPatterns)+".txt", true);
+                    xmlhttp3.send(requestBody3);
+                    xmlhttp3.onload = function(e){
+                        console.log(xmlhttp3.response.status);
+                        console.log("Created new pattern file number: "+numberOfPatterns);
+                        gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].__max=gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].__max+1;
+                        globalController.patternToEdit=numberOfPatterns;
+                        gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].updateDisplay()
+                    }
+				}
+            }
+				
+			function recordDMX(sceneNum){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../proxy/get_dmx?u="+parseInt(globalController.Universe), true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					dmxRecordingString=dmxRecordingString+JSON.parse(xmlhttp.response).dmx.toString()+"\n";
+					setTimeout(function(){
+						if(sceneNum<(30*4)){
+							recordDMX(sceneNum+1);
+						}else{
+							console.log("done recording:");
+							console.log(dmxRecordingString);
+							document.getElementById("textbox1").value=dmxRecordingString;
+						}
+					},30);
+				}
+			}
+		
+		</script>
+	</body>
+</html>
+

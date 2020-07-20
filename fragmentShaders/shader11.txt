@@ -1,0 +1,20 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+uniform float mousey;
+uniform float mousex;
+varying vec2 vUv;
+uniform sampler2D colorTexture;
+uniform sampler2D colorTexture2;
+
+void main()	{
+	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(mousey))  ) * vUv;
+	float horStripes = abs( sin( position.y/1.0 + 3.14/1.5 + time / .75 ) );
+	float vertStripes = abs( sin( position.x/1.0 + 3.14/1.5 + time / .75 ) );
+	vertStripes=1.0-(2.0*vertStripes*(1.0-abs(mousex)));
+	horStripes=1.0-(2.0*horStripes*abs(mousex));
+	float checkerGrid=horStripes+vertStripes;
+	vec3 mask = texture2D( colorTexture, vUv ).rgb;
+	gl_FragColor = vec4( vertStripes, vertStripes, horStripes, mask.r );
+}

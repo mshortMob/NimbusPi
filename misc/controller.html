@@ -1,0 +1,65 @@
+<html>
+	<head>
+		<title>FlowMapper</title>
+		<style>
+			body{
+			    margin:0px;
+				background-color:black;
+			}
+			#guiContainer{
+				position:absolute;
+			}
+		</style>
+	</head>
+	<body>
+		<script src="dependancies/dat.gui.min.js"></script>
+
+		<script>
+			initGlobalVars();
+			
+			function initGlobalVars(){
+				addControls();	
+			}
+				
+			function addControls(){
+				var gui = new dat.GUI({ autoPlace: false });
+				var guiContainer=document.createElement('div');
+				guiContainer.id="guiContainer";
+				document.body.appendChild(guiContainer);
+				guiContainer.appendChild(gui.domElement);
+				globalController  = {
+					value0:0,
+					value1:0,
+					value2:0,
+					value3:0,
+					value4:0,
+					value5:0,
+					value6:0,
+					value7:0,
+					value8:0,
+					value9:0,
+					value10:0,
+					value11:0,
+					value12:0,
+				}
+				gui.width=window.innerWidth-(window.innerWidth/60);
+				globalFolder=gui.addFolder( "Global" )
+				globalFolder.open();
+				globalFolder.add(globalController, "value0", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value1", 0, 3, 1 ).onChange(function(){});	
+				globalFolder.add(globalController, "value2", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value3", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value4", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value5", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value6", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value7", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value8", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value9", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value10", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value11", 0, 3, 1 ).onChange(function(){});
+				globalFolder.add(globalController, "value12", 0, 3, 1 ).onChange(function(){});
+			}					
+		</script>
+	</body>
+</html>
+

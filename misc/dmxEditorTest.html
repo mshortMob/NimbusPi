@@ -1,0 +1,111 @@
+<html>
+	<head>
+		<title>FlowMapper</title>
+		<style>
+			body{
+			    margin:0px;
+				background-color:black;
+				padding-top:3%;
+			}	
+			#guiContainer{
+				position:absolute;
+				width:50%;
+				right:0%;
+			}
+			label{
+				color:white;
+			}
+			label,input{
+				left:5%;
+				position:relative;
+			}
+			.slider {
+				-webkit-appearance: none;
+				width: 30%;
+				height: 25px;
+				background: #d3d3d3;
+				outline: none;
+				opacity: 0.7;
+				-webkit-transition: .2s;
+				transition: opacity .2s;
+				position:relative;
+				display: block;
+				margin-top:2%;
+			}
+			.slider:hover {
+			opacity: 1;
+			}
+			.slider::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			appearance: none;
+			width: 25px;
+			height: 25px;
+			background: #4CAF50;
+			cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<label for="FixtureName">Fixture Name:</label>
+		<input type="text" id="FixtureName" name="FixtureName"><br><br>
+		<label for="NumberOfChannels">Number Of Channels:</label>
+		<input type="text" id="NumberOfChannels" name="Number Of Channels"><br><br>
+		<input type="submit" value="Add Fixture" onclick="addFixture();"><br><br>
+		<!-- <input type="range" min="1" max="100" value="50" class="slider"> -->
+		
+		<script>
+
+			init();
+			function init(){
+				document.getElementById("NumberOfChannels").value=3;
+				document.getElementById("FixtureName").value="SinglePixel";
+			}
+
+			function addFixture(){
+
+				var numSliders=document.body.getElementsByClassName('slider').length;
+				for (var x =0; x<numSliders;x++){
+						document.body.removeChild(document.getElementById("slider"+x));
+						console.log(x);
+				}
+
+				var numChannels=parseInt(document.getElementById("NumberOfChannels").value);
+				for(var x=0; x<numChannels; x++){
+					var newSlider=document.createElement('input');
+					newSlider.type="range";
+					newSlider.classList="slider";
+					newSlider.id="slider"+x;
+					newSlider.max=255;
+					newSlider.value=0;
+					document.body.appendChild(newSlider);
+				}
+
+			}
+																									
+			function saveState(){
+				var requestBody=JSON.stringify({"storage" : statesArray})
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=dmxTests/test.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+			}
+			
+			function recallState(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=dmxTests/test.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					statesArray=JSON.parse(xmlhttp.response).storage
+					globalState=JSON.parse(xmlhttp.response).global
+					// presetsArray=JSON.parse(xmlhttp.response).storage2
+					updateControlsView();
+				}
+			}					
+		
+			function temp(){
+
+			}
+		</script>
+	</body>
+</html>
+
