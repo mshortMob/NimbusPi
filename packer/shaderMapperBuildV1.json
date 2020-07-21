@@ -1,24 +1,98 @@
 {
-    "variables": {
-      "wifi_name": "",
-      "wifi_password": "",
-      "home": "{{env `HOME`}}"
+  "variables": {
+    "home": "{{env `HOME`}}"
+  },
+  "builders": [{
+    "type": "arm-image",
+    "iso_url": "https://downloads.raspberrypi.org/raspbian/images/raspbian-2020-02-14/2020-02-13-raspbian-buster.zip",
+    "iso_checksum": "a82ed4139dfad31c3167e60e943bcbe28c404d1858f4713efe5530c08a419f50",
+    "last_partition_extra_size": 1073741824
+  }],  
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "touch /boot/ssh",
+        "sudo echo -e 'raspberry\nmshort123\nmshort123' | passwd pi",
+        "sudo apt update",
+        "sudo apt install git apache2 php ola chromium-browser hostapd dnsmasq pciutils -y",
+        "sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent iptables-persistent",
+        "sudo systemctl unmask hostapd",
+        "sudo systemctl enable hostapd",
+        "sudo echo '' >> /etc/dhcpcd.conf",
+        "sudo echo 'interface wlan0' >> /etc/dhcpcd.conf",
+        "sudo echo '    static ip_address=192.168.4.1/24' >> /etc/dhcpcd.conf",
+        "sudo echo '    nohook wpa_supplicant' >> /etc/dhcpcd.conf",
+        "git clone https://github.com/mshortMob/ShaderMapper.git",
+        "git clone https://github.com/mshortMob/FlowMapper.git",
+        "sudo cp -fr ShaderMapper/* /var/www/html/",
+        "sudo chown -R root:root /var/www/html/*",
+        "sudo systemctl enable olad",
+        "sudo systemctl enable apache2",
+        "sudo a2enmod proxy",
+        "sudo a2enmod proxy_http"
+      ]
     },
-    "builders": [{
-      "type": "arm-image",
-      "iso_url": "https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip",
-      "iso_checksum": "sha256:12ae6e17bf95b6ba83beca61e7394e7411b45eba7e6a520f434b0748ea7370e8",
-      "last_partition_extra_size": 1073741824
-    }],  
-    "provisioners": [
-      {
-        "type": "shell",
-        "inline": [
-          "sudo apt update",
-          "sudo apt install git apache2 php ola chromium-browser -y",
-          "git clone https://github.com/mshortMob/ShaderMapper.git",
-          "echo 'ShaderMapper Install Comlete!' "
-        ]
-      }
-    ] 
-  } 
+    {
+      "type": "file",
+      "source": "files/dnsmasq.conf",
+      "destination": "/home/pi/dnsmasq.conf"
+   },
+   {
+      "type": "file",
+      "source": "files/hostapd.conf",
+      "destination": "/home/pi/hostapd.conf"
+   },
+   {
+      "type": "file",
+      "source": "files/rc.local",
+      "destination": "/home/pi/rc.local"
+   },
+   {
+      "type": "file",
+      "source": "files/webserver.conf",
+      "destination": "/home/pi/webserver.conf"
+   },
+   {
+      "type": "file",
+      "source": "files/autostart",
+      "destination": "/home/pi/autostart"
+   },
+   {
+      "type": "file",
+      "source": "files/ola-universe.conf",
+      "destination": "/home/pi/ola-universe.conf"
+   },
+   {
+      "type": "file",
+      "source": "files/ola-artnet.conf",
+      "destination": "/home/pi/ola-artnet.conf"
+   },
+   {
+      "type": "shell",
+      "inline": [
+        "sudo mv -f /home/pi/dnsmasq.conf /etc/dnsmasq.conf",
+        "sudo chown root:root /etc/dnsmasq.conf",
+        "sudo chmod 644 /etc/dnsmasq.conf",
+        "sudo mv -f /home/pi/hostapd.conf /etc/hostapd/hostapd.conf",
+        "sudo chown root:root /etc/hostapd/hostapd.conf",
+        "sudo chmod 644 /etc/hostapd/hostapd.conf",
+        "sudo mv -f /home/pi/rc.local /etc/rc.local",
+        "sudo chown root:root /etc/rc.local",
+        "sudo chmod 755 /etc/rc.local",
+        "sudo mv -f /home/pi/webserver.conf /etc/apache2/sites-enabled/000-default.conf",
+        "sudo chown root:root /etc/apache2/sites-enabled/000-default.conf",
+        "sudo chmod 755 /etc/apache2/sites-enabled/000-default.conf",
+        "sudo mv -f /home/pi/autostart /etc/xdg/lxsession/LXDE-pi/autostart",
+        "sudo chown root:root /etc/xdg/lxsession/LXDE-pi/autostart",
+        "sudo chmod 644 /etc/xdg/lxsession/LXDE-pi/autostart",
+        "sudo mv -f /home/pi/ola-universe.conf /etc/ola/ola-universe.conf",
+        "sudo chown olad:olad /etc/ola/ola-universe.conf",
+        "sudo chmod 664 /etc/ola/ola-universe.conf",
+        "sudo mv -f /home/pi/ola-artnet.conf /etc/ola/ola-artnet.conf",
+        "sudo chown olad:olad /etc/ola/ola-artnet.conf",
+        "sudo chmod 664 /etc/ola/ola-artnet.conf"
+     ]
+   }
+ ] 
+} 

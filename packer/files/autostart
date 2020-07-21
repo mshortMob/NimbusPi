@@ -1,0 +1,9 @@
+@lxpanel --profile LXDE-pi
+@pcmanfm --desktop --profile LXDE-pi
+@xscreensaver -no-splash
+@xset s off
+@xset -dpms
+@sudo rfkill unblock all
+@sudo rfkill unblock wlan
+@sudo service hostapd restart
+@chromium-browser --kiosk --noerrors --disable-session-crashed-bubble --disable-infobars --start-fullscreen localhost
