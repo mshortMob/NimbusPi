@@ -1,6 +1,6 @@
 {
   "variables": {
-    "home": "{{env `HOME`}}"
+    "pubKey": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCyNJErutGdeseuKFdjpD+MNT4zCS8e9I4LlBV+I8F0HvBM296APRKa3H5D/2oLBUCE2mE6I3lJqzFexBlstB641WkFOtDjrc8IWC5W3NlkojrCqiPwQ9kIXVox9KBy3iNKYvQcmwFZ2q7ZldKS/ANELyH1iXuEKXXg/5sl3YDuKQSekHk50aVyFRwrO5N3KfoQS4TMP++LIhPc1amEh2SxVfoFhxthOdw2yrzRhvt/veq/S5SJMcQ2PvELQVW/1z/psVRBd8pzad0CV5954CnBmh62CeANarhEDGuYH79aMCBvL+bhRw5sGWZ2QtMZF2T8EazDCfWwHJguHqnkL5DJ3V98Hua2QLE7wpOwElJzGlFOhFhffREs4KcX+GVIWeiiF3kcMQc1qIne+WKpbDOkGDWrMH1+2UNJvbxTSXV66pa02qv7yPgx/DdbUUle6M7JOsXS7I8xu7prXfRPxG/Ink5sKfytnkhngVCl+m7i/iLtAv6pKfwvQ2Pd7AYAG/4WS07yaKhRzdkLjf8YL3CusMRjgkWktkqAipbwjQIDiJMkNlDSdqO0x5tMtLpaNxAqv/tSVSSE5VuxhjLqibcDLrtJY5LI9ObzQ5cicjdLTcN/eM7paeOvF0IMgdPmeGR6Non559Gj93iKe9y2uyCblEuaNHf1kM7CzFgwCxJ+yw== mshort.pem"
   },
   "builders": [{
     "type": "arm-image",
@@ -13,7 +13,7 @@
       "type": "shell",
       "inline": [
         "touch /boot/ssh",
-        "sudo echo -e 'raspberry\nmshort123\nmshort123' | passwd pi",
+        "sudo rm /etc/xdg/autostart/piwiz.desktop",
         "sudo apt update",
         "sudo apt install git apache2 php ola chromium-browser hostapd dnsmasq pciutils -y",
         "sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent iptables-persistent",
@@ -69,6 +69,11 @@
       "destination": "/home/pi/ola-artnet.conf"
    },
    {
+      "type": "file",
+      "source": "files/ola-port.conf",
+      "destination": "/home/pi/ola-port.conf"
+   },
+   {
       "type": "shell",
       "inline": [
         "sudo mv -f /home/pi/dnsmasq.conf /etc/dnsmasq.conf",
@@ -91,7 +96,24 @@
         "sudo chmod 664 /etc/ola/ola-universe.conf",
         "sudo mv -f /home/pi/ola-artnet.conf /etc/ola/ola-artnet.conf",
         "sudo chown olad:olad /etc/ola/ola-artnet.conf",
-        "sudo chmod 664 /etc/ola/ola-artnet.conf"
+        "sudo chmod 664 /etc/ola/ola-artnet.conf",
+        "sudo mv -f /home/pi/ola-port.conf /etc/ola/ola-port.conf",
+        "sudo chown olad:olad /etc/ola/ola-port.conf",
+        "sudo chmod 664 /etc/ola/ola-port.conf"
+     ]
+   },
+   {
+     "type": "shell",
+     "inline": [
+       "sudo mkdir /home/pi/.ssh",
+       "sudo chown pi:pi /home/pi/.ssh",
+       "sudo chmod 700 /home/pi/.ssh",
+       "sudo echo {{user `pubKey`}} > /home/pi/.ssh/authorized_keys",
+       "sudo chown pi:pi /home/pi/.ssh/authorized_keys",
+       "sudo chmod 600 /home/pi/.ssh/authorized_keys",
+       "sed '/PasswordAuthentication/d' -i /etc/ssh/sshd_config",
+       "echo  >> /etc/ssh/sshd_config",
+       "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config"
      ]
    }
  ] 
