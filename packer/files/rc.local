@@ -1,0 +1,11 @@
+_IP=$(hostname -I) || true
+if [ "$_IP" ]; then
+  printf "My IP address is %s\n" "$_IP"
+fi
+
+sudo setpci -s 01:00.0 0xD4.B=0x41
+
+sudo rfkill unblock all
+sudo rfkill unblock wlan
+
+exit 0
