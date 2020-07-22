@@ -26,6 +26,8 @@
         "git clone https://github.com/mshortMob/ShaderMapper.git",
         "git clone https://github.com/mshortMob/FlowMapper.git",
         "sudo cp -fr ShaderMapper/* /var/www/html/",
+        "sudo mkdir /var/www/html/FlowMapper",
+        "sudo cp -fr FlowMapper/* /var/www/html/FlowMapper/",
         "sudo chown -R root:root /var/www/html/*",
         "sudo systemctl enable olad",
         "sudo systemctl enable apache2",

@@ -48,7 +48,7 @@
 
             function  loadSelectedPattern(){
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "../php/read.php?fn=pixelPatterns/pattern"+parseInt(globalController.patternToEdit)+".txt", true);
+				xmlhttp.open("GET", "../php/read.php?fn=dmxPresets/pattern"+parseInt(globalController.patternToEdit)+".txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
                     document.getElementById('textbox1').value=xmlhttp.response;
@@ -58,7 +58,7 @@
             function saveState(){
 				var requestBody=document.getElementById('textbox1').value;
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "../php/write.php?fn=pixelPatterns/pattern"+parseInt(globalController.patternToEdit)+".txt", true);
+				xmlhttp.open("POST", "../php/write.php?fn=dmxPresets/pattern"+parseInt(globalController.patternToEdit)+".txt", true);
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
 			}
@@ -80,7 +80,7 @@
 
             function getNumberOfPatterns(){
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "../php/read.php?fn=pixelPatterns/numberOfPatterns.txt", true);
+				xmlhttp.open("GET", "../php/read.php?fn=dmxPresets/numberOfPatterns.txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
                     numberOfPatterns=parseInt(xmlhttp.response);
@@ -96,18 +96,18 @@
                 console.log("set number of patterns: "+numberOfPatterns)
 				var requestBody=numberOfPatterns.toString();
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "../php/write.php?fn=pixelPatterns/numberOfPatterns.txt", true);
+				xmlhttp.open("POST", "../php/write.php?fn=dmxPresets/numberOfPatterns.txt", true);
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
 
 				var xmlhttp2=new XMLHttpRequest();
-				xmlhttp2.open("GET", "../php/read.php?fn=pixelPatterns/pattern"+parseInt(globalController.patternToEdit)+".txt", true);
+				xmlhttp2.open("GET", "../php/read.php?fn=dmxPresets/pattern"+parseInt(globalController.patternToEdit)+".txt", true);
 				xmlhttp2.send();
 				xmlhttp2.onload = function(e){
                     console.log("loading copy buffer");
                     var requestBody3=xmlhttp2.response;
                     var xmlhttp3=new XMLHttpRequest();
-                    xmlhttp3.open("POST", "../php/write.php?fn=pixelPatterns/pattern"+parseInt(numberOfPatterns)+".txt", true);
+                    xmlhttp3.open("POST", "../php/write.php?fn=dmxPresets/pattern"+parseInt(numberOfPatterns)+".txt", true);
                     xmlhttp3.send(requestBody3);
                     xmlhttp3.onload = function(e){
                         console.log(xmlhttp3.response.status);
