@@ -22,7 +22,7 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 
 ## Usage Instructions
 
-- Find a basic walkthrough and demo [here](http://www.nimbuslaboratory.com/NimbusPi%20Walkthrough.mp4).
+Find a basic walkthrough and demo [here](http://www.nimbuslaboratory.com/NimbusPi%20Walkthrough.mp4).
 
 ### Local Development
 
