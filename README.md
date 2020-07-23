@@ -28,7 +28,7 @@ Find a basic walkthrough and demo [here](http://www.nimbuslaboratory.com/NimbusP
 
 The code based is based around [Three.js](https://threejs.org/) and designed primarily to be run as a local web app. Most features will work on any machine capable of running a simple webserver, php, and chrome. Features related to DMX typically require additional configuration to proxy the [OLA](https://www.openlighting.org/ola/tutorials/ola-on-raspberry-pi/) port (9090) to your web port.
 
-For local development there is no build process, just clone this repo to your webserver's root directoy.But do note that these apps use WebRTC's `getUserMedia`, and thus must either be hosted locally or on a site with TLS/SSH enabled.
+For local development there is no build process, just clone this repo to your webserver's root directoy. But do note that these apps use WebRTC's `getUserMedia`, and thus must either be hosted locally or on a site with TLS/SSH enabled.
 
 ### Building Images
 
