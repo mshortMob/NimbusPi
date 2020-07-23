@@ -16,12 +16,14 @@ NimbusPi images currently contains 2 separate applications, ShaderMapper and Flo
 - Effects include time delay, brightness and movement thresholds, kaleidoscoping, and color mixing.
 - Works very well for live "Light Painting" installations
 
-## Installation
-
-#### Basic Install
+## Basic Install
 
 Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.img) and then burn to an SD card using [Raspberry Pi Imager](https://www.raspberrypi.org/downloads/) or an alternative of your choosing. These images should work on both the Pi 3b+ and Pi 4, although the apps run substantially smoother on a Pi 4.
 
+## Usage Instructions
+
+- Find a basic walkthrough and demo [here](http://www.nimbuslaboratory.com/NimbusPi%20Walkthrough.mp4).
+- TODO: Add list of keyboard shortcuts
 
 #### Local Development
 
@@ -33,7 +35,3 @@ For local development there is no build process, just clone this repo to your we
 
 To build your own image, you must be setup to run [packer-builder-arm-image](https://github.com/solo-io/packer-builder-arm-image). Once this is done, simply run a packer build using the [packer template file found here](https://github.com/mshortMob/NimbusPi/blob/master/packer/build.json)
 
-## Usage Instructions
-
-- Find a basic walkthrough and demo [here](http://www.nimbuslaboratory.com/NimbusPi%20Walkthrough.mp4).
-- TODO: Add list of keyboard shortcuts
