@@ -35,4 +35,5 @@ To build your own image, you must be setup to run [packer-builder-arm-image](htt
 
 ## Usage Instructions
 
-Find a basic walkthrough and demo [here](http://www.nimbuslaboratory.com/NimbusPi%20Walkthrough.mp4).
+- Find a basic walkthrough and demo [here](http://www.nimbuslaboratory.com/NimbusPi%20Walkthrough.mp4).
+- TODO: Add list of keyboard shortcuts
