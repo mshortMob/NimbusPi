@@ -25,13 +25,13 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 - Find a basic walkthrough and demo [here](http://www.nimbuslaboratory.com/NimbusPi%20Walkthrough.mp4).
 - TODO: Add list of keyboard shortcuts
 
-#### Local Development
+### Local Development
 
 The code based is based around [Three.js](https://threejs.org/) and designed primarily to be run as a local web app. Most features will work on any machine capable of running a simple webserver, php, and chrome. Features related to DMX typically require additional configuration to proxy the [OLA](https://www.openlighting.org/ola/tutorials/ola-on-raspberry-pi/) port (9090) to your web port.
 
 For local development there is no build process, just clone this repo to your webserver's root directoy.But do note that these apps use WebRTC's `getUserMedia`, and thus must either be hosted locally or on a site with TLS/SSH enabled.
 
-#### Building Images
+### Building Images
 
 To build your own image, you must be setup to run [packer-builder-arm-image](https://github.com/solo-io/packer-builder-arm-image). Once this is done, simply run a packer build using the [packer template file found here](https://github.com/mshortMob/NimbusPi/blob/master/packer/build.json)
 
