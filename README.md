@@ -16,7 +16,7 @@ NimbusPi images currently contains 2 separate applications, ShaderMapper and Flo
 - Effects include time delay, brightness and movement thresholds, kaleidoscoping, and color mixing.
 - Works very well for live "Light Painting" installations
 
-## Basic Install
+## Installation
 
 Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.img) and then burn to an SD card using [Raspberry Pi Imager](https://www.raspberrypi.org/downloads/) or an alternative of your choosing. These images should work on both the Pi 3b+ and Pi 4, although the apps run substantially smoother on a Pi 4.
 
