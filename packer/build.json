@@ -26,6 +26,7 @@
         "git clone https://github.com/mshortMob/NimbusPi.git",
         "sudo cp -fr /NimbusPi/* /var/www/html/",
         "sudo chown -R root:root /var/www/html/*",
+        "sudo chmod 777 -R /var/www/html/*",
         "sudo systemctl enable olad",
         "sudo systemctl enable apache2",
         "sudo a2enmod proxy",
