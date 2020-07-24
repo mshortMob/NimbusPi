@@ -13,7 +13,7 @@
 				top:0px;
 				left:0px;
 				z-index:10;
-				transform:scale(1,-1);
+				transform:scale(1,1);
 				position:fixed;
 				float:left;
 				object-fit:fill;
@@ -212,6 +212,7 @@ void main()	{
 
 			function initGlobalVars(){
 				getNumberOfShadersAndPresets();
+				audioData = new Uint8Array(analyser.frequencyBinCount);
 				//------------------
 				ledStripAnimationmMasterIndex=0;
 				ledStripPatternsArray=[];
@@ -413,7 +414,7 @@ void main()	{
 				globalFolder.add(globalController, "loadShaderB", 1, 11, 1 ).onChange(function(){globalController.loadShaderB=parseInt(globalController.loadShaderB);loadShaderPreset(2);updateControlsValues();});								
 				globalFolder.add(globalController, "MaskA", 1, 3, 1 ).onChange(function(){globalController.MaskA=parseInt(globalController.MaskA); changeMask(1); updateControlsValues();});				
 				globalFolder.add(globalController, "MaskB", 1, 3, 1 ).onChange(function(){globalController.MaskB=parseInt(globalController.MaskB); changeMask(2); updateControlsValues();});
-				globalFolder.add( globalController, "VolumeThreshold", .0001,.01,.0001 ).onChange(function(){updateControlsValues();});				
+				globalFolder.add( globalController, "VolumeThreshold", .0001,.1,.0001 ).onChange(function(){updateControlsValues();});				
 				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
 				controlsFolder.add( objectController, "Visible", true ).onChange(function(){updateControlsValues();syncObjectsToJson();});	
@@ -423,7 +424,7 @@ void main()	{
 				dmxFolder.open();
 				dmxFolder.add(globalController, "DMX_Pattern", 1,6,1 ).onChange(function(){globalController.DMX_Pattern=parseInt(globalController.DMX_Pattern);  updateControlsValues(); retrievePixelPattern();});
 				dmxFolder.add(globalController, "Brightness", 0.0, 1.0, .01 ).onChange(function(){updateControlsValues(); });
-				dmxFolder.add(globalController, "DMX_Pattern_Rate", 0.00,.5,.01 ).onChange(function(){updateControlsValues(); });
+				dmxFolder.add(globalController, "DMX_Pattern_Rate", 0.00,1.0,.01 ).onChange(function(){updateControlsValues(); });
 				dmxFolder.add( globalController, "DMX_X1", 1,255,1 ).onChange(function(){globalController.DMX_X1=parseInt(globalController.DMX_X1);updateControlsValues();});
 				dmxFolder.add( globalController, "DMX_Y1", 1,255,1 ).onChange(function(){globalController.DMX_Y1=parseInt(globalController.DMX_Y1);updateControlsValues();});
 				dmxFolder.add( globalController, "DMX_X2", 1,255,1 ).onChange(function(){globalController.DMX_X2=parseInt(globalController.DMX_X2);updateControlsValues();});
@@ -1177,9 +1178,6 @@ void main()	{
 						var analyser = ctx.createAnalyser();
 
 						mic.connect(analyser); 
-						
-
-						audioData = new Uint8Array(analyser.frequencyBinCount);
 
 						function play() {
 							analyser.getByteFrequencyData(audioData);
