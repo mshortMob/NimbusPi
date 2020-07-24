@@ -212,7 +212,7 @@ void main()	{
 
 			function initGlobalVars(){
 				getNumberOfShadersAndPresets();
-				audioData = new Uint8Array(analyser.frequencyBinCount);
+				audioData = new Uint8Array(8);
 				//------------------
 				ledStripAnimationmMasterIndex=0;
 				ledStripPatternsArray=[];
@@ -1178,7 +1178,7 @@ void main()	{
 						var analyser = ctx.createAnalyser();
 
 						mic.connect(analyser); 
-
+						audioData = new Uint8Array(analyser.frequencyBinCount);
 						function play() {
 							analyser.getByteFrequencyData(audioData);
 							//console.log(audioData);
