@@ -105,9 +105,9 @@
         "sudo mv -f /home/pi/ola-port.conf /etc/ola/ola-port.conf",
         "sudo chown olad:olad /etc/ola/ola-port.conf",
         "sudo chmod 664 /etc/ola/ola-port.conf",
-        "sudo mv -f /home/pi/config.txt /boot/config.txt",
-        "sudo chmod 755 /boot/config.txt",
-        "sudo chown root:root /boot/config.txt"
+        "#sudo mv -f /home/pi/config.txt /boot/config.txt",
+        "#sudo chmod 755 /boot/config.txt",
+        "#sudo chown root:root /boot/config.txt"
      ]
    },
    {
