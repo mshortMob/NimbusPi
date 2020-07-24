@@ -15,6 +15,7 @@
         "touch /boot/ssh",
         "sudo rm /etc/xdg/autostart/piwiz.desktop",
         "sudo apt update",
+        "sudo apt upgrade -y",
         "sudo apt install git apache2 php ola chromium-browser hostapd dnsmasq pciutils -y",
         "sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent iptables-persistent",
         "sudo systemctl unmask hostapd",
