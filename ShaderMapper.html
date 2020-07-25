@@ -248,7 +248,6 @@ void main()	{
 				dmxInterval=0;
 				maxNumDMXScenes=8;
 				dmxPresetData=[];
-				retrievePixelPattern();
 				initializeDMX();
 				selectedVertice=0;
 				// width=document.getElementById('video').width;
@@ -423,7 +422,7 @@ void main()	{
 				controlsFolder.add( objectController, "Shader", 1, 2, 1 ).onChange(function(){objectController.Shader=parseInt(objectController.Shader);updateControlsValues();syncObjectsToJson()});
 				dmxFolder=gui.addFolder( "DMX" );
 				dmxFolder.open();
-				dmxFolder.add(globalController, "DMX_Pattern", 1,6,1 ).onChange(function(){globalController.DMX_Pattern=parseInt(globalController.DMX_Pattern);  updateControlsValues(); retrievePixelPattern();});
+				dmxFolder.add(globalController, "DMX_Pattern", 1,6,1 ).onChange(function(){globalController.DMX_Pattern=parseInt(globalController.DMX_Pattern);  updateControlsValues();});
 				dmxFolder.add(globalController, "Brightness", 0.0, 1.0, .01 ).onChange(function(){updateControlsValues(); });
 				dmxFolder.add(globalController, "DMX_Pattern_Rate", 0.00,1.0,.01 ).onChange(function(){updateControlsValues(); });
 				dmxFolder.add( globalController, "DMX_X1", 1,255,1 ).onChange(function(){globalController.DMX_X1=parseInt(globalController.DMX_X1);updateControlsValues();});
@@ -519,7 +518,6 @@ void main()	{
 					changeMask(2);
 					loadShaderPreset(1);
 					loadShaderPreset(2);
-					retrievePixelPattern();
 				}
 			}
 			
@@ -968,8 +966,8 @@ void main()	{
 				keyPressToSlider(event, ")", globalController, "MaskA", -1, gui.__folders.Global, function(){ changeMask(1); updateControlsValues(); } );
 				keyPressToSlider(event, "p", globalController, "MaskB", 1, gui.__folders.Global, function(){loadShaderPreset(2); updateControlsValues(); } );
 				keyPressToSlider(event, "P", globalController, "MaskB", -1, gui.__folders.Global, function(){gloadShaderPreset(2); updateControlsValues(); } );
-				keyPressToSlider(event, "k", globalController, "DMX_Pattern", 1, gui.__folders.DMX, function(){updateControlsValues(); retrievePixelPattern();  } );
-				keyPressToSlider(event, "K", globalController, "DMX_Pattern", -1, gui.__folders.DMX, function(){updateControlsValues(); retrievePixelPattern(); } );
+				keyPressToSlider(event, "k", globalController, "DMX_Pattern", 1, gui.__folders.DMX, function(){updateControlsValues(); } );
+				keyPressToSlider(event, "K", globalController, "DMX_Pattern", -1, gui.__folders.DMX, function(){updateControlsValues(); } );
 				keyPressToSlider(event, "j", globalController, "Brightness", .05, gui.__folders.DMX, function(){ updateControlsValues();  } );
 				keyPressToSlider(event, "J", globalController, "Brightness", -.05, gui.__folders.DMX, function(){ updateControlsValues();  } );
 				keyPressToSlider(event, "i", globalController, "DMX_Pattern_Rate", .05, gui.__folders.DMX, function(){ updateControlsValues();  } );
@@ -1062,26 +1060,6 @@ void main()	{
 				}
 			}
 			
-			function retrievePixelPattern(){
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "php/read.php?fn=dmxPresets/pixelPattern"+globalController.DMX_Pattern+".txt", true);
-				xmlhttp.send();
-				xmlhttp.onload = function(e){
-					var response=xmlhttp.response;
-					var presetScenes=response.split('\n')
-					var fullPresetArray=[];
-					for(var s=0;s<presetScenes.length;s++){
-						var stringArray=presetScenes[s].split(',');
-						for(var t=0; t<stringArray.length;t++){
-							stringArray[t]=parseInt(stringArray[t]);
-						}
-					fullPresetArray.push(stringArray);
-					}
-					dmxPresetData=fullPresetArray;
-					//console.log(dmxPresetData);
-				}
-			}	
-
 			function writeDMX() {
 				var xhttp = new XMLHttpRequest();
 				xhttp.onreadystatechange = function() {
