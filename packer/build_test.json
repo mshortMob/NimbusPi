@@ -13,7 +13,14 @@
       "type": "shell",
       "inline": [
         "touch /boot/ssh",
-        "sudo rm /etc/xdg/autostart/piwiz.desktop"
+        "sudo rm /etc/xdg/autostart/piwiz.desktop",
+        "sudo apt update",
+        "sudo apt install apache2 php -y",
+        "git clone https://github.com/mshortMob/NimbusPi.git",
+        "sudo cp -fr /NimbusPi/* /var/www/html/",
+        "sudo chown -R root:root /var/www/html/*",
+        "sudo chmod 777 -R /var/www/html/*",
+        "sudo systemctl enable apache2"
       ]
     },
    {
@@ -29,6 +36,27 @@
        "echo  >> /etc/ssh/sshd_config",
        "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config"
      ]
-   }
+   },
+   {
+      "type": "file",
+      "source": "files/rc.local",
+      "destination": "/home/pi/rc.local"
+    },
+    {
+      "type": "file",
+      "source": "files/autostart",
+      "destination": "/home/pi/autostart"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "sudo mv -f /home/pi/rc.local /etc/rc.local",
+        "sudo chown root:root /etc/rc.local",
+        "sudo chmod 755 /etc/rc.local",
+        "sudo mv -f /home/pi/autostart /etc/xdg/lxsession/LXDE-pi/autostart",
+        "sudo chown root:root /etc/xdg/lxsession/LXDE-pi/autostart",
+        "sudo chmod 644 /etc/xdg/lxsession/LXDE-pi/autostart"
+    ]
+  }
  ] 
-} 
+}
