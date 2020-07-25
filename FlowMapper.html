@@ -295,7 +295,7 @@
 				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedFixture].children.length;x++){ displayObjects[globalController.selectedFixture].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');	
 				utilsFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
 				utilsFolder.add({ 'Recall Preset':function(){ recallState() }},'Recall Preset');
-				utilsFolder.add(globalController, 'PresetName').onChange(function(){});
+				// utilsFolder.add(globalController, 'PresetName').onChange(function(){});
 				utilsFolder.add(globalController, "selectedCamera", 0, 1, 1 ).onChange(function(){globalController.selectedCamera=parseInt(globalController.selectedCamera);getVideo("select",globalController.selectedCamera);});
 				utilsFolder.add({ 'ShaderMapper':function(){ window.location.replace("http://"+location.hostname+"/ShaderMapper.html"); }},'ShaderMapper');
 			}
@@ -837,14 +837,14 @@
 			function saveState(){
 				var requestBody=JSON.stringify({"storage" : statesArray, "storage2": presetsArray})
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "php/write.php?fn=presets/"+globalController.PresetName+".txt", true);
+				xmlhttp.open("POST", "php/write.php?fn=flowMapperPresets/"+globalController.PresetName+".txt", true);
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
 			}
 			
 			function recallState(){
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "php/read.php?fn=presets/"+globalController.PresetName+".txt", true);
+				xmlhttp.open("GET", "php/read.php?fn=flowMapperPresets/"+globalController.PresetName+".txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
 					statesArray=JSON.parse(xmlhttp.response).storage
