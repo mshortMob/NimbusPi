@@ -4,15 +4,14 @@
   },
   "builders": [{
     "type": "arm-image",
-    "iso_url": "https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2020-05-28/2020-05-27-raspios-buster-arm64.zip",
-    "iso_checksum": "d06d8eecfa3980e18f9061777ca2dac50d98037373e1bd04e8726d79467dc7c7",
+    "iso_url": "https://downloads.raspberrypi.org/raspios_full_armhf/images/raspios_full_armhf-2020-05-28/2020-05-27-raspios-buster-full-armhf.zip",
+    "iso_checksum": "fdbd6f5b5b7e1fa5e724bd8747c5109801442e9200144d0a1941c9e73c93dd61",
     "last_partition_extra_size": 1073741824
   }],  
   "provisioners": [
     {
       "type": "shell",
       "inline": [
-        "#!/bin/bash",
         "touch /boot/ssh",
         "sudo rm /etc/xdg/autostart/piwiz.desktop",
         "sudo apt update",
