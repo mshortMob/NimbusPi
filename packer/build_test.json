@@ -13,7 +13,7 @@
       "type": "shell",
       "inline": [
         "touch /boot/ssh",
-        "sudo rm /etc/xdg/autostart/piwiz.desktop",
+        "sudo rm /etc/xdg/autostart/piwiz.desktop"
       ]
     },
    {
