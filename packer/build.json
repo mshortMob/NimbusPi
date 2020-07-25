@@ -4,8 +4,8 @@
   },
   "builders": [{
     "type": "arm-image",
-    "iso_url": "https://downloads.raspberrypi.org/raspios_full_armhf/images/raspios_full_armhf-2020-05-28/2020-05-27-raspios-buster-full-armhf.zip",
-    "iso_checksum": "fdbd6f5b5b7e1fa5e724bd8747c5109801442e9200144d0a1941c9e73c93dd61",
+    "iso_url": "https://downloads.raspberrypi.org/raspios_armhf_latest",
+    "iso_checksum": "b9a5c5321b3145e605b3bcd297ca9ffc350ecb1844880afd8fb75a7589b7bd04",
     "last_partition_extra_size": 1073741824
   }],  
   "provisioners": [
