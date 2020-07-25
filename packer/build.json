@@ -12,106 +12,11 @@
     {
       "type": "shell",
       "inline": [
-        "touch /boot/ssh",
-        "sudo rm /etc/xdg/autostart/piwiz.desktop",
-        "sudo apt update",
-        "#sudo apt upgrade -y",
-        "sudo apt install git apache2 php ola chromium-browser hostapd dnsmasq pciutils -y",
-        "sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent iptables-persistent",
-        "sudo systemctl unmask hostapd",
-        "sudo systemctl enable hostapd",
-        "sudo echo '' >> /etc/dhcpcd.conf",
-        "sudo echo 'interface wlan0' >> /etc/dhcpcd.conf",
-        "sudo echo '    static ip_address=192.168.4.1/24' >> /etc/dhcpcd.conf",
-        "sudo echo '    nohook wpa_supplicant' >> /etc/dhcpcd.conf",
-        "git clone https://github.com/mshortMob/NimbusPi.git",
-        "sudo cp -fr /NimbusPi/* /var/www/html/",
-        "sudo chown -R root:root /var/www/html/*",
-        "sudo chmod 777 -R /var/www/html/*",
-        "sudo systemctl enable olad",
-        "sudo systemctl enable apache2",
-        "sudo a2enmod proxy",
-        "sudo a2enmod proxy_http"
+      "touch /boot/ssh",
+      "sudo rm /etc/xdg/autostart/piwiz.desktop"
       ]
     },
     {
-      "type": "file",
-      "source": "files/dnsmasq.conf",
-      "destination": "/home/pi/dnsmasq.conf"
-   },
-   {
-      "type": "file",
-      "source": "files/hostapd.conf",
-      "destination": "/home/pi/hostapd.conf"
-   },
-   {
-      "type": "file",
-      "source": "files/rc.local",
-      "destination": "/home/pi/rc.local"
-   },
-   {
-      "type": "file",
-      "source": "files/webserver.conf",
-      "destination": "/home/pi/webserver.conf"
-   },
-   {
-      "type": "file",
-      "source": "files/autostart",
-      "destination": "/home/pi/autostart"
-   },
-   {
-      "type": "file",
-      "source": "files/ola-universe.conf",
-      "destination": "/home/pi/ola-universe.conf"
-   },
-   {
-      "type": "file",
-      "source": "files/ola-artnet.conf",
-      "destination": "/home/pi/ola-artnet.conf"
-   },
-   {
-      "type": "file",
-      "source": "files/ola-port.conf",
-      "destination": "/home/pi/ola-port.conf"
-   },
-   {
-    "type": "file",
-    "source": "files/config.txt",
-    "destination": "/home/pi/config.txt"
-   },
-   {
-      "type": "shell",
-      "inline": [
-        "sudo mv -f /home/pi/dnsmasq.conf /etc/dnsmasq.conf",
-        "sudo chown root:root /etc/dnsmasq.conf",
-        "sudo chmod 644 /etc/dnsmasq.conf",
-        "sudo mv -f /home/pi/hostapd.conf /etc/hostapd/hostapd.conf",
-        "sudo chown root:root /etc/hostapd/hostapd.conf",
-        "sudo chmod 644 /etc/hostapd/hostapd.conf",
-        "sudo mv -f /home/pi/rc.local /etc/rc.local",
-        "sudo chown root:root /etc/rc.local",
-        "sudo chmod 755 /etc/rc.local",
-        "sudo mv -f /home/pi/webserver.conf /etc/apache2/sites-enabled/000-default.conf",
-        "sudo chown root:root /etc/apache2/sites-enabled/000-default.conf",
-        "sudo chmod 755 /etc/apache2/sites-enabled/000-default.conf",
-        "sudo mv -f /home/pi/autostart /etc/xdg/lxsession/LXDE-pi/autostart",
-        "sudo chown root:root /etc/xdg/lxsession/LXDE-pi/autostart",
-        "sudo chmod 644 /etc/xdg/lxsession/LXDE-pi/autostart",
-        "sudo mv -f /home/pi/ola-universe.conf /etc/ola/ola-universe.conf",
-        "sudo chown olad:olad /etc/ola/ola-universe.conf",
-        "sudo chmod 664 /etc/ola/ola-universe.conf",
-        "sudo mv -f /home/pi/ola-artnet.conf /etc/ola/ola-artnet.conf",
-        "sudo chown olad:olad /etc/ola/ola-artnet.conf",
-        "sudo chmod 664 /etc/ola/ola-artnet.conf",
-        "sudo mv -f /home/pi/ola-port.conf /etc/ola/ola-port.conf",
-        "sudo chown olad:olad /etc/ola/ola-port.conf",
-        "sudo chmod 664 /etc/ola/ola-port.conf",
-        "#sudo mv -f /home/pi/config.txt /boot/config.txt",
-        "#sudo chmod 755 /boot/config.txt",
-        "#sudo chown root:root /boot/config.txt"
-     ]
-   },
-   {
      "type": "shell",
      "inline": [
        "sudo mkdir /home/pi/.ssh",
