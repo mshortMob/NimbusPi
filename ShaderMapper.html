@@ -424,7 +424,7 @@ void main()	{
 				dmxFolder.open();
 				dmxFolder.add(globalController, "DMX_Pattern", 1,6,1 ).onChange(function(){globalController.DMX_Pattern=parseInt(globalController.DMX_Pattern);  updateControlsValues();});
 				dmxFolder.add(globalController, "Brightness", 0.0, 1.0, .01 ).onChange(function(){updateControlsValues(); });
-				dmxFolder.add(globalController, "DMX_Pattern_Rate", 0.00,1.0,.01 ).onChange(function(){updateControlsValues(); });
+				dmxFolder.add(globalController, "DMX_Pattern_Rate", 0.00,4.0,.01 ).onChange(function(){updateControlsValues(); });
 				dmxFolder.add( globalController, "DMX_X1", 1,255,1 ).onChange(function(){globalController.DMX_X1=parseInt(globalController.DMX_X1);updateControlsValues();});
 				dmxFolder.add( globalController, "DMX_Y1", 1,255,1 ).onChange(function(){globalController.DMX_Y1=parseInt(globalController.DMX_Y1);updateControlsValues();});
 				dmxFolder.add( globalController, "DMX_X2", 1,255,1 ).onChange(function(){globalController.DMX_X2=parseInt(globalController.DMX_X2);updateControlsValues();});
