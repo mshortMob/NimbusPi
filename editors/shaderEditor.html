@@ -67,11 +67,13 @@
 					shaderToEdit:1
 				}
 				gui = new dat.GUI();
-                gui.width=260;
+                gui.width=320;
 				gui.add(globalController, "shaderToEdit", 1, 10, 1 ).onChange(function(){globalController.shaderToEdit=parseInt(globalController.shaderToEdit);loadSelectedShader(); });		
                 gui.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
 				gui.add({ 'Save As New Preset':function(){ addNewShader() }},'Save As New Preset');
                 gui.add({ 'Back to Main':function(){ window.location.replace("http://"+location.hostname+"/index.html"); }},'Back to Main');
+                gui.add({ 'Use Pi4':function(){ writeCanvasYFlip(1); }},'Use Pi4');
+				gui.add({ 'Use Pi3b':function(){ writeCanvasYFlip(-1); }},'Use Pi3b');
 									
 			}
 
@@ -115,7 +117,14 @@
                     }
 				}
             }
-				
+
+			function writeCanvasYFlip(val){
+				var requestBody=val;
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=misc/canvasYFlip.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+			}	
 		</script>
 	</body>
 </html>

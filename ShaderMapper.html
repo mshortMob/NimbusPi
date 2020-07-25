@@ -211,6 +211,7 @@ void main()	{
 			}
 
 			function initGlobalVars(){
+				getCanvasYFlip();
 				getNumberOfShadersAndPresets();
 				audioData = new Uint8Array(8);
 				//------------------
@@ -1238,6 +1239,17 @@ void main()	{
                     console.log("get list of guarded channels: "+listOfGuardedChannels)				
 				}
             }
+		
+			function getCanvasYFlip(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=misc/canvasYFlip.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					var yFlipValue=parseInt(xmlhttp.response);
+					console.log("Got Y Flip Value: "+yFlipValue);
+					document.getElementsByTagName('canvas')[0].style.transform='scale(1,'+yFlipValue+')';
+				}
+			}
 		</script>
 	</body>
 </html>

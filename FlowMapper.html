@@ -146,6 +146,7 @@
 			}
 			
 			function initGlobalVars(){
+				getCanvasYFlip();
 				selectedVertice=0;
 				clr=new colorObject();
 			    width=document.getElementById('video').width;
@@ -884,6 +885,17 @@
 					}
 					folder.__controllers.filter(obj => { return obj.property == slider})[0].updateDisplay();
 					callback();
+				}
+			}
+		
+			function getCanvasYFlip(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=misc/canvasYFlip.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					var yFlipValue=parseInt(xmlhttp.response);
+					console.log("Got Y Flip Value: "+yFlipValue);
+					document.getElementsByTagName('canvas')[1].style.transform='scale(1,'+yFlipValue+')';
 				}
 			}
 		</script>
