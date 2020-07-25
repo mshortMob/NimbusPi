@@ -12,6 +12,7 @@
     {
       "type": "shell",
       "inline": [
+        "#!/bin/bash",
         "touch /boot/ssh",
         "sudo rm /etc/xdg/autostart/piwiz.desktop",
         "sudo apt update",
