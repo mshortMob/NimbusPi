@@ -4,8 +4,8 @@
   },
   "builders": [{
     "type": "arm-image",
-    "iso_url": "https://downloads.raspberrypi.org/raspbian/images/raspbian-2020-02-14/2020-02-13-raspbian-buster.zip",
-    "iso_checksum": "a82ed4139dfad31c3167e60e943bcbe28c404d1858f4713efe5530c08a419f50",
+    "iso_url": "https://downloads.raspberrypi.org/raspios_arm64/images/raspios_arm64-2020-05-28/2020-05-27-raspios-buster-arm64.zip",
+    "iso_checksum": "d06d8eecfa3980e18f9061777ca2dac50d98037373e1bd04e8726d79467dc7c7",
     "last_partition_extra_size": 1073741824
   }],  
   "provisioners": [
