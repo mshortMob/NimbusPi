@@ -68,12 +68,16 @@
 				}
 				gui = new dat.GUI();
                 gui.width=320;
-				gui.add(globalController, "shaderToEdit", 1, 10, 1 ).onChange(function(){globalController.shaderToEdit=parseInt(globalController.shaderToEdit);loadSelectedShader(); });		
-                gui.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
-				gui.add({ 'Save As New Preset':function(){ addNewShader() }},'Save As New Preset');
-                gui.add({ 'Back to Main':function(){ window.location.replace("http://"+location.hostname+"/index.html"); }},'Back to Main');
-                gui.add({ 'Use Pi4':function(){ writeCanvasYFlip(1); }},'Use Pi4');
-				gui.add({ 'Use Pi3b':function(){ writeCanvasYFlip(-1); }},'Use Pi3b');
+				ShaderEditorFolder=gui.addFolder( "ShaderEditor" );
+				ShaderEditorFolder.open();
+				ShaderEditorFolder.add(globalController, "shaderToEdit", 1, 10, 1 ).onChange(function(){globalController.shaderToEdit=parseInt(globalController.shaderToEdit);loadSelectedShader(); });		
+                ShaderEditorFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
+				ShaderEditorFolder.add({ 'Save As New Preset':function(){ addNewShader() }},'Save As New Preset');
+                ShaderEditorFolder.add({ 'Back to Main':function(){ window.location.replace("http://"+location.hostname+"/index.html"); }},'Back to Main');
+				globalFolder=gui.addFolder( "Global Settings" );
+				globalFolder.open();
+				globalFolder.add({ 'Use Pi4':function(){ writeCanvasYFlip(1); }},'Use Pi4');
+				globalFolder.add({ 'Use Pi3b':function(){ writeCanvasYFlip(-1); }},'Use Pi3b');
 									
 			}
 
