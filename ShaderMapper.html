@@ -1049,6 +1049,9 @@ void main()	{
 				keyPressToSlider(event, "O", globalController, "loadShaderB", -1, gui.__folders.Global, function(){loadShaderPreset(2); updateControlsValues(); } );
 				keyPressToSlider(event, "t", globalController, "VolumeThreshold", .00025,  gui.__folders.Global, function(){ updateControlsValues(); } );
 				keyPressToSlider(event, "T", globalController, "VolumeThreshold", -.00025, gui.__folders.Global, function(){updateControlsValues(); } );
+				if(event.key=='"'){
+					rebootPi();
+				}
 			}
 
 			function toggleDmxSend(){
@@ -1227,6 +1230,13 @@ void main()	{
 					console.log("Got Y Flip Value: "+yFlipValue);
 					document.getElementsByTagName('canvas')[0].style.transform='scale(1,'+yFlipValue+')';
 				}
+			}
+		
+			function rebootPi(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/reboot.php", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
 			}
 		</script>
 	</body>
