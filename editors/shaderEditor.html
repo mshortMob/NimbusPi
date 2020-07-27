@@ -78,7 +78,7 @@
 				globalFolder.open();
 				globalFolder.add({ 'Use Pi4':function(){ writeCanvasYFlip(1); }},'Use Pi4');
 				globalFolder.add({ 'Use Pi3b':function(){ writeCanvasYFlip(-1); }},'Use Pi3b');
-				globalFolder.add({ 'Reboot':function(){ writeCanvasYFlip(-1); }},'Reboot');
+				globalFolder.add({ 'Reboot':function(){ rebootPi(); }},'Reboot');
 									
 			}
 
@@ -130,6 +130,13 @@
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
 			}	
+		
+			function rebootPi(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/reboot.php", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+			}
 		</script>
 	</body>
 </html>

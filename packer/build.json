@@ -122,7 +122,8 @@
        "sudo chmod 600 /home/pi/.ssh/authorized_keys",
        "sed '/PasswordAuthentication/d' -i /etc/ssh/sshd_config",
        "echo  >> /etc/ssh/sshd_config",
-       "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config"
+       "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config",
+       "echo 'www-data ALL = NOPASSWD: /sbin/reboot' >> /etc/sudoers"
      ]
    }
  ] 
