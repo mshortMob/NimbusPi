@@ -89,8 +89,8 @@
 				xmlhttp.onload = function(e){
                     numberOfShaders=parseInt(xmlhttp.response);
                     console.log("get number of shaders: "+numberOfShaders)
-                    gui.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].__max=numberOfShaders;
-                    gui.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].updateDisplay()
+                    ShaderEditorFolder.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].__max=numberOfShaders;
+                    ShaderEditorFolder.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].updateDisplay()
 				}
             }
 
@@ -116,9 +116,9 @@
                     xmlhttp3.onload = function(e){
                         console.log(xmlhttp3.response.status);
                         console.log("Created new shader file number: "+numberOfShaders);
-                        gui.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].__max=gui.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].__max+1;
+                        ShaderEditorFolder.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].__max=ShaderEditorFolder.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].__max+1;
                         globalController.shaderToEdit=numberOfShaders;
-                        gui.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].updateDisplay()
+                        ShaderEditorFolder.__controllers.filter(obj => { return obj.property == "shaderToEdit"})[0].updateDisplay()
                     }
 				}
             }
@@ -133,7 +133,7 @@
 		
 			function rebootPi(){
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "php/reboot.php", true);
+				xmlhttp.open("GET", "../php/reboot.php", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
 			}
