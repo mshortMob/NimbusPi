@@ -1053,6 +1053,9 @@ void main()	{
 				if(event.key=='"'){
 					rebootPi();
 				}
+				if(event.key=='|'){
+					window.location.replace("http://"+location.hostname+"/FlowMapper.html");
+				}
 			}
 
 			function toggleDmxSend(){

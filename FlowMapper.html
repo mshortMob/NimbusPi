@@ -198,6 +198,8 @@
 					addPlane();
 				}
 				window.addEventListener("keypress", keyHandler);
+				gui.close();
+				setTimeout(function(){recallState();},100);
 			}
 			
 			function initScene() {
@@ -445,6 +447,9 @@
 					globalController.PresetName="Preset_1"
 					recallState();
 				}
+				if(event.key=='|'){
+					window.location.replace("http://"+location.hostname+"/ShaderMapper.html");
+				}			
 			}
 			
 			function updateControlsView(){
@@ -851,6 +856,7 @@
 					presetsArray=JSON.parse(xmlhttp.response).storage2
 					updateControlsView();
 					syncObjectsToJson();
+					for(var x=0;x<displayObjects[globalController.selectedFixture].children.length;x++){ displayObjects[globalController.selectedFixture].children[x].visible=false; };
 				}
 			}	
 			
