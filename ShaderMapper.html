@@ -814,6 +814,7 @@ void main()	{
 					// presetsArray=JSON.parse(xmlhttp.response).storage2
 					updateControlsView();
 					syncObjectsToJson(true);
+					for(var x=0;x<displayObjects[globalController.selectedFixture].children.length;x++){ displayObjects[globalController.selectedFixture].children[x].visible=false; };
 				}
 			}	
 			
