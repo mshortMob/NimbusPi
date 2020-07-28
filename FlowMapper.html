@@ -182,8 +182,8 @@
 				presetsArray=[];
 				for(var x=0;x<4;x++){
 					var objectJSON ={}
-					for (var key in mappingController) {
-						objectJSON[key]=mappingController[key]
+					for (var key in objectController) {
+						objectJSON[key]=objectController[key]
 					}
 					statesArray.push(objectJSON)
 				}
@@ -245,7 +245,7 @@
 					 PresetName:"Preset_1",
 					 selectedCamera:0
 				}
-				mappingController  = {
+				objectController  = {
 					 Visible:false,
 					 ZValue:0
 				};
@@ -262,8 +262,8 @@
 				var count=0; 
 				for(var y=4; y>=0;y--){
 					for(var x=0; x<5;x++){
-						mappingController["VerticeX"+count]=-200+100*x;
-						mappingController["VerticeY"+count]=-200+100*y;
+						objectController["VerticeX"+count]=-200+100*x;
+						objectController["VerticeY"+count]=-200+100*y;
 						count=count+1;
 					}
 				}
@@ -275,10 +275,10 @@
 				globalFolder.add(globalController, "mappingMode", 0, 1, .1 ).onChange(function(){if(statesArray[globalController.selectedFixture]["Visible"]==true){displayObjects[globalController.selectedFixture].hideChildren();displayObjects[globalController.selectedFixture].showChildren();};});
 				globalFolder.add( globalController, "PresetRate", 0, .15, .0001 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
 				gui.width=260;
-				controlsFolder=gui.addFolder( "MappingControls" )
+				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
-				controlsFolder.add( mappingController, "Visible", true ).onChange(function(){updateControlsValues();syncObjectsToJson();});	
-				controlsFolder.add( mappingController, "ZValue", -20, 20, 1 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
+				controlsFolder.add( objectController, "Visible", true ).onChange(function(){updateControlsValues();syncObjectsToJson();});	
+				controlsFolder.add( objectController, "ZValue", -20, 20, 1 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
 				painterFolder=gui.addFolder( "PainterControls" )
 				painterFolder.open();
 				painterFolder.add( painterController, "VelocitySensitivity", 0, 1, .01 ).onChange(function(){painterController.VelocitySensitivity=parseFloat(painterController.VelocitySensitivity);updateControlsValues();});
@@ -448,10 +448,10 @@
 			}
 			
 			function updateControlsView(){
-				for (var i in gui.__folders.MappingControls.__controllers) {
-					//mappingController[i]=statesArray[globalController.selectedScene].objects[globalController.selectedFixture]
-				  	mappingController[gui.__folders.MappingControls.__controllers[i].property]=statesArray[parseInt(globalController.selectedFixture)][gui.__folders.MappingControls.__controllers[i].property];
-					gui.__folders.MappingControls.__controllers[i].updateDisplay();
+				for (var i in gui.__folders.ObjectControls.__controllers) {
+					//objectController[i]=statesArray[globalController.selectedScene].objects[globalController.selectedFixture]
+				  	objectController[gui.__folders.ObjectControls.__controllers[i].property]=statesArray[parseInt(globalController.selectedFixture)][gui.__folders.ObjectControls.__controllers[i].property];
+					gui.__folders.ObjectControls.__controllers[i].updateDisplay();
 				}
 				for (var i in gui.__folders.PainterControls.__controllers) {
 				  painterController[gui.__folders.PainterControls.__controllers[i].property]=presetsArray[parseInt(globalController.selectedPreset)][gui.__folders.PainterControls.__controllers[i].property];
@@ -463,8 +463,8 @@
 			}
 			
 			function updateControlsValues(){  
-				for (var i in gui.__folders.MappingControls.__controllers) {
-				  statesArray[parseInt(globalController.selectedFixture)][gui.__folders.MappingControls.__controllers[i].property]=mappingController[gui.__folders.MappingControls.__controllers[i].property];
+				for (var i in gui.__folders.ObjectControls.__controllers) {
+				  statesArray[parseInt(globalController.selectedFixture)][gui.__folders.ObjectControls.__controllers[i].property]=objectController[gui.__folders.ObjectControls.__controllers[i].property];
 				}
 				for (var i in gui.__folders.PainterControls.__controllers) {
 				  presetsArray[parseInt(globalController.selectedPreset)][gui.__folders.PainterControls.__controllers[i].property]=painterController[gui.__folders.PainterControls.__controllers[i].property];
@@ -636,8 +636,8 @@
 					object.geometry.verticesNeedUpdate = true;
 					//object.drawV()
 					for(var x=0;x<object.geometry.vertices.length;x++){
-						mappingController["VerticeX"+x]=object.geometry.vertices[x].x;
-						mappingController["VerticeY"+x]=object.geometry.vertices[x].y;
+						objectController["VerticeX"+x]=object.geometry.vertices[x].x;
+						objectController["VerticeY"+x]=object.geometry.vertices[x].y;
 					}
 					for(var x=0;x<object.children.length;x++){
 						if(object.children[x].name.indexOf("vertice"!=0)){
