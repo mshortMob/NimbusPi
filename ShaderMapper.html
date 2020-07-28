@@ -373,10 +373,10 @@ void main()	{
 				
 			function addControls(){
 				globalController  = {
-					selectedFixture:0,
+					selectedObject:0,
 					mappingMode:0,
-					loadShaderA:1,
-					loadShaderB:2,
+					ShaderA:1,
+					ShaderB:2,
 					MaskA:1,
 					MaskB:2,
 					PresetName:"GlobalPreset1",
@@ -406,12 +406,12 @@ void main()	{
 					}
 				}
 				gui = new dat.GUI();
-				gui.width=260;
+				gui.width=360;
 				globalFolder=gui.addFolder( "Global" )
 				globalFolder.open();
-				globalFolder.add(globalController, "selectedFixture", 0, 3, 1 ).onChange(function(){globalController.selectedFixture=parseInt(globalController.selectedFixture);updateControlsView();syncObjectsToJson();});
-				globalFolder.add(globalController, "loadShaderA", 1, 11, 1 ).onChange(function(){globalController.loadShaderA=parseInt(globalController.loadShaderA);loadShaderPreset(1);updateControlsValues();});				
-				globalFolder.add(globalController, "loadShaderB", 1, 11, 1 ).onChange(function(){globalController.loadShaderB=parseInt(globalController.loadShaderB);loadShaderPreset(2);updateControlsValues();});								
+				globalFolder.add(globalController, "selectedObject", 0, 3, 1 ).onChange(function(){globalController.selectedObject=parseInt(globalController.selectedObject);updateControlsView();syncObjectsToJson();});
+				globalFolder.add(globalController, "ShaderA", 1, 11, 1 ).onChange(function(){globalController.ShaderA=parseInt(globalController.ShaderA);loadShaderPreset(1);updateControlsValues();});				
+				globalFolder.add(globalController, "ShaderB", 1, 11, 1 ).onChange(function(){globalController.ShaderB=parseInt(globalController.ShaderB);loadShaderPreset(2);updateControlsValues();});								
 				globalFolder.add(globalController, "MaskA", 1, 3, 1 ).onChange(function(){globalController.MaskA=parseInt(globalController.MaskA); changeMask(1); updateControlsValues();});				
 				globalFolder.add(globalController, "MaskB", 1, 3, 1 ).onChange(function(){globalController.MaskB=parseInt(globalController.MaskB); changeMask(2); updateControlsValues();});
 				globalFolder.add( globalController, "VolumeThreshold", .0001,.1,.0001 ).onChange(function(){updateControlsValues();});				
@@ -432,7 +432,7 @@ void main()	{
 				utilsFolder=gui.addFolder( "Utils" )
 				utilsFolder.open();
 				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
-				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedFixture].children.length;x++){ displayObjects[globalController.selectedFixture].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');	
+				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');	
 				utilsFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
 				utilsFolder.add({ 'Recall Preset':function(){ recallState() }},'Recall Preset');
 				utilsFolder.add({ 'Shader Editor':function(){ window.location.replace("http://"+location.hostname+"/editors/shaderEditor.html"); }},'Shader Editor');
@@ -456,9 +456,9 @@ void main()	{
 			
 			function loadShaderPreset(shaderNum){
 				if(shaderNum==1){
-					var shaverVal=parseInt(globalController.loadShaderA);
+					var shaverVal=parseInt(globalController.ShaderA);
 				}else{
-					var shaverVal=parseInt(globalController.loadShaderB);
+					var shaverVal=parseInt(globalController.ShaderB);
 				}
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("GET", "php/read.php?fn=fragmentShaders/shader"+parseInt(shaverVal)+".txt", true);
@@ -478,7 +478,7 @@ void main()	{
 			
 			function updateControlsView(){
 				for (var i in gui.__folders.ObjectControls.__controllers) {
-				  	objectController[gui.__folders.ObjectControls.__controllers[i].property]=statesArray[parseInt(globalController.selectedFixture)][gui.__folders.ObjectControls.__controllers[i].property];
+				  	objectController[gui.__folders.ObjectControls.__controllers[i].property]=statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property];
 					gui.__folders.ObjectControls.__controllers[i].updateDisplay();
 				}
 				for (var i in gui.__folders.Global.__controllers) {
@@ -495,7 +495,7 @@ void main()	{
 			
 			function updateControlsValues(){  
 				for (var i in gui.__folders.ObjectControls.__controllers) {
-				  statesArray[parseInt(globalController.selectedFixture)][gui.__folders.ObjectControls.__controllers[i].property]=objectController[gui.__folders.ObjectControls.__controllers[i].property];
+				  statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property]=objectController[gui.__folders.ObjectControls.__controllers[i].property];
 				}
 				for (var i in gui.__folders.Global.__controllers) {
 					globalState[gui.__folders.Global.__controllers[i].property]=globalController[gui.__folders.Global.__controllers[i].property];
@@ -510,7 +510,7 @@ void main()	{
 					displayObjects[x].setState(statesArray[x])
 					displayObjects[x].hideChildren();
 				}
-				displayObjects[globalController.selectedFixture].showChildren();
+				displayObjects[globalController.selectedObject].showChildren();
 
 				//--------------------------
 				if(includGlobal){
@@ -670,8 +670,8 @@ void main()	{
 						if(object.children[x].name.indexOf("vertice"!=0)){
 							object.children[x].position.x=object.geometry.vertices[x].x;
 							object.children[x].position.y=object.geometry.vertices[x].y;
-							statesArray[globalController.selectedFixture]["VerticeX"+x]=object.geometry.vertices[x].x;
-							statesArray[globalController.selectedFixture]["VerticeY"+x]=object.geometry.vertices[x].y;
+							statesArray[globalController.selectedObject]["VerticeX"+x]=object.geometry.vertices[x].x;
+							statesArray[globalController.selectedObject]["VerticeY"+x]=object.geometry.vertices[x].y;
 						}		
 					}
 					updateControlsValues();
@@ -715,8 +715,8 @@ void main()	{
 							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
 							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
 							SELECTED.parent.geometry.verticesNeedUpdate = true;
-							statesArray[parseInt(globalController.selectedFixture)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-							statesArray[parseInt(globalController.selectedFixture)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
 						}
 					}
 					return;
@@ -814,40 +814,40 @@ void main()	{
 					// presetsArray=JSON.parse(xmlhttp.response).storage2
 					updateControlsView();
 					syncObjectsToJson(true);
-					for(var x=0;x<displayObjects[globalController.selectedFixture].children.length;x++){ displayObjects[globalController.selectedFixture].children[x].visible=false; };
+					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
 				}
 			}	
 			
 			function keyHandler(event){
 				if(event.key=="<"){
-					if(globalController.selectedFixture>0){
-						globalController.selectedFixture=globalController.selectedFixture-1;
+					if(globalController.selectedObject>0){
+						globalController.selectedObject=globalController.selectedObject-1;
 						updateControlsView();
 						gui.__folders.Global.__controllers[0].updateDisplay();
 						syncObjectsToJson();
 					}else{
-						globalController.selectedFixture=3;
+						globalController.selectedObject=3;
 						updateControlsView();
 						gui.__folders.Global.__controllers[0].updateDisplay();
 						syncObjectsToJson();
 					}
 				}
 				if(event.key==">"){
-					if(globalController.selectedFixture<3){
-						globalController.selectedFixture=globalController.selectedFixture+1;
+					if(globalController.selectedObject<3){
+						globalController.selectedObject=globalController.selectedObject+1;
 						updateControlsView();
 						gui.__folders.Global.__controllers[0].updateDisplay();
 						syncObjectsToJson();
 					}else{
-						globalController.selectedFixture=0;
+						globalController.selectedObject=0;
 						updateControlsView();
 						gui.__folders.Global.__controllers[0].updateDisplay();
 						syncObjectsToJson();
 					}
 				}
 				if(event.key=="?"){
-					for(var x=0;x<displayObjects[globalController.selectedFixture].children.length;x++){ 
-						displayObjects[globalController.selectedFixture].children[x].visible=false; 
+					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ 
+						displayObjects[globalController.selectedObject].children[x].visible=false; 
 					};
 				}
 				if(event.key=="C"){
@@ -862,94 +862,94 @@ void main()	{
 				}
 				if(event.key=="a"){
 					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedFixture]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedFixture]["VerticeX"+listOfCornerVertices[selectedVertice]]+1;
+					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+1;
 					updateControlsView();
 					syncObjectsToJson();
-					displayObjects[globalController.selectedFixture].updateCorners();
+					displayObjects[globalController.selectedObject].updateCorners();
 				}
 				if(event.key=="s"){
 					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedFixture]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedFixture]["VerticeY"+listOfCornerVertices[selectedVertice]]-1;
+					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-1;
 					updateControlsView();
 					syncObjectsToJson();
-					displayObjects[globalController.selectedFixture].updateCorners();
+					displayObjects[globalController.selectedObject].updateCorners();
 				}
 				if(event.key=="d"){
 					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedFixture]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedFixture]["VerticeX"+listOfCornerVertices[selectedVertice]]-1;
+					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]-1;
 					updateControlsView();
 					syncObjectsToJson();
-					displayObjects[globalController.selectedFixture].updateCorners();
+					displayObjects[globalController.selectedObject].updateCorners();
 				}
 				if(event.key=="w"){
 					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedFixture]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedFixture]["VerticeY"+listOfCornerVertices[selectedVertice]]+1;
+					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]+1;
 					updateControlsView();
 					syncObjectsToJson();
-					displayObjects[globalController.selectedFixture].updateCorners();
+					displayObjects[globalController.selectedObject].updateCorners();
 				}
 				if(event.key=="A"){
 					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedFixture]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedFixture]["VerticeX"+listOfCornerVertices[selectedVertice]]+40;
+					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+40;
 					updateControlsView();
 					syncObjectsToJson();
-					displayObjects[globalController.selectedFixture].updateCorners();
+					displayObjects[globalController.selectedObject].updateCorners();
 				}
 				if(event.key=="S"){
 					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedFixture]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedFixture]["VerticeY"+listOfCornerVertices[selectedVertice]]-40;
+					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-40;
 					updateControlsView();
 					syncObjectsToJson();
-					displayObjects[globalController.selectedFixture].updateCorners();
+					displayObjects[globalController.selectedObject].updateCorners();
 				}
 				if(event.key=="D"){
 					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedFixture]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedFixture]["VerticeX"+listOfCornerVertices[selectedVertice]]-40;
+					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]-40;
 					updateControlsView();
 					syncObjectsToJson();
-					displayObjects[globalController.selectedFixture].updateCorners();
+					displayObjects[globalController.selectedObject].updateCorners();
 				}
 				if(event.key=="W"){
 					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedFixture]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedFixture]["VerticeY"+listOfCornerVertices[selectedVertice]]+40;
+					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]+40;
 					updateControlsView();
 					syncObjectsToJson();
-					displayObjects[globalController.selectedFixture].updateCorners();
+					displayObjects[globalController.selectedObject].updateCorners();
 				}
 				if(event.key=="z"){
-					if(statesArray[globalController.selectedFixture].ZValue>-20){
-						statesArray[globalController.selectedFixture].ZValue=statesArray[globalController.selectedFixture].ZValue-1;
+					if(statesArray[globalController.selectedObject].ZValue>-20){
+						statesArray[globalController.selectedObject].ZValue=statesArray[globalController.selectedObject].ZValue-1;
 						updateControlsView();
 						syncObjectsToJson();
 					}
 				}
 				if(event.key=="Z"){
-					if(statesArray[globalController.selectedFixture].ZValue<20){
-						statesArray[globalController.selectedFixture].ZValue=statesArray[globalController.selectedFixture].ZValue+1;
+					if(statesArray[globalController.selectedObject].ZValue<20){
+						statesArray[globalController.selectedObject].ZValue=statesArray[globalController.selectedObject].ZValue+1;
 						updateControlsView();
 						syncObjectsToJson();
 					}
 				}			
 				if(event.key=="X"){
-					if(statesArray[globalController.selectedFixture].Shader+1>2){
-						statesArray[globalController.selectedFixture].Shader=1;
+					if(statesArray[globalController.selectedObject].Shader+1>2){
+						statesArray[globalController.selectedObject].Shader=1;
 					}else{
-						statesArray[globalController.selectedFixture].Shader=statesArray[globalController.selectedFixture].Shader+1
+						statesArray[globalController.selectedObject].Shader=statesArray[globalController.selectedObject].Shader+1
 					}
 					updateControlsView();
 					syncObjectsToJson();
 				}
 				if(event.key=="x"){
-					if(statesArray[globalController.selectedFixture].Shader-1<1){
-						statesArray[globalController.selectedFixture].Shader=2;
+					if(statesArray[globalController.selectedObject].Shader-1<1){
+						statesArray[globalController.selectedObject].Shader=2;
 					}else{
-						statesArray[globalController.selectedFixture].Shader=statesArray[globalController.selectedFixture].Shader-1
+						statesArray[globalController.selectedObject].Shader=statesArray[globalController.selectedObject].Shader-1
 					}
 					updateControlsView();
 					syncObjectsToJson();
 				}
 				if(event.key=="v" || event.key=="V"){
-					statesArray[globalController.selectedFixture].Visible=!statesArray[globalController.selectedFixture].Visible;
+					statesArray[globalController.selectedObject].Visible=!statesArray[globalController.selectedObject].Visible;
 					updateControlsView();
 					syncObjectsToJson();
 				}
@@ -1034,7 +1034,7 @@ void main()	{
 				}					
 				if(event.key=="m"){
 					globalController.mappingMode=parseInt(globalController.mappingMode+1)%2;
-					if(statesArray[globalController.selectedFixture]["Visible"]==true){displayObjects[globalController.selectedFixture].hideChildren();displayObjects[globalController.selectedFixture].showChildren();};
+					if(statesArray[globalController.selectedObject]["Visible"]==true){displayObjects[globalController.selectedObject].hideChildren();displayObjects[globalController.selectedObject].showChildren();};
 				}
 				keyPressToSlider(event, "6", globalController, "DMX_X1", 1, gui.__folders.DMX, function(){ updateControlsValues(); } );
 				keyPressToSlider(event, "^", globalController, "DMX_X1", -1, gui.__folders.DMX, function(){ updateControlsValues(); } );
@@ -1044,10 +1044,10 @@ void main()	{
 				keyPressToSlider(event, "*", globalController, "DMX_X2", -1, gui.__folders.DMX, function(){ updateControlsValues(); } );
 				keyPressToSlider(event, "9", globalController, "DMX_Y2", 1, gui.__folders.DMX, function(){ updateControlsValues(); } );
 				keyPressToSlider(event, "(", globalController, "DMX_Y2", -1, gui.__folders.DMX, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "l", globalController, "loadShaderA", 1, gui.__folders.Global, function(){loadShaderPreset(1); updateControlsValues(); } );
-				keyPressToSlider(event, "L", globalController, "loadShaderA", -1, gui.__folders.Global, function(){loadShaderPreset(1); updateControlsValues(); } );
-				keyPressToSlider(event, "o", globalController, "loadShaderB", 1, gui.__folders.Global, function(){loadShaderPreset(2); updateControlsValues(); } );
-				keyPressToSlider(event, "O", globalController, "loadShaderB", -1, gui.__folders.Global, function(){loadShaderPreset(2); updateControlsValues(); } );
+				keyPressToSlider(event, "l", globalController, "ShaderA", 1, gui.__folders.Global, function(){loadShaderPreset(1); updateControlsValues(); } );
+				keyPressToSlider(event, "L", globalController, "ShaderA", -1, gui.__folders.Global, function(){loadShaderPreset(1); updateControlsValues(); } );
+				keyPressToSlider(event, "o", globalController, "ShaderB", 1, gui.__folders.Global, function(){loadShaderPreset(2); updateControlsValues(); } );
+				keyPressToSlider(event, "O", globalController, "ShaderB", -1, gui.__folders.Global, function(){loadShaderPreset(2); updateControlsValues(); } );
 				keyPressToSlider(event, "t", globalController, "VolumeThreshold", .00025,  gui.__folders.Global, function(){ updateControlsValues(); } );
 				keyPressToSlider(event, "T", globalController, "VolumeThreshold", -.00025, gui.__folders.Global, function(){updateControlsValues(); } );
 				if(event.key=='"'){
@@ -1186,10 +1186,10 @@ void main()	{
 				xmlhttp.onload = function(e){
                     numberOfShaders=parseInt(xmlhttp.response);
                     console.log("get number of shaders: "+numberOfShaders)
-                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "loadShaderA"})[0].__max=numberOfShaders;
-                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "loadShaderA"})[0].updateDisplay()
-                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "loadShaderB"})[0].__max=numberOfShaders;
-                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "loadShaderB"})[0].updateDisplay()
+                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "ShaderA"})[0].__max=numberOfShaders;
+                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "ShaderA"})[0].updateDisplay()
+                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "ShaderB"})[0].__max=numberOfShaders;
+                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "ShaderB"})[0].updateDisplay()
                     gui.__folders.DMX.__controllers.filter(obj => { return obj.property == "DMX_Pattern"})[0].__max=numberOfShaders;
                     gui.__folders.DMX.__controllers.filter(obj => { return obj.property == "DMX_Pattern"})[0].updateDisplay()					
 				}
