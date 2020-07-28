@@ -1,0 +1,19 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+uniform float mousey;
+uniform float mousex;
+varying vec2 vUv;
+uniform sampler2D colorTexture;
+uniform sampler2D colorTexture2;
+
+void main( void ) {
+	vec3 col = vec3(0.0);
+	
+	col.r = vUv.x+sin(time);
+	col.b = vUv.y+cos(time);		
+	col.g = vUv.y+sin(time+1.57/2.0);
+	gl_FragColor = vec4(col,1.57);
+
+}

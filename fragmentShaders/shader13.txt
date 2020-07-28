@@ -1,0 +1,44 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+uniform float mousey;
+uniform float mousex;
+varying vec2 vUv;
+uniform sampler2D colorTexture;
+uniform sampler2D colorTexture2;
+
+float map(vec3 p) {
+	vec3 q = fract(p)*2.0 - 1.0;
+	// return length(q) - 0.25;
+	return sqrt(q.x*q.x + q.y*q.y)*0.5 + .0;
+}
+
+float trace(vec3 o, vec3 r) {
+	float t = 0.0;
+	for (int i=0;i<32;++i) {
+		vec3 p = o+r*t;
+		float d = map(p);
+		t += d*0.5;
+	}
+	return t;
+}
+
+void main( void ) {
+
+	vec2 uv = vUv;
+
+	uv = uv*2.0 - 1.0;
+	vec3 r = normalize(vec3(uv, 1.0));
+	
+	float the = time * 0.25;
+	r.xz *= mat2(cos(the), -sin(the), sin(the), cos(the));
+	vec3 o = vec3(0.0, time, time);
+	
+	float t = trace(o,r);
+	float fog = 1.0 / (1.0 + t*t*0.1);
+	vec3 fc = vec3(fog,0.0,fog);
+		
+	gl_FragColor = vec4( fc, 1.0 );
+
+}
