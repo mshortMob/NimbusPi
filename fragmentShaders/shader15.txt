@@ -14,6 +14,7 @@ void main( void ) {
 	col.r = vUv.x+sin(time);
 	col.b = vUv.y+cos(time);		
 	col.g = vUv.y+sin(time+1.57/2.0);
-	gl_FragColor = vec4(col,1.57);
+	vec3 mask = texture2D( colorTexture, vUv ).rgb;
+	gl_FragColor = vec4(col,mask.r);
 
 }

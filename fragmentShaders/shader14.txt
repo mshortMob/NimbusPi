@@ -44,7 +44,7 @@ void main( void ) {
 	float t = trace(o,r);
 	float fog = 1.0 / (1.0 + t*t*0.1);
 	vec3 fc = vec3(0.,fog,fog);
-		
-	gl_FragColor = vec4( fc, 1.0 );
+	vec3 mask = texture2D( colorTexture, vUv ).rgb;
+	gl_FragColor = vec4( fc, mask.r );
 
 }
