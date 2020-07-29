@@ -22,6 +22,8 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 
 ## Usage Instructions
 
+![NimbusPi User Guide](http://www.nimbuslaboratory.com/NimbusPi%20User%20Guide.jpg)
+
 Find a basic walkthrough and demo [here](http://www.nimbuslaboratory.com/NimbusPi%20Walkthrough.mp4).
 
 ### Local Development
