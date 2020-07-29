@@ -70,11 +70,13 @@
 				}
 				gui = new dat.GUI();
                 gui.width=260;
-				gui.add(globalController, "patternToEdit", 0, 10, 1 ).onChange(function(){globalController.patternToEdit=parseInt(globalController.patternToEdit);loadSelectedPattern(); });		
-                gui.add({ 'Record Input':function(){ recordDMX(0); }},'Record Input');
-				gui.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
-				gui.add({ 'Save As New Preset':function(){ addNewPattern() }},'Save As New Preset');
-                gui.add({ 'Back to Main':function(){ window.location.replace("http://"+location.hostname+"/index.html"); }},'Back to Main');
+				DmxEditorFolder=gui.addFolder( "DmxEditor" );
+				DmxEditorFolder.open();
+				DmxEditorFolder.add(globalController, "patternToEdit", 0, 10, 1 ).onChange(function(){globalController.patternToEdit=parseInt(globalController.patternToEdit);loadSelectedPattern(); });		
+                DmxEditorFolder.add({ 'Record Input':function(){ recordDMX(0); }},'Record Input');
+				DmxEditorFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
+				DmxEditorFolder.add({ 'Save As New Preset':function(){ addNewPattern() }},'Save As New Preset');
+                DmxEditorFolder.add({ 'Back to Main':function(){ window.location.replace("http://"+location.hostname+"/index.html"); }},'Back to Main');
 									
 			}
 
@@ -85,8 +87,8 @@
 				xmlhttp.onload = function(e){
                     numberOfPatterns=parseInt(xmlhttp.response);
                     console.log("get number of patterns: "+numberOfPatterns)
-                    gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].__max=numberOfPatterns;
-                    gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].updateDisplay()
+                    DmxEditorFolder.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].__max=numberOfPatterns;
+					DmxEditorFolder.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].updateDisplay()
 				}
             }
 
@@ -112,9 +114,9 @@
                     xmlhttp3.onload = function(e){
                         console.log(xmlhttp3.response.status);
                         console.log("Created new pattern file number: "+numberOfPatterns);
-                        gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].__max=gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].__max+1;
+                        DmxEditorFolder.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].__max=DmxEditorFolder.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].__max+1;
                         globalController.patternToEdit=numberOfPatterns;
-                        gui.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].updateDisplay()
+                        DmxEditorFolder.__controllers.filter(obj => { return obj.property == "patternToEdit"})[0].updateDisplay()
                     }
 				}
             }
