@@ -239,7 +239,7 @@
 			function addControls(){
 				globalController  = {
 					 selectedObject:0,
-					 selectedPreset:0,
+					 selectedScene:0,
 					 mappingMode:0,
 					 PresetRate:0.0,
 					 Master:false,
@@ -273,7 +273,7 @@
 				globalFolder=gui.addFolder( "Global" )
 				globalFolder.open();
 				globalFolder.add(globalController, "selectedObject", 0, 3, 1 ).onChange(function(){globalController.selectedObject=parseInt(globalController.selectedObject);updateControlsView();syncObjectsToJson();});
-				globalFolder.add(globalController, "selectedPreset", 0, 3, 1 ).onChange(function(){globalController.selectedPreset=parseInt(globalController.selectedPreset);updateControlsView();});
+				globalFolder.add(globalController, "selectedScene", 0, 3, 1 ).onChange(function(){globalController.selectedScene=parseInt(globalController.selectedScene);updateControlsView();});
 				globalFolder.add(globalController, "mappingMode", 0, 1, .1 ).onChange(function(){if(statesArray[globalController.selectedObject]["Visible"]==true){displayObjects[globalController.selectedObject].hideChildren();displayObjects[globalController.selectedObject].showChildren();};});
 				globalFolder.add( globalController, "PresetRate", 0, .15, .0001 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
 				gui.width=360;
@@ -297,7 +297,7 @@
 				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');	
 				utilsFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
 				utilsFolder.add({ 'Recall Preset':function(){ recallState() }},'Recall Preset');
-				// utilsFolder.add(globalController, 'PresetName').onChange(function(){});
+				utilsFolder.add(globalController, 'PresetName').onChange(function(){});
 				utilsFolder.add(globalController, "selectedCamera", 0, 1, 1 ).onChange(function(){globalController.selectedCamera=parseInt(globalController.selectedCamera);getVideo("select",globalController.selectedCamera);});
 				utilsFolder.add({ 'ShaderMapper':function(){ window.location.replace("http://"+location.hostname+"/ShaderMapper.html"); }},'ShaderMapper');
 			}
@@ -440,13 +440,55 @@
 				keyPressToSlider(event, "j", painterController, "ColorHop", .1, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
 				keyPressToSlider(event, "J", painterController, "ColorHop", -.1, gui.__folders.PainterControls, function(){ updateControlsValues(); } );	
 				if(event.key=="!"){
-					globalController.PresetName="Preset_1"
+					globalController.PresetName="Preset_1";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					saveState();
 				}
 				if(event.key=="1"){
-					globalController.PresetName="Preset_1"
+					globalController.PresetName="Preset_1";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					recallState();
 				}
+				if(event.key=="@"){
+					globalController.PresetName="Preset_2";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					saveState();
+				}
+				if(event.key=="2"){
+					globalController.PresetName="Preset_2";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					recallState();
+				}
+				if(event.key=="#"){
+					globalController.PresetName="Preset_3";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					saveState();
+				}
+				if(event.key=="3"){
+					globalController.PresetName="Preset_3";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					recallState();
+				}			
+				if(event.key=="$"){
+					globalController.PresetName="Preset_4";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					saveState();
+				}
+				if(event.key=="4"){
+					globalController.PresetName="Preset_4";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					recallState();
+				}				
+				if(event.key=="%"){
+					globalController.PresetName="Preset_5";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					saveState();
+				}
+				if(event.key=="5"){
+					globalController.PresetName="Preset_5";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					recallState();
+				}		
 				if(event.key=='|'){
 					window.location.replace("http://"+location.hostname+"/ShaderMapper.html");
 				}			
@@ -459,7 +501,7 @@
 					gui.__folders.ObjectControls.__controllers[i].updateDisplay();
 				}
 				for (var i in gui.__folders.PainterControls.__controllers) {
-				  painterController[gui.__folders.PainterControls.__controllers[i].property]=presetsArray[parseInt(globalController.selectedPreset)][gui.__folders.PainterControls.__controllers[i].property];
+				  painterController[gui.__folders.PainterControls.__controllers[i].property]=presetsArray[parseInt(globalController.selectedScene)][gui.__folders.PainterControls.__controllers[i].property];
 				  gui.__folders.PainterControls.__controllers[i].updateDisplay();
 				}
 				gui.__folders.Global.__controllers[1].updateDisplay();
@@ -472,7 +514,7 @@
 				  statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property]=objectController[gui.__folders.ObjectControls.__controllers[i].property];
 				}
 				for (var i in gui.__folders.PainterControls.__controllers) {
-				  presetsArray[parseInt(globalController.selectedPreset)][gui.__folders.PainterControls.__controllers[i].property]=painterController[gui.__folders.PainterControls.__controllers[i].property];
+				  presetsArray[parseInt(globalController.selectedScene)][gui.__folders.PainterControls.__controllers[i].property]=painterController[gui.__folders.PainterControls.__controllers[i].property];
 				}
 				setPPResolution()
 				setKalMode();
@@ -804,7 +846,7 @@
 					presetCounter=presetCounter+globalController.PresetRate
 					if(presetCounter > 1){
 						presetCounter=0;
-						globalController.selectedPreset=(globalController.selectedPreset+1)%4;
+						globalController.selectedScene=(globalController.selectedScene+1)%4;
 						updateControlsView();
 					}
 			    }

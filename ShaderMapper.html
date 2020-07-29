@@ -435,6 +435,7 @@ void main()	{
 				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');	
 				utilsFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
 				utilsFolder.add({ 'Recall Preset':function(){ recallState() }},'Recall Preset');
+				utilsFolder.add(globalController, 'PresetName').onChange(function(){});
 				utilsFolder.add({ 'Shader Editor':function(){ window.location.replace("http://"+location.hostname+"/editors/shaderEditor.html"); }},'Shader Editor');
 				utilsFolder.add({ 'DMX Editor':function(){ window.location.replace("http://"+location.hostname+"/editors/dmxEditor.html"); }},'DMX Editor');
 				utilsFolder.add({ 'FlowMapper':function(){ window.location.replace("http://"+location.hostname+"/FlowMapper.html"); }},'FlowMapper');
@@ -993,43 +994,53 @@ void main()	{
 					updateControlsValues();
 				}			
 				if(event.key=="!"){
-					globalController.PresetName="GlobalPreset1"
+					globalController.PresetName="GlobalPreset1";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					saveState();
 				}
 				if(event.key=="1"){
-					globalController.PresetName="GlobalPreset1"
+					globalController.PresetName="GlobalPreset1";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					recallState();
 				}
 				if(event.key=="@"){
-					globalController.PresetName="GlobalPreset2"
+					globalController.PresetName="GlobalPreset2";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					saveState();
 				}
 				if(event.key=="2"){
-					globalController.PresetName="GlobalPreset2"
+					globalController.PresetName="GlobalPreset2";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					recallState();
 				}
 				if(event.key=="#"){
-					globalController.PresetName="GlobalPreset3"
+					globalController.PresetName="GlobalPreset3";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					saveState();
 				}
 				if(event.key=="3"){
-					globalController.PresetName="GlobalPreset3"
+					globalController.PresetName="GlobalPreset3";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					recallState();
 				}			
 				if(event.key=="$"){
-					globalController.PresetName="GlobalPreset4"
+					globalController.PresetName="GlobalPreset4";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					saveState();
 				}
 				if(event.key=="4"){
-					globalController.PresetName="GlobalPreset4"
+					globalController.PresetName="GlobalPreset4";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					recallState();
 				}				
 				if(event.key=="%"){
-					globalController.PresetName="GlobalPreset5"
+					globalController.PresetName="GlobalPreset5";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					saveState();
 				}
 				if(event.key=="5"){
-					globalController.PresetName="GlobalPreset5"
+					globalController.PresetName="GlobalPreset5";
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					recallState();
 				}					
 				if(event.key=="m"){
