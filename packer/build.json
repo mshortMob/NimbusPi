@@ -14,6 +14,7 @@
       "inline": [
         "touch /boot/ssh",
         "sudo rm /etc/xdg/autostart/piwiz.desktop",
+        "sudo apt clean all",
         "sudo apt update",
         "#sudo apt upgrade -y",
         "sudo apt install git apache2 php ola chromium-browser hostapd dnsmasq pciutils -y",
