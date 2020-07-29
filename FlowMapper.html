@@ -241,7 +241,7 @@
 					 selectedObject:0,
 					 selectedScene:0,
 					 mappingMode:0,
-					 PresetRate:0.0,
+					 sceneRate:0.0,
 					 Master:false,
 					 Slave:false,
 					 PresetName:"Preset_1",
@@ -275,7 +275,7 @@
 				globalFolder.add(globalController, "selectedObject", 0, 3, 1 ).onChange(function(){globalController.selectedObject=parseInt(globalController.selectedObject);updateControlsView();syncObjectsToJson();});
 				globalFolder.add(globalController, "selectedScene", 0, 3, 1 ).onChange(function(){globalController.selectedScene=parseInt(globalController.selectedScene);updateControlsView();});
 				globalFolder.add(globalController, "mappingMode", 0, 1, .1 ).onChange(function(){if(statesArray[globalController.selectedObject]["Visible"]==true){displayObjects[globalController.selectedObject].hideChildren();displayObjects[globalController.selectedObject].showChildren();};});
-				globalFolder.add( globalController, "PresetRate", 0, .15, .0001 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
+				globalFolder.add( globalController, "sceneRate", 0, .15, .0001 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
 				gui.width=360;
 				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
@@ -842,8 +842,8 @@
 			
 			function animate() {
 				//computeTraces()
-			    if(globalController.PresetRate != 0){
-					presetCounter=presetCounter+globalController.PresetRate
+			    if(globalController.sceneRate != 0){
+					presetCounter=presetCounter+globalController.sceneRate
 					if(presetCounter > 1){
 						presetCounter=0;
 						globalController.selectedScene=(globalController.selectedScene+1)%4;
