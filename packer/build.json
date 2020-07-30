@@ -14,7 +14,7 @@
       "inline": [
         "touch /boot/ssh",
         "sudo rm /etc/xdg/autostart/piwiz.desktop",
-	"sudo apt-get update",
+	      "sudo apt-get update",
         "#sudo apt upgrade -y",
         "sudo apt-get install git apache2 php ola chromium-browser hostapd dnsmasq pciutils -y",
         "sudo DEBIAN_FRONTEND=noninteractive apt install -y netfilter-persistent iptables-persistent",
@@ -80,6 +80,11 @@
     "destination": "/home/pi/config.txt"
    },
    {
+    "type": "file",
+    "source": "files/keyboard",
+    "destination": "/home/pi/keyboard"
+   },
+   {
       "type": "shell",
       "inline": [
         "sudo mv -f /home/pi/dnsmasq.conf /etc/dnsmasq.conf",
@@ -108,7 +113,10 @@
         "sudo chmod 664 /etc/ola/ola-port.conf",
         "#sudo mv -f /home/pi/config.txt /boot/config.txt",
         "#sudo chmod 755 /boot/config.txt",
-        "#sudo chown root:root /boot/config.txt"
+        "#sudo chown root:root /boot/config.txt",
+        "sudo mv -f /home/pi/keyboard /etc/default/keyboard",
+        "sudo chown root:root /etc/default/keyboard",
+        "sudo chmod 644 /etc/default/keyboard"
      ]
    },
    {
