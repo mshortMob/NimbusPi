@@ -966,8 +966,8 @@ void main()	{
 				}
 				keyPressToSlider(event, "0", globalController, "MaskA", 1, gui.__folders.Global, function(){ changeMask(1); updateControlsValues(); } );
 				keyPressToSlider(event, ")", globalController, "MaskA", -1, gui.__folders.Global, function(){ changeMask(1); updateControlsValues(); } );
-				keyPressToSlider(event, "p", globalController, "MaskB", 1, gui.__folders.Global, function(){loadShaderPreset(2); updateControlsValues(); } );
-				keyPressToSlider(event, "P", globalController, "MaskB", -1, gui.__folders.Global, function(){gloadShaderPreset(2); updateControlsValues(); } );
+				keyPressToSlider(event, "p", globalController, "MaskB", 1, gui.__folders.Global, function(){changeMask(2); updateControlsValues(); } );
+				keyPressToSlider(event, "P", globalController, "MaskB", -1, gui.__folders.Global, function(){changeMask(2); updateControlsValues(); } );
 				keyPressToSlider(event, "k", globalController, "DMX_Pattern", 1, gui.__folders.DMX, function(){updateControlsValues(); } );
 				keyPressToSlider(event, "K", globalController, "DMX_Pattern", -1, gui.__folders.DMX, function(){updateControlsValues(); } );
 				keyPressToSlider(event, "j", globalController, "Brightness", .05, gui.__folders.DMX, function(){ updateControlsValues();  } );
