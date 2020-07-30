@@ -200,6 +200,7 @@
 				window.addEventListener("keypress", keyHandler);
 				gui.close();
 				setTimeout(function(){recallState();},100);
+				highlightSelectedVertice();
 			}
 			
 			function initScene() {
@@ -421,9 +422,11 @@
 					}else{
 						selectedVertice=3;
 					}
+					highlightSelectedVertice();
 				}
 				if(event.key=="." ){
 					selectedVertice=(selectedVertice+1)%4;
+					highlightSelectedVertice();
 				}
 				keyPressToSlider(event, "b", painterController, "BrightnessSensitivity", .01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
 				keyPressToSlider(event, "B", painterController, "BrightnessSensitivity", -.01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
@@ -799,6 +802,17 @@
 				//		SELECTED=null;
 				//	},300);
 				//}
+				if (SELECTED) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+							// console.log(SELECTED)
+							SELECTED.parent.updateCorners();
+
+							var listOfCornerVertices=[4,0,20,24];
+							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
+							// console.log("Selected Vertice:"+selectedVertice);
+							highlightSelectedVertice();
+						}
+					}
 			}
 			
 			function onDocumentMouseUp( event ) {
@@ -944,6 +958,17 @@
 					var yFlipValue=parseInt(xmlhttp.response);
 					console.log("Got Y Flip Value: "+yFlipValue);
 					document.getElementsByTagName('canvas')[1].style.transform='scale(1,'+yFlipValue+')';
+				}
+			}
+		
+			function highlightSelectedVertice(){
+				var listOfCornerVertices=[4,0,20,24];
+				for(var x=0; x<4; x++){
+					if(parseInt(x)==parseInt(selectedVertice)){
+						displayObjects[globalController.selectedObject].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":0.0, "b":1.0}
+					}else{
+						displayObjects[globalController.selectedObject].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":1.0, "b":1.0}
+					}
 				}
 			}
 		</script>

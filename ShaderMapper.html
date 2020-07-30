@@ -297,6 +297,7 @@ void main()	{
 				updateControlsView();
 				syncObjectsToJson();
 				window.addEventListener("keypress", keyHandler);
+				highlightSelectedVertice();
 			}
 
 			function getDMXPatternData(patNum,ledStripPatternsArray){
@@ -697,6 +698,7 @@ void main()	{
 			function onDocumentMouseMove( event ) {
 				if (SELECTED) {
 					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+						console.log(SELECTED)
 						SELECTED.parent.updateCorners();
 					}
 				}
@@ -746,6 +748,17 @@ void main()	{
 							offset.copy( intersection ).sub( SELECTED.position );
 						}
 						container.style.cursor = 'move';
+					}
+					if (SELECTED) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+							// console.log(SELECTED)
+							SELECTED.parent.updateCorners();
+
+							var listOfCornerVertices=[4,0,20,24];
+							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
+							// console.log("Selected Vertice:"+selectedVertice);
+							highlightSelectedVertice();
+						}
 					}
 			}
 			
@@ -960,9 +973,13 @@ void main()	{
 					}else{
 						selectedVertice=3;
 					}
+					// console.log("Selected Vertice:"+selectedVertice);
+					highlightSelectedVertice();
 				}
 				if(event.key=="." ){
 					selectedVertice=(selectedVertice+1)%4;
+					// console.log("Selected Vertice:"+selectedVertice);
+					highlightSelectedVertice();
 				}
 				keyPressToSlider(event, "0", globalController, "MaskA", 1, gui.__folders.Global, function(){ changeMask(1); updateControlsValues(); } );
 				keyPressToSlider(event, ")", globalController, "MaskA", -1, gui.__folders.Global, function(){ changeMask(1); updateControlsValues(); } );
@@ -1252,6 +1269,17 @@ void main()	{
 				xmlhttp.open("GET", "../php/reboot.php", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+			}
+		
+			function highlightSelectedVertice(){
+				var listOfCornerVertices=[4,0,20,24];
+				for(var x=0; x<4; x++){
+					if(parseInt(x)==parseInt(selectedVertice)){
+						displayObjects[globalController.selectedObject].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":0.0, "b":1.0}
+					}else{
+						displayObjects[globalController.selectedObject].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":1.0, "b":1.0}
+					}
+				}
 			}
 		</script>
 	</body>
