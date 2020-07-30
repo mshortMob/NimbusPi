@@ -5,13 +5,13 @@ uniform float time;
 
 uniform float audioVolume;
 varying vec2 vUv;
-uniform sampler2D colorTexture;
+uniform sampler2D maskTexture;
 
 void main()	{
 	vec2 position = ( -10.0 - (5.0 * abs(audioVolume))  )/2.0 - ( -10.0 - (5.0 * abs(audioVolume))  ) * vUv;
 	float red = 1.0 * ( sin( position.x * position.y - time / 1.1 ) );
 	float green = 1.0 * ( sin( position.x * position.y + time / 1.8 ) );
 	float blue = 1.0 * ( sin( position.x * position.y + time / 1.9) );
-	vec3 mask = texture2D( colorTexture, vUv ).rgb;
+	vec3 mask = texture2D( maskTexture, vUv ).rgb;
 	gl_FragColor = vec4( mask.r*red*.7, mask.g*green-.7, mask.b*blue*1.2, mask.r );
 }

@@ -5,7 +5,7 @@ uniform float time;
 
 uniform float audioVolume;
 varying vec2 vUv;
-uniform sampler2D colorTexture;
+uniform sampler2D maskTexture;
 
 void main()	{
 	vec2 p = ( -8.0 - (6.0 * abs(audioVolume))  )/2.0 - ( -8.0 - (6.0 * abs(audioVolume))  ) * vUv;
@@ -21,6 +21,6 @@ void main()	{
 		p=newp;
 	}
 	vec3 col=vec3(2.7*sin(p.x*1.+p.y), 0.3*sin(2.0*p.y), 0.3*sin(2.0*p.y));
-	vec3 mask = texture2D( colorTexture, vUv ).rgb;
+	vec3 mask = texture2D( maskTexture, vUv ).rgb;
 	gl_FragColor=vec4(col.r, col.g, col.r*abs(audioVolume), mask.r);
 }

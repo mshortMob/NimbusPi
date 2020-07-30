@@ -5,7 +5,7 @@ uniform float time;
 
 uniform float audioVolume;
 varying vec2 vUv;
-uniform sampler2D colorTexture;
+uniform sampler2D maskTexture;
 
 void main()	{
 	vec2 p = ( -1.0 - (20.0+ 32.0 * abs(audioVolume))  )/2.0 - ( -1.0 - (20.0+ 32.0 * abs(audioVolume))  ) * vUv;
@@ -18,6 +18,6 @@ void main()	{
 	vertStripes=1.0-(2.0*vertStripes*(1.0-abs(audioVolume)));
 	horStripes=1.0-(2.0*horStripes*abs(audioVolume));
 	float checkerGrid=horStripes+vertStripes;
-	vec3 mask = texture2D( colorTexture, vUv ).rgb;
+	vec3 mask = texture2D( maskTexture, vUv ).rgb;
 	gl_FragColor = vec4( horStripes, vertStripes, vertStripes, mask.r );
 }
