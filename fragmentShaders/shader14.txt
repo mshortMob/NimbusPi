@@ -2,11 +2,10 @@ precision mediump float;
 precision mediump int;
 
 uniform float time;
-uniform float mousey;
-uniform float mousex;
+
+uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D colorTexture;
-uniform sampler2D colorTexture2;
 
 float map(vec3 p) {
 	vec3 q = fract(p)*2.0 - 1.0;
@@ -26,7 +25,7 @@ float trace(vec3 o, vec3 r) {
 
 void main( void ) {
 
-	vec2 p = ( -1.0 - (8.+ 16. * abs(mousey))  )/2.0 - ( -1.0 - (8.+ 16. * abs(mousey))  ) * vUv;
+	vec2 p = ( -1.0 - (8.+ 16. * abs(audioVolume))  )/2.0 - ( -1.0 - (8.+ 16. * abs(audioVolume))  ) * vUv;
 	p=p*p*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
 	p.y*= .1;
 	p.x*= .1;

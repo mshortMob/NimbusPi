@@ -2,14 +2,13 @@ precision mediump float;
 precision mediump int;
 
 uniform float time;
-uniform float mousey;
-uniform float mousex;
+
+uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D colorTexture;
-uniform sampler2D colorTexture2;
 
 void main()	{
-	vec2 p = ( -1.0 - (16.0+ 32.0 * abs(mousey))  )/2.0 - ( -1.0 - (16.0+ 32.0 * abs(mousey))  ) * vUv;
+	vec2 p = ( -1.0 - (16.0+ 32.0 * abs(audioVolume))  )/2.0 - ( -1.0 - (16.0+ 32.0 * abs(audioVolume))  ) * vUv;
 	p=p*p*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
 	p.y*= .02;
 	p.x*= .02;

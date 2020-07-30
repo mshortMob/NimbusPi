@@ -224,10 +224,8 @@ void main()	{
 					setInterval(function(){  
 						audioVolume=audioData.reduce(function(a, b){return a + b;}, 0)/1024/100; 
 						if(audioVolume>globalController.VolumeThreshold){
-							uniforms1.mousex={ value: ((uniforms1.mousex.value+.1+audioVolume*400.0)%1.0) };
-							uniforms2.mousex={ value: ((uniforms2.mousex.value+.1+audioVolume*400.0)%1.0) };
-							uniforms1.mousey={ value: ((uniforms1.mousey.value+.1+audioVolume*400.0)%1.0) };
-							uniforms2.mousey={ value: ((uniforms2.mousey.value+.1+audioVolume*400.0)%1.0) };
+							uniforms1.audioVolume={ value: ((uniforms1.audioVolume.value+.1+audioVolume*400.0)%1.0) };
+							uniforms2.audioVolume={ value: ((uniforms2.audioVolume.value+.1+audioVolume*400.0)%1.0) };
 
 							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+5)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
 
@@ -333,6 +331,7 @@ void main()	{
 					"resolution": [width,height],
 					"mousex": { value: 0.0 },
 					"mousey": { value: 0.0 },
+					"audioVolume": { value: 0.0 },
 					"colorTexture": { value: imgTexture }
 				};
 				uniforms2 = {
@@ -340,6 +339,7 @@ void main()	{
 					"resolution": [width,height],
 					"mousex": { value: 0.0 },
 					"mousey": { value: 0.0 },
+					"audioVolume": { value: 0.0 },
 					"colorTexture": { value: imgTexture2 }
 				};
 				// uniforms1[ "colorTexture" ].value.wrapS = uniforms1[ "colorTexture" ].value.wrapT = THREE.MirroredRepeatWrapping;
@@ -704,10 +704,10 @@ void main()	{
 				}
 				mouse.x = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
 				mouse.y = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
-				// uniforms1.mousey={ value: mouse.y };
-				// uniforms2.mousey={ value: mouse.y };
-				// uniforms1.mousex={ value: mouse.x };
-				// uniforms2.mousex={ value: mouse.x };
+				uniforms1.mousey={ value: mouse.y };
+				uniforms2.mousey={ value: mouse.y };
+				uniforms1.mousex={ value: mouse.x };
+				uniforms2.mousex={ value: mouse.x };
 				raycaster.setFromCamera( mouse, camera );
 				if ( SELECTED ) {
 					
