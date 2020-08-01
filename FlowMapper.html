@@ -963,11 +963,13 @@
 		
 			function highlightSelectedVertice(){
 				var listOfCornerVertices=[4,0,20,24];
-				for(var x=0; x<4; x++){
-					if(parseInt(x)==parseInt(selectedVertice)){
-						displayObjects[globalController.selectedObject].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":0.0, "b":1.0}
-					}else{
-						displayObjects[globalController.selectedObject].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":1.0, "b":1.0}
+				for(var y=0; y<displayObjects.length; y++){
+					for(var x=0; x<4; x++){
+						if(parseInt(x)==parseInt(selectedVertice)){
+							displayObjects[y].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":0.0, "b":1.0}
+						}else{
+							displayObjects[y].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":1.0, "b":1.0}
+						}
 					}
 				}
 			}
