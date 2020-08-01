@@ -32,5 +32,5 @@ For local development there is no build process, just clone this repo to your we
 
 ### Building Images
 
-To build your own image, you must be setup to run [packer-builder-arm-image](https://github.com/solo-io/packer-builder-arm-image). Once this is done, simply run a packer build using the [packer template file found here](https://github.com/mshortMob/NimbusPi/blob/master/packer/build.json)
+To build your own image, you must be setup to run [packer-builder-arm-image](https://github.com/solo-io/packer-builder-arm-image). Once this is done, simply run a packer build using the [packer template file found here](https://github.com/mshortMob/NimbusPi/blob/master/packer/build.json).
 
