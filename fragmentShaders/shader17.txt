@@ -1,0 +1,29 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+
+uniform float audioVolume;
+varying vec2 vUv;
+uniform sampler2D maskTexture;
+
+float circle(in vec2 _st, in float _radius){
+    vec2 dist = _st-vec2(0.5);
+	return 1.-smoothstep(_radius-(_radius*0.01),
+                         _radius+(_radius*0.01),
+                         dot(dist,dist)*4.0);
+}
+
+void main(){
+	vec2 st = vUv;
+
+	float r1 = vec3(circle(st,.35*abs(sin(time/5.0)))).r;
+        float g1 = vec3(circle(st,.35*abs(cos(time/5.0)))).g;
+	float r2 = vec3(circle(st,1.25*abs(sin(time/5.0)))).r;
+        float g2 = vec3(circle(st,1.25*abs(cos(time/5.0)))).g;
+        float r=r2-r1;
+        float g=g2-g1;
+        r=r+1.5*r;
+	vec3 mask = texture2D( maskTexture, vUv ).rgb;
+	gl_FragColor = vec4( r, g, (abs(audioVolume)*1.0)-r-g, mask.r );
+}
