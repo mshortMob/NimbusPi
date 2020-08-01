@@ -1,0 +1,24 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+
+uniform float audioVolume;
+varying vec2 vUv;
+uniform sampler2D maskTexture;
+
+void main()	{
+	vec2 p = -3.0 + 6.0 * vUv;
+
+	for(int i=1;i<5;i++)
+	{
+		vec2 newp=p;
+		float speed = 40.0; // speed control
+		newp.x-=(-1.8+(audioVolume/4.0))/float(i)*sin(float(i)*p.y-time/(100.0/speed)-0.8*float(i))+1.0;
+		newp.y-=(1.8+(audioVolume/4.0))/float(i)*sin(float(i)*p.x+time/(100.0/speed)+0.3*float(i+10))-11.4;
+		p=newp;
+	}
+	vec3 col=vec3( sin(p.x*1.+p.y), 0.0, 0.9*sin(12.0*p.y));
+	vec3 mask = texture2D( maskTexture, vUv ).rgb;
+	gl_FragColor=vec4(col, mask.r);
+}	
