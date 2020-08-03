@@ -13,10 +13,10 @@ bool startupMode=true;
 bool wifiConnected=false;
 ESP8266WebServer server(80);
 struct {
-  char ssid[256] = "TestSSID"; // This is what gets stored in EEPROM if you uncomment 
-  char password[256] = "Test1234"; //  EEPROM.put and EEPROM.commit in setup
-  char universe[32] = "0";
-  char startChan[32] = "0";
+  char ssid[256] = "NimbusPi"; // This is what gets stored in EEPROM if you uncomment 
+  char password[256] = "NimbusPi123"; //  EEPROM.put and EEPROM.commit in setup
+  char universe[32] = "1";
+  char startChan[32] = "1";
 }epdata;
 Adafruit_NeoPixel leds = Adafruit_NeoPixel(num_leds, led_pin, NEO_GRBW + NEO_KHZ800);
 ArtnetWifi artnet;
