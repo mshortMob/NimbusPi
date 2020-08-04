@@ -26,13 +26,34 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 
 ![NimbusPi User Guide](http://www.nimbuslaboratory.com/NimbusPi%20User%20Guide_v2.jpg) 
 
-### Local Development
+### DMX/ArtNet/Wifi Details
+
+###### Broadcasting Wifi and ArtNet
+* The NimbusPi image is configures the Pi as a standalone hotspot. By default the SSID is `NimbusPi` and password is `NimbusPi123`. 
+* ArtNet data is sent via wifi only, not the Pi's ethernet port. 
+* 1 full universe of output is supported. By default this is the artnet universe 1 in subnet 0. 
+
+###### Recording New Presets
+* To record a new preset, navigate to the `DmxEditor` page found at the bottom of the ShaderMapper control panel.
+* When recording, must send data to artnet universe 2 in subnet 0. If you want to live monitor what you are recording, then send your data to both universe 1 and 2 in subnet 0. 
+* The DmxEditor page shows raw DMX data in CSV form, rows are dmx frames and columns are dmx channels. You may edit by hand or copy/poste as desired. 
+* Be sure to press save once your recording or manual edits are complete.
+
+###### Override Channels
+* Be aware that Dmx Pattern 0 is a special config file and not raw DMX file as described above.
+* The data held in Dmx Pattern 0 is simple CSV list.
+    * The first 4 values in this list correspond to the 4 dmx override channels, which discards the listed channels' data in the preset files any replaces it with  data coming from the override values (Overrides are labelled DMX_X1, DMX_X2, DMX_Y1, DMX_Y2 in the control panel)
+    * Any subsequent values are channels which do not get scaled by the `Brightness` controls. 
+* Overrides are usefull for controlling things like position, strobe, or macro channels on DMX fixtures.
+* If you dont need any override channels (such as with LED strips) then set pattern 0 to a value of `0,0,0,0`
+
+#### Local Development
 
 The code based is based around [Three.js](https://threejs.org/) and designed primarily to be run as a local web app. Most features will work on any machine capable of running a simple webserver, php, and chrome. Features related to DMX typically require additional configuration to proxy the [OLA](https://www.openlighting.org/ola/tutorials/ola-on-raspberry-pi/) port (9090) to your web port.
 
 For local development there is no build process, just clone this repo to your webserver's root directoy. But do note that these apps use WebRTC's `getUserMedia`, and thus must either be hosted locally or on a site with TLS/SSH enabled.
 
-### Building Images
+#### Building Images
 
 To build your own image, you must be setup to run [packer-builder-arm-image](https://github.com/solo-io/packer-builder-arm-image). Once this is done, simply run a packer build using the [packer template file found here](https://github.com/mshortMob/NimbusPi/blob/master/packer/build.json).
 
