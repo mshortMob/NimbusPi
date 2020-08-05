@@ -48,7 +48,7 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 * If you dont need any override channels (such as with LED strips) then set pattern 0 to a value of `0,0,0,0`
 
 #### Using NimbusPi with NodeMCU / ESP8266 
-The Pi's built in hotspot works well to control any number of wifi enabled micro controllers capable of running [ArtNetWifi](https://github.com/rstephan/ArtnetWifi) The example code seen [here](https://github.com/mshortMob/NimbusPi/blob/master/esp8266_Firmware/Arnet_Pixel_Controler_Indiviual_Addressable/featherwing_arnet_w_webUI_for_strips.ino) should work with most generic WS2812b RGB leds, includes a simple WebUI control panel, and projects its own hotspot when it can't connect to the saved network. See the general instructions for using this script below:
+The Pi's built in hotspot works well to control any number of wifi enabled micro controllers capable of running [ArtNetWifi](https://github.com/rstephan/ArtnetWifi). The example code seen [here](https://github.com/mshortMob/NimbusPi/blob/master/esp8266_Firmware/Arnet_Pixel_Controler_Indiviual_Addressable/featherwing_arnet_w_webUI_for_strips.ino) should work with most generic WS2812b RGB leds, includes a simple WebUI control panel, and projects its own hotspot when it can't connect to the saved network. See the general instructions for using this script below:
 
 - Set the led pin, number of leds, standalone hotspot's SSID and password [here](https://github.com/mshortMob/NimbusPi/blob/master/esp8266_Firmware/Arnet_Pixel_Controler_Indiviual_Addressable/featherwing_arnet_w_webUI_for_strips.ino#L10-L11).
 
