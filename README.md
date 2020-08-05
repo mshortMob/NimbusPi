@@ -54,7 +54,7 @@ The Pi's built in hotspot works well to control any number of wifi enabled micro
 
 - If you don't wan't to use the WebUI and want to flash your microcontroller to use the default NimbusPi wifi credentials, then simply uncomment the lines found [here](https://github.com/mshortMob/NimbusPi/blob/master/esp8266_Firmware/Arnet_Pixel_Controler_Indiviual_Addressable/featherwing_arnet_w_webUI_for_strips.ino#L65-L66)
 
-- Use the [Arduino IDE](https://www.arduino.cc/en/main/software) or alternative of your choosing to write the code to your microcontroller. The Adafruit guide [here](https://learn.adafruit.com/adafruit-feather) is good if your new to this area.
+- Use the [Arduino IDE](https://www.arduino.cc/en/main/software) or alternative of your choosing to write the code to your microcontroller.
 
 - Once your controller is up and running, the led status codes are as follows:
     - Red = Attempting to connect to external Wifi
