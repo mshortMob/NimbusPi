@@ -44,7 +44,7 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 * The data held in pattern `0` is simple CSV list.
     * The first 4 values in this list correspond to the 4 dmx override channels, which discards the listed channels' preset data and replaces it with data from the override controls. (Overrides are labelled `DMX_X1`, `DMX_X2`, `DMX_Y1`, `DMX_Y2` in the control panel)
     * Any subsequent values are channels which should not get scaled by the `Brightness` controls. (dmx mode channels for example) 
-* Overrides are usefull for controlling things like position, strobe, or macro channels on DMX fixtures.
+* Overrides are usefull for directly controlling things like position, strobe, or macro channels on DMX fixtures.
 * If you dont need any override channels (such as with LED strips) then set pattern 0 to a value of `0,0,0,0`
 
 ## Development
