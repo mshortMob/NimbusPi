@@ -29,7 +29,7 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 ### DMX/ArtNet/Wifi Details
 
 #### Broadcasting Wifi and ArtNet
-* The NimbusPi image is configures the Pi as a standalone hotspot. By default the SSID is `NimbusPi` and password is `NimbusPi123`. 
+* The NimbusPi image configures the Pi as a standalone hotspot. By default the SSID is `NimbusPi` and password is `NimbusPi123`. 
 * ArtNet data is sent via wifi only, not the Pi's ethernet port. 
 * 1 full universe of output is supported. By default this is artnet `universe 1` in `subnet 0`. 
 
