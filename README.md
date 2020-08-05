@@ -49,7 +49,7 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 
 ## Development
 
-#### Local Development
+#### Running Locally
 
 The code based is based around [Three.js](https://threejs.org/) and designed primarily to be run as a local web app. Most features will work on any machine capable of running a simple webserver, php, and chrome. Features related to DMX typically require additional configuration to proxy the [OLA](https://www.openlighting.org/ola/tutorials/ola-on-raspberry-pi/) port (9090) to your web port.
 
