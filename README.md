@@ -28,18 +28,18 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 
 ### DMX/ArtNet/Wifi Details
 
-##### Broadcasting Wifi and ArtNet
+#### Broadcasting Wifi and ArtNet
 * The NimbusPi image is configures the Pi as a standalone hotspot. By default the SSID is `NimbusPi` and password is `NimbusPi123`. 
 * ArtNet data is sent via wifi only, not the Pi's ethernet port. 
 * 1 full universe of output is supported. By default this is artnet `universe 1` in `subnet 0`. 
 
-##### Recording New Presets
+#### Recording New Presets
 * To record a new preset, navigate to the `DmxEditor` page found at the bottom of the ShaderMapper control panel.
 * When recording, you must send data to artnet `universe 2` in `subnet 0`. If you want to live monitor what you are recording, then send your data to both `universe 1` and `2` in `subnet 0`. 
 * The DmxEditor page shows raw DMX data in CSV form, rows are dmx frames and columns are dmx channels. You may edit by hand or copy/poste as desired. 
 * Be sure to press `Save Preset` once your recording or manual edits are complete.
 
-##### Override Channels
+#### Override Channels
 * **Be aware that dmx pattern `0` is a special config file and not a raw DMX file as described above**.
 * The data held in pattern `0` is simple CSV list.
     * The first 4 values in this list correspond to the 4 dmx override channels, which discards the listed channels' preset data and replaces it with data from the override controls. (Overrides are labelled `DMX_X1`, `DMX_X2`, `DMX_Y1`, `DMX_Y2` in the control panel)
