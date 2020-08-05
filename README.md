@@ -47,7 +47,24 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 * Overrides are usefull for directly controlling things like position, strobe, or macro channels on DMX fixtures.
 * If you dont need any override channels (such as with LED strips) then set pattern 0 to a value of `0,0,0,0`
 
-## Development
+#### Using NimbusPi with NodeMCU / ESP8266 
+The Pi's built in hotspot works well to control any number of wifi enabled micro controllers capable of running [ArtNetWifi](https://github.com/rstephan/ArtnetWifi) The example code seen [here](https://github.com/mshortMob/NimbusPi/blob/master/esp8266_Firmware/Arnet_Pixel_Controler_Indiviual_Addressable/featherwing_arnet_w_webUI_for_strips.ino) should work with most generic WS2812b RGB leds, includes a simple WebUI control panel, and projects its own hotspot when it can't connect to the saved network. See the general instructions for using this script below:
+
+- Set the led pin, number of leds, standalone hotspot's SSID and password [here](https://github.com/mshortMob/NimbusPi/blob/master/esp8266_Firmware/Arnet_Pixel_Controler_Indiviual_Addressable/featherwing_arnet_w_webUI_for_strips.ino#L10-L11).
+
+- If you don't wan't to use the WebUI and want to flash your microcontroller to use the default NimbusPi wifi credentials, then simply uncomment the lines found [here](https://github.com/mshortMob/NimbusPi/blob/master/esp8266_Firmware/Arnet_Pixel_Controler_Indiviual_Addressable/featherwing_arnet_w_webUI_for_strips.ino#L65-L66)
+
+- Use the [Arduino IDE](https://www.arduino.cc/en/main/software) or alternative of your choosing to write the code to your microcontroller. The Adafruit guide [here](https://learn.adafruit.com/adafruit-feather) is good if your new to this area.
+
+- Once your controller is up and running, the led status codes are as follows:
+    - Red = Attempting to connect to external Wifi
+    - Blue = Failed to connect to external Wifi, HotSpot + WebUI Active
+    - Green = Connnected to external wifi, waiting to receive artnet signal.
+
+- Once connected to the hotspot (as defined [here](https://github.com/mshortMob/NimbusPi/blob/master/esp8266_Firmware/Arnet_Pixel_Controler_Indiviual_Addressable/featherwing_arnet_w_webUI_for_strips.ino#L10-L11)), the Config menu is available in your browser at `http://192.168.4.1/data/`. You may use this menu to set the device's artnet universe, arnet address, external wifi SSID, and external wifi password.
+
+
+### Development
 
 #### Running Locally
 
