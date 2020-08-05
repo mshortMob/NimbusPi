@@ -47,6 +47,8 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/NimbusPi.i
 * Overrides are usefull for controlling things like position, strobe, or macro channels on DMX fixtures.
 * If you dont need any override channels (such as with LED strips) then set pattern 0 to a value of `0,0,0,0`
 
+## Development
+
 #### Local Development
 
 The code based is based around [Three.js](https://threejs.org/) and designed primarily to be run as a local web app. Most features will work on any machine capable of running a simple webserver, php, and chrome. Features related to DMX typically require additional configuration to proxy the [OLA](https://www.openlighting.org/ola/tutorials/ola-on-raspberry-pi/) port (9090) to your web port.
