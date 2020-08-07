@@ -1,0 +1,58 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+
+uniform float audioVolume;
+varying vec2 vUv;
+uniform sampler2D maskTexture;
+
+
+#extension GL_OES_standard_derivatives : enable
+
+mat2 rotate(float a)
+{
+	float c = cos(a);
+	float s = sin(a);
+	return mat2(c, s, -s, c);
+}
+
+void main( void ) {
+	
+	vec2 p = -1.5 + 3.0 * vUv;
+	
+	float d = length(p);
+	p*=rotate((time*0.31) * d*0.01+p.y*0.005);
+	
+	p.x += sin(time*0.3+p.y*2.5)*0.1;
+	p.y = dot(p,p);
+	float len = 0.01 / length(p.x + sin(p.y * 0.25 + time));
+
+	
+	p*=rotate(sin(time*0.015+p.y*0.1)*0.2);
+	float len2 = 0.5 / length(p.x + sin(p.y+p.x * 2.0) + 0.2);
+	float k1 = 0.5+sin(time*0.3+p.y*42.0)*0.5;
+	float k2 = 0.5+sin(time*0.3+p.x*22.0)*0.5;
+	len2+=-d*0.1+k1*.1;
+	
+	p*=rotate(sin(0.6*time+p.x*0.7)*6.28);
+	
+	len *= len2;
+	
+	float circle = 2.5 / length(vec2(sin(p.x + time), p.y));
+	circle += k2*1.5;
+	
+	len *= circle;
+	
+	float vv = smoothstep(0.0,0.07,len);
+	float vv2 = smoothstep(0.0,0.09,len+(sin(time+(d+p.x*2.4))*0.05));
+	float vv3 = smoothstep(0.0,0.11,len+(sin(time*.5-(d-p.y*1.4))*0.09));
+	
+	vec3 color = vec3(0.8*vv3,vv2*0.75,vv*1.1)* vv;
+	
+	
+	
+	vec3 mask = texture2D( maskTexture, vUv ).rgb;
+	gl_FragColor = vec4(color,mask.r);
+
+}

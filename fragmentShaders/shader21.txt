@@ -1,0 +1,41 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+
+uniform float audioVolume;
+varying vec2 vUv;
+uniform sampler2D maskTexture;
+
+
+#define ITERATIONS 6.0
+void main() {
+	vec2 p = -2.0 + 4.0 * vUv;
+	p-=1.0;
+	float d = length(p);
+	
+
+	for(float i = 1.0; i < ITERATIONS; i+=0.5) {
+		p.x += 1.0 / i * sin(time*0.2-i * p.y);
+		p.y += 1.0 / i * cos(time*0.9+i * p.x*0.8);
+		if (i>ITERATIONS*0.5)
+		{
+		float yy = p.y;
+		p.y = p.x;
+		p.x = yy;
+		}
+
+	}
+
+	vec3 col = vec3(sin(p.y+d*5.0-p.x*2.0), cos(p.y+p.x + time*0.9), sin(p.x*3.0));
+	
+	float d1 = length(col*col);
+	vec3 col1 =vec3(0.3,0.4,0.6)*d1;
+	vec3 col2 =vec3(0.3,0.5,0.95)*(d+1.0);
+	
+	d1 = clamp(d1*d1,0.0,1.0);
+	col = mix(col2,col1,d1)*0.8;
+	
+	vec3 mask = texture2D( maskTexture, vUv ).rgb;
+	gl_FragColor = vec4(col, mask.r);
+}
