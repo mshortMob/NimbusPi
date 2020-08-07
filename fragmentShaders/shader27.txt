@@ -25,7 +25,7 @@ void main()
     float speed = .02;
     
     vec2 uv = vUv;
-    vec2 p = uv*.125 - 0.0625;
+    vec2 p = uv*.5 - 0.25;
     p = max(p, 1.0/(1.0 - abs(p)));
     p.x = acos(abs(normalize(p).x));
     p.y = min(sin(p.x),cos(p.x))*length(p);

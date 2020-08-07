@@ -21,7 +21,7 @@ void main()
 {
     float t = fract(time*0.5);
     float mode = 1.0;
-    float s = sin(time/20.0);
+    float s = sign(sin(time/20.0));
     float speed = .1;
     
     vec2 uv = vUv;
@@ -29,7 +29,7 @@ void main()
     //p = max(p, 1.0/(1.0 - abs(p)));
     //p.x = acos(abs(normalize(p).x));
     //p.y = min(sin(p.x),cos(p.x))*length(p);
-    p += p/length(p)*(time/10.)*s*speed;
+    p += p/length(p)*(time/1.)*s*speed;
     
     float x = (max(abs(p.x),abs(p.y))==abs(p.x)) ? abs(p.x) : abs(p.y);
     float y = (min(abs(p.x),abs(p.y))==abs(p.y)) ? abs(p.y) : abs(p.x);
