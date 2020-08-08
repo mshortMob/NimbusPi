@@ -29,7 +29,7 @@ void main()
     //p = max(p, 1.0/(1.0 - abs(p)));
     //p.x = acos(abs(normalize(p).x));
     //p.y = min(sin(p.x),cos(p.x))*length(p);
-    p += p/length(p)*(time/1.)*s*speed;
+    p += p/length(p)*(70.0*sin(time/30.))*s*speed;
     
     float x = (max(abs(p.x),abs(p.y))==abs(p.x)) ? abs(p.x) : abs(p.y);
     float y = (min(abs(p.x),abs(p.y))==abs(p.y)) ? abs(p.y) : abs(p.x);
