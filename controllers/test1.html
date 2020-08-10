@@ -13,7 +13,7 @@
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
-				height:50%;
+				height:40%;
 				position:absolute;
 			}
 			.mask-container{
@@ -23,7 +23,7 @@
 				padding: 5px;
 				width:49.0%;
 				height:13%;
-				top:50%;
+				top:43%;
 				position:absolute;
 			}
 			.grid-item:hover{
@@ -106,6 +106,7 @@
 							document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity="1.0"
 						}
 					}
+					globalState["Shader"+deck]=shaderNumber;
 					console.log("ShaderNumber:"+shaderNumber+" Deck:"+deck);
 				}
 
@@ -117,6 +118,7 @@
 							document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity="1.0"
 						}
 					}
+					globalState["Mask"+deck]=maskNumber;
 					console.log("MaskNumber:"+maskNumber+" Deck:"+deck);
 				}
 			
@@ -129,8 +131,22 @@
 						globalState=JSON.parse(xmlhttp.response).global;
 						createGrid("A");
 						createGrid("B");
+						saveState();
 					}
 				}	
+			
+				function saveState(){
+					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
+					xmlhttp.send(requestBody);
+					xmlhttp.onload = function(e){
+						console.log(xmlhttp.response.status)
+						setTimeout(function(){
+							saveState();
+						}, 1000);
+					}
+				}
 			</script>
 	</body>
 </html>
