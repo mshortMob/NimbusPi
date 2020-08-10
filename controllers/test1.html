@@ -4,6 +4,7 @@
 		<style>
 			body{
 			    margin:0px;
+				padding:5px;
 				background-color:black;
 			}	
 			.grid-container{
@@ -11,7 +12,7 @@
 				grid-template-columns: auto auto auto auto auto auto auto auto;
 				background-color: #777777;
 				padding: 5px;
-				width:48%;
+				width:49.0%;
 				height:50%;
 				position:absolute;
 			}
@@ -20,7 +21,7 @@
 				grid-template-columns: auto auto auto auto auto auto;
 				background-color: #777777;
 				padding: 5px;
-				width:48%;
+				width:49.0%;
 				height:13%;
 				top:50%;
 				position:absolute;
@@ -33,10 +34,10 @@
 				text-align: center;
 			}
 			#grid-container-A,#mask-container-A{
-				left:1%;
+				left:0%;
 			}
 			#grid-container-B,#mask-container-B{
-				left:51%;
+				left:50.0%;
 			}
 		</style>
 	</head>
@@ -46,8 +47,8 @@
 			<div class="mask-container" id="mask-container-A"></div>
 			<div class="mask-container" id="mask-container-B"></div>
 			<script>
-				createGrid("A");
-				createGrid("B");
+
+				recallState();
 
 				function createGrid(deck){
 					if(deck=="A"){
@@ -57,25 +58,30 @@
 						var gridContainer=document.getElementById("grid-container-B")
 						var maskContainer=document.getElementById("mask-container-B")
 					}
-					for(var x=0; x<32; x++){
+					for(var x=1; x<=32; x++){
 						var gridItem=document.createElement('button')
 						gridItem.id="GridItem"+x+"_Deck"+deck;
 						gridItem.deck=deck;
 						gridItem.shaderNumber=x;
-						gridItem.style.backgroundImage="url('fragmentShaderIcons/shader"+parseInt(x+1)+".png')";
+						gridItem.style.backgroundImage="url('fragmentShaderIcons/shader"+parseInt(x)+".png')";
 						gridItem.style.backgroundPosition="center";
 						gridItem.style.backgroundSize="cover";
 						gridItem.style.borderColor="black";
 						gridItem.class="grid-item";
 						gridItem.onclick=function(){selectShader(this.shaderNumber,this.deck)};
+						if(parseInt(globalState["Shader"+deck])==x){
+							gridItem.style.opacity=".2"
+						}else{
+							gridItem.style.opacity="1.0"
+						}
 						gridContainer.appendChild(gridItem);
 					}
-					for(var x=0; x<6; x++){
+					for(var x=1; x<=6; x++){
 						var maskItem=document.createElement('button')
 						maskItem.id="MaskItem"+x+"_Deck"+deck;
 						maskItem.deck=deck;
 						maskItem.maskNumber=x;
-						maskItem.style.backgroundImage="url('maskIcons/mask"+parseInt(x+1)+".jpg')";
+						maskItem.style.backgroundImage="url('maskIcons/mask"+parseInt(x)+".jpg')";
 						maskItem.style.backgroundPosition="center";
 						maskItem.style.backgroundSize="contain";
 						maskItem.style.backgroundRepeat="no-repeat";
@@ -83,33 +89,48 @@
 						maskItem.style.borderColor="black";
 						maskItem.class="grid-item";
 						maskItem.onclick=function(){selectMask(this.maskNumber,this.deck)};
+						if(parseInt(globalState["Mask"+deck])==x){
+							maskItem.style.opacity=".2"
+						}else{
+							maskItem.style.opacity="1.0"
+						}
 						maskContainer.appendChild(maskItem);
 					}
 				}
 
 				function selectShader(shaderNumber,deck){
-					for(var x=0; x<32; x++){
+					for(var x=1; x<=32; x++){
 						if(parseInt(shaderNumber)==x){
 							document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity=".2"
 						}else{
 							document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity="1.0"
 						}
 					}
-					shaderNumber=shaderNumber+1;
 					console.log("ShaderNumber:"+shaderNumber+" Deck:"+deck);
 				}
 
 				function selectMask(maskNumber,deck){
-					for(var x=0; x<6; x++){
+					for(var x=1; x<=6; x++){
 						if(parseInt(maskNumber)==x){
 							document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity=".2"
 						}else{
 							document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity="1.0"
 						}
 					}
-					maskNumber=maskNumber+1;
 					console.log("MaskNumber:"+maskNumber+" Deck:"+deck);
 				}
+			
+				function recallState(){
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
+					xmlhttp.send();
+					xmlhttp.onload = function(e){
+						statesArray=JSON.parse(xmlhttp.response).storage;
+						globalState=JSON.parse(xmlhttp.response).global;
+						createGrid("A");
+						createGrid("B");
+					}
+				}	
 			</script>
 	</body>
 </html>
