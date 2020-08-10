@@ -438,14 +438,16 @@ void main()	{
 				utilsFolder.open();
 				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
 				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');
-				utilsFolder.add({ 'Remote Mode':function(){ setInterval(function(){recallState();},  1000); }},'Remote Mode');
-				utilsFolder.add({ 'Controll Mode':function(){ setInterval(function(){saveState();},  1000); }},'Controll Mode');
 				utilsFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
 				utilsFolder.add({ 'Recall Preset':function(){ recallState() }},'Recall Preset');
 				utilsFolder.add(globalController, 'PresetName').onChange(function(){});
 				utilsFolder.add({ 'Shader Editor':function(){ window.location.replace("http://"+location.hostname+"/editors/shaderEditor.html"); }},'Shader Editor');
 				utilsFolder.add({ 'DMX Editor':function(){ window.location.replace("http://"+location.hostname+"/editors/dmxEditor.html"); }},'DMX Editor');
 				utilsFolder.add({ 'FlowMapper':function(){ window.location.replace("http://"+location.hostname+"/FlowMapper.html"); }},'FlowMapper');
+				miscFolder=gui.addFolder( "Misc" )
+				miscFolder.open();
+				miscFolder.add({ 'Slave Mode':function(){ setInterval(function(){recallState();},  1000); }},'Slave Mode');
+				miscFolder.add({ 'Controller Mode':function(){ setInterval(function(){saveState();},  1000); }},'Controller Mode');
 			}
 									
 			function changeMask(changedMask){
