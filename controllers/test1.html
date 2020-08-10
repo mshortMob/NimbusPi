@@ -13,7 +13,7 @@
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
-				height:40%;
+				height:50%;
 				position:absolute;
 			}
 			.mask-container{
@@ -23,7 +23,7 @@
 				padding: 5px;
 				width:49.0%;
 				height:13%;
-				top:43%;
+				top:50%;
 				position:absolute;
 			}
 			.grid-item:hover{
@@ -39,115 +39,153 @@
 			#grid-container-B,#mask-container-B{
 				left:50.0%;
 			}
+			.slider-container{
+				background-color: darkgrey;
+				width:49.0%;
+				height:34%;
+				top:65%;
+				position:absolute;
+				border:5px solid grey;
+				margin:0px;
+				padding:0px;
+				left:0px;
+			}
+			.slider {
+				border:2.5px solid grey;
+				-webkit-appearance: none;
+				width: 100%;
+				height: 25%;
+				background: darkgrey;
+				outline: none;
+				opacity: 1;
+				-webkit-transition: .2s;
+				transition: opacity .2s;
+				margin:0px;
+				padding:0px;
+			}
+			.slider::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 25px;
+				height: 100%;
+				background: lightgrey;
+				cursor: pointer;
+			}
 		</style>
 	</head>
 	<body>
-			<div class="grid-container" id="grid-container-A"></div>
-			<div class="grid-container" id="grid-container-B"></div>
-			<div class="mask-container" id="mask-container-A"></div>
-			<div class="mask-container" id="mask-container-B"></div>
-			<script>
+		<div class="grid-container" id="grid-container-A"></div>
+		<div class="grid-container" id="grid-container-B"></div>
+		<div class="mask-container" id="mask-container-A"></div>
+		<div class="mask-container" id="mask-container-B"></div>
+		<div class="slider-container" id="slider-container">
+			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+		</div>
+		<script>
 
-				recallState();
+			recallState();
 
-				function createGrid(deck){
-					if(deck=="A"){
-						var gridContainer=document.getElementById("grid-container-A")
-						var maskContainer=document.getElementById("mask-container-A")
+			function createGrid(deck){
+				if(deck=="A"){
+					var gridContainer=document.getElementById("grid-container-A")
+					var maskContainer=document.getElementById("mask-container-A")
+				}else{
+					var gridContainer=document.getElementById("grid-container-B")
+					var maskContainer=document.getElementById("mask-container-B")
+				}
+				for(var x=1; x<=32; x++){
+					var gridItem=document.createElement('button')
+					gridItem.id="GridItem"+x+"_Deck"+deck;
+					gridItem.deck=deck;
+					gridItem.shaderNumber=x;
+					gridItem.style.backgroundImage="url('fragmentShaderIcons/shader"+parseInt(x)+".png')";
+					gridItem.style.backgroundPosition="center";
+					gridItem.style.backgroundSize="cover";
+					gridItem.style.borderColor="black";
+					gridItem.class="grid-item";
+					gridItem.onclick=function(){selectShader(this.shaderNumber,this.deck)};
+					if(parseInt(globalState["Shader"+deck])==x){
+						gridItem.style.opacity=".2"
 					}else{
-						var gridContainer=document.getElementById("grid-container-B")
-						var maskContainer=document.getElementById("mask-container-B")
+						gridItem.style.opacity="1.0"
 					}
-					for(var x=1; x<=32; x++){
-						var gridItem=document.createElement('button')
-						gridItem.id="GridItem"+x+"_Deck"+deck;
-						gridItem.deck=deck;
-						gridItem.shaderNumber=x;
-						gridItem.style.backgroundImage="url('fragmentShaderIcons/shader"+parseInt(x)+".png')";
-						gridItem.style.backgroundPosition="center";
-						gridItem.style.backgroundSize="cover";
-						gridItem.style.borderColor="black";
-						gridItem.class="grid-item";
-						gridItem.onclick=function(){selectShader(this.shaderNumber,this.deck)};
-						if(parseInt(globalState["Shader"+deck])==x){
-							gridItem.style.opacity=".2"
-						}else{
-							gridItem.style.opacity="1.0"
-						}
-						gridContainer.appendChild(gridItem);
-					}
-					for(var x=1; x<=6; x++){
-						var maskItem=document.createElement('button')
-						maskItem.id="MaskItem"+x+"_Deck"+deck;
-						maskItem.deck=deck;
-						maskItem.maskNumber=x;
-						maskItem.style.backgroundImage="url('maskIcons/mask"+parseInt(x)+".jpg')";
-						maskItem.style.backgroundPosition="center";
-						maskItem.style.backgroundSize="contain";
-						maskItem.style.backgroundRepeat="no-repeat";
-						maskItem.style.backgroundColor="#000000"
-						maskItem.style.borderColor="black";
-						maskItem.class="grid-item";
-						maskItem.onclick=function(){selectMask(this.maskNumber,this.deck)};
-						if(parseInt(globalState["Mask"+deck])==x){
-							maskItem.style.opacity=".2"
-						}else{
-							maskItem.style.opacity="1.0"
-						}
-						maskContainer.appendChild(maskItem);
-					}
+					gridContainer.appendChild(gridItem);
 				}
+				for(var x=1; x<=6; x++){
+					var maskItem=document.createElement('button')
+					maskItem.id="MaskItem"+x+"_Deck"+deck;
+					maskItem.deck=deck;
+					maskItem.maskNumber=x;
+					maskItem.style.backgroundImage="url('maskIcons/mask"+parseInt(x)+".jpg')";
+					maskItem.style.backgroundPosition="center";
+					maskItem.style.backgroundSize="contain";
+					maskItem.style.backgroundRepeat="no-repeat";
+					maskItem.style.backgroundColor="#000000"
+					maskItem.style.borderColor="black";
+					maskItem.class="grid-item";
+					maskItem.onclick=function(){selectMask(this.maskNumber,this.deck)};
+					if(parseInt(globalState["Mask"+deck])==x){
+						maskItem.style.opacity=".2"
+					}else{
+						maskItem.style.opacity="1.0"
+					}
+					maskContainer.appendChild(maskItem);
+				}
+			}
 
-				function selectShader(shaderNumber,deck){
-					for(var x=1; x<=32; x++){
-						if(parseInt(shaderNumber)==x){
-							document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity=".2"
-						}else{
-							document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity="1.0"
-						}
+			function selectShader(shaderNumber,deck){
+				for(var x=1; x<=32; x++){
+					if(parseInt(shaderNumber)==x){
+						document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity=".2"
+					}else{
+						document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity="1.0"
 					}
-					globalState["Shader"+deck]=shaderNumber;
-					console.log("ShaderNumber:"+shaderNumber+" Deck:"+deck);
 				}
+				globalState["Shader"+deck]=shaderNumber;
+				console.log("ShaderNumber:"+shaderNumber+" Deck:"+deck);
+			}
 
-				function selectMask(maskNumber,deck){
-					for(var x=1; x<=6; x++){
-						if(parseInt(maskNumber)==x){
-							document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity=".2"
-						}else{
-							document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity="1.0"
-						}
+			function selectMask(maskNumber,deck){
+				for(var x=1; x<=6; x++){
+					if(parseInt(maskNumber)==x){
+						document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity=".2"
+					}else{
+						document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity="1.0"
 					}
-					globalState["Mask"+deck]=maskNumber;
-					console.log("MaskNumber:"+maskNumber+" Deck:"+deck);
 				}
-			
-				function recallState(){
-					var xmlhttp=new XMLHttpRequest();
-					xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
-					xmlhttp.send();
-					xmlhttp.onload = function(e){
-						statesArray=JSON.parse(xmlhttp.response).storage;
-						globalState=JSON.parse(xmlhttp.response).global;
-						createGrid("A");
-						createGrid("B");
+				globalState["Mask"+deck]=maskNumber;
+				console.log("MaskNumber:"+maskNumber+" Deck:"+deck);
+			}
+		
+			function recallState(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					statesArray=JSON.parse(xmlhttp.response).storage;
+					globalState=JSON.parse(xmlhttp.response).global;
+					createGrid("A");
+					createGrid("B");
+					saveState();
+				}
+			}	
+		
+			function saveState(){
+				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log(xmlhttp.response.status)
+					setTimeout(function(){
 						saveState();
-					}
-				}	
-			
-				function saveState(){
-					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
-					var xmlhttp=new XMLHttpRequest();
-					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
-					xmlhttp.send(requestBody);
-					xmlhttp.onload = function(e){
-						console.log(xmlhttp.response.status)
-						setTimeout(function(){
-							saveState();
-						}, 1000);
-					}
+					}, 1000);
 				}
-			</script>
+			}
+		</script>
 	</body>
 </html>
 
