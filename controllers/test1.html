@@ -13,7 +13,8 @@
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
-				height:50%;
+				height:40%;
+				top:10%;
 				position:absolute;
 			}
 			.mask-container{
@@ -22,9 +23,22 @@
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
-				height:13%;
+				height:10%;
 				top:50%;
 				position:absolute;
+			}
+			.dmx-grid-container{
+				display: grid;
+				grid-template-columns: auto auto auto auto auto auto auto auto;
+				background-color: #777777;
+				width:49.0%;
+				height:30%;
+				top:62%;
+				position:absolute;
+				border:5px solid grey;
+				margin:0px;
+				padding:0px;
+				left:50%;
 			}
 			.grid-item:hover{
 				background-color: rgba(150, 150, 200, 0.8);
@@ -36,14 +50,14 @@
 			#grid-container-A,#mask-container-A{
 				left:0%;
 			}
-			#grid-container-B,#mask-container-B,#slider-container2{
+			#grid-container-B,#mask-container-B{
 				left:50.0%;
 			}
 			.slider-container{
 				background-color: darkgrey;
 				width:49.0%;
-				height:34%;
-				top:65%;
+				height:30%;
+				top:62%;
 				position:absolute;
 				border:5px solid grey;
 				margin:0px;
@@ -53,15 +67,28 @@
 			.slider {
 				border:2.5px solid grey;
 				-webkit-appearance: none;
-				width: 100%;
+				width: 80%;
+				left:20%;
+				display:inline;
 				height: 25%;
-				background: darkgrey;
+				position:absolute;
 				outline: none;
 				opacity: 1;
 				-webkit-transition: .2s;
 				transition: opacity .2s;
 				margin:0px;
 				padding:0px;
+			}
+			.sliderLabel{
+				border:2.5px solid grey;
+				height:24%;
+				width:20%;
+				background-color: black;
+				z-index: 19;
+				text-align: center;
+				position:absolute;
+				color:white;
+				margin:0;
 			}
 			.slider::-webkit-slider-thumb {
 				-webkit-appearance: none;
@@ -79,17 +106,16 @@
 		<div class="mask-container" id="mask-container-A"></div>
 		<div class="mask-container" id="mask-container-B"></div>
 		<div class="slider-container" id="slider-container">
-			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">Shaders Level</span></div>
+			<input type="range" min="1" max="100" value="50" class="slider" id="slider1" style="top:0%">		
+			<div class="sliderLabel" style="top:25%"><span style="position:relative; top:35%;height:50%;">DMX Level</span></div>
+			<input type="range" min="1" max="100" value="50" class="slider" id="slider2" style="top:25%">		
+			<div class="sliderLabel"  style="top:50%"><span style="position:relative; top:35%;height:50%;">DMX Speed</span></div>
+			<input type="range" min="1" max="100" value="50" class="slider" id="slider3" style="top:50%">		
+			<div class="sliderLabel"  style="top:75%"><span style="position:relative; top:35%;height:50%;">Volume Threshold</span></div>
+			<input type="range" min="1" max="100" value="50" class="slider" id="slider4" style="top:75%">		
 		</div>
-		<div class="slider-container" id="slider-container2">
-			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-			<input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-		</div>
+		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<script>
 
 			recallState();
