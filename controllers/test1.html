@@ -13,8 +13,8 @@
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
-				height:40%;
-				top:10%;
+				height:44%;
+				top:15%;
 				position:absolute;
 			}
 			.mask-container{
@@ -23,8 +23,8 @@
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
-				height:10%;
-				top:50%;
+				height:8%;
+				top:59.8%;
 				position:absolute;
 			}
 			.dmx-grid-container{
@@ -32,13 +32,26 @@
 				grid-template-columns: auto auto auto auto auto auto auto auto;
 				background-color: #777777;
 				width:49.0%;
-				height:30%;
-				top:67%;
+				height:23%;
+				top:75%;
 				position:absolute;
 				border:5px solid grey;
 				margin:0px;
 				padding:0px;
 				left:50%;
+			}
+			.presets-grid-container{
+				display: grid;
+				grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+				background-color: #777777;
+				width:98.75%;
+				height:9%;
+				top:0%;
+				position:absolute;
+				border:5px solid grey;
+				margin:0px;
+				padding:0px;
+				left:0.25%;
 			}
 			.grid-item:hover{
 				background-color: rgba(150, 150, 200, 0.8);
@@ -56,8 +69,8 @@
 			.slider-container{
 				background-color: darkgrey;
 				width:49.0%;
-				height:30%;
-				top:67%;
+				height:23%;
+				top:75%;
 				position:absolute;
 				border:5px solid grey;
 				margin:0px;
@@ -114,14 +127,15 @@
 		</style>
 	</head>
 	<body>
-		<div class="sectionLabel" id="sectionLabelA" style="top:5%"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderA</span></div>
-		<div class="sectionLabel" id="sectionLabelB" style="top:5%"><<span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderB</span></div>
+		<div class="presets-grid-container" id="presets-grid-container"></div>
+		<div class="sectionLabel" id="sectionLabelA" style="top:10%"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderA</span></div>
+		<div class="sectionLabel" id="sectionLabelB" style="top:10%"><<span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderB</span></div>
 		<div class="grid-container" id="grid-container-A"></div>
 		<div class="grid-container" id="grid-container-B"></div>
 		<div class="mask-container" id="mask-container-A"></div>
 		<div class="mask-container" id="mask-container-B"></div>
-		<div class="sectionLabel" id="sectionLabelC" style="top:61%"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
-		<div class="sectionLabel" id="sectionLabelD" style="top:61%"><<span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
+		<div class="sectionLabel" id="sectionLabelC" style="top:69%"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
+		<div class="sectionLabel" id="sectionLabelD" style="top:69%"><<span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
 		<div class="slider-container" id="slider-container">
 			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">Shaders Level</span></div>
 			<input type="range" min="1" max="100" value="50" class="slider" id="slider1" style="top:0%">		
@@ -204,6 +218,32 @@
 					gridContainer.appendChild(gridItem);
 				}
 			}
+			
+			function createPresetsGrid(){
+				var gridContainer=document.getElementById("presets-grid-container")
+				for(var x=1; x<=10; x++){
+					var gridItem=document.createElement('button')
+					gridItem.id="PresetsGridItem"+x;
+					gridItem.dmxPatternNumber=x;
+					gridItem.style.borderColor="black";
+					gridItem.style.backgroundColor="grey";
+					gridItem.class="grid-item";
+					gridItem.onclick=function(){selectShader(this.shaderNumber,this.deck)};
+					if(x==1){
+						gridItem.innerHTML="Save Preset";
+					}else if(x==2){
+						gridItem.innerHTML="Recal Preset";
+					}else{
+						gridItem.innerHTML=parseInt(x-2);
+					}
+					if(parseInt(globalState.dmxPatternNumber)==x){
+						gridItem.style.opacity=".2"
+					}else{
+						gridItem.style.opacity="1.0"
+					}
+					gridContainer.appendChild(gridItem);
+				}
+			}
 
 			function selectShader(shaderNumber,deck){
 				for(var x=1; x<=32; x++){
@@ -239,6 +279,7 @@
 					createGrid("A");
 					createGrid("B");
 					createDMXGrid();
+					createPresetsGrid();
 					saveState();
 				}
 			}	
