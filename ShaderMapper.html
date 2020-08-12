@@ -332,7 +332,8 @@ void main()	{
 					"mousex": { value: 0.0 },
 					"mousey": { value: 0.0 },
 					"audioVolume": { value: 0.0 },
-					"maskTexture": { value: imgTexture }
+					"maskTexture": { value: imgTexture },
+					"brightness": { value: globalController.Brightness }
 				};
 				uniforms2 = {
 					"time": { value: 1.0 },
@@ -340,7 +341,8 @@ void main()	{
 					"mousex": { value: 0.0 },
 					"mousey": { value: 0.0 },
 					"audioVolume": { value: 0.0 },
-					"maskTexture": { value: imgTexture2 }
+					"maskTexture": { value: imgTexture2 },
+					"brightness": { value: globalController.Brightness }
 				};
 				// uniforms1[ "maskTexture" ].value.wrapS = uniforms1[ "maskTexture" ].value.wrapT = THREE.MirroredRepeatWrapping;
 				materialsList=initShaderMaterial(uniforms1);
@@ -801,6 +803,8 @@ void main()	{
 			function render() {
 				uniforms1[ "time" ].value += .01 * 5;
 				uniforms2[ "time" ].value += .01 * 5;
+				uniforms1[ "brightness" ].value=globalController.Brightness;
+				uniforms2[ "brightness" ].value=globalController.Brightness;
 				for(var x=0;x<displayObjects.length;x++){
 					displayObjects[x].material.transparent=true
 					displayObjects[x].material.needsUpdate=true
