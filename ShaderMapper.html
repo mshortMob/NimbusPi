@@ -383,7 +383,7 @@ void main()	{
 					PresetName:"GlobalPreset1",
 					SendDMX:true,
 					DMX_Rate: 50,
-					Brightness:.5,
+					DMX_Brightness:.5,
 					DMX_Pattern:1,
 					DMX_Pattern_Rate:.1,
 					Universe:1,
@@ -394,6 +394,7 @@ void main()	{
 					VolumeThreshold:.003,
 					Camera_X:0.0,
 					Camera_Y:0.0,
+					Brightness:1.0,
 				}
 				objectController  = {
 					 Visible:false,
@@ -420,6 +421,7 @@ void main()	{
 				globalFolder.add( globalController, "VolumeThreshold", .0001,.1,.0001 ).onChange(function(){updateControlsValues();});	
 				globalFolder.add( globalController, "Camera_X", -1.0,1.0,.001 ).onChange(function(){camera.position.x=globalController.Camera_X*window.innerWidth/3; updateControlsValues();});
 				globalFolder.add( globalController, "Camera_Y", -1.0,1.0,.001 ).onChange(function(){camera.position.y=globalController.Camera_Y*window.innerHeight/3; updateControlsValues();});			
+				globalFolder.add( globalController, "Brightness", 0.0,1.0,.001 ).onChange(function(){updateControlsValues();});			
 				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
 				controlsFolder.add( objectController, "Visible", true ).onChange(function(){updateControlsValues();syncObjectsToJson();});	
@@ -428,7 +430,7 @@ void main()	{
 				dmxFolder=gui.addFolder( "DMX" );
 				dmxFolder.open();
 				dmxFolder.add(globalController, "DMX_Pattern", 1,6,1 ).onChange(function(){globalController.DMX_Pattern=parseInt(globalController.DMX_Pattern);  updateControlsValues();});
-				dmxFolder.add(globalController, "Brightness", 0.0, 1.0, .01 ).onChange(function(){updateControlsValues(); });
+				dmxFolder.add(globalController, "DMX_Brightness", 0.0, 1.0, .01 ).onChange(function(){updateControlsValues(); });
 				dmxFolder.add(globalController, "DMX_Pattern_Rate", 0.00,4.0,.01 ).onChange(function(){updateControlsValues(); });
 				dmxFolder.add( globalController, "DMX_X1", 1,255,1 ).onChange(function(){globalController.DMX_X1=parseInt(globalController.DMX_X1);updateControlsValues();});
 				dmxFolder.add( globalController, "DMX_Y1", 1,255,1 ).onChange(function(){globalController.DMX_Y1=parseInt(globalController.DMX_Y1);updateControlsValues();});
@@ -998,8 +1000,8 @@ void main()	{
 				keyPressToSlider(event, "P", globalController, "MaskB", -1, gui.__folders.Global, function(){changeMask(2); updateControlsValues(); } );
 				keyPressToSlider(event, "k", globalController, "DMX_Pattern", 1, gui.__folders.DMX, function(){updateControlsValues(); } );
 				keyPressToSlider(event, "K", globalController, "DMX_Pattern", -1, gui.__folders.DMX, function(){updateControlsValues(); } );
-				keyPressToSlider(event, "j", globalController, "Brightness", .05, gui.__folders.DMX, function(){ updateControlsValues();  } );
-				keyPressToSlider(event, "J", globalController, "Brightness", -.05, gui.__folders.DMX, function(){ updateControlsValues();  } );
+				keyPressToSlider(event, "j", globalController, "DMX_Brightness", .05, gui.__folders.DMX, function(){ updateControlsValues();  } );
+				keyPressToSlider(event, "J", globalController, "DMX_Brightness", -.05, gui.__folders.DMX, function(){ updateControlsValues();  } );
 				keyPressToSlider(event, "i", globalController, "DMX_Pattern_Rate", .05, gui.__folders.DMX, function(){ updateControlsValues();  } );
 				keyPressToSlider(event, "I", globalController, "DMX_Pattern_Rate", -.05, gui.__folders.DMX, function(){ updateControlsValues();  } );
 				if(event.key=="u"){
@@ -1124,7 +1126,7 @@ void main()	{
 				xhttp.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
 				xhttp.setRequestHeader("pragma", "no-cache" );
 
-				var brightnessAdjustedDMXData=[];
+				var DMX_BrightnessAdjustedDMXData=[];
 				for(var x=0; x<ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1][parseInt(ledStripAnimationmMasterIndex)].length ; x++){
 					var oneValue=ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1][parseInt(ledStripAnimationmMasterIndex)][x];
 					var isGuardedChannel=false;
@@ -1135,25 +1137,25 @@ void main()	{
 					}
 					if(isGuardedChannel){
 						if(x==(listOfGuardedChannels[0]-1)){
-							brightnessAdjustedDMXData.push(parseInt(globalController.DMX_X1));
+							DMX_BrightnessAdjustedDMXData.push(parseInt(globalController.DMX_X1));
 						}
 						if(x==(listOfGuardedChannels[1]-1)){
-							brightnessAdjustedDMXData.push(parseInt(globalController.DMX_Y1));
+							DMX_BrightnessAdjustedDMXData.push(parseInt(globalController.DMX_Y1));
 						}
 						if(x==(listOfGuardedChannels[2]-1)){
-							brightnessAdjustedDMXData.push(parseInt(globalController.DMX_X2));
+							DMX_BrightnessAdjustedDMXData.push(parseInt(globalController.DMX_X2));
 						}
 						if(x==(listOfGuardedChannels[3]-1)){
-							brightnessAdjustedDMXData.push(parseInt(globalController.DMX_Y2));
+							DMX_BrightnessAdjustedDMXData.push(parseInt(globalController.DMX_Y2));
 						}
 						
 					}else{
-						brightnessAdjustedDMXData.push(parseInt(parseInt(oneValue)*globalController.Brightness));
+						DMX_BrightnessAdjustedDMXData.push(parseInt(parseInt(oneValue)*globalController.DMX_Brightness));
 					}
 				}
-				var brightnessAdjustedDMXDataString=brightnessAdjustedDMXData.toString();
+				var DMX_BrightnessAdjustedDMXDataString=DMX_BrightnessAdjustedDMXData.toString();
 
-				dmxPayloadString="u="+parseInt(globalController.Universe)+"&d="+brightnessAdjustedDMXDataString+"0";
+				dmxPayloadString="u="+parseInt(globalController.Universe)+"&d="+DMX_BrightnessAdjustedDMXDataString+"0";
 				// console.log(dmxPayloadString);
 				xhttp.send(dmxPayloadString);
 			}	

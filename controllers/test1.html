@@ -127,22 +127,22 @@
 		</style>
 	</head>
 	<body>
-		<div class="sectionLabel" id="sectionLabelA" style="top:0%"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderA</span></div>
-		<div class="sectionLabel" id="sectionLabelB" style="top:0%"><<span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderB</span></div>
+		<div class="sectionLabel" id="sectionLabelA" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderA</span></div>
+		<div class="sectionLabel" id="sectionLabelB" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderB</span></div>
 		<div class="grid-container" id="grid-container-A"></div>
 		<div class="grid-container" id="grid-container-B"></div>
 		<div class="mask-container" id="mask-container-A"></div>
 		<div class="mask-container" id="mask-container-B"></div>
-		<div class="sectionLabel" id="sectionLabelC" style="top:59%"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
-		<div class="sectionLabel" id="sectionLabelD" style="top:59%"><<span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
+		<div class="sectionLabel" id="sectionLabelC" style="top:59%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
+		<div class="sectionLabel" id="sectionLabelD" style="top:59%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
 		<div class="slider-container" id="slider-container">
 			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">Shaders Level</span></div>
-			<input type="range" min="1" max="100" value="50" class="slider" id="slider1" style="top:0%">		
+			<input type="range" min="0" max="1000" value="50" class="slider" id="slider1" style="top:0%">		
 			<div class="sliderLabel" style="top:25%"><span style="position:relative; top:35%;height:50%;">DMX Level</span></div>
-			<input type="range" min="1" max="100" value="50" class="slider" id="slider2" style="top:25%">		
+			<input type="range" min="0" max="1000" value="50" class="slider" id="slider2" style="top:25%">		
 			<div class="sliderLabel"  style="top:50%"><span style="position:relative; top:35%;height:50%;">DMX Speed</span></div>
-			<input type="range" min="1" max="100" value="50" class="slider" id="slider3" style="top:50%">		
-			<div class="sliderLabel"  style="top:75%"><span style="position:relative; top:35%;height:50%;">Volume Threshold</span></div>
+			<input type="range" min="0" max="4000" value="50" class="slider" id="slider3" style="top:50%">		
+			<div class="sliderLabel"  style="top:75%"><span style="font-size: .85em;position:relative; top:35%;height:50%;">Volume Threshold</span></div>
 			<input type="range" min="1" max="100" value="50" class="slider" id="slider4" style="top:75%">		
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
@@ -281,11 +281,19 @@
 					createGrid("B");
 					createDMXGrid();
 					createPresetsGrid();
+					document.getElementById("slider1").value=globalState.Brightness*1000;
+					document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
+					document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
+					document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
 					saveState();
 				}
 			}	
 		
 			function saveState(){
+				globalState.Brightness=document.getElementById("slider1").value/1000;
+				globalState.DMX_Brightness=document.getElementById("slider2").value/1000;
+				globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
+				globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
 				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
@@ -295,6 +303,21 @@
 					setTimeout(function(){
 						saveState();
 					}, 1000);
+				}
+			}
+			
+			function requestFullScreen() {
+				// Supports most browsers and their versions.
+				var element = document.body; // Make the body go full screen.
+				var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+			
+				if (requestMethod) { // Native full screen.
+					requestMethod.call(element);
+				} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+					var wscript = new ActiveXObject("WScript.Shell");
+					if (wscript !== null) {
+						wscript.SendKeys("{F11}");
+					}
 				}
 			}
 		</script>
