@@ -33,7 +33,7 @@
 				background-color: #777777;
 				width:49.0%;
 				height:30%;
-				top:62%;
+				top:67%;
 				position:absolute;
 				border:5px solid grey;
 				margin:0px;
@@ -47,22 +47,21 @@
 				font-size: 14px;
 				text-align: center;
 			}
-			#grid-container-A,#mask-container-A{
-				left:0%;
+			#grid-container-A,#mask-container-A,#sectionLabelA,#sectionLabelC,.slider-container{
+				left:.25%;
 			}
-			#grid-container-B,#mask-container-B{
+			#grid-container-B,#mask-container-B,#sectionLabelB,#sectionLabelD{
 				left:50.0%;
 			}
 			.slider-container{
 				background-color: darkgrey;
 				width:49.0%;
 				height:30%;
-				top:62%;
+				top:67%;
 				position:absolute;
 				border:5px solid grey;
 				margin:0px;
 				padding:0px;
-				left:0px;
 			}
 			.slider {
 				border:2.5px solid grey;
@@ -78,6 +77,7 @@
 				transition: opacity .2s;
 				margin:0px;
 				padding:0px;
+				background-color: darkgrey;
 			}
 			.sliderLabel{
 				border:2.5px solid grey;
@@ -89,22 +89,39 @@
 				position:absolute;
 				color:white;
 				margin:0;
+				font-size:.8em;
 			}
 			.slider::-webkit-slider-thumb {
 				-webkit-appearance: none;
 				appearance: none;
-				width: 25px;
+				width: 40px;
 				height: 100%;
-				background: lightgrey;
+				background: slategray;
 				cursor: pointer;
+				border-left:1px solid darkslategray;
+				border-right:1px solid darkslategray;
+			}
+			.sectionLabel{
+				background-color: black;
+				display: grid;
+				grid-template-columns: auto;
+				width:49.0%;
+				height:5%;
+				position:absolute;
+				border:5px solid grey;
+				font-size: 1.05em;
 			}
 		</style>
 	</head>
 	<body>
+		<div class="sectionLabel" id="sectionLabelA" style="top:5%"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderA</span></div>
+		<div class="sectionLabel" id="sectionLabelB" style="top:5%"><<span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderB</span></div>
 		<div class="grid-container" id="grid-container-A"></div>
 		<div class="grid-container" id="grid-container-B"></div>
 		<div class="mask-container" id="mask-container-A"></div>
 		<div class="mask-container" id="mask-container-B"></div>
+		<div class="sectionLabel" id="sectionLabelC" style="top:61%"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
+		<div class="sectionLabel" id="sectionLabelD" style="top:61%"><<span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
 		<div class="slider-container" id="slider-container">
 			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">Shaders Level</span></div>
 			<input type="range" min="1" max="100" value="50" class="slider" id="slider1" style="top:0%">		
@@ -168,6 +185,26 @@
 				}
 			}
 
+			function createDMXGrid(){
+				var gridContainer=document.getElementById("dmx-grid-container")
+				for(var x=1; x<=16; x++){
+					var gridItem=document.createElement('button')
+					gridItem.id="DMXGridItem"+x;
+					gridItem.dmxPatternNumber=x;
+					gridItem.style.borderColor="black";
+					gridItem.style.backgroundColor="grey";
+					gridItem.class="grid-item";
+					gridItem.onclick=function(){selectShader(this.shaderNumber,this.deck)};
+					gridItem.innerHTML=x;
+					if(parseInt(globalState.dmxPatternNumber)==x){
+						gridItem.style.opacity=".2"
+					}else{
+						gridItem.style.opacity="1.0"
+					}
+					gridContainer.appendChild(gridItem);
+				}
+			}
+
 			function selectShader(shaderNumber,deck){
 				for(var x=1; x<=32; x++){
 					if(parseInt(shaderNumber)==x){
@@ -201,6 +238,7 @@
 					globalState=JSON.parse(xmlhttp.response).global;
 					createGrid("A");
 					createGrid("B");
+					createDMXGrid();
 					saveState();
 				}
 			}	
