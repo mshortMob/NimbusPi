@@ -2,6 +2,7 @@ precision mediump float;
 precision mediump int;
 
 uniform float time;
+uniform float brightness;
 
 uniform float audioVolume;
 varying vec2 vUv;
@@ -16,5 +17,5 @@ void main()	{
 	float green = cos(position.x/abs(audioVolume/2.0)+time )+sin(time/14. )+position.y*8.;
 	float blue =tan(position.x/.3+time/4. )+sin(time/3.5 )+position.y*4.;
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( (red-green-blue)*(1.0-abs(audioVolume/1.5)), (green-red-blue)*abs(audioVolume/1.5), blue*(1.0-abs(audioVolume/.5)), mask.r );
+	gl_FragColor = vec4( (red-green-blue)*(1.0-abs(audioVolume/1.5)), (green-red-blue)*abs(audioVolume/1.5), blue*(1.0-abs(audioVolume/.5)), mask.r*brightness );
 }

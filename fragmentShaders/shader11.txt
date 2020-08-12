@@ -2,6 +2,7 @@ precision mediump float;
 precision mediump int;
 
 uniform float time;
+uniform float brightness;
 
 uniform float audioVolume;
 varying vec2 vUv;
@@ -15,5 +16,5 @@ void main()	{
 	horStripes=1.0-(2.0*horStripes*abs(audioVolume));
 	float checkerGrid=horStripes+vertStripes;
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( vertStripes, vertStripes, horStripes, mask.r );
+	gl_FragColor = vec4( vertStripes, vertStripes, horStripes, mask.r*brightness );
 }
