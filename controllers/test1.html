@@ -102,7 +102,7 @@
 				position:absolute;
 				color:white;
 				margin:0;
-				font-size:.8em;
+				font-size:.5em;
 			}
 			.slider::-webkit-slider-thumb {
 				-webkit-appearance: none;
@@ -122,7 +122,7 @@
 				height:5%;
 				position:absolute;
 				border:5px solid grey;
-				font-size: 1.05em;
+				font-size:.6em;
 			}
 		</style>
 	</head>
@@ -228,6 +228,7 @@
 					gridItem.style.borderColor="grey";
 					gridItem.style.backgroundColor="black";
 					gridItem.style.color="white";
+					gridItem.style.fontSize=".5em";
 					gridItem.class="grid-item";
 					gridItem.onclick=function(){selectShader(this.dmxPatternNumber)};
 					if(x==1){
