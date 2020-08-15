@@ -292,7 +292,7 @@
 					createGrid("A");
 					createGrid("B");
 					createDMXGrid();
-					createPresetsGrid();
+					// createPresetsGrid();
 					document.getElementById("slider1").value=globalState.Brightness*1000;
 					document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
 					document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
@@ -314,7 +314,7 @@
 					console.log(xmlhttp.response.status)
 					setTimeout(function(){
 						saveState();
-					}, 1000);
+					}, 400);
 				}
 			}
 			

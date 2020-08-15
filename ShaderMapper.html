@@ -211,6 +211,8 @@ void main()	{
 			}
 
 			function initGlobalVars(){
+				slaveModeInterval=-1;
+				controllerModeInterval=-1;
 				getCanvasYFlip();
 				getNumberOfShadersAndPresets();
 				audioData = new Uint8Array(8);
@@ -450,8 +452,36 @@ void main()	{
 				utilsFolder.add({ 'FlowMapper':function(){ window.location.replace("http://"+location.hostname+"/FlowMapper.html"); }},'FlowMapper');
 				miscFolder=gui.addFolder( "Misc" )
 				miscFolder.open();
-				miscFolder.add({ 'Slave Mode':function(){ setInterval(function(){recallState();},  1000); }},'Slave Mode');
-				miscFolder.add({ 'Controller Mode':function(){ setInterval(function(){saveState();},  1000); }},'Controller Mode');
+				miscFolder.add({ 'Slave Mode':function(){  initSlaveMode(); }},'Slave Mode');
+				miscFolder.add({ 'Controller Mode':function(){ initControllerMode();  }},'Controller Mode');
+				miscFolder.add({ 'Standalone':function(){ initStandaloneMode();  }},'Standalone');
+			}
+
+			function initSlaveMode(){
+				if(slaveModeInterval==-1){
+					console.log("starting slaveModeInterval");
+					slaveModeInterval=setInterval(function(){recallState();},  400);
+				}
+			}
+
+			function initControllerMode(){
+				if(controllerModeInterval==-1){
+					console.log("starting controllerModeInterval");
+					controllerModeInterval=setInterval(function(){saveState();},  400);
+				}
+			}
+
+			function initStandaloneMode(){
+				if(slaveModeInterval!=-1){
+					console.log("stopping slaveModeInterval");
+					clearInterval(slaveModeInterval);
+					slaveModeInterval=-1;
+				}
+				if(controllerModeInterval!=-1){
+					console.log("stopping controllerModeInterval");
+					clearInterval(controllerModeInterval);
+					slaveModeInterval=-1;
+				}
 			}
 									
 			function changeMask(changedMask){
@@ -1104,6 +1134,15 @@ void main()	{
 				}
 				if(event.key=='|'){
 					window.location.replace("http://"+location.hostname+"/FlowMapper.html");
+				}
+				if(event.key==";"){
+					initStandaloneMode();
+				}
+				if(event.key=="'"){
+					initControllerMode();
+				}
+				if(event.key==":"){
+					initSlaveMode();
 				}
 			}
 
