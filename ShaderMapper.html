@@ -211,6 +211,8 @@ void main()	{
 			}
 
 			function initGlobalVars(){
+				slaveModeInterval=-1;
+				controllerModeInterval=-1;
 				getCanvasYFlip();
 				getNumberOfShadersAndPresets();
 				audioData = new Uint8Array(8);
@@ -332,7 +334,8 @@ void main()	{
 					"mousex": { value: 0.0 },
 					"mousey": { value: 0.0 },
 					"audioVolume": { value: 0.0 },
-					"maskTexture": { value: imgTexture }
+					"maskTexture": { value: imgTexture },
+					"brightness": { value: globalController.Brightness }
 				};
 				uniforms2 = {
 					"time": { value: 1.0 },
@@ -340,7 +343,8 @@ void main()	{
 					"mousex": { value: 0.0 },
 					"mousey": { value: 0.0 },
 					"audioVolume": { value: 0.0 },
-					"maskTexture": { value: imgTexture2 }
+					"maskTexture": { value: imgTexture2 },
+					"brightness": { value: globalController.Brightness }
 				};
 				// uniforms1[ "maskTexture" ].value.wrapS = uniforms1[ "maskTexture" ].value.wrapT = THREE.MirroredRepeatWrapping;
 				materialsList=initShaderMaterial(uniforms1);
@@ -383,7 +387,7 @@ void main()	{
 					PresetName:"GlobalPreset1",
 					SendDMX:true,
 					DMX_Rate: 50,
-					Brightness:.5,
+					DMX_Brightness:.5,
 					DMX_Pattern:1,
 					DMX_Pattern_Rate:.1,
 					Universe:1,
@@ -394,6 +398,7 @@ void main()	{
 					VolumeThreshold:.003,
 					Camera_X:0.0,
 					Camera_Y:0.0,
+					Brightness:1.0,
 				}
 				objectController  = {
 					 Visible:false,
@@ -420,6 +425,7 @@ void main()	{
 				globalFolder.add( globalController, "VolumeThreshold", .0001,.1,.0001 ).onChange(function(){updateControlsValues();});	
 				globalFolder.add( globalController, "Camera_X", -1.0,1.0,.001 ).onChange(function(){camera.position.x=globalController.Camera_X*window.innerWidth/3; updateControlsValues();});
 				globalFolder.add( globalController, "Camera_Y", -1.0,1.0,.001 ).onChange(function(){camera.position.y=globalController.Camera_Y*window.innerHeight/3; updateControlsValues();});			
+				globalFolder.add( globalController, "Brightness", 0.0,1.0,.001 ).onChange(function(){updateControlsValues();});			
 				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
 				controlsFolder.add( objectController, "Visible", true ).onChange(function(){updateControlsValues();syncObjectsToJson();});	
@@ -428,7 +434,7 @@ void main()	{
 				dmxFolder=gui.addFolder( "DMX" );
 				dmxFolder.open();
 				dmxFolder.add(globalController, "DMX_Pattern", 1,6,1 ).onChange(function(){globalController.DMX_Pattern=parseInt(globalController.DMX_Pattern);  updateControlsValues();});
-				dmxFolder.add(globalController, "Brightness", 0.0, 1.0, .01 ).onChange(function(){updateControlsValues(); });
+				dmxFolder.add(globalController, "DMX_Brightness", 0.0, 1.0, .01 ).onChange(function(){updateControlsValues(); });
 				dmxFolder.add(globalController, "DMX_Pattern_Rate", 0.00,4.0,.01 ).onChange(function(){updateControlsValues(); });
 				dmxFolder.add( globalController, "DMX_X1", 1,255,1 ).onChange(function(){globalController.DMX_X1=parseInt(globalController.DMX_X1);updateControlsValues();});
 				dmxFolder.add( globalController, "DMX_Y1", 1,255,1 ).onChange(function(){globalController.DMX_Y1=parseInt(globalController.DMX_Y1);updateControlsValues();});
@@ -437,13 +443,46 @@ void main()	{
 				utilsFolder=gui.addFolder( "Utils" )
 				utilsFolder.open();
 				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
-				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');	
+				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');
 				utilsFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
 				utilsFolder.add({ 'Recall Preset':function(){ recallState() }},'Recall Preset');
 				utilsFolder.add(globalController, 'PresetName').onChange(function(){});
 				utilsFolder.add({ 'Shader Editor':function(){ window.location.replace("http://"+location.hostname+"/editors/shaderEditor.html"); }},'Shader Editor');
+				utilsFolder.add({ 'Shader Controller':function(){ window.location.replace("http://"+location.hostname+"/controller/index.html"); }},'Shader Controller');
 				utilsFolder.add({ 'DMX Editor':function(){ window.location.replace("http://"+location.hostname+"/editors/dmxEditor.html"); }},'DMX Editor');
 				utilsFolder.add({ 'FlowMapper':function(){ window.location.replace("http://"+location.hostname+"/FlowMapper.html"); }},'FlowMapper');
+				miscFolder=gui.addFolder( "Misc" )
+				miscFolder.open();
+				miscFolder.add({ 'Slave Mode':function(){  initSlaveMode(); }},'Slave Mode');
+				miscFolder.add({ 'Controller Mode':function(){ initControllerMode();  }},'Controller Mode');
+				miscFolder.add({ 'Standalone':function(){ initStandaloneMode();  }},'Standalone');
+			}
+
+			function initSlaveMode(){
+				if(slaveModeInterval==-1){
+					console.log("starting slaveModeInterval");
+					slaveModeInterval=setInterval(function(){recallState();},  400);
+				}
+			}
+
+			function initControllerMode(){
+				if(controllerModeInterval==-1){
+					console.log("starting controllerModeInterval");
+					controllerModeInterval=setInterval(function(){saveState();},  400);
+				}
+			}
+
+			function initStandaloneMode(){
+				if(slaveModeInterval!=-1){
+					console.log("stopping slaveModeInterval");
+					clearInterval(slaveModeInterval);
+					slaveModeInterval=-1;
+				}
+				if(controllerModeInterval!=-1){
+					console.log("stopping controllerModeInterval");
+					clearInterval(controllerModeInterval);
+					slaveModeInterval=-1;
+				}
 			}
 									
 			function changeMask(changedMask){
@@ -795,6 +834,8 @@ void main()	{
 			function render() {
 				uniforms1[ "time" ].value += .01 * 5;
 				uniforms2[ "time" ].value += .01 * 5;
+				uniforms1[ "brightness" ].value=globalController.Brightness;
+				uniforms2[ "brightness" ].value=globalController.Brightness;
 				for(var x=0;x<displayObjects.length;x++){
 					displayObjects[x].material.transparent=true
 					displayObjects[x].material.needsUpdate=true
@@ -994,8 +1035,8 @@ void main()	{
 				keyPressToSlider(event, "P", globalController, "MaskB", -1, gui.__folders.Global, function(){changeMask(2); updateControlsValues(); } );
 				keyPressToSlider(event, "k", globalController, "DMX_Pattern", 1, gui.__folders.DMX, function(){updateControlsValues(); } );
 				keyPressToSlider(event, "K", globalController, "DMX_Pattern", -1, gui.__folders.DMX, function(){updateControlsValues(); } );
-				keyPressToSlider(event, "j", globalController, "Brightness", .05, gui.__folders.DMX, function(){ updateControlsValues();  } );
-				keyPressToSlider(event, "J", globalController, "Brightness", -.05, gui.__folders.DMX, function(){ updateControlsValues();  } );
+				keyPressToSlider(event, "j", globalController, "DMX_Brightness", .05, gui.__folders.DMX, function(){ updateControlsValues();  } );
+				keyPressToSlider(event, "J", globalController, "DMX_Brightness", -.05, gui.__folders.DMX, function(){ updateControlsValues();  } );
 				keyPressToSlider(event, "i", globalController, "DMX_Pattern_Rate", .05, gui.__folders.DMX, function(){ updateControlsValues();  } );
 				keyPressToSlider(event, "I", globalController, "DMX_Pattern_Rate", -.05, gui.__folders.DMX, function(){ updateControlsValues();  } );
 				if(event.key=="u"){
@@ -1095,6 +1136,15 @@ void main()	{
 				if(event.key=='|'){
 					window.location.replace("http://"+location.hostname+"/FlowMapper.html");
 				}
+				if(event.key==";"){
+					initStandaloneMode();
+				}
+				if(event.key=="'"){
+					initControllerMode();
+				}
+				if(event.key==":"){
+					initSlaveMode();
+				}
 			}
 
 			function toggleDmxSend(){
@@ -1120,7 +1170,7 @@ void main()	{
 				xhttp.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
 				xhttp.setRequestHeader("pragma", "no-cache" );
 
-				var brightnessAdjustedDMXData=[];
+				var DMX_BrightnessAdjustedDMXData=[];
 				for(var x=0; x<ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1][parseInt(ledStripAnimationmMasterIndex)].length ; x++){
 					var oneValue=ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1][parseInt(ledStripAnimationmMasterIndex)][x];
 					var isGuardedChannel=false;
@@ -1131,25 +1181,25 @@ void main()	{
 					}
 					if(isGuardedChannel){
 						if(x==(listOfGuardedChannels[0]-1)){
-							brightnessAdjustedDMXData.push(parseInt(globalController.DMX_X1));
+							DMX_BrightnessAdjustedDMXData.push(parseInt(globalController.DMX_X1));
 						}
 						if(x==(listOfGuardedChannels[1]-1)){
-							brightnessAdjustedDMXData.push(parseInt(globalController.DMX_Y1));
+							DMX_BrightnessAdjustedDMXData.push(parseInt(globalController.DMX_Y1));
 						}
 						if(x==(listOfGuardedChannels[2]-1)){
-							brightnessAdjustedDMXData.push(parseInt(globalController.DMX_X2));
+							DMX_BrightnessAdjustedDMXData.push(parseInt(globalController.DMX_X2));
 						}
 						if(x==(listOfGuardedChannels[3]-1)){
-							brightnessAdjustedDMXData.push(parseInt(globalController.DMX_Y2));
+							DMX_BrightnessAdjustedDMXData.push(parseInt(globalController.DMX_Y2));
 						}
 						
 					}else{
-						brightnessAdjustedDMXData.push(parseInt(parseInt(oneValue)*globalController.Brightness));
+						DMX_BrightnessAdjustedDMXData.push(parseInt(parseInt(oneValue)*globalController.DMX_Brightness));
 					}
 				}
-				var brightnessAdjustedDMXDataString=brightnessAdjustedDMXData.toString();
+				var DMX_BrightnessAdjustedDMXDataString=DMX_BrightnessAdjustedDMXData.toString();
 
-				dmxPayloadString="u="+parseInt(globalController.Universe)+"&d="+brightnessAdjustedDMXDataString+"0";
+				dmxPayloadString="u="+parseInt(globalController.Universe)+"&d="+DMX_BrightnessAdjustedDMXDataString+"0";
 				// console.log(dmxPayloadString);
 				xhttp.send(dmxPayloadString);
 			}	

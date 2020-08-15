@@ -1,0 +1,338 @@
+<html>
+	<head>
+		<title>ShaderMapper</title>
+		<style>
+			body{
+			    margin:0px;
+				padding:5px;
+				background-color:black;
+			}	
+			.grid-container{
+				display: grid;
+				grid-template-columns: auto auto auto auto auto auto auto auto;
+				background-color: #777777;
+				padding: 5px;
+				width:49.0%;
+				height:44%;
+				top:5%;
+				position:absolute;
+			}
+			.mask-container{
+				display: grid;
+				grid-template-columns: auto auto auto auto auto auto;
+				background-color: #777777;
+				padding: 5px;
+				width:49.0%;
+				height:8%;
+				top:49.8%;
+				position:absolute;
+			}
+			.dmx-grid-container{
+				display: grid;
+				grid-template-columns: auto auto auto auto auto auto auto auto;
+				background-color: #777777;
+				width:49.0%;
+				height:32%;
+				top:65%;
+				position:absolute;
+				border:5px solid grey;
+				margin:0px;
+				padding:0px;
+				left:50%;
+			}
+			.presets-grid-container{
+				display: grid;
+				grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+				background-color: #777777;
+				width:98.75%;
+				height:9%;
+				top:88.75%;
+				position:absolute;
+				border:5px solid grey;
+				margin:0px;
+				padding:0px;
+				left:0.25%;
+			}
+			.grid-item:hover{
+				background-color: rgba(150, 150, 200, 0.8);
+				border: 1px solid rgba(0, 0, 0, 0.8);
+				padding: 20px;
+				font-size: 14px;
+				text-align: center;
+			}
+			#grid-container-A,#mask-container-A,#sectionLabelA,#sectionLabelC,.slider-container{
+				left:.25%;
+			}
+			#grid-container-B,#mask-container-B,#sectionLabelB,#sectionLabelD{
+				left:50.0%;
+			}
+			.slider-container{
+				background-color: darkgrey;
+				width:49.0%;
+				height:32%;
+				top:65%;
+				position:absolute;
+				border:5px solid grey;
+				margin:0px;
+				padding:0px;
+			}
+			.slider {
+				border:2.5px solid grey;
+				-webkit-appearance: none;
+				width: 80%;
+				left:20%;
+				display:inline;
+				height: 25%;
+				position:absolute;
+				outline: none;
+				opacity: 1;
+				-webkit-transition: .2s;
+				transition: opacity .2s;
+				margin:0px;
+				padding:0px;
+				background-color: darkgrey;
+			}
+			.sliderLabel{
+				border:2.5px solid grey;
+				height:24%;
+				width:20%;
+				background-color: black;
+				z-index: 19;
+				text-align: center;
+				position:absolute;
+				color:white;
+				margin:0;
+				font-size:.5em;
+			}
+			.slider::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				appearance: none;
+				width: 40px;
+				height: 100%;
+				background: slategray;
+				cursor: pointer;
+				border-left:1px solid darkslategray;
+				border-right:1px solid darkslategray;
+			}
+			.sectionLabel{
+				background-color: black;
+				display: grid;
+				grid-template-columns: auto;
+				width:49.0%;
+				height:5%;
+				position:absolute;
+				border:5px solid grey;
+				font-size:.6em;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="sectionLabel" id="sectionLabelA" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderA</span></div>
+		<div class="sectionLabel" id="sectionLabelB" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderB</span></div>
+		<div class="grid-container" id="grid-container-A"></div>
+		<div class="grid-container" id="grid-container-B"></div>
+		<div class="mask-container" id="mask-container-A"></div>
+		<div class="mask-container" id="mask-container-B"></div>
+		<div class="sectionLabel" id="sectionLabelC" style="top:59%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
+		<div class="sectionLabel" id="sectionLabelD" style="top:59%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
+		<div class="slider-container" id="slider-container">
+			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">Shaders Level</span></div>
+			<input type="range" min="0" max="1000" value="50" class="slider" id="slider1" style="top:0%">		
+			<div class="sliderLabel" style="top:25%"><span style="position:relative; top:35%;height:50%;">DMX Level</span></div>
+			<input type="range" min="0" max="1000" value="50" class="slider" id="slider2" style="top:25%">		
+			<div class="sliderLabel"  style="top:50%"><span style="position:relative; top:35%;height:50%;">DMX Speed</span></div>
+			<input type="range" min="0" max="4000" value="50" class="slider" id="slider3" style="top:50%">		
+			<div class="sliderLabel"  style="top:75%"><span style="font-size: .85em;position:relative; top:35%;height:50%;">Volume Threshold</span></div>
+			<input type="range" min="1" max="100" value="50" class="slider" id="slider4" style="top:75%">		
+		</div>
+		<div class="dmx-grid-container" id="dmx-grid-container"></div>
+		<!-- <div class="presets-grid-container" id="presets-grid-container"></div> -->
+		<script>
+
+			recallState();
+
+			function createGrid(deck){
+				if(deck=="A"){
+					var gridContainer=document.getElementById("grid-container-A")
+					var maskContainer=document.getElementById("mask-container-A")
+				}else{
+					var gridContainer=document.getElementById("grid-container-B")
+					var maskContainer=document.getElementById("mask-container-B")
+				}
+				for(var x=1; x<=32; x++){
+					var gridItem=document.createElement('button')
+					gridItem.id="GridItem"+x+"_Deck"+deck;
+					gridItem.deck=deck;
+					gridItem.shaderNumber=x;
+					gridItem.style.backgroundImage="url('fragmentShaderIcons/shader"+parseInt(x)+".png')";
+					gridItem.style.backgroundPosition="center";
+					gridItem.style.backgroundSize="cover";
+					gridItem.style.borderColor="black";
+					gridItem.class="grid-item";
+					gridItem.onclick=function(){selectShader(this.shaderNumber,this.deck)};
+					if(parseInt(globalState["Shader"+deck])==x){
+						gridItem.style.opacity=".2"
+					}else{
+						gridItem.style.opacity="1.0"
+					}
+					gridContainer.appendChild(gridItem);
+				}
+				for(var x=1; x<=6; x++){
+					var maskItem=document.createElement('button')
+					maskItem.id="MaskItem"+x+"_Deck"+deck;
+					maskItem.deck=deck;
+					maskItem.maskNumber=x;
+					maskItem.style.backgroundImage="url('maskIcons/mask"+parseInt(x)+".jpg')";
+					maskItem.style.backgroundPosition="center";
+					maskItem.style.backgroundSize="contain";
+					maskItem.style.backgroundRepeat="no-repeat";
+					maskItem.style.backgroundColor="#000000"
+					maskItem.style.borderColor="black";
+					maskItem.class="grid-item";
+					maskItem.onclick=function(){selectMask(this.maskNumber,this.deck)};
+					if(parseInt(globalState["Mask"+deck])==x){
+						maskItem.style.opacity=".2"
+					}else{
+						maskItem.style.opacity="1.0"
+					}
+					maskContainer.appendChild(maskItem);
+				}
+			}
+
+			function createDMXGrid(){
+				var gridContainer=document.getElementById("dmx-grid-container")
+				for(var x=1; x<=16; x++){
+					var gridItem=document.createElement('button')
+					gridItem.id="DMXGridItem"+x;
+					gridItem.dmxPatternNumber=x;
+					gridItem.style.borderColor="black";
+					gridItem.style.backgroundColor="grey";
+					gridItem.class="grid-item";
+					gridItem.onclick=function(){selectDMXPreset(this.dmxPatternNumber)};
+					gridItem.innerHTML=x;
+					if(parseInt(globalState.dmxPatternNumber)==x){
+						gridItem.style.backgroundColor="darkgrey"
+					}else{
+						gridItem.style.backgroundColor="grey"
+					}
+					gridContainer.appendChild(gridItem);
+				}
+			}
+			
+			function createPresetsGrid(){
+				var gridContainer=document.getElementById("presets-grid-container")
+				for(var x=1; x<=10; x++){
+					var gridItem=document.createElement('button')
+					gridItem.id="PresetsGridItem"+x;
+					gridItem.dmxPatternNumber=x;
+					gridItem.style.borderColor="grey";
+					gridItem.style.backgroundColor="black";
+					gridItem.style.color="white";
+					gridItem.style.fontSize=".5em";
+					gridItem.class="grid-item";
+					gridItem.onclick=function(){selectShader(this.dmxPatternNumber)};
+					if(x==1){
+						gridItem.innerHTML="Save Preset";
+					}else if(x==2){
+						gridItem.innerHTML="Recal Preset";
+					}else{
+						gridItem.innerHTML=parseInt(x-2);
+					}
+					if(parseInt(globalState.dmxPatternNumber)==x){
+						gridItem.style.opacity=".2"
+					}else{
+						gridItem.style.opacity="1.0"
+					}
+					gridContainer.appendChild(gridItem);
+				}
+			}
+
+			function selectShader(shaderNumber,deck){
+				for(var x=1; x<=32; x++){
+					if(parseInt(shaderNumber)==x){
+						document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity=".2"
+					}else{
+						document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity="1.0"
+					}
+				}
+				globalState["Shader"+deck]=shaderNumber;
+				console.log("ShaderNumber:"+shaderNumber+" Deck:"+deck);
+			}
+
+			function selectMask(maskNumber,deck){
+				for(var x=1; x<=6; x++){
+					if(parseInt(maskNumber)==x){
+						document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity=".2"
+					}else{
+						document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity="1.0"
+					}
+				}
+				globalState["Mask"+deck]=maskNumber;
+				console.log("MaskNumber:"+maskNumber+" Deck:"+deck);
+			}
+
+			function selectDMXPreset(dmxPatternNumber){
+				for(var x=1; x<=16; x++){
+					if(parseInt(dmxPatternNumber)==x){
+						document.getElementById("DMXGridItem"+x).style.backgroundColor="darkgrey"
+					}else{
+						document.getElementById("DMXGridItem"+x).style.backgroundColor="grey"
+					}
+				}
+				globalState.DMX_Pattern=dmxPatternNumber;
+			}
+		
+			function recallState(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					statesArray=JSON.parse(xmlhttp.response).storage;
+					globalState=JSON.parse(xmlhttp.response).global;
+					createGrid("A");
+					createGrid("B");
+					createDMXGrid();
+					// createPresetsGrid();
+					document.getElementById("slider1").value=globalState.Brightness*1000;
+					document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
+					document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
+					document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
+					saveState();
+				}
+			}	
+		
+			function saveState(){
+				globalState.Brightness=document.getElementById("slider1").value/1000;
+				globalState.DMX_Brightness=document.getElementById("slider2").value/1000;
+				globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
+				globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
+				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log(xmlhttp.response.status)
+					setTimeout(function(){
+						saveState();
+					}, 400);
+				}
+			}
+			
+			function requestFullScreen() {
+				// Supports most browsers and their versions.
+				var element = document.body; // Make the body go full screen.
+				var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+			
+				if (requestMethod) { // Native full screen.
+					requestMethod.call(element);
+				} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+					var wscript = new ActiveXObject("WScript.Shell");
+					if (wscript !== null) {
+						wscript.SendKeys("{F11}");
+					}
+				}
+			}
+		</script>
+	</body>
+</html>
+
