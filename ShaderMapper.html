@@ -1132,8 +1132,10 @@ void main()	{
 				keyPressToSlider(event, "F", globalController, "Camera_X", -.01, gui.__folders.Global, function(){ camera.position.x=globalController.Camera_X*window.innerWidth/3; updateControlsValues(); } );
 				keyPressToSlider(event, "g", globalController, "Camera_Y", .01,  gui.__folders.Global, function(){ camera.position.y=globalController.Camera_Y*window.innerHeight/3; updateControlsValues(); } );
 				keyPressToSlider(event, "G", globalController, "Camera_Y", -.01, gui.__folders.Global, function(){ camera.position.y=globalController.Camera_Y*window.innerHeight/3; updateControlsValues(); } );
-				keyPressToSlider(event, "u", globalController, "Brightness", .1, gui.__folders.Global, function(){updateControlsValues(); } );
-				keyPressToSlider(event, "U", globalController, "Brightness", -.1, gui.__folders.Global, function(){updateControlsValues(); } );
+				keyPressToSlider(event, "u", globalController, "BrightnessA", .1, gui.__folders.Global, function(){updateControlsValues(); } );
+				keyPressToSlider(event, "U", globalController, "BrightnessA", -.1, gui.__folders.Global, function(){updateControlsValues(); } );
+				keyPressToSlider(event, "y", globalController, "BrightnessB", .1, gui.__folders.Global, function(){updateControlsValues(); } );
+				keyPressToSlider(event, "Y", globalController, "BrightnessB", -.1, gui.__folders.Global, function(){updateControlsValues(); } );
 				if(event.key=='"'){
 					rebootPi();
 				}
