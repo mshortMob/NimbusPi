@@ -335,7 +335,7 @@ void main()	{
 					"mousey": { value: 0.0 },
 					"audioVolume": { value: 0.0 },
 					"maskTexture": { value: imgTexture },
-					"brightness": { value: globalController.Brightness }
+					"brightness": { value: globalController.BrightnessA }
 				};
 				uniforms2 = {
 					"time": { value: 1.0 },
@@ -344,7 +344,7 @@ void main()	{
 					"mousey": { value: 0.0 },
 					"audioVolume": { value: 0.0 },
 					"maskTexture": { value: imgTexture2 },
-					"brightness": { value: globalController.Brightness }
+					"brightness": { value: globalController.BrightnessB }
 				};
 				// uniforms1[ "maskTexture" ].value.wrapS = uniforms1[ "maskTexture" ].value.wrapT = THREE.MirroredRepeatWrapping;
 				materialsList=initShaderMaterial(uniforms1);
@@ -398,7 +398,8 @@ void main()	{
 					VolumeThreshold:.003,
 					Camera_X:0.0,
 					Camera_Y:0.0,
-					Brightness:1.0,
+					BrightnessA:1.0,
+					BrightnessB:1.0,
 				}
 				objectController  = {
 					 Visible:false,
@@ -422,10 +423,11 @@ void main()	{
 				globalFolder.add(globalController, "ShaderB", 1, 11, 1 ).onChange(function(){globalController.ShaderB=parseInt(globalController.ShaderB);loadShaderPreset(2);updateControlsValues();});								
 				globalFolder.add(globalController, "MaskA", 1, 3, 1 ).onChange(function(){globalController.MaskA=parseInt(globalController.MaskA); changeMask(1); updateControlsValues();});				
 				globalFolder.add(globalController, "MaskB", 1, 3, 1 ).onChange(function(){globalController.MaskB=parseInt(globalController.MaskB); changeMask(2); updateControlsValues();});
+				globalFolder.add( globalController, "BrightnessA", 0.0,1.0,.001 ).onChange(function(){updateControlsValues();});			
+				globalFolder.add( globalController, "BrightnessB", 0.0,1.0,.001 ).onChange(function(){updateControlsValues();});	
 				globalFolder.add( globalController, "VolumeThreshold", .0001,.1,.0001 ).onChange(function(){updateControlsValues();});	
 				globalFolder.add( globalController, "Camera_X", -1.0,1.0,.001 ).onChange(function(){camera.position.x=globalController.Camera_X*window.innerWidth/3; updateControlsValues();});
-				globalFolder.add( globalController, "Camera_Y", -1.0,1.0,.001 ).onChange(function(){camera.position.y=globalController.Camera_Y*window.innerHeight/3; updateControlsValues();});			
-				globalFolder.add( globalController, "Brightness", 0.0,1.0,.001 ).onChange(function(){updateControlsValues();});			
+				globalFolder.add( globalController, "Camera_Y", -1.0,1.0,.001 ).onChange(function(){camera.position.y=globalController.Camera_Y*window.innerHeight/3; updateControlsValues();});		
 				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
 				controlsFolder.add( objectController, "Visible", true ).onChange(function(){updateControlsValues();syncObjectsToJson();});	
@@ -834,8 +836,8 @@ void main()	{
 			function render() {
 				uniforms1[ "time" ].value += .01 * 5;
 				uniforms2[ "time" ].value += .01 * 5;
-				uniforms1[ "brightness" ].value=globalController.Brightness;
-				uniforms2[ "brightness" ].value=globalController.Brightness;
+				uniforms1[ "brightness" ].value=globalController.BrightnessA;
+				uniforms2[ "brightness" ].value=globalController.BrightnessB;
 				for(var x=0;x<displayObjects.length;x++){
 					displayObjects[x].material.transparent=true
 					displayObjects[x].material.needsUpdate=true

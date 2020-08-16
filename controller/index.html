@@ -82,7 +82,7 @@
 				width: 80%;
 				left:20%;
 				display:inline;
-				height: 25%;
+				height: 20%;
 				position:absolute;
 				outline: none;
 				opacity: 1;
@@ -94,7 +94,7 @@
 			}
 			.sliderLabel{
 				border:2.5px solid grey;
-				height:24%;
+				height:19%;
 				width:20%;
 				background-color: black;
 				z-index: 19;
@@ -136,14 +136,16 @@
 		<div class="sectionLabel" id="sectionLabelC" style="top:59%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
 		<div class="sectionLabel" id="sectionLabelD" style="top:59%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
 		<div class="slider-container" id="slider-container">
-			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">Shaders Level</span></div>
-			<input type="range" min="0" max="1000" value="50" class="slider" id="slider1" style="top:0%">		
-			<div class="sliderLabel" style="top:25%"><span style="position:relative; top:35%;height:50%;">DMX Level</span></div>
-			<input type="range" min="0" max="1000" value="50" class="slider" id="slider2" style="top:25%">		
-			<div class="sliderLabel"  style="top:50%"><span style="position:relative; top:35%;height:50%;">DMX Speed</span></div>
-			<input type="range" min="0" max="4000" value="50" class="slider" id="slider3" style="top:50%">		
-			<div class="sliderLabel"  style="top:75%"><span style="font-size: .85em;position:relative; top:35%;height:50%;">Volume Threshold</span></div>
-			<input type="range" min="1" max="100" value="50" class="slider" id="slider4" style="top:75%">		
+			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">ShaderA Level</span></div>
+			<input type="range" min="0" max="1000" value="50" class="slider" id="slider1a" style="top:0%">
+			<div class="sliderLabel" style="top:20%"><span style="position:relative; top:35%;height:50%;">ShaderB Level</span></div>
+			<input type="range" min="0" max="1000" value="50" class="slider" id="slider1b" style="top:20%">		
+			<div class="sliderLabel" style="top:40%"><span style="position:relative; top:35%;height:50%;">DMX Level</span></div>
+			<input type="range" min="0" max="1000" value="50" class="slider" id="slider2" style="top:40%">		
+			<div class="sliderLabel"  style="top:60%"><span style="position:relative; top:35%;height:50%;">DMX Speed</span></div>
+			<input type="range" min="0" max="4000" value="50" class="slider" id="slider3" style="top:60%">		
+			<div class="sliderLabel"  style="top:80%"><span style="font-size: .85em;position:relative; top:35%;height:50%;">Volume Threshold</span></div>
+			<input type="range" min="1" max="100" value="50" class="slider" id="slider4" style="top:80%">		
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<!-- <div class="presets-grid-container" id="presets-grid-container"></div> -->
@@ -293,7 +295,8 @@
 					createGrid("B");
 					createDMXGrid();
 					// createPresetsGrid();
-					document.getElementById("slider1").value=globalState.Brightness*1000;
+					document.getElementById("slider1a").value=globalState.BrightnessA*1000;
+					document.getElementById("slider1b").value=globalState.BrightnessB*1000;
 					document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
 					document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
 					document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
@@ -302,7 +305,8 @@
 			}	
 		
 			function saveState(){
-				globalState.Brightness=document.getElementById("slider1").value/1000;
+				globalState.BrightnessA=document.getElementById("slider1a").value/1000;
+				globalState.BrightnessB=document.getElementById("slider1b").value/1000;
 				globalState.DMX_Brightness=document.getElementById("slider2").value/1000;
 				globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
 				globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
