@@ -24,7 +24,7 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/static/Nim
 
 ## Usage Instructions
 
-![NimbusPi User Guide](http://www.nimbuslaboratory.com/static/NimbusPi/NimbusPi%20User%20Guide_v3.jpg) 
+![NimbusPi User Guide](http://www.nimbuslaboratory.com/static/NimbusPi/NimbusPi%20User%20Guide_v4.jpg) 
 
 ### DMX/ArtNet/Wifi Details
 
