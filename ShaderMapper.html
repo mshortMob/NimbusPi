@@ -463,7 +463,32 @@ void main()	{
 			function initSlaveMode(){
 				if(slaveModeInterval==-1){
 					console.log("starting slaveModeInterval");
-					slaveModeInterval=setInterval(function(){recallState();},  400);
+					slaveModeInterval=setInterval(function(){getControllerData();getCurrentPresetNumber();},  200);
+				}
+			}
+
+			function getControllerData(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					statesArray=JSON.parse(xmlhttp.response).storage
+					globalState=JSON.parse(xmlhttp.response).global
+					// presetsArray=JSON.parse(xmlhttp.response).storage2
+					updateControlsView();
+					syncObjectsToJson(true);
+					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
+				}
+			}
+
+			function getCurrentPresetNumber(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					globalState.PresetName="GlobalPreset"+parseInt(xmlhttp.response);
+					globalController.PresetName="GlobalPreset"+parseInt(xmlhttp.response);
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 				}
 			}
 

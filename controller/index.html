@@ -13,7 +13,7 @@
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
-				height:44%;
+				height:39%;
 				top:5%;
 				position:absolute;
 			}
@@ -23,8 +23,8 @@
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
-				height:8%;
-				top:49.8%;
+				height:6%;
+				top:42.8%;
 				position:absolute;
 			}
 			.dmx-grid-container{
@@ -33,7 +33,7 @@
 				background-color: #777777;
 				width:49.0%;
 				height:32%;
-				top:65%;
+				top:56%;
 				position:absolute;
 				border:5px solid grey;
 				margin:0px;
@@ -42,7 +42,7 @@
 			}
 			.presets-grid-container{
 				display: grid;
-				grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+				grid-template-columns: auto auto auto auto auto auto auto auto auto;
 				background-color: #777777;
 				width:98.75%;
 				height:9%;
@@ -51,7 +51,7 @@
 				border:5px solid grey;
 				margin:0px;
 				padding:0px;
-				left:0.25%;
+				left:.25%;
 			}
 			.grid-item:hover{
 				background-color: rgba(150, 150, 200, 0.8);
@@ -70,7 +70,7 @@
 				background-color: darkgrey;
 				width:49.0%;
 				height:32%;
-				top:65%;
+				top:56%;
 				position:absolute;
 				border:5px solid grey;
 				margin:0px;
@@ -133,8 +133,8 @@
 		<div class="grid-container" id="grid-container-B"></div>
 		<div class="mask-container" id="mask-container-A"></div>
 		<div class="mask-container" id="mask-container-B"></div>
-		<div class="sectionLabel" id="sectionLabelC" style="top:59%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
-		<div class="sectionLabel" id="sectionLabelD" style="top:59%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
+		<div class="sectionLabel" id="sectionLabelC" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
+		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
 		<div class="slider-container" id="slider-container">
 			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">ShaderA Level</span></div>
 			<input type="range" min="0" max="1000" value="50" class="slider" id="slider1a" style="top:0%">
@@ -148,10 +148,26 @@
 			<input type="range" min="1" max="100" value="50" class="slider" id="slider4" style="top:80%">		
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
-		<!-- <div class="presets-grid-container" id="presets-grid-container"></div> -->
+		<div class="presets-grid-container" id="presets-grid-container"></div>
 		<script>
 
-			recallState();
+			initDone=false;
+			isMidPresetChange=false;
+			getCurrentPresetNumber();
+
+			function init(){
+				createGrid("A");
+					createGrid("B");
+					createDMXGrid();
+					createPresetsGrid();
+					document.getElementById("slider1a").value=globalState.BrightnessA*1000;
+					document.getElementById("slider1b").value=globalState.BrightnessB*1000;
+					document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
+					document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
+					document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
+					initDone=true;
+					saveState();
+			}
 
 			function createGrid(deck){
 				if(deck=="A"){
@@ -222,30 +238,32 @@
 			}
 			
 			function createPresetsGrid(){
-				var gridContainer=document.getElementById("presets-grid-container")
-				for(var x=1; x<=10; x++){
+				var presetGridContainer=document.getElementById("presets-grid-container")
+				var labelItem=document.createElement('button');
+				labelItem.id="presetGridLabel"
+				labelItem.style.borderColor="grey";
+				labelItem.style.backgroundColor="black";
+				labelItem.innerHTML="Global Presets";
+				labelItem.style.color="white";
+				labelItem.style.fontSize=".5em";
+				presetGridContainer.appendChild(labelItem);
+				for(var x=1; x<=8; x++){
 					var gridItem=document.createElement('button')
 					gridItem.id="PresetsGridItem"+x;
-					gridItem.dmxPatternNumber=x;
+					gridItem.presetNumber=x;
 					gridItem.style.borderColor="grey";
-					gridItem.style.backgroundColor="black";
+					gridItem.innerHTML=x;
+					if(currentPresetNumber==x){
+						gridItem.style.backgroundColor="grey"
+					}else{
+						gridItem.style.backgroundColor="black"
+					}
 					gridItem.style.color="white";
 					gridItem.style.fontSize=".5em";
 					gridItem.class="grid-item";
-					gridItem.onclick=function(){selectShader(this.dmxPatternNumber)};
-					if(x==1){
-						gridItem.innerHTML="Save Preset";
-					}else if(x==2){
-						gridItem.innerHTML="Recal Preset";
-					}else{
-						gridItem.innerHTML=parseInt(x-2);
-					}
-					if(parseInt(globalState.dmxPatternNumber)==x){
-						gridItem.style.opacity=".2"
-					}else{
-						gridItem.style.opacity="1.0"
-					}
-					gridContainer.appendChild(gridItem);
+					gridItem.onclick=function(){selectGlobalPreset(this.presetNumber)};
+					gridItem.innerHTML=parseInt(x);
+					presetGridContainer.appendChild(gridItem);
 				}
 			}
 
@@ -284,23 +302,58 @@
 				globalState.DMX_Pattern=dmxPatternNumber;
 			}
 		
+			function setCurrentPresetNumber(presetNumber){
+				var requestBody=parseInt(presetNumber);
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Changed current preset number")
+				}
+			}
+
+			function selectGlobalPreset(presetNumber){
+				currentPresetNumber=presetNumber;
+				isMidPresetChange=true;
+				recallState();
+				for(var x=1; x<=8; x++){
+					if(parseInt(presetNumber)==x){
+						document.getElementById("PresetsGridItem"+x).style.backgroundColor="grey"
+						console.log("Setting currentPreset to: "+parseInt(presetNumber));
+						setCurrentPresetNumber(parseInt(presetNumber));
+					}else{
+						document.getElementById("PresetsGridItem"+x).style.backgroundColor="black"
+					}
+				}
+			}
+			
+			function getCurrentPresetNumber(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					currentPresetNumber=parseInt(xmlhttp.response);
+					if(initDone==false){
+						recallState();
+					}
+				}
+			}
+
 			function recallState(){
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+"GlobalPreset"+currentPresetNumber+".txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
 					statesArray=JSON.parse(xmlhttp.response).storage;
 					globalState=JSON.parse(xmlhttp.response).global;
-					createGrid("A");
-					createGrid("B");
-					createDMXGrid();
-					// createPresetsGrid();
-					document.getElementById("slider1a").value=globalState.BrightnessA*1000;
-					document.getElementById("slider1b").value=globalState.BrightnessB*1000;
-					document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
-					document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
-					document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
-					saveState();
+					if(initDone==false){
+						init();
+					}
+					if(isMidPresetChange==true){
+						isMidPresetChange=false;
+						updateView();
+						saveState();
+					}
 				}
 			}	
 		
@@ -312,13 +365,15 @@
 				globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
 				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+"GlobalPreset1"+".txt", true);
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+"GlobalPreset"+currentPresetNumber+".txt", true);
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){
 					console.log(xmlhttp.response.status)
-					setTimeout(function(){
-						saveState();
-					}, 400);
+					if(isMidPresetChange==false){
+						setTimeout(function(){
+							saveState();
+						}, 200);
+					}
 				}
 			}
 			
@@ -335,6 +390,49 @@
 						wscript.SendKeys("{F11}");
 					}
 				}
+			}
+		
+			function updateView(){
+				for(var x=1; x<=32; x++){
+					if(parseInt(globalState.ShaderA)==x){
+						document.getElementById("GridItem"+x+"_DeckA").style.opacity=".2"
+					}else{
+						document.getElementById("GridItem"+x+"_DeckA").style.opacity="1.0"
+					}
+				}
+				for(var x=1; x<=32; x++){
+					if(parseInt(globalState.ShaderB)==x){
+						document.getElementById("GridItem"+x+"_DeckB").style.opacity=".2"
+					}else{
+						document.getElementById("GridItem"+x+"_DeckB").style.opacity="1.0"
+					}
+				}
+				for(var x=1; x<=6; x++){
+					if(parseInt(globalState.MaskA)==x){
+						document.getElementById("MaskItem"+x+"_DeckA").style.opacity=".2"
+					}else{
+						document.getElementById("MaskItem"+x+"_DeckA").style.opacity="1.0"
+					}
+				}
+				for(var x=1; x<=6; x++){
+					if(parseInt(globalState.MaskB)==x){
+						document.getElementById("MaskItem"+x+"_DeckB").style.opacity=".2"
+					}else{
+						document.getElementById("MaskItem"+x+"_DeckB").style.opacity="1.0"
+					}
+				}
+				for(var x=1; x<=16; x++){
+					if(parseInt(globalState.DMX_Pattern)==x){
+						document.getElementById("DMXGridItem"+x).style.backgroundColor="darkgrey"
+					}else{
+						document.getElementById("DMXGridItem"+x).style.backgroundColor="grey"
+					}
+				}
+				document.getElementById("slider1a").value=globalState.BrightnessA*1000;
+				document.getElementById("slider1b").value=globalState.BrightnessB*1000;
+				document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
+				document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
+				document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
 			}
 		</script>
 	</body>
