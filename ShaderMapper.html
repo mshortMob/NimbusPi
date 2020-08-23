@@ -1129,6 +1129,7 @@ void main()	{
 					globalController.PresetName="GlobalPreset5";
 					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					saveState();
+					clonePreset5(6);
 				}
 				if(event.key=="5"){
 					globalController.PresetName="GlobalPreset5";
@@ -1175,6 +1176,18 @@ void main()	{
 				}
 				if(event.key==":"){
 					initSlaveMode();
+				}
+			}
+
+			function clonePreset5(destinationPresetNumber){
+				if(destinationPresetNumber<9){
+					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("POST", "php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
+					xmlhttp.send(requestBody);
+					xmlhttp.onload = function(e){
+						clonePreset5(destinationPresetNumber+1);
+					}
 				}
 			}
 
