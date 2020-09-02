@@ -1,0 +1,865 @@
+<html>
+	<head>
+		<title>OrbitMapper</title>
+		<style>
+			body{
+			    margin:0px;
+				background-color:black;
+			}	
+		</style>
+	</head>
+	<body>
+		<script src="dependancies/three.js"></script>
+		<script src='dependancies/dat.gui.min.js'></script>
+		<script src="dependancies/Detector.js"></script>
+		<script src="dependancies/NURBSSurface.js"></script>
+		<script src="dependancies/NURBSUtils.js"></script>
+		<script src="dependancies/TrackballControls.js"></script>
+		<script>
+			initGlobalVars();
+			function initGlobalVars(){
+				selectedVertice=0;
+				bufferScene = new THREE.Scene();
+				bufferTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { side:THREE.DoubleSide, minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter});						    
+			    bufferScene.scale.x=1.2;
+			    bufferScene.scale.y=1.2;
+				PICKED=false;
+				addControls();			
+				points=[];
+				container=null;
+				camera=null;
+				controls=null;
+				scene=null;
+				renderer=null;
+				objects = [];
+				displayObjects=[];
+				plane = new THREE.Plane();
+				raycaster = new THREE.Raycaster();
+				mouse = new THREE.Vector2();
+				offset = new THREE.Vector3();
+				intersection = new THREE.Vector3();
+				INTERSECTED=null;
+				SELECTED=null;
+				SCALE_FACTOR = 800;
+				initScene();
+				statesArray=[];
+				for(var x=0;x<4;x++){
+					var objectJSON ={}
+					for (var key in mappingController) {
+						objectJSON[key]=mappingController[key]
+					}
+					statesArray.push(objectJSON)
+				}
+				for(var y=0;y<4;y++){
+					addObject();
+				}
+				if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
+				VISUALS_VISIBLE = true;
+				SCALE_FACTOR = 800;
+				camera3_BOUND = 200;
+				NUM_POINTS_SUBSET = 2000;
+				NUM_SUBSETS       = 7;
+				NUM_POINTS = NUM_POINTS_SUBSET * NUM_SUBSETS;
+				NUM_LEVELS = 7;
+				LEVEL_DEPTH = 300;
+				DEF_BRIGHTNESS = .07;
+				DEF_SATURATION = 0.999;
+				SPRITE_SIZE = 20;
+				// Orbit parameters constraints
+				A_MIN = -30;
+				A_MAX = 30;
+				B_MIN = .2;
+				B_MAX = 1.8;
+				C_MIN = 5;
+				C_MAX = 17;
+				D_MIN = 0;
+				D_MAX = 10;
+				E_MIN = 0;
+				E_MAX = 12;
+				// Orbit parameters
+				a=0;
+				b=0;
+				c=0;
+				d=0;
+				e=0;
+				// Orbit data
+				orbit = {
+					subsets: [],
+					xMin: 0,
+					xMax: 0,
+					yMin: 0,
+					yMax: 0,
+					scaleX: 0,
+					scaleY: 0
+				}
+				// Initialize data points
+				for (var i = 0; i < NUM_SUBSETS; i++){
+					subsetPoints = [];
+					for (var j = 0; j < NUM_POINTS_SUBSET; j++){
+						subsetPoints[j] = {
+							x: 0,
+							y: 0, 
+							vertex:  new THREE.Vector3(new THREE.Vector3(0,0,0))
+						};
+					}
+					orbit.subsets.push(subsetPoints);
+				}           
+				container3=null;
+				composer = [];
+				hueValues = [];
+				mouseX = 0
+				mouseY = 0;
+				windowHalfX = window.innerWidth / 2;
+				windowHalfY = window.innerHeight / 2;
+				speed = 6;
+				rotationSpeed = 0.000;
+				initOrbit();
+				animate();
+				setTimeout(function(){
+					recallState();
+				},100);
+				highlightSelectedVertice();
+			}
+			
+			function initScene() {
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+				frustumSize = 1000;
+				var aspect = window.innerWidth / window.innerHeight;
+				camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 0, 10000 );
+				camera.position.z = -1000;
+				camera3 = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 3 * SCALE_FACTOR );
+				camera3.position.z = SCALE_FACTOR/2;
+				controls = new THREE.TrackballControls( camera , container);
+				controls.enabled=false;
+				scene = new THREE.Scene();
+				LIGHTING=new THREE.AmbientLight( 0xffffff ) 
+				scene.add( LIGHTING );
+				LIGHTING3=new THREE.AmbientLight( 0xffffff ) 
+				bufferScene.add( LIGHTING3 );
+				renderer = new THREE.WebGLRenderer( { antialias: true , alpha:true} );
+				renderer.setClearColor( 0x000000 , 1);
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.sortObjects = false;
+				container.appendChild( renderer.domElement );
+				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
+				renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
+				window.addEventListener("keypress", keyHandler);
+				//renderer.domElement.addEventListener( 'touchmove', onDocumentMouseMove, false );
+				//renderer.domElement.addEventListener( 'touchstart', onDocumentMouseDown, false );
+				//renderer.domElement.addEventListener( 'touchend', onDocumentMouseUp, false );
+				window.addEventListener( 'resize', onWindowResize, false );
+				tempElem=document.body.getElementsByClassName('ac')[0];
+				tempElem.className="";
+				tempElem.style.zIndex='10000000'
+				tempElem.style.position='fixed'
+				tempElem.style.right='0px';
+				matNumGlobal=0;			}
+				
+			function addControls(){
+				globalController  = {
+					 selectedObject:0,
+					 PresetName:"OrbitMapperPreset1",
+				}
+				mappingController  = {
+					 Visible:false,
+					 ZValue:0,
+					 Image:0
+				};
+				var count=0; 
+				for(var y=0; y<5;y++){
+					for(var x=4; x>-1;x--){
+						mappingController["VerticeX"+count]=-200+100*x;
+						mappingController["VerticeY"+count]=-200+100*y;
+						count=count+1;
+					}
+				}
+				gui = new dat.GUI();
+				gui.close();
+				globalFolder=gui.addFolder( "Global" )
+				globalFolder.open();
+				globalFolder.add(globalController, "selectedObject", 0, 3, 1 ).onChange(function(){globalController.selectedObject=parseInt(globalController.selectedObject);updateControlsView();syncObjectsToJson();});
+				globalFolder.add({ 'ChangeOrbit':function(){ bufferScene.children=[bufferScene.children[0]];initOrbit(); }},'ChangeOrbit');
+				gui.width=360;
+				controlsFolder=gui.addFolder( "ObjectControls" )
+				controlsFolder.open();
+				controlsFolder.add( mappingController, "Visible", true ).onChange(function(){updateControlsValues();syncObjectsToJson();});	
+				controlsFolder.add( mappingController, "ZValue", -20, 20, 1 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
+				utilsFolder=gui.addFolder( "Utils" )
+				utilsFolder.open();
+				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
+				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');	
+				utilsFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
+				utilsFolder.add({ 'Recall Preset':function(){ recallState() }},'Recall Preset');
+				utilsFolder.add({ 'FlowMapper':function(){ window.location.replace("http://"+location.hostname+"/FlowMapper.html"); }},'FlowMapper');
+				utilsFolder.add({ 'ShaderMapper':function(){ window.location.replace("http://"+location.hostname+"/ShaderMapper.html"); }},'ShaderMapper');
+				// utilsFolder.add(globalController, 'PresetName').onChange(function(){});
+			}
+									
+			function updateControlsView(){
+				for (var i in gui.__folders.ObjectControls.__controllers) {
+					//mappingController[i]=statesArray[globalController.selectedScene].objects[globalController.selectedObject]
+				  mappingController[gui.__folders.ObjectControls.__controllers[i].property]=statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property];
+
+					gui.__folders.ObjectControls.__controllers[i].updateDisplay();
+				}
+			}
+			
+			function updateControlsValues(){  
+				for (var i in gui.__folders.ObjectControls.__controllers) {
+				  statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property]=mappingController[gui.__folders.ObjectControls.__controllers[i].property];
+				}
+			}
+			
+			function syncObjectsToJson(){
+				for(var x=0;x<displayObjects.length;x++){
+					displayObjects[x].setState(statesArray[x])
+					displayObjects[x].hideChildren();
+				}
+				displayObjects[globalController.selectedObject].showChildren();
+				//changeImageBank();
+			}
+			
+			function addObject(){
+			  function createGeometry(u,v){
+					nsControlPoints = [
+						 [
+							 new THREE.Vector4 ( -200, -200, 0, 1 ),
+							 new THREE.Vector4 ( -200, -100, 0, 1 ),
+							 new THREE.Vector4 ( -200, 100, 0, 1 ),
+							 new THREE.Vector4 ( -200, 200, 0, 1 )
+						 ],
+						 [
+							 new THREE.Vector4 ( 0, -200, 0, 1 ),
+							 new THREE.Vector4 ( 0, -100, 0, 1 ),
+							 new THREE.Vector4 ( 0, 100, 0, 1 ),
+							 new THREE.Vector4 ( 0, 200, 0, 1 )
+						 ],
+						 [
+							 new THREE.Vector4 ( 200, -200, 0, 1 ),
+							 new THREE.Vector4 ( 200, -100, 0, 1 ),
+							 new THREE.Vector4 ( 200, 100, 0, 1 ),
+							 new THREE.Vector4 ( 200, 200, 0, 1 )
+						 ]
+					 ];
+					 degree1 = 2;
+					 degree2 = 3;
+					 knots1 = [0, 0, 0, 1, 1, 1];
+					 knots2 = [0, 0, 0, 0, 1, 1, 1, 1];
+					 nurbsSurface = new THREE.NURBSSurface(degree1, degree2, knots1, knots2, nsControlPoints);
+					 return nurbsSurface.getPoint(u, v);		
+			  }
+			  function createObject(){
+				var geometry = new THREE.ParametricGeometry( createGeometry, 4, 4 );			  			
+				var material = new THREE.MeshLambertMaterial({map : bufferTexture.texture , morphTargets: true, side: THREE.DoubleSide, transparent:true})
+				var object = new THREE.Mesh( geometry, material);				
+				object.imageNum=0;
+				return object;
+			  }
+			  var object = createObject();
+			  object.showChildren=function(){
+				for(var x=0; x<object.children.length ;x++){
+					if (object.children[x].isCorner==true) {
+						object.children[x].visible=true;
+						object.updatecorners;
+					}
+				}					
+			  }
+			  object.hideChildren=function(){
+				for(var x=object.children.length-1;x>=0 ;x--){
+						object.children[x].visible=false;			
+				}
+			  }
+			  object.drawV=function(){
+				for(var x=0; x<object.geometry.vertices.length ; x++ ){
+					//var  geo = new THREE.BoxGeometry( 35, 35, 0 );
+					//var mat = new THREE.PointsMaterial( { size: 300, vertexColors: THREE.VertexColors , color: 0xffffff } );
+					//var mesh1 = new THREE.Mesh( geo, mat );
+					mesh1 = new THREE.Mesh( new THREE.CircleGeometry(15, 15, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}))
+					mesh1.name="vertice"+x;
+					mesh1.isCorner=false;
+					if (x == 0 || x == 4 || x == 24 || x == 20) {
+						mesh1.isCorner=true;
+					}
+					mesh1.vertNum=x;
+					mesh1.position.x=object.geometry.vertices[x].x;
+					mesh1.position.y=object.geometry.vertices[x].y;
+					mesh1.position.z=-5;
+					object.add(mesh1)
+					objects.push(mesh1)
+				}
+			  }
+			  object.setState=function(savedJSON){
+				object.visible=savedJSON.Visible;
+				object.position.z= savedJSON.ZValue
+				for(var x=0;x<object.geometry.vertices.length;x++){
+					object.geometry.vertices[x].x=savedJSON["VerticeX"+x]
+					object.geometry.vertices[x].y=savedJSON["VerticeY"+x]
+					object.children[x].position.x=savedJSON["VerticeX"+x]
+					object.children[x].position.y=savedJSON["VerticeY"+x]
+				}
+				object.geometry.verticesNeedUpdate = true;
+				object.imageNum=parseInt(savedJSON.Image)
+			  }
+			  object.setImage=function(savedJSON){
+			  	object.imageNum=parseInt(savedJSON)
+			  	if(globalController.Warning=="warn1"){
+			  		 //object.material.map=videoTextures[numberOfVideos]
+			  	}else if (globalController.Warning=="warn2"){
+			  		 //object.material.map=videoTextures[numberOfVideos+1]					
+				}else{
+					//object.material.map=videoTextures[object.imageNum]
+				}	
+			  }		  
+			  object.updateCorners=function(){
+					var cornerNum=[];
+					cornerNum[0]=0;
+					cornerNum[1]=Math.sqrt(object.geometry.vertices.length)-1
+					cornerNum[2]=object.geometry.vertices.length-1-(Math.sqrt(object.geometry.vertices.length)-1)
+					cornerNum[3]=object.geometry.vertices.length-1
+					var x1 = object.geometry.vertices[cornerNum[0]].x
+					var y1 = object.geometry.vertices[cornerNum[0]].y
+					var x2 = object.geometry.vertices[cornerNum[1]].x
+					var y2 = object.geometry.vertices[cornerNum[1]].y
+					var x3 = object.geometry.vertices[cornerNum[2]].x
+					var y3 = object.geometry.vertices[cornerNum[2]].y
+					var x4 = object.geometry.vertices[cornerNum[3]].x
+					var y4 = object.geometry.vertices[cornerNum[3]].y
+					var xDiff1=(x2-x1)/(Math.sqrt(object.geometry.vertices.length)-1)
+					var yDiff1=(y2-y1)/(Math.sqrt(object.geometry.vertices.length)-1)
+					for(var x=0; x<Math.sqrt(object.geometry.vertices.length);x++){
+						 object.geometry.vertices[x].x=+object.geometry.vertices[0].x+xDiff1*x;
+						 object.geometry.vertices[x].y=object.geometry.vertices[0].y+yDiff1*x;
+					}
+					xDiff1=(x3-x1)/(Math.sqrt(object.geometry.vertices.length)-1)
+					yDiff1=(y3-y1)/(Math.sqrt(object.geometry.vertices.length)-1)
+					for(var x=0; x<Math.sqrt(object.geometry.vertices.length);x++){
+						 object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length))*x].x=+object.geometry.vertices[0].x+xDiff1*x;
+						 object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length))*x].y=object.geometry.vertices[0].y+yDiff1*x;
+					}
+					xDiff1=(x4-x3)/(Math.sqrt(object.geometry.vertices.length)-1)
+					yDiff1=(y4-y3)/(Math.sqrt(object.geometry.vertices.length)-1)
+					for(var x=object.geometry.vertices.length-1; x>object.geometry.vertices.length-Math.sqrt(object.geometry.vertices.length);x--){
+						 object.geometry.vertices[x].x=object.geometry.vertices[object.geometry.vertices.length-1].x+xDiff1*(x-(object.geometry.vertices.length-1));
+						 object.geometry.vertices[x].y=object.geometry.vertices[object.geometry.vertices.length-1].y+yDiff1*(x-(object.geometry.vertices.length-1));
+					}
+					xDiff1=(x4-x2)/(Math.sqrt(object.geometry.vertices.length)-1)
+					yDiff1=(y4-y2)/(Math.sqrt(object.geometry.vertices.length)-1)
+					for(var x=0; x<Math.sqrt(object.geometry.vertices.length);x++){
+						 object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length))*x+Math.sqrt(object.geometry.vertices.length)-1].x=object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length)-1)].x+xDiff1*(x);
+						 object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length))*x+Math.sqrt(object.geometry.vertices.length)-1].y=object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length)-1)].y+yDiff1*(x);
+					}
+					var sqrt=(Math.sqrt(object.geometry.vertices.length))
+					var numOfMiddleRows=(Math.sqrt(object.geometry.vertices.length)-2)
+					for(var rowNum = 1; rowNum < (Math.sqrt(object.geometry.vertices.length)-1) ; rowNum ++){
+						 var x1 = object.geometry.vertices[rowNum*sqrt].x
+						 var y1 = object.geometry.vertices[rowNum*sqrt].y
+						 var x2 = object.geometry.vertices[rowNum*sqrt+(sqrt-1)].x
+						 var y2 = object.geometry.vertices[rowNum*sqrt+(sqrt-1)].y
+						 xDiff1=(x2-x1)/(Math.sqrt(object.geometry.vertices.length)-1)
+						 yDiff1=(y2-y1)/(Math.sqrt(object.geometry.vertices.length)-1)
+						 for(var x=0; x<(Math.sqrt(object.geometry.vertices.length)-1) ; x++ ){
+							  object.geometry.vertices[rowNum*sqrt+x].x= x1+xDiff1*x;
+							  object.geometry.vertices[rowNum*sqrt+x].y= y1+yDiff1*x;
+						 }
+					}
+					
+					object.geometry.verticesNeedUpdate = true;
+					//object.drawV()
+					for(var x=0;x<object.geometry.vertices.length;x++){
+						mappingController["VerticeX"+x]=object.geometry.vertices[x].x;
+						mappingController["VerticeY"+x]=object.geometry.vertices[x].y;
+					}
+					for(var x=0;x<object.children.length;x++){
+						if(object.children[x].name.indexOf("vertice"!=0)){
+							object.children[x].position.x=object.geometry.vertices[x].x;
+							object.children[x].position.y=object.geometry.vertices[x].y;
+							statesArray[globalController.selectedObject]["VerticeX"+x]=object.geometry.vertices[x].x;
+							statesArray[globalController.selectedObject]["VerticeY"+x]=object.geometry.vertices[x].y;
+						}		
+					}
+					updateControlsValues();
+					//updateControlsView();
+			  }
+			  object.drawV();
+			  object.visible=false;
+			  scene.add(object);
+			  displayObjects.push(object);
+			}
+									
+			function onWindowResize() {
+				var aspect = window.innerWidth / window.innerHeight;
+				camera.left   = - frustumSize * aspect / 2;
+				camera.right  =   frustumSize * aspect / 2;
+				camera.top    =   frustumSize / 2;
+				camera.bottom = - frustumSize / 2;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			
+			function onDocumentMouseMove( event ) {
+				if (SELECTED) {
+					if (SELECTED.isCorner==true) {
+						SELECTED.parent.updateCorners();
+					}
+				}
+				mouse.x = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
+				raycaster.setFromCamera( mouse, camera );
+				if ( SELECTED ) {
+					
+					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+						    console.log(SELECTED.name)
+							SELECTED.position.copy(intersection.sub( offset ));
+							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
+							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
+							SELECTED.parent.geometry.verticesNeedUpdate = true;
+							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+						}
+					}
+					//SELECTED=null;
+					return;
+				}
+				var intersects = raycaster.intersectObjects( objects);
+				if ( intersects.length > 0 ) {
+					if ( INTERSECTED != intersects[ 0 ].object ) {
+						//if ( INTERSECTED ) INTERSECTED.uniforms[0].material.color.setHex( INTERSECTED.currentHex );
+						INTERSECTED = intersects[ 0 ].object;
+						//INTERSECTED.currentHex = INTERSECTED.uniforms[0].material.color.getHex();
+						plane.setFromNormalAndCoplanarPoint(
+							camera.getWorldDirection( plane.normal ),
+							INTERSECTED.position );
+					}
+					container.style.cursor = 'pointer';
+				} else {
+					//if ( INTERSECTED ) INTERSECTED.uniforms[0].material.color.setHex( INTERSECTED.currentHex );
+					INTERSECTED = null;
+					container.style.cursor = 'auto';
+				}
+			}
+			
+			function onDocumentMouseDown( event ) {
+				raycaster.setFromCamera( mouse, camera );
+				intersects = raycaster.intersectObjects( objects);
+				if ( intersects.length > 0 ) {
+					SELECTED = intersects[ 0 ].object;
+					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+						offset.copy( intersection ).sub( SELECTED.position );
+					}
+					container.style.cursor = 'move';
+				}
+				if (SELECTED) {
+					if (SELECTED.isCorner==true) {
+						// console.log(SELECTED)
+						SELECTED.parent.updateCorners();
+
+						var listOfCornerVertices=[4,0,20,24];
+						selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
+						// console.log("Selected Vertice:"+selectedVertice);
+						highlightSelectedVertice();
+					}
+				}
+			}
+			
+			function onDocumentMouseUp( event ) {
+				//event.preventDefault();
+				if (SELECTED) {
+					if (SELECTED.isCorner==true) {
+						SELECTED.parent.updateCorners();
+					}
+				}
+				SELECTED = null;
+				container.style.cursor = 'auto';
+			}
+
+			function keyHandler(event){
+				if(event.key=="<"){
+					if(globalController.selectedObject>0){
+						globalController.selectedObject=globalController.selectedObject-1;
+						updateControlsView();
+						gui.__folders.Global.__controllers[0].updateDisplay();
+						syncObjectsToJson();
+					}else{
+						globalController.selectedObject=3;
+						updateControlsView();
+						gui.__folders.Global.__controllers[0].updateDisplay();
+						syncObjectsToJson();
+					}
+				}
+				if(event.key==">"){
+					if(globalController.selectedObject<3){
+						globalController.selectedObject=globalController.selectedObject+1;
+						updateControlsView();
+						gui.__folders.Global.__controllers[0].updateDisplay();
+						syncObjectsToJson();
+					}else{
+						globalController.selectedObject=0;
+						updateControlsView();
+						gui.__folders.Global.__controllers[0].updateDisplay();
+						syncObjectsToJson();
+					}
+				}
+				if(event.key=="?"){
+					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ 
+						displayObjects[globalController.selectedObject].children[x].visible=false; 
+					};
+				}
+				if(event.key=="C"){
+					gui.close();
+				}
+				if(event.key=="c"){
+					gui.open();
+				}
+				if(event.key=="a"){
+					var listOfCornerVertices=[4,0,20,24];
+					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+1;
+					updateControlsView();
+					syncObjectsToJson();
+					displayObjects[globalController.selectedObject].updateCorners();
+				}
+				if(event.key=="s"){
+					var listOfCornerVertices=[4,0,20,24];
+					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-1;
+					updateControlsView();
+					syncObjectsToJson();
+					displayObjects[globalController.selectedObject].updateCorners();
+				}
+				if(event.key=="d"){
+					var listOfCornerVertices=[4,0,20,24];
+					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]-1;
+					updateControlsView();
+					syncObjectsToJson();
+					displayObjects[globalController.selectedObject].updateCorners();
+				}
+				if(event.key=="w"){
+					var listOfCornerVertices=[4,0,20,24];
+					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]+1;
+					updateControlsView();
+					syncObjectsToJson();
+					displayObjects[globalController.selectedObject].updateCorners();
+				}
+				if(event.key=="A"){
+					var listOfCornerVertices=[4,0,20,24];
+					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+40;
+					updateControlsView();
+					syncObjectsToJson();
+					displayObjects[globalController.selectedObject].updateCorners();
+				}
+				if(event.key=="S"){
+					var listOfCornerVertices=[4,0,20,24];
+					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-40;
+					updateControlsView();
+					syncObjectsToJson();
+					displayObjects[globalController.selectedObject].updateCorners();
+				}
+				if(event.key=="D"){
+					var listOfCornerVertices=[4,0,20,24];
+					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]-40;
+					updateControlsView();
+					syncObjectsToJson();
+					displayObjects[globalController.selectedObject].updateCorners();
+				}
+				if(event.key=="W"){
+					var listOfCornerVertices=[4,0,20,24];
+					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]+40;
+					updateControlsView();
+					syncObjectsToJson();
+					displayObjects[globalController.selectedObject].updateCorners();
+				}
+				if(event.key=="z"){
+					if(statesArray[globalController.selectedObject].ZValue>-20){
+						statesArray[globalController.selectedObject].ZValue=statesArray[globalController.selectedObject].ZValue-1;
+						updateControlsView();
+						syncObjectsToJson();
+					}
+				}
+				if(event.key=="Z"){
+					if(statesArray[globalController.selectedObject].ZValue<20){
+						statesArray[globalController.selectedObject].ZValue=statesArray[globalController.selectedObject].ZValue+1;
+						updateControlsView();
+						syncObjectsToJson();
+					}
+				}			
+				if(event.key=="v" || event.key=="V"){
+					statesArray[globalController.selectedObject].Visible=!statesArray[globalController.selectedObject].Visible;
+					updateControlsView();
+					syncObjectsToJson();
+				}
+				if(event.key=="," ){
+					if( (selectedVertice-1)>=0){
+						selectedVertice=selectedVertice-1;
+					}else{
+						selectedVertice=3;
+					}
+					highlightSelectedVertice();
+				}
+				if(event.key=="." ){
+					selectedVertice=(selectedVertice+1)%4;
+					highlightSelectedVertice();
+				}	
+				if(event.key=="!"){
+					// gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					saveState();
+				}
+				if(event.key=="1"){
+					// gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					recallState();
+				}	
+				if(event.key=='|'){
+					window.location.replace("http://"+location.hostname+"/ShaderMapper.html");
+				}		
+				if(event.key=='o'){
+					bufferScene.children=[bufferScene.children[0]];initOrbit();
+				}		
+			}
+
+			function animate() {
+				requestAnimationFrame( animate );
+				render();
+			}
+			
+			function render() {
+				if (camera3.position.x >= - camera3_BOUND && camera3.position.x <= camera3_BOUND){
+                camera3.position.x += ( mouseX - camera3.position.x ) * 0.05;
+                if (camera3.position.x < - camera3_BOUND) camera3.position.x = -camera3_BOUND;
+                if (camera3.position.x >  camera3_BOUND) camera3.position.x = camera3_BOUND;
+            }
+            	if (camera3.position.y >= - camera3_BOUND && camera3.position.y <= camera3_BOUND){
+                camera3.position.y += ( - mouseY - camera3.position.y ) * 0.05;
+                if (camera3.position.y < - camera3_BOUND) camera3.position.y = -camera3_BOUND;
+                if (camera3.position.y >  camera3_BOUND) camera3.position.y = camera3_BOUND;
+            }
+            	camera3.lookAt( bufferScene.position );
+				for( i = 0; i < bufferScene.children.length; i++ ) {
+					bufferScene.children[i].position.z +=  speed;
+					bufferScene.children[i].rotation.z += rotationSpeed;
+					if (bufferScene.children[i].position.z > camera3.position.z){
+						bufferScene.children[i].position.z = - (NUM_LEVELS -1) * LEVEL_DEPTH;
+						// if (bufferScene.children[i].needsUpdate == 1){
+						// 	// bufferScene.children[i].geometry.__dirtyVertices = true;   
+						// 	bufferScene.children[i].material.color.setHSL( hueValues[bufferScene.children[i].mySubset], DEF_SATURATION, DEF_BRIGHTNESS);
+						// 	bufferScene.children[i].needsUpdate = 0;
+						// }
+					}
+				}
+				renderer.render(bufferScene,camera3,bufferTexture);
+				renderer.render( scene, camera );
+			}
+			
+			function requestFullScreen() {
+				// Supports most browsers and their versions.
+				var element = document.body; // Make the body go full screen.
+				var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+			
+				if (requestMethod) { // Native full screen.
+					requestMethod.call(element);
+				} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+					var wscript = new ActiveXObject("WScript.Shell");
+					if (wscript !== null) {
+						wscript.SendKeys("{F11}");
+					}
+				}
+			}
+			
+			function saveState(){
+				var requestBody=JSON.stringify({"storage" : statesArray})
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=orbitMapperData/"+globalController.PresetName+".txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+			}
+			
+			function recallState(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=orbitMapperData/"+globalController.PresetName+".txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					statesArray=JSON.parse(xmlhttp.response).storage
+					updateControlsView();
+					syncObjectsToJson();
+					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
+				}
+			}
+						
+			function initOrbit() { 
+
+				sprite1 = new THREE.TextureLoader().load( "orbitMapperData/sprite_image.png" );
+
+				generateOrbit();
+			
+				for (var s = 0; s < NUM_SUBSETS; s++){hueValues[s] = Math.random();}
+			
+				// Create particle systems
+				for (var k = 0; k < NUM_LEVELS; k++){
+					for (var s = 0; s < NUM_SUBSETS; s++){
+				
+						var geometry = new THREE.Geometry();
+						for (var i = 0; i < NUM_POINTS_SUBSET; i++){geometry.vertices.push( orbit.subsets[s][i].vertex);}
+						var materials = new THREE.PointsMaterial( { size: (SPRITE_SIZE ), map: sprite1, blending: THREE.AdditiveBlending, depthTest: false, transparent : true } );
+						materials.color.setHSL(hueValues[s], DEF_SATURATION, DEF_BRIGHTNESS);
+					
+					
+						var particles = new THREE.Points( geometry, materials );
+						particles.myMaterial = materials;
+						particles.myLevel = k;
+						particles.mySubset = s;
+						particles.position.x = 0;
+						particles.position.y = 0;
+						particles.position.z = - LEVEL_DEPTH * k - (s  * LEVEL_DEPTH / NUM_SUBSETS) + SCALE_FACTOR/2;
+						particles.needsUpdate = 0;
+						bufferScene.add( particles );                    
+					
+					}
+				}
+				setInterval(updateOrbit, 3000);
+			}
+      
+			function updateOrbit(){
+				generateOrbit();
+				for (var s = 0; s < NUM_SUBSETS; s++){
+					hueValues[s] = Math.random();
+				}
+				for( i = 0; i < bufferScene.children.length; i++ ) {
+					bufferScene.children[i].needsUpdate = 1;
+				}
+
+			}
+		
+			function generateOrbit(){
+				var x, y, z, x1;
+				var idx = 0;
+
+				prepareOrbit();
+			
+				// Using local vars should be faster
+				var al = a;
+				var bl = b;
+				var cl = c;
+				var dl = d;
+				var el = e;
+				var subsets = orbit.subsets;
+				var num_points_subset_l = NUM_POINTS_SUBSET;
+				var num_points_l = NUM_POINTS;
+				var scale_factor_l = SCALE_FACTOR;
+			
+				var xMin = 0, xMax = 0, yMin = 0, yMax = 0;
+				var choice; 
+						choice = Math.random();
+
+				for (var s = 0; s < NUM_SUBSETS; s++){
+			
+					// Use a different starting point for each orbit subset
+					x = s * .005 * (0.5-Math.random());
+					y = s * .005 * (0.5-Math.random());
+				
+					var curSubset = subsets[s];
+				
+					for (var i = 0; i < num_points_subset_l; i++){
+				
+						// Iteration formula (generalization of the Barry Martin's original one)
+					
+					
+						if (choice < 0.5){
+							z = (dl + (Math.sqrt(Math.abs(bl * x - cl))));
+						}
+						else if (choice < 0.75){
+						z = (dl + Math.sqrt(Math.sqrt(Math.abs(bl * x - cl))));
+					
+						}
+						else {
+							z = (dl + Math.log(2+Math.sqrt(Math.abs(bl * x - cl))));
+						}
+
+						if (x > 0) {x1 = y - z;}
+						else if (x == 0) {x1 = y;}
+						else {x1 = y + z;}
+						y = al - x;
+						x = x1 + el;        
+
+						curSubset[i].x = x;
+						curSubset[i].y = y;
+					
+						if (x < xMin) {xMin = x;}
+						else if (x > xMax) {xMax = x;}
+						if (y < yMin) {yMin = y;}
+						else if (y > yMax) {yMax = y;}
+					
+						idx++;
+					}
+				}
+							
+				var scaleX = 2 * scale_factor_l / (xMax - xMin);
+				var scaleY = 2 * scale_factor_l / (yMax - yMin);
+			
+				orbit.xMin = xMin;
+				orbit.xMax = xMax;
+				orbit.yMin = yMin;
+				orbit.yMax = yMax;
+				orbit.scaleX = scaleX;
+				orbit.scaleY = scaleY;
+			
+				// Normalize and update vertex data             
+				for (var s = 0; s < NUM_SUBSETS; s++){
+					var curSubset = subsets[s];
+					for (var i = 0; i < num_points_subset_l; i++){
+						curSubset[i].vertex.x = scaleX * (curSubset[i].x - xMin) - scale_factor_l;
+						curSubset[i].vertex.y = scaleY * (curSubset[i].y - yMin) - scale_factor_l;                 
+					}
+				}
+			}
+		
+			function prepareOrbit(){
+				shuffleParams();
+				orbit.xMin = 0;
+				orbit.xMax = 0;
+				orbit.yMin = 0;
+				orbit.yMax = 0;
+			}
+		
+			function shuffleParams() {
+				a = A_MIN + Math.random() * (A_MAX - A_MIN);
+				b = B_MIN + Math.random() * (B_MAX - B_MIN);
+				c = C_MIN + Math.random() * (C_MAX - C_MIN);
+				d = D_MIN + Math.random() * (D_MAX - D_MIN);
+				e = E_MIN + Math.random() * (E_MAX - E_MIN);
+			}
+
+			function keyPressToSlider(event, key, controller, slider, delta, folder, callback){
+				if(event.key==key){
+					var sliderMax=folder.__controllers.filter(obj => { return obj.property == slider})[0].__max;
+					var sliderMin=folder.__controllers.filter(obj => { return obj.property == slider})[0].__min;
+					if(controller[slider]+delta<=sliderMax && controller[slider]+delta>=sliderMin){
+						controller[slider]=controller[slider]+delta;
+					}else{
+						if(controller[slider]+delta>sliderMax){
+							controller[slider]=sliderMax;
+						}
+						if(controller[slider]+delta<sliderMin){
+							controller[slider]=sliderMin;
+						}
+					}
+					folder.__controllers.filter(obj => { return obj.property == slider})[0].updateDisplay();
+					callback();
+				}
+			}
+		
+			function highlightSelectedVertice(){
+				var listOfCornerVertices=[4,0,20,24];
+				for(var y=0; y<displayObjects.length; y++){
+					for(var x=0; x<4; x++){
+						if(parseInt(x)==parseInt(selectedVertice)){
+							displayObjects[y].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":0.0, "b":1.0}
+						}else{
+							displayObjects[y].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":1.0, "b":1.0}
+						}
+					}
+				}
+				syncObjectsToJson();
+			}
+		</script>
+	</body>
+</html>
