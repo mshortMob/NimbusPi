@@ -18,6 +18,9 @@
 		<script>
 			initGlobalVars();
 			function initGlobalVars(){
+				lastTime=0;
+				audioData = new Uint8Array(8);
+				initAudio();
 				selectedVertice=0;
 				bufferScene = new THREE.Scene();
 				bufferTexture = new THREE.WebGLRenderTarget( window.innerWidth, window.innerHeight, { side:THREE.DoubleSide, minFilter: THREE.LinearFilter, magFilter: THREE.NearestFilter});						    
@@ -166,6 +169,7 @@
 				globalController  = {
 					 selectedObject:0,
 					 PresetName:"OrbitMapperPreset1",
+					 VolumeThreshold:.003,
 				}
 				mappingController  = {
 					 Visible:false,
@@ -186,6 +190,7 @@
 				globalFolder.open();
 				globalFolder.add(globalController, "selectedObject", 0, 3, 1 ).onChange(function(){globalController.selectedObject=parseInt(globalController.selectedObject);updateControlsView();syncObjectsToJson();});
 				globalFolder.add({ 'ChangeOrbit':function(){ bufferScene.children=[bufferScene.children[0]];initOrbit(); }},'ChangeOrbit');
+				globalFolder.add( globalController, "VolumeThreshold", .0001,.1,.0001 ).onChange(function(){updateControlsValues();});	
 				gui.width=360;
 				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
@@ -209,6 +214,7 @@
 
 					gui.__folders.ObjectControls.__controllers[i].updateDisplay();
 				}
+				gui.__folders.Global.__controllers[2].updateDisplay();
 			}
 			
 			function updateControlsValues(){  
@@ -619,6 +625,8 @@
 				if(event.key=='o'){
 					bufferScene.children=[bufferScene.children[0]];initOrbit();
 				}		
+				keyPressToSlider(event, "t", globalController, "VolumeThreshold", .00025,  gui.__folders.Global, function(){ updateControlsValues(); } );
+				keyPressToSlider(event, "T", globalController, "VolumeThreshold", -.00025, gui.__folders.Global, function(){updateControlsValues(); } );
 			}
 
 			function animate() {
@@ -670,7 +678,7 @@
 			}
 			
 			function saveState(){
-				var requestBody=JSON.stringify({"storage" : statesArray})
+				var requestBody=JSON.stringify({"storage" : statesArray, "global":globalController.VolumeThreshold})
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "php/write.php?fn=orbitMapperData/"+globalController.PresetName+".txt", true);
 				xmlhttp.send(requestBody);
@@ -683,6 +691,7 @@
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
 					statesArray=JSON.parse(xmlhttp.response).storage
+					globalController.VolumeThreshold=JSON.parse(xmlhttp.response).global;
 					updateControlsView();
 					syncObjectsToJson();
 					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
@@ -864,6 +873,47 @@
 				}
 				syncObjectsToJson();
 			}
+		
+			function initAudio() {
+				if(location.href.indexOf("localhost")!="-1"){
+					console.log("trying audio");
+					navigator.getUserMedia = navigator.getUserMedia
+									|| navigator.webkitGetUserMedia
+									|| navigator.mozGetUserMedia;
+
+					navigator.getUserMedia({ video : false, audio : true }, getAudioData, console.log);
+
+					setInterval(function(){
+						if( (audioVolume=audioData.reduce(function(a, b){return a + b;}, 0)/1024/100) > globalController.VolumeThreshold  ){
+							thisTime=new Date().getTime();
+							if(thisTime-lastTime > 125){
+								bufferScene.children=[bufferScene.children[0]];initOrbit();
+								lastTime=thisTime;
+							}
+						}
+					},100);
+
+					function getAudioData(stream) {
+						var ctx = new AudioContext();
+						var mic = ctx.createMediaStreamSource(stream);
+						var analyser = ctx.createAnalyser();
+
+						mic.connect(analyser); 
+						audioData = new Uint8Array(analyser.frequencyBinCount);
+						function play() {
+							analyser.getByteFrequencyData(audioData);
+							//console.log(audioData);
+							requestAnimationFrame(play);
+						}
+
+						play();
+					}
+				}else{
+					console.log("audio only supported on localhost (without tls)");
+					audioData = new Uint8Array(8);
+				}
+			}
+		
 		</script>
 	</body>
 </html>
