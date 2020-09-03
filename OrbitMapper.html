@@ -886,7 +886,7 @@
 					setInterval(function(){
 						if( (audioVolume=audioData.reduce(function(a, b){return a + b;}, 0)/1024/100) > globalController.VolumeThreshold  ){
 							thisTime=new Date().getTime();
-							if(thisTime-lastTime > 125){
+							if(thisTime-lastTime > 1000){
 								bufferScene.children=[bufferScene.children[0]];initOrbit();
 								lastTime=thisTime;
 							}
