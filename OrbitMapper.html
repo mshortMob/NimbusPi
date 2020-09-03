@@ -134,6 +134,10 @@
 				controls.enabled=false;
 				scene = new THREE.Scene();
 				LIGHTING=new THREE.AmbientLight( 0xffffff ) 
+				ambientBrightness=5;
+				LIGHTING.color.r=ambientBrightness;
+				LIGHTING.color.g=ambientBrightness;
+				LIGHTING.color.b=ambientBrightness;
 				scene.add( LIGHTING );
 				LIGHTING3=new THREE.AmbientLight( 0xffffff ) 
 				bufferScene.add( LIGHTING3 );
