@@ -1,4 +1,4 @@
-# NimbusPi ![Badge Test](http://www.nimbuslaboratory.com/static/NimbusPi/build_status.png) 
+# NimbusPi ![Badge Test](http://www.nimbuslaboratory.com/static/NimbusPi/build_status_2.png) 
 
 
 
