@@ -1,7 +1,5 @@
 # NimbusPi   ![Badge Test](http://www.nimbuslaboratory.com/static/NimbusPi/build_status_2.png) 
 
-
-
 NimbusPi is a collection of projection mapping, VJ, and lighting design tool built for the Raspberry Pi. 
 
 ![NimbusPi Demo Screenshot](http://www.nimbuslaboratory.com/static/NimbusPi/NimbusPi_Demo_Screenshot.png) 
