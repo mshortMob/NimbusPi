@@ -5,6 +5,7 @@
   "builders": [{
     "type": "arm-image",
     "iso_url": "base_image",
+    "iso_checksum": "d989de8d04b48dadacacce60e01d7e527b87d047fc6d7dd7f30eddacb6ad29c2",
     "last_partition_extra_size": 1073741824
   }],  
   "provisioners": [
