@@ -85,6 +85,11 @@
     "destination": "/home/pi/keyboard"
    },
    {
+    "type": "file",
+    "source": "files/config.txt",
+    "destination": "/home/pi/boot_config.txt"
+   },
+   {
       "type": "shell",
       "inline": [
         "sudo mv -f /home/pi/dnsmasq.conf /etc/dnsmasq.conf",
@@ -116,7 +121,10 @@
         "#sudo chown root:root /boot/config.txt",
         "sudo mv -f /home/pi/keyboard /etc/default/keyboard",
         "sudo chown root:root /etc/default/keyboard",
-        "sudo chmod 644 /etc/default/keyboard"
+        "sudo chmod 644 /etc/default/keyboard",
+        "sudo mv -f /home/pi/boot_config.txt /boot/config.txt",
+        "sudo chown root:root /boot/config.txt",
+        "sudo chmod 755 /boot/config.txt"
      ]
    },
    {
