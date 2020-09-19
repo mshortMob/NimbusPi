@@ -25,7 +25,7 @@ float circle(in vec2 _st, in float _radius){
 }
 
 
-#define MAX 15.0
+#define MAX 10.0
 void main(){
 	//vec2 uv=(.5*sin(time/5.))-(sin(time/5.)*vUv);
         vec2 uv=.5-1.0*vUv;
@@ -34,10 +34,10 @@ void main(){
 	vec2 p = uv;
 	
 	/** /
-	p.y -= sin(time+p.x*0.3);
-	p.x -= sin(time+p.y*0.1);
+	p.y -= sin(10.*time+p.x*0.3);
+	p.x -= sin(10.*time+p.y*0.1);
 	
-	vec2 rot = rotate(p, sin(0.1*time));
+	vec2 rot = rotate(p, sin(0.5*time));
 	p = rot;
 	/**/
 	
@@ -45,10 +45,11 @@ void main(){
 	vec2 s=p;
 	float l=0.0;	
 	for (float f=0.0;f<MAX;f+=1.){
-		s = sin(vec2((s.x*s.x-s.y*s.y), (4.*s.x*s.y* ((1.0+(sin(time/10.))+.3)/1.75) ))) - ((circle(s, length(l))));
+		s = sin(vec2((s.x*s.x-s.y*s.y), (4.*s.x*s.y* ((1.0+(sin(time/2.0))+.3)/1.75) ))) - ((circle(s, length(l))));
 	       	l += (s.x*s.y);
 	}
 
         vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor=vec4(l*(uv.y+sin(time/3.0)), l*(uv.x+cos(time/4.0)), 0.0, mask.r*brightness);
+	gl_FragColor=vec4(l*(uv.y+sin(time/1.1)), l*(uv.x+cos(time/1.6)), 0.0, mask.r*brightness);
 }
+

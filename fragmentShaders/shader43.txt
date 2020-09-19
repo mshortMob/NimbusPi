@@ -17,7 +17,7 @@ void main()
     float t = 0.;
     for (int i = 20; i > 0; --i) {
         t += min(min(length(p.xy), length(p.xz)), length(p.yz)) - .05;
-	p = fract(vec3(0, 0, .3 * time) + d * t) - .5;
+	p = fract(vec3(0, 0, .3 * time*1.8) + d * t) - .5;
     }
     p=(1.0-p);
     vec3 thresh=step(p, vec3(.85) );
@@ -26,7 +26,7 @@ void main()
     p=vec3(totalBri,totalBri,totalBri);
 
     vec3 mask = texture2D( maskTexture, vUv ).rgb;
-    p.b=p.r*(u.x+sin(time/3.0));
+    p.b=p.r*(u.x+sin(time/2.0));
     p.g=p.g*u.y;
     gl_FragColor = vec4(p*1.5, mask.r*brightness);
 }
