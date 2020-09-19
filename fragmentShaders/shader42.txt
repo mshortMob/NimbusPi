@@ -1,0 +1,35 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+uniform float brightness;
+
+uniform float audioVolume;
+varying vec2 vUv;
+uniform sampler2D maskTexture;
+
+#define R(t) mat2(cos(3. * t + vec4(0, 33, 11, 0)))
+void main()
+{
+    vec2 u = .75-1.5*vUv;
+    vec3 p, d = normalize(vec3(u, dot(u, u) - .25));
+    //float volThresCrossed=smoothstep(audioVolume, .5, .55 );
+    //d.xy *= R(0.0); d.yz *= R(time*0.1*sin(audioVolume) );
+    d.xy *= R(0.0); d.yz *= R(time*0.1);
+    float t = 0.;
+    for (int i = 28; i > 0; --i)
+        //p = fract(vec3(0, 0, .1 * (1.0-sin(audioVolume)) * time) + d * (t += min(min(length(p.xy), length(p.xz)), length(p.yz)) - .05)) - .5;
+        p = fract(vec3(0, 0, .1 * time) + d * (t += min(min(length(p.xy), length(p.xz)), length(p.yz)) - .05)) - .5;
+    p=p + .3 * t - dot(u, u);
+    p=(1.0-p);
+    vec3 thresh=step(p, vec3(.85) );
+    p=p*thresh;
+    float totalBri=p.r+p.g+p.b;
+    p=vec3(totalBri,totalBri,totalBri);
+    //p=vec3(sin(audioVolume),sin(audioVolume),sin(audioVolume));
+    vec3 mask = texture2D( maskTexture, vUv ).rgb;
+    p.r=p.r*(u.y+sin(time/3.0));
+    p.g=p.g*(u.y+sin(time/3.0));
+    p=vec3(p.r, p.b, p.g);
+    gl_FragColor = vec4(p*1.5, mask.r*brightness);
+}

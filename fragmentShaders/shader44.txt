@@ -1,0 +1,54 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+uniform float brightness;
+
+uniform float audioVolume;
+varying vec2 vUv;
+uniform sampler2D maskTexture;
+
+vec2 rotate(vec2 v, float a) {
+	float s = sin(a);
+	float c = cos(a);
+	mat2 m = mat2(c, -s, s, c);
+	return m * v;
+}
+
+// from https://thebookofshaders.com/07/
+
+float circle(in vec2 _st, in float _radius){
+    vec2 dist = _st-vec2(0.5);
+	return 1.-smoothstep(_radius-(_radius*0.01),
+                         _radius+(_radius*0.01),
+                         dot(dist,dist)*4.0);
+}
+
+
+#define MAX 15.0
+void main(){
+	//vec2 uv=(.5*sin(time/5.))-(sin(time/5.)*vUv);
+        vec2 uv=.5-1.0*vUv;
+	uv *= 2.0;
+	uv /= dot(uv,uv);
+	vec2 p = uv;
+	
+	/** /
+	p.y -= sin(time+p.x*0.3);
+	p.x -= sin(time+p.y*0.1);
+	
+	vec2 rot = rotate(p, sin(0.1*time));
+	p = rot;
+	/**/
+	
+	
+	vec2 s=p;
+	float l=0.0;	
+	for (float f=0.0;f<MAX;f+=1.){
+		s = sin(vec2((s.x*s.x-s.y*s.y), (4.*s.x*s.y* ((1.0+(sin(time/10.))+.3)/1.75) ))) - ((circle(s, length(l))));
+	       	l += (s.x*s.y);
+	}
+
+        vec3 mask = texture2D( maskTexture, vUv ).rgb;
+	gl_FragColor=vec4(l*(uv.y+sin(time/3.0)), l*(uv.x+cos(time/4.0)), 0.0, mask.r*brightness);
+}
