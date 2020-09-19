@@ -1,0 +1,32 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+uniform float brightness;
+
+uniform float audioVolume;
+varying vec2 vUv;
+uniform sampler2D maskTexture;
+
+#define R(t) mat2(cos(3. * t + vec4(0, 33, 11, 0)))
+void main()
+{
+    vec2 u = .5-1.0*vUv;
+    vec3 p;
+    vec3 d = normalize(vec3(u, u.x*u.x - .5));
+    float t = 0.;
+    for (int i = 20; i > 0; --i) {
+        t += min(min(length(p.xy), length(p.xz)), length(p.yz)) - .05;
+	p = fract(vec3(0, 0, .3 * time*1.8) + d * t) - .5;
+    }
+    p=(1.0-p);
+    vec3 thresh=step(p, vec3(.85) );
+    p=p*thresh;
+    float totalBri=p.r+p.g+p.b;
+    p=vec3(totalBri,totalBri,totalBri);
+
+    vec3 mask = texture2D( maskTexture, vUv ).rgb;
+    p.b=p.r*(u.x+sin(time/2.0));
+    p.g=p.g*u.y;
+    gl_FragColor = vec4(p*1.5, mask.r*brightness);
+}
