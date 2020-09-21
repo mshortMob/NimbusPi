@@ -9,7 +9,7 @@
 			}	
 			.grid-container{
 				display: grid;
-				grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto;
+				grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto auto;
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
@@ -177,7 +177,7 @@
 					var gridContainer=document.getElementById("grid-container-B")
 					var maskContainer=document.getElementById("mask-container-B")
 				}
-				for(var x=1; x<=44; x++){
+				for(var x=1; x<=48; x++){
 					var gridItem=document.createElement('button')
 					gridItem.id="GridItem"+x+"_Deck"+deck;
 					gridItem.deck=deck;
@@ -268,7 +268,7 @@
 			}
 
 			function selectShader(shaderNumber,deck){
-				for(var x=1; x<=44; x++){
+				for(var x=1; x<=48; x++){
 					if(parseInt(shaderNumber)==x){
 						document.getElementById("GridItem"+x+"_Deck"+deck).style.opacity=".2"
 					}else{
@@ -393,14 +393,14 @@
 			}
 		
 			function updateView(){
-				for(var x=1; x<=44; x++){
+				for(var x=1; x<=48; x++){
 					if(parseInt(globalState.ShaderA)==x){
 						document.getElementById("GridItem"+x+"_DeckA").style.opacity=".2"
 					}else{
 						document.getElementById("GridItem"+x+"_DeckA").style.opacity="1.0"
 					}
 				}
-				for(var x=1; x<=44; x++){
+				for(var x=1; x<=48; x++){
 					if(parseInt(globalState.ShaderB)==x){
 						document.getElementById("GridItem"+x+"_DeckB").style.opacity=".2"
 					}else{
