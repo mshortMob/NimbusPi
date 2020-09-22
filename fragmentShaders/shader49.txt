@@ -14,7 +14,7 @@ vec3 lungth(vec2 x,vec3 c){
 
 void main( void ) {
 	
-	vec2 position = .5-1.0*vUv;
+	vec2 position = 1.0-2.0*vUv;
 	float th = atan(position.y, position.x) / (1.0 * 3.1415926);
 	float dd = length(position) + 0.105;
 	float d = 0.5 / dd + time/5.0;
@@ -38,5 +38,5 @@ void main( void ) {
 	color += 	mix(c2, 			vec3(0.1, 0.2, 0.2),  pow(c, 0.1)) * 0.75;
         color *=dd;
         vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( color.b, color.r, color.r, mask.r*brightness);
+	gl_FragColor = vec4( color.b, color.g*0.5, color.r, mask.r*brightness);
 }
