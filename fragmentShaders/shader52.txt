@@ -1,0 +1,42 @@
+precision mediump float;
+precision mediump int;
+
+uniform float time;
+uniform float brightness;
+
+uniform float audioVolume;
+varying vec2 vUv;
+uniform sampler2D maskTexture;
+
+void main() {
+	vec2 p = .5-1.0*vUv*1.;
+	float a = atan(p.x,p.y);
+	float r = length(p*20.);
+        float m = 6.5;
+	r = (sin(abs(m*sin(0.5*r+time*1.1)))) - .8*abs(sin(a*6.+time*0.0));
+	r = fract((r*.5));
+	vec4 green = vec4(0.0, 0.0 - r * 0.8, 0.0, 1.0);
+	vec4 yellow = vec4( 1.0 - r * 0.1,  0.1,  1.0 - r * 0.8, 0.0);
+        vec4 colSwap1= vec4(yellow + (yellow - green) * r/1.6);
+        vec3 colSwap2=smoothstep(vec3(0.0, 0.0, 0.0), vec3(.3, .5, .8), vec3(colSwap1.g*1.3, colSwap1.b, colSwap1.r/2.) );
+        colSwap1=vec4(1.0-colSwap2, colSwap1.a);
+
+	float a2 = atan(p.x,p.y);
+	float r2 = length(p*20.);
+        float m2 = 6.5;
+	r2 = (sin(abs(m2*sin(0.5*r2-time*1.1)))) - .8*abs(sin(a2*6.+time*0.0));
+	r2 = fract((r2*.5));
+	vec4 green2 = vec4(0.0, 0.0 - r2 * 0.8, 0.0, 1.0);
+	vec4 yellow2 = vec4( 1.0 - r2 * 0.1,  0.1,  1.0 - r2 * 0.8, 0.0);
+        vec4 colSwap3= vec4(yellow2 + (yellow2 - green2) * r2/1.6);
+        vec3 colSwap4=smoothstep(vec3(0.0, 0.0, 0.0), vec3(.3, .9, .8), vec3(colSwap3.g*1.3, colSwap3.b, colSwap3.r/2.) );
+        colSwap3=vec4(1.0-colSwap4, colSwap3.a);
+
+        vec3 mask = texture2D( maskTexture, vUv ).rgb;
+	gl_FragColor = 1.0*colSwap1+colSwap3;
+	gl_FragColor.a = 1.0*brightness*mask.r;
+}
+
+	//(pos.y<=-.0) 
+	//? gl_FragColor = vec4( vec3(abs(s.y*5.0*sin(time/4.1))*0.5,abs(s.y*9.4*sin(time/2.7))*0.5,0.3)+vec3((1.-c)*0.5+sin(time*0.6)*sin(time/3.7),c*0.5+sin(time*0.6)*sin(time/2.7),c*sin(time/4.1)),  mask.r*brightness)
+	//:
