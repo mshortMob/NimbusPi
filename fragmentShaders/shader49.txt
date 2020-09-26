@@ -14,10 +14,10 @@ vec3 lungth(vec2 x,vec3 c){
 
 void main( void ) {
 	
-	vec2 position = 1.0-2.0*vUv;
+	vec2 position = .5-1.0*vUv;
 	float th = atan(position.y, position.x) / (1.0 * 3.1415926);
 	float dd = length(position) + 0.105;
-	float d = 0.5 / dd + time/5.0;
+	float d = 0.5 / dd + time/1.4;
 	
     	vec2 x = 1.0*vUv;
     	vec3 c2=vec3(0,0,0);
