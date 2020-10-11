@@ -19,7 +19,7 @@
 			}
 			.mask-container{
 				display: grid;
-				grid-template-columns: auto auto auto auto auto auto;
+				grid-template-columns: auto auto auto auto auto auto auto;
 				background-color: #777777;
 				padding: 5px;
 				width:49.0%;
@@ -195,7 +195,7 @@
 					}
 					gridContainer.appendChild(gridItem);
 				}
-				for(var x=1; x<=6; x++){
+				for(var x=1; x<=7; x++){
 					var maskItem=document.createElement('button')
 					maskItem.id="MaskItem"+x+"_Deck"+deck;
 					maskItem.deck=deck;
@@ -280,7 +280,7 @@
 			}
 
 			function selectMask(maskNumber,deck){
-				for(var x=1; x<=6; x++){
+				for(var x=1; x<=7; x++){
 					if(parseInt(maskNumber)==x){
 						document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity=".2"
 					}else{
@@ -407,14 +407,14 @@
 						document.getElementById("GridItem"+x+"_DeckB").style.opacity="1.0"
 					}
 				}
-				for(var x=1; x<=6; x++){
+				for(var x=1; x<=7; x++){
 					if(parseInt(globalState.MaskA)==x){
 						document.getElementById("MaskItem"+x+"_DeckA").style.opacity=".2"
 					}else{
 						document.getElementById("MaskItem"+x+"_DeckA").style.opacity="1.0"
 					}
 				}
-				for(var x=1; x<=6; x++){
+				for(var x=1; x<=7; x++){
 					if(parseInt(globalState.MaskB)==x){
 						document.getElementById("MaskItem"+x+"_DeckB").style.opacity=".2"
 					}else{
