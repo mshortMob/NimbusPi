@@ -2,131 +2,402 @@
 	<head>
 		<title>ShaderMapper</title>
 		<style>
-			body{
-			    margin:0px;
-				padding:5px;
-				background-color:black;
-			}	
-			.grid-container{
-				display: grid;
-				grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto auto auto;
-				background-color: #777777;
-				padding: 5px;
-				width:49.0%;
-				height:36.5%;
-				top:5%;
-				position:absolute;
+			@media only screen and (min-width:801px){
+				body{
+					margin:0px;
+					background-color:black;
+				}	
+				canvas{
+					opacity: 1;
+					width:100%;
+					height:100%;
+					top:0px;
+					left:0px;
+					z-index:-2;
+					transform:scale(1,1);
+					position:fixed;
+					float:left;
+					object-fit:fill;
+					/* cursor: none; */
+				}
+				.grid-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto auto auto;
+					background-color: #777777;
+					padding: 5px;
+					width:47.5%;
+					height:36.5%;
+					top:5%;
+					position:absolute;
+				}
+				.mask-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto;
+					background-color: #777777;
+					padding: 5px;
+					width:47.5%;
+					height:6%;
+					top:42.8%;
+					position:absolute;
+				}
+				.dmx-grid-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto auto;
+					background-color: #777777;
+					width:47.5%;
+					height:32%;
+					top:56%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.presets-grid-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto auto auto;
+					background-color: #777777;
+					width:99.25%;
+					height:9%;
+					top:88.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+					left:0%;
+				}
+				.mapping-controls-grid-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto;
+					background-color: #777777;
+					width:99.25%;
+					height:9%;
+					top:88.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+					left:0%;
+				}
+				.menu-grid-container{
+						display: grid;
+						grid-template-columns: auto;
+						background-color: #777777;
+						height:88%;
+						width:3.5%;
+						top:0%;
+						left:0%;
+						position:absolute;
+						border:5px solid grey;
+						margin:0px;
+						padding:0px;
+				}	
+				.menu-grid-container-item{
+					font-size: 0.5em;
+				}
+				.grid-item:hover{
+					background-color: rgba(150, 150, 200, 0.8);
+					border: 1px solid rgba(0, 0, 0, 0.8);
+					padding: 20px;
+					font-size: 14px;
+					text-align: center;
+				}
+				#grid-container-A,#mask-container-A,#sectionLabelA,#sectionLabelC,.slider-container,.menu-page{
+					left:3.75%;
+				}
+				#grid-container-B,#mask-container-B,#sectionLabelB,#sectionLabelD,.dmx-grid-container{
+					left:51.75%;
+				}
+				.slider-container{
+					background-color: darkgrey;
+					width:47.5%;
+					height:32%;
+					top:56%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.customSlider {
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					width: 80%;
+					left:20%;
+					display:inline;
+					height: 20%;
+					position:absolute;
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin:0px;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				#zSlider{
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					/* width:100%;
+					left:0%; */
+					position: relative;;
+					/* display:inline; */
+					/* height: 20%; */
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin:0px;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				.sliderLabel{
+					border:2.5px solid grey;
+					height:19%;
+					width:20%;
+					background-color: black;
+					z-index: 0;
+					text-align: center;
+					position:absolute;
+					color:white;
+					margin:0;
+					font-size:.5em;
+				}
+				.customSlider::-webkit-slider-thumb,#zSlider::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				.sectionLabel{
+					background-color: black;
+					display: grid;
+					grid-template-columns: auto;
+					width:47.5%;
+					height:5%;
+					position:absolute;
+					border:5px solid grey;
+					font-size:.6em;
+				}
+				button:focus{
+					outline: none;
+				}
+				.menu-page{
+					display:none;
+					width:95.5%;
+					height:87.75%;
+					top:0%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
 			}
-			.mask-container{
-				display: grid;
-				grid-template-columns: auto auto auto auto auto auto auto;
-				background-color: #777777;
-				padding: 5px;
-				width:49.0%;
-				height:6%;
-				top:42.8%;
-				position:absolute;
-			}
-			.dmx-grid-container{
-				display: grid;
-				grid-template-columns: auto auto auto auto auto auto auto auto;
-				background-color: #777777;
-				width:49.0%;
-				height:32%;
-				top:56%;
-				position:absolute;
-				border:5px solid grey;
-				margin:0px;
-				padding:0px;
-				left:50%;
-			}
-			.presets-grid-container{
-				display: grid;
-				grid-template-columns: auto auto auto auto auto auto auto auto auto;
-				background-color: #777777;
-				width:98.75%;
-				height:9%;
-				top:88.75%;
-				position:absolute;
-				border:5px solid grey;
-				margin:0px;
-				padding:0px;
-				left:.25%;
-			}
-			.grid-item:hover{
-				background-color: rgba(150, 150, 200, 0.8);
-				border: 1px solid rgba(0, 0, 0, 0.8);
-				padding: 20px;
-				font-size: 14px;
-				text-align: center;
-			}
-			#grid-container-A,#mask-container-A,#sectionLabelA,#sectionLabelC,.slider-container{
-				left:.25%;
-			}
-			#grid-container-B,#mask-container-B,#sectionLabelB,#sectionLabelD{
-				left:50.0%;
-			}
-			.slider-container{
-				background-color: darkgrey;
-				width:49.0%;
-				height:32%;
-				top:56%;
-				position:absolute;
-				border:5px solid grey;
-				margin:0px;
-				padding:0px;
-			}
-			.slider {
-				border:2.5px solid grey;
-				-webkit-appearance: none;
-				width: 80%;
-				left:20%;
-				display:inline;
-				height: 20%;
-				position:absolute;
-				outline: none;
-				opacity: 1;
-				-webkit-transition: .2s;
-				transition: opacity .2s;
-				margin:0px;
-				padding:0px;
-				background-color: darkgrey;
-			}
-			.sliderLabel{
-				border:2.5px solid grey;
-				height:19%;
-				width:20%;
-				background-color: black;
-				z-index: 19;
-				text-align: center;
-				position:absolute;
-				color:white;
-				margin:0;
-				font-size:.5em;
-			}
-			.slider::-webkit-slider-thumb {
-				-webkit-appearance: none;
-				appearance: none;
-				width: 40px;
-				height: 100%;
-				background: slategray;
-				cursor: pointer;
-				border-left:1px solid darkslategray;
-				border-right:1px solid darkslategray;
-			}
-			.sectionLabel{
-				background-color: black;
-				display: grid;
-				grid-template-columns: auto;
-				width:49.0%;
-				height:5%;
-				position:absolute;
-				border:5px solid grey;
-				font-size:.6em;
+			@media only screen and (max-width:800px){
+				body{
+					margin:0px;
+					background-color:black;
+				}	
+				canvas{
+					opacity: 1;
+					width:100%;
+					height:100%;
+					top:0px;
+					left:0px;
+					z-index:-2;
+					transform:scale(1,1);
+					position:fixed;
+					float:left;
+					object-fit:fill;
+					/* cursor: none; */
+				}
+				.grid-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto auto auto;
+					background-color: #777777;
+					padding: 5px;
+					width:46.5%;
+					height:36.5%;
+					top:5%;
+					position:absolute;
+				}
+				.mask-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto;
+					background-color: #777777;
+					padding: 5px;
+					width:46.5%;
+					height:6%;
+					top:42.8%;
+					position:absolute;
+				}
+				.dmx-grid-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto auto;
+					background-color: #777777;
+					width:46.5%;
+					height:32%;
+					top:56%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.presets-grid-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto auto auto;
+					background-color: #777777;
+					width:98.75%;
+					height:9%;
+					top:88.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+					left:0%;
+				}
+				.mapping-controls-grid-container{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto auto auto;
+					background-color: #777777;
+					width:98.75%;
+					height:9%;
+					top:88.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+					left:0%;
+				}
+				.menu-grid-container{
+						display: grid;
+						grid-template-columns: auto;
+						background-color: #777777;
+						height:87.75%;
+						width:4.125%;
+						top:0%;
+						left:0%;
+						position:absolute;
+						border:5px solid grey;
+						margin:0px;
+						padding:0px;
+				}	
+				.menu-grid-container-item{
+					font-size: 0.4em;
+				}
+				.grid-item:hover{
+					background-color: rgba(150, 150, 200, 0.8);
+					border: 1px solid rgba(0, 0, 0, 0.8);
+					padding: 20px;
+					font-size: 14px;
+					text-align: center;
+				}
+				#grid-container-A,#mask-container-A,#sectionLabelA,#sectionLabelC,.slider-container,.menu-page{
+					left:5%;
+				}
+				#grid-container-B,#mask-container-B,#sectionLabelB,#sectionLabelD,.dmx-grid-container{
+					left:51.75%;
+				}
+				.slider-container{
+					background-color: darkgrey;
+					width:47.5%;
+					height:32%;
+					top:56%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.customSlider {
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					width: 80%;
+					left:20%;
+					display:inline;
+					height: 20%;
+					position:absolute;
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin:0px;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				#zSlider{
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					/* width:100%;
+					left:0%; */
+					position: relative;;
+					/* display:inline; */
+					/* height: 20%; */
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin:0px;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				.sliderLabel{
+					border:2.5px solid grey;
+					height:19%;
+					width:20%;
+					background-color: black;
+					z-index: 0;
+					text-align: center;
+					position:absolute;
+					color:white;
+					margin:0;
+					font-size:.5em;
+				}
+				.customSlider::-webkit-slider-thumb,#zSlider::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				.sectionLabel{
+					background-color: black;
+					display: grid;
+					grid-template-columns: auto;
+					width:46.5%;
+					height:5%;
+					position:absolute;
+					border:5px solid grey;
+					font-size:.6em;
+				}
+				button:focus{
+					outline: none;
+				}
+				.menu-page{
+					display:none;
+					width:95.5%;
+					height:87.75%;
+					top:0%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
 			}
 		</style>
 	</head>
 	<body>
+		<script src="../dependancies/three.js"></script>
+		<script src="../dependancies/pixel8.js"></script>
+		<script src="../dependancies/Detector.js"></script>
+		<script src="../dependancies/NURBSSurface.js"></script>
+		<script src="../dependancies/NURBSUtils.js"></script>
+		<script src="../dependancies/TrackballControls.js"></script> 
+
 		<div class="sectionLabel" id="sectionLabelA" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderA</span></div>
 		<div class="sectionLabel" id="sectionLabelB" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderB</span></div>
 		<div class="grid-container" id="grid-container-A"></div>
@@ -137,25 +408,882 @@
 		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
 		<div class="slider-container" id="slider-container">
 			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">ShaderA Level</span></div>
-			<input type="range" min="0" max="1000" value="50" class="slider" id="slider1a" style="top:0%">
+			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider1a" style="top:0%">
 			<div class="sliderLabel" style="top:20%"><span style="position:relative; top:35%;height:50%;">ShaderB Level</span></div>
-			<input type="range" min="0" max="1000" value="50" class="slider" id="slider1b" style="top:20%">		
+			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider1b" style="top:20%">		
 			<div class="sliderLabel" style="top:40%"><span style="position:relative; top:35%;height:50%;">DMX Level</span></div>
-			<input type="range" min="0" max="1000" value="50" class="slider" id="slider2" style="top:40%">		
+			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider2" style="top:40%">		
 			<div class="sliderLabel"  style="top:60%"><span style="position:relative; top:35%;height:50%;">DMX Speed</span></div>
-			<input type="range" min="0" max="4000" value="50" class="slider" id="slider3" style="top:60%">		
+			<input type="range" min="0" max="4000" value="50" class="customSlider" id="slider3" style="top:60%">		
 			<div class="sliderLabel"  style="top:80%"><span style="font-size: .85em;position:relative; top:35%;height:50%;">Volume Threshold</span></div>
-			<input type="range" min="1" max="100" value="50" class="slider" id="slider4" style="top:80%">		
+			<input type="range" min="1" max="100" value="50" class="customSlider" id="slider4" style="top:80%">		
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
-		<div class="presets-grid-container" id="presets-grid-container"></div>
+		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
+		<div class="mapping-controls-grid-container" id="mapping-controls-grid-container" style="z-index:1; display:none;">
+			<button id="mapping-controls-grid-item-1" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">1</button>
+			<button id="mapping-controls-grid-item-2" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
+			<button id="mapping-controls-grid-item-3" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
+			<button id="mapping-controls-grid-item-4" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
+			<button id="mapping-controls-selected-visibility" onclick="updateObject('visible');" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Visible</button>
+			<button id="mapping-controls-selected-shader" onclick="updateObject('shader');" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Shader AB</button>		
+			<input type="range" min="-20" max="20" value="0" onchange="updateObject('zValue');" id="zSlider" style="">
+		</div>
+		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
+			<!-- <button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Menu</button> -->
+			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
+			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
+			<!-- <button class="menu-grid-container-item"  id="Effects_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">Effects</button> -->
+		</div>
+		<div class="menu-page" id="menu_page"></div>
+		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
+		<div class="menu-page" id="effects_page"></div>
+
+		<script id="vertexShader" type="x-shader/x-vertex">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform mat4 modelViewMatrix; // optional
+			uniform mat4 projectionMatrix; // optional
+			
+			attribute vec3 position;
+			attribute vec4 color;
+			attribute vec2 uv;
+			
+			varying vec3 vPosition;
+			varying vec4 vColor;
+			varying vec2 vUv;
+			
+			void main()	{
+				vUv = uv;
+				vPosition = position;
+				vColor = color;
+			
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			
+			}
+		</script>
+			
+		<script id="fragmentShader1" type="x-shader/x-fragment">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform float time;
+			varying vec2 vUv;
+			uniform sampler2D maskTexture;
+			uniform sampler2D maskTexture2;
+			
+			void main( void ) {
+				vec3 mask = texture2D( maskTexture, vUv ).rgb;
+				gl_FragColor = vec4( vec3(  mask.r, 0.0, 0.0), mask.r );
+			
+			}			
+		</script>
+		
+		<script id="fragmentShader2" type="x-shader/x-fragment">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform float time;
+			varying vec2 vUv;
+			uniform sampler2D maskTexture;
+			uniform sampler2D maskTexture2;
+			
+			void main( void ) {
+				vec3 mask = texture2D( maskTexture, vUv ).rgb;
+				gl_FragColor = vec4( vec3(  0.0, 0.0, mask.r), mask.r );
+			
+			}	
+		</script>
+
 		<script>
 
-			initDone=false;
-			isMidPresetChange=false;
-			getCurrentPresetNumber();
+			initGlobalVars();
+			
+			function initGlobalVars(){
+				slaveModeInterval=-1;
+				controllerModeInterval=-1;
+				getCanvasYFlip();
+				getNumberOfShadersAndPresets();
+				lastMaskAValue=-1;
+				lastMaskBValue=-1;
+				fade_Position=0;
+				// setTimeout(function(){recallState();},10);
+				initGlobalController();
+				dmxInterval=0;
+				maxNumDMXScenes=8;
+				dmxPresetData=[];
+				selectedVertice=0;
+				// width=document.getElementById('video').width;
+				// height=document.getElementById('video').height;	
+				width=32;
+				height=32;
+				materialArray=new Uint8Array(width * height * 4);
+				// previousData=new Uint8Array(width * height * 4);
+				// data=new Uint8Array(width * height * 4);
+				isFirstCycle=true;
+				colorCounter=0.0;
+				// getVideo("init",0)
+				container=null;
+				camera=null;
+				controls=null;
+				scene=null;
+				renderer=null;
+				objects = [];
+				displayObjects=[];
+				plane = new THREE.Plane();
+				raycaster = new THREE.Raycaster();
+				mouse = new THREE.Vector2();
+				offset = new THREE.Vector3();
+				intersection = new THREE.Vector3();
+				INTERSECTED=null;
+				SELECTED=null;
+				initScene();
+				animate();
+				statesArray=[];
+				for(var x=0;x<4;x++){
+					var objectJSON ={}
+					for (var key in objectController) {
+						objectJSON[key]=objectController[key]
+					}
+					statesArray.push(objectJSON)
+				}
+				for(var y=0;y<4;y++){
+					addObject();
+				}
+				statesArray[0].Visible=true;
+				//=------
+				globalState={};
+				for (var key in globalController) {
+					globalState[key]=globalController[key]
+				}
+				//=------
+				syncObjectsToJson();
+				initControllerDone=false;
+				isMidPresetChange=false;
+				getCurrentPresetName();
+				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
+			}
+			
+			function initShaderMaterial(uniforms1){
+				matList=[];
+				for(var x=1;x<=2;x++){
+					if(x==1){
+						var material = new THREE.RawShaderMaterial( {
+							uniforms: uniforms1,
+							vertexShader: document.getElementById( 'vertexShader' ).textContent,
+							fragmentShader: document.getElementById( 'fragmentShader'+x ).textContent
+						} );	
+					}else{
+						var material = new THREE.RawShaderMaterial( {
+							uniforms: uniforms2,
+							vertexShader: document.getElementById( 'vertexShader' ).textContent,
+							fragmentShader: document.getElementById( 'fragmentShader'+x ).textContent
+						} );	
+					}		
+					material.side=THREE.DoubleSide;
+					// material.transparent=true;
+					matList.push(material)		
+				}
+				return matList;
+			}
+		
+			function changeMask(changedMask){
+				if(changedMask==1){
+					if(parseInt(globalState.MaskA)!=lastMaskAValue){
+						uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskA)+'.jpg' ) };
+						lastMaskAValue=parseInt(globalState.MaskA);
+					}
+				}else{
+					if(parseInt(globalState.MaskB)!=lastMaskBValue){
+						uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskB)+'.jpg' ) };
+						lastMaskBValue=parseInt(globalState.MaskB);
+					}
+				}
+			}
 
-			function init(){
+			function initScene() {
+				// prevData=pixel8(video,0,0,width,height)
+				imgTexture = new THREE.TextureLoader().load( '../masks/mask1.jpg' );
+				imgTexture2 = new THREE.TextureLoader().load( '../masks/mask2.jpg' );
+				dataTexture=[]	
+				dataTexture = new THREE.DataTexture( materialArray, width, height, THREE.RGBAFormat );
+				dataTexture.needsUpdate = true;
+				uniforms1 = {
+					"time": { value: 1.0 },
+					"resolution": [width,height],
+					"mousex": { value: 0.0 },
+					"mousey": { value: 0.0 },
+					"audioVolume": { value: 0.0 },
+					"maskTexture": { value: imgTexture },
+					"brightness": { value: globalController.BrightnessA }
+				};
+				uniforms2 = {
+					"time": { value: 1.0 },
+					"resolution": [width,height],
+					"mousex": { value: 0.0 },
+					"mousey": { value: 0.0 },
+					"audioVolume": { value: 0.0 },
+					"maskTexture": { value: imgTexture2 },
+					"brightness": { value: globalController.BrightnessB }
+				};
+				// uniforms1[ "maskTexture" ].value.wrapS = uniforms1[ "maskTexture" ].value.wrapT = THREE.MirroredRepeatWrapping;
+				materialsList=initShaderMaterial(uniforms1);
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+				frustumSize = 1000;
+				var aspect = window.innerWidth / window.innerHeight;
+				camera = new THREE.OrthographicCamera( frustumSize * aspect / - 2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / - 2, 0, 10000 );
+				camera.position.z = -1000;
+				controls = new THREE.TrackballControls( camera , container);
+				controls.enabled=false;
+				scene = new THREE.Scene();
+				LIGHTING=new THREE.AmbientLight( 0xffffff ) 
+				scene.add( LIGHTING );
+				renderer = new THREE.WebGLRenderer( { antialias: true , alpha:true} );
+				renderer.setClearColor( 0x000000 , 1);
+				renderer.setPixelRatio( window.devicePixelRatio );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.sortObjects = true;
+				container.appendChild( renderer.domElement );
+				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
+				renderer.domElement.addEventListener( 'mouseup', onDocumentMouseUp, false );
+				renderer.domElement.addEventListener( 'touchmove', onDocumentTouchMove, false );
+                renderer.domElement.addEventListener( 'touchstart', onDocumentTouchStart, false );
+                renderer.domElement.addEventListener( 'touchend', onDocumentTouchEnd, false );
+				window.addEventListener( 'resize', onWindowResize, false );
+				// tempElem=document.body.getElementsByClassName('ac')[0];
+				// tempElem.className="";
+				// tempElem.style.zIndex='10000000'
+				// tempElem.style.position='fixed'
+				// tempElem.style.right='0px';
+			}
+				
+			function initGlobalController(){
+				globalController  = {
+					selectedObject:0,
+					mappingMode:0,
+					ShaderA:1,
+					ShaderB:2,
+					MaskA:1,
+					MaskB:2,
+					PresetName:"GlobalPreset1",
+					SendDMX:true,
+					DMX_Rate: 50,
+					DMX_Brightness:.5,
+					DMX_Pattern:1,
+					DMX_Pattern_Rate:.1,
+					Universe:1,
+					DMX_X1:0,
+					DMX_Y1:175,
+					DMX_X2:150,
+					DMX_Y2:175,
+					VolumeThreshold:.003,
+					Camera_X:0.0,
+					Camera_Y:0.0,
+					BrightnessA:1.0,
+					BrightnessB:1.0,
+					SavedByController:true,
+				}
+				objectController  = {
+					 Visible:false,
+					 ZValue:0,
+					 Shader:1
+				};
+				var count=0; 
+				for(var y=4; y>=0;y--){
+					for(var x=0; x<5;x++){
+						objectController["VerticeX"+count]=-200+100*x;
+						objectController["VerticeY"+count]=-200+100*y;
+						count=count+1;
+					}
+				}
+			}
+
+			function getControllerData(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					statesArray=JSON.parse(xmlhttp.response).storage
+					globalState=JSON.parse(xmlhttp.response).global
+					// presetsArray=JSON.parse(xmlhttp.response).storage2
+					
+					syncObjectsToJson(true);
+					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
+				}
+			}
+
+			function syncObjectsToJson(includGlobal){
+				for(var x=0;x<displayObjects.length;x++){
+					displayObjects[x].setState(statesArray[x])
+					displayObjects[x].hideChildren();
+				}
+				// displayObjects[globalController.selectedObject].showChildren();
+
+				//--------------------------
+				if(includGlobal){
+					camera.position.x=globalController.Camera_X*window.innerWidth/3;
+					camera.position.y=globalController.Camera_Y*window.innerHeight/3;
+
+				}
+			}
+			
+			function addObject(){
+			  function createGeometry(u,v){
+					nsControlPoints = [
+						 [
+							 new THREE.Vector4 ( -200, -200, 0, 1 ),
+							 new THREE.Vector4 ( -200, -100, 0, 1 ),
+							 new THREE.Vector4 ( -200, 100, 0, 1 ),
+							 new THREE.Vector4 ( -200, 200, 0, 1 )
+						 ],
+						 [
+							 new THREE.Vector4 ( 0, -200, 0, 1 ),
+							 new THREE.Vector4 ( 0, -100, 0, 1 ),
+							 new THREE.Vector4 ( 0, 100, 0, 1 ),
+							 new THREE.Vector4 ( 0, 200, 0, 1 )
+						 ],
+						 [
+							 new THREE.Vector4 ( 200, -200, 0, 1 ),
+							 new THREE.Vector4 ( 200, -100, 0, 1 ),
+							 new THREE.Vector4 ( 200, 100, 0, 1 ),
+							 new THREE.Vector4 ( 200, 200, 0, 1 )
+						 ]
+					 ];
+					 degree1 = 2
+					 degree2 = 3;
+					 knots1 = [0, 0, 0, 1, 1, 1];
+					 knots2 = [0, 0, 0, 0, 1, 1, 1, 1];
+					 nurbsSurface = new THREE.NURBSSurface(degree1, degree2, knots1, knots2, nsControlPoints);
+					 return nurbsSurface.getPoint(u, v);		
+			  }
+			  function createObject(){
+				var geometry = new THREE.ParametricGeometry( createGeometry, 4, 4 );			  
+				//var geometry=new THREE.BoxGeometry( 10, 10, 10 );
+				var object = new THREE.Mesh( geometry, materialsList[0]);	
+				object.shaderNumber=0;			
+				return object;
+			  }
+			  var object = createObject();
+			  object.showChildren=function(){
+			        if (globalController.mappingMode>.5) {
+						for(var x=0; x<object.children.length ;x++){
+								object.children[x].visible=true;							
+						}
+					}else{
+						for(var x=0; x<object.children.length ;x++){
+							if (object.children[x].isCorner==true) {
+								object.children[x].visible=true;
+								object.updatecorners;
+							}
+						}					
+					}
+			  }
+			  object.hideChildren=function(){
+				for(var x=object.children.length-1;x>=0 ;x--){
+						object.children[x].visible=false;			
+				}
+			  }
+			  object.drawV=function(){
+				for(var x=0; x<object.geometry.vertices.length ; x++ ){
+					//var  geo = new THREE.BoxGeometry( 35, 35, 0 );
+					//var mat = new THREE.PointsMaterial( { size: 300, vertexColors: THREE.VertexColors , color: 0xffffff } );
+					//var mesh1 = new THREE.Mesh( geo, mat );
+					mesh1 = new THREE.Mesh( new THREE.CircleGeometry(40, 40, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}))
+					mesh1.name="vertice"+x;
+					mesh1.isCorner=false;
+					if (x == 0 || x == 4 || x == 24 || x == 20) {
+						mesh1.isCorner=true;
+					}
+					mesh1.vertNum=x;
+					mesh1.position.x=object.geometry.vertices[x].x;
+					mesh1.position.y=object.geometry.vertices[x].y;
+					mesh1.position.z=-500;
+					object.add(mesh1)
+					objects.push(mesh1)
+				}
+			  }
+			  object.setState=function(savedJSON){
+				object.visible=savedJSON.Visible;
+				object.position.z= savedJSON.ZValue;
+				object.material=materialsList[parseInt(savedJSON.Shader-1)];
+				object.shaderNumber=parseInt(savedJSON.Shader-1);
+				for(var x=0;x<object.geometry.vertices.length;x++){
+					object.geometry.vertices[x].x=savedJSON["VerticeX"+x]
+					object.geometry.vertices[x].y=savedJSON["VerticeY"+x]
+					object.children[x].position.x=savedJSON["VerticeX"+x]
+					object.children[x].position.y=savedJSON["VerticeY"+x]
+				}
+				object.geometry.verticesNeedUpdate = true;
+			  }	  
+			  object.updateCorners=function(){
+					var cornerNum=[];
+					cornerNum[0]=0;
+					cornerNum[1]=Math.sqrt(object.geometry.vertices.length)-1
+					cornerNum[2]=object.geometry.vertices.length-1-(Math.sqrt(object.geometry.vertices.length)-1)
+					cornerNum[3]=object.geometry.vertices.length-1
+					var x1 = object.geometry.vertices[cornerNum[0]].x
+					var y1 = object.geometry.vertices[cornerNum[0]].y
+					var x2 = object.geometry.vertices[cornerNum[1]].x
+					var y2 = object.geometry.vertices[cornerNum[1]].y
+					var x3 = object.geometry.vertices[cornerNum[2]].x
+					var y3 = object.geometry.vertices[cornerNum[2]].y
+					var x4 = object.geometry.vertices[cornerNum[3]].x
+					var y4 = object.geometry.vertices[cornerNum[3]].y
+					var xDiff1=(x2-x1)/(Math.sqrt(object.geometry.vertices.length)-1)
+					var yDiff1=(y2-y1)/(Math.sqrt(object.geometry.vertices.length)-1)
+					for(var x=0; x<Math.sqrt(object.geometry.vertices.length);x++){
+						 object.geometry.vertices[x].x=+object.geometry.vertices[0].x+xDiff1*x;
+						 object.geometry.vertices[x].y=object.geometry.vertices[0].y+yDiff1*x;
+					}
+					xDiff1=(x3-x1)/(Math.sqrt(object.geometry.vertices.length)-1)
+					yDiff1=(y3-y1)/(Math.sqrt(object.geometry.vertices.length)-1)
+					for(var x=0; x<Math.sqrt(object.geometry.vertices.length);x++){
+						 object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length))*x].x=+object.geometry.vertices[0].x+xDiff1*x;
+						 object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length))*x].y=object.geometry.vertices[0].y+yDiff1*x;
+					}
+					xDiff1=(x4-x3)/(Math.sqrt(object.geometry.vertices.length)-1)
+					yDiff1=(y4-y3)/(Math.sqrt(object.geometry.vertices.length)-1)
+					for(var x=object.geometry.vertices.length-1; x>object.geometry.vertices.length-Math.sqrt(object.geometry.vertices.length);x--){
+						 object.geometry.vertices[x].x=object.geometry.vertices[object.geometry.vertices.length-1].x+xDiff1*(x-(object.geometry.vertices.length-1));
+						 object.geometry.vertices[x].y=object.geometry.vertices[object.geometry.vertices.length-1].y+yDiff1*(x-(object.geometry.vertices.length-1));
+					}
+					xDiff1=(x4-x2)/(Math.sqrt(object.geometry.vertices.length)-1)
+					yDiff1=(y4-y2)/(Math.sqrt(object.geometry.vertices.length)-1)
+					for(var x=0; x<Math.sqrt(object.geometry.vertices.length);x++){
+						 object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length))*x+Math.sqrt(object.geometry.vertices.length)-1].x=object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length)-1)].x+xDiff1*(x);
+						 object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length))*x+Math.sqrt(object.geometry.vertices.length)-1].y=object.geometry.vertices[(Math.sqrt(object.geometry.vertices.length)-1)].y+yDiff1*(x);
+					}
+					var sqrt=(Math.sqrt(object.geometry.vertices.length))
+					var numOfMiddleRows=(Math.sqrt(object.geometry.vertices.length)-2)
+					for(var rowNum = 1; rowNum < (Math.sqrt(object.geometry.vertices.length)-1) ; rowNum ++){
+						 var x1 = object.geometry.vertices[rowNum*sqrt].x
+						 var y1 = object.geometry.vertices[rowNum*sqrt].y
+						 var x2 = object.geometry.vertices[rowNum*sqrt+(sqrt-1)].x
+						 var y2 = object.geometry.vertices[rowNum*sqrt+(sqrt-1)].y
+						 xDiff1=(x2-x1)/(Math.sqrt(object.geometry.vertices.length)-1)
+						 yDiff1=(y2-y1)/(Math.sqrt(object.geometry.vertices.length)-1)
+						 for(var x=0; x<(Math.sqrt(object.geometry.vertices.length)-1) ; x++ ){
+							  object.geometry.vertices[rowNum*sqrt+x].x= x1+xDiff1*x;
+							  object.geometry.vertices[rowNum*sqrt+x].y= y1+yDiff1*x;
+						 }
+					}
+					
+					object.geometry.verticesNeedUpdate = true;
+					//object.drawV()
+					for(var x=0;x<object.geometry.vertices.length;x++){
+						objectController["VerticeX"+x]=object.geometry.vertices[x].x;
+						objectController["VerticeY"+x]=object.geometry.vertices[x].y;
+					}
+					for(var x=0;x<object.children.length;x++){
+						if(object.children[x].name.indexOf("vertice"!=0)){
+							object.children[x].position.x=object.geometry.vertices[x].x;
+							object.children[x].position.y=object.geometry.vertices[x].y;
+							statesArray[globalController.selectedObject]["VerticeX"+x]=object.geometry.vertices[x].x;
+							statesArray[globalController.selectedObject]["VerticeY"+x]=object.geometry.vertices[x].y;
+						}		
+					}
+					
+					//
+			  }
+			  object.drawV();
+			  object.visible=false;
+			  scene.add(object);
+			  displayObjects.push(object);
+			}
+
+			function updateObject(controlType){
+
+				if(controlType=="shader"){
+					console.log('AA')
+					if(displayObjects[globalController.selectedObject].shaderNumber==0){
+						displayObjects[globalController.selectedObject].material=materialsList[1];
+						displayObjects[globalController.selectedObject].shaderNumber=1;
+						document.getElementById("mapping-controls-selected-shader").style.backgroundColor="grey";
+						statesArray[globalController.selectedObject].Shader=2;
+					}else{
+						displayObjects[globalController.selectedObject].material=materialsList[0];
+						displayObjects[globalController.selectedObject].shaderNumber=0;
+						document.getElementById("mapping-controls-selected-shader").style.backgroundColor="black";
+						statesArray[globalController.selectedObject].Shader=1;
+					}
+				}
+
+				if(controlType=="visible"){
+					console.log('BB')
+					if(displayObjects[globalController.selectedObject].visible==true){
+						displayObjects[globalController.selectedObject].visible=false;
+						document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="black";
+						statesArray[globalController.selectedObject].Visible=false;
+					}else{
+						displayObjects[globalController.selectedObject].visible=true
+						document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="grey";
+						statesArray[globalController.selectedObject].Visible=true;
+					}
+				}
+
+				if(controlType=="zValue"){
+					displayObjects[globalController.selectedObject].position.z=document.getElementById("zSlider").value;
+					statesArray[globalController.selectedObject].ZValue=document.getElementById("zSlider").value;
+				}
+
+			}
+
+			function selectObject(objectNum, buttonId){
+				globalController.selectedObject=parseInt(objectNum);
+				buttonElem=document.getElementById(buttonId);
+				// console.log(buttonElem.style);
+				for(var x=0; x<displayObjects.length; x++){
+					displayObjects[x].hideChildren()
+					document.getElementById("mapping-controls-grid-item-"+parseInt(x+1)).style.backgroundColor="black";
+				}
+				displayObjects[parseInt(objectNum)].showChildren()
+				buttonElem.style.backgroundColor="grey";
+				
+				if(displayObjects[parseInt(objectNum)].visible){
+					document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="grey";
+				}else{
+					document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="black";
+				}
+
+				if(displayObjects[parseInt(objectNum)].shaderNumber==1){
+					document.getElementById("mapping-controls-selected-shader").style.backgroundColor="grey";
+				}else{
+					document.getElementById("mapping-controls-selected-shader").style.backgroundColor="black";
+				}
+
+				document.getElementById("zSlider").value=statesArray[parseInt(objectNum)].ZValue;
+				
+			}
+
+			function onWindowResize() {
+				var aspect = window.innerWidth / window.innerHeight;
+				camera.left   = - frustumSize * aspect / 2;
+				camera.right  =   frustumSize * aspect / 2;
+				camera.top    =   frustumSize / 2;
+				camera.bottom = - frustumSize / 2;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+			}
+			
+			function onDocumentTouchMove(event){
+				if (SELECTED) {
+					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+						console.log(SELECTED)
+						SELECTED.parent.updateCorners();
+					}
+				}
+                mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
+                mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
+
+				uniforms1.mousey={ value: mouse.y };
+				uniforms2.mousey={ value: mouse.y };
+				uniforms1.mousex={ value: mouse.x };
+				uniforms2.mousex={ value: mouse.x };
+				raycaster.setFromCamera( mouse, camera );
+				if ( SELECTED ) {
+					
+					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+						    console.log(SELECTED.name)
+							SELECTED.position.copy(intersection.sub( offset ));
+							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
+							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
+							SELECTED.parent.geometry.verticesNeedUpdate = true;
+							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+						}
+					}
+					return;
+				}
+				var intersects = raycaster.intersectObjects( objects);
+				if ( intersects.length > 0 ) {
+					if ( INTERSECTED != intersects[ 0 ].object ) {
+						INTERSECTED = intersects[ 0 ].object;
+						plane.setFromNormalAndCoplanarPoint(
+							camera.getWorldDirection( plane.normal ),
+							INTERSECTED.position );
+					}
+					container.style.cursor = 'pointer';
+				} else {
+					INTERSECTED = null;
+					container.style.cursor = 'auto';
+				}
+			}
+
+			function onDocumentTouchStart(event){
+				mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
+                mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
+				requestFullScreen();
+                raycaster.setFromCamera( mouse, camera );
+				intersects = raycaster.intersectObjects( objects);
+				if ( intersects.length > 0 ) {
+					SELECTED = intersects[ 0 ].object;
+					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+						offset.copy( intersection ).sub( SELECTED.position );
+					}
+					container.style.cursor = 'move';
+				}
+				if (SELECTED) {
+					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+						// console.log(SELECTED)
+						SELECTED.parent.updateCorners();
+
+						var listOfCornerVertices=[4,0,20,24];
+						selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
+						// console.log("Selected Vertice:"+selectedVertice);
+					}
+				}
+			}
+
+            function onDocumentTouchEnd(event){
+				SELECTED = null;
+				//event.preventDefault();
+				if (SELECTED) {
+					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+						SELECTED.parent.updateCorners();
+					}
+				}
+				
+				container.style.cursor = 'auto';
+			}
+				         			
+			function onDocumentMouseMove( event ) {
+				if (SELECTED) {
+					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+						console.log(SELECTED)
+						SELECTED.parent.updateCorners();
+					}
+				}
+				mouse.x = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
+				uniforms1.mousey={ value: mouse.y };
+				uniforms2.mousey={ value: mouse.y };
+				uniforms1.mousex={ value: mouse.x };
+				uniforms2.mousex={ value: mouse.x };
+				raycaster.setFromCamera( mouse, camera );
+				if ( SELECTED ) {
+					
+					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+						    console.log(SELECTED.name)
+							SELECTED.position.copy(intersection.sub( offset ));
+							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
+							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
+							SELECTED.parent.geometry.verticesNeedUpdate = true;
+							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+						}
+					}
+					return;
+				}
+				var intersects = raycaster.intersectObjects( objects);
+				if ( intersects.length > 0 ) {
+					if ( INTERSECTED != intersects[ 0 ].object ) {
+						INTERSECTED = intersects[ 0 ].object;
+						plane.setFromNormalAndCoplanarPoint(
+							camera.getWorldDirection( plane.normal ),
+							INTERSECTED.position );
+					}
+					container.style.cursor = 'pointer';
+				} else {
+					INTERSECTED = null;
+					container.style.cursor = 'auto';
+				}
+			}
+			
+			function onDocumentMouseDown( event ) {
+					raycaster.setFromCamera( mouse, camera );
+					intersects = raycaster.intersectObjects( objects);
+					if ( intersects.length > 0 ) {
+						SELECTED = intersects[ 0 ].object;
+						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+							offset.copy( intersection ).sub( SELECTED.position );
+						}
+						container.style.cursor = 'move';
+					}
+					if (SELECTED) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+							// console.log(SELECTED)
+							SELECTED.parent.updateCorners();
+
+							var listOfCornerVertices=[4,0,20,24];
+							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
+							// console.log("Selected Vertice:"+selectedVertice);
+						}
+					}
+			}
+			
+			function onDocumentMouseUp( event ) {
+				//event.preventDefault();
+				if (SELECTED) {
+					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+						SELECTED.parent.updateCorners();
+					}
+				}
+				SELECTED = null;
+				container.style.cursor = 'auto';
+			}
+				
+			function animate() {
+			    // if(painterController.ColorMix != 0){
+				// 	colorCounter=colorCounter+painterController.ColorRate
+				// 	if(colorCounter > 1){
+				// 		colorCounter=0;
+				// 		clr.change();
+				// 	}
+			    // }
+				requestAnimationFrame( animate );
+				render();
+			}
+			
+			function render() {
+				uniforms1[ "time" ].value += .01 * 5;
+				uniforms2[ "time" ].value += .01 * 5;
+				uniforms1[ "brightness" ].value=globalController.BrightnessA;
+				uniforms2[ "brightness" ].value=globalController.BrightnessB;
+				for(var x=0;x<displayObjects.length;x++){
+					displayObjects[x].material.transparent=true
+					displayObjects[x].material.needsUpdate=true
+				}
+				renderer.render( scene, camera );
+			}
+			
+			function requestFullScreen() {
+				// Supports most browsers and their versions.
+				var element = document.body; // Make the body go full screen.
+				var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+			
+				if (requestMethod) { // Native full screen.
+					requestMethod.call(element);
+				} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+					var wscript = new ActiveXObject("WScript.Shell");
+					if (wscript !== null) {
+						wscript.SendKeys("{F11}");
+					}
+				}
+			}
+		
+			function saveState(){
+				globalState.BrightnessA=document.getElementById("slider1a").value/1000;
+				globalState.BrightnessB=document.getElementById("slider1b").value/1000;
+				globalState.DMX_Brightness=document.getElementById("slider2").value/1000;
+				globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
+				globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
+				globalState.SavedByController=true;
+				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log(xmlhttp.response.status);
+					setTimeout(function(){
+						if(isMidPresetChange==false){
+							setTimeout(function(){
+								saveState();
+							}, 200);
+						}
+					}, 200);
+				}
+			}
+			
+			function recallState(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+
+					globalState=JSON.parse(xmlhttp.response).global;
+					if(globalState.SavedByController==false){
+						var temp=JSON.parse(xmlhttp.response).storage;
+						for(var x=0; x<4; x++){
+							for(var y=0; y<25; y++){
+								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]/1.5;
+								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]/1.5;
+								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]+window.innerWidth*.04;
+								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]+window.innerHeight*.09;
+							}						
+						}
+						statesArray=temp;
+					}else{
+						statesArray=JSON.parse(xmlhttp.response).storage
+					}			
+
+					syncObjectsToJson(true);
+					if(initControllerDone==false){
+						initController();
+					}
+					if(isMidPresetChange==true){
+						isMidPresetChange=false;
+						updateControllerView();
+						saveState();
+					}
+					changeMask(1);
+					changeMask(2);
+				}
+			}	
+			
+			function clonePreset5(destinationPresetNumber){
+				if(destinationPresetNumber<9){
+					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
+					xmlhttp.send(requestBody);
+					xmlhttp.onload = function(e){
+						clonePreset5(destinationPresetNumber+1);
+					}
+				}
+			}
+	
+            function getNumberOfShadersAndPresets(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=fragmentShaders/numberOfShaders.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+                    numberOfShaders=parseInt(xmlhttp.response);
+                    console.log("get number of shaders: "+numberOfShaders)			
+				}
+				var xmlhttp2=new XMLHttpRequest();
+				xmlhttp2.open("GET", "../php/read.php?fn=dmxPresets/numberOfPatterns.txt", true);
+				xmlhttp2.send();
+				xmlhttp2.onload = function(e){
+                    numberOfDMXPatterns=parseInt(xmlhttp2.response);
+                    console.log("get number of dmx patterns: "+numberOfDMXPatterns);
+				}
+				var xmlhttp3=new XMLHttpRequest();
+				xmlhttp3.open("GET", "../php/read.php?fn=masks/numberOfMasks.txt", true);
+				xmlhttp3.send();
+				xmlhttp3.onload = function(e){
+                    numberOfMasks=parseInt(xmlhttp3.response);
+                    console.log("get number of masks: "+numberOfMasks)			
+				}
+				var xmlhttp4=new XMLHttpRequest();
+				xmlhttp4.open("GET", "../php/read.php?fn=dmxPresets/pattern0.txt", true);
+				xmlhttp4.send();
+				xmlhttp4.onload = function(e){
+                    listOfGuardedChannels=xmlhttp4.response.split(",");
+					for (var x=0; x<listOfGuardedChannels.length; x++){
+						listOfGuardedChannels[x]=parseInt(listOfGuardedChannels[x]);
+					}
+                    console.log("get list of guarded channels: "+listOfGuardedChannels)				
+				}
+            }
+		
+			function getCanvasYFlip(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=misc/canvasYFlip.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					var yFlipValue=parseInt(xmlhttp.response);
+					console.log("Got Y Flip Value: "+yFlipValue);
+					document.getElementsByTagName('canvas')[0].style.transform='scale(1,'+yFlipValue+')';
+				}
+			}
+		
+			function initController(){
+				document.getElementById('VJ_Button').style.backgroundColor='grey';
 				createGrid("A");
 					createGrid("B");
 					createDMXGrid();
@@ -165,10 +1293,99 @@
 					document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
 					document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
 					document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
-					initDone=true;
-					saveState();
+					initControllerDone=true;
+					saveControllerState();
 			}
 
+			function selectPage(buttonElement){
+				console.log("Selected Page:"+buttonElement.id)
+				// document.getElementById('Menu_Button').style.backgroundColor='black';
+				document.getElementById('VJ_Button').style.backgroundColor='black';
+				document.getElementById('Mapping_Button').style.backgroundColor='black';
+				// document.getElementById('Effects_Button').style.backgroundColor='black';
+				buttonElement.style.backgroundColor='grey';
+				if(buttonElement.id=="Menu_Button"){
+					clearVJ();
+					clearEffects();
+					clearMapping();
+					showMenu();
+				}else if(buttonElement.id=="VJ_Button"){
+					clearMenu();
+					clearEffects();
+					clearMapping();
+					showVJ();
+				}else if(buttonElement.id=="Mapping_Button"){
+					clearVJ();
+					clearMenu();
+					clearEffects();
+					showMapping();
+				}else if(buttonElement.id=="Effects_Button"){
+					clearVJ();
+					clearMenu();
+					clearMapping();
+					showEffects();
+				}
+				function clearVJ(){
+					document.getElementById('grid-container-A').style.display='none';
+					document.getElementById('grid-container-B').style.display='none';
+					document.getElementById('mask-container-A').style.display='none';
+					document.getElementById('mask-container-B').style.display='none';
+					document.getElementById('slider-container').style.display='none';
+					document.getElementById('dmx-grid-container').style.display='none';
+					document.getElementById('sectionLabelA').style.display='none';	
+					document.getElementById('sectionLabelB').style.display='none';	
+					document.getElementById('sectionLabelC').style.display='none';	
+					document.getElementById('sectionLabelD').style.display='none';	
+					document.getElementById('presets-grid-container').style.display='none';	
+				}
+				function showVJ(){
+					document.getElementById('grid-container-A').style.display='grid';
+					document.getElementById('grid-container-B').style.display='grid';
+					document.getElementById('mask-container-A').style.display='grid';
+					document.getElementById('mask-container-B').style.display='grid';
+					document.getElementById('slider-container').style.display='grid';
+					document.getElementById('dmx-grid-container').style.display='grid';	
+					document.getElementById('sectionLabelA').style.display='grid';	
+					document.getElementById('sectionLabelB').style.display='grid';	
+					document.getElementById('sectionLabelC').style.display='grid';	
+					document.getElementById('sectionLabelD').style.display='grid';	
+					document.getElementById('presets-grid-container').style.display='grid';		
+				}
+				function clearMenu(){
+					document.getElementById('menu_page').style.display='none';
+					document.getElementById('presets-grid-container').style.display='none';		
+
+				}
+				function showMenu(){
+					document.getElementById('menu_page').style.display='block';
+					document.getElementById('presets-grid-container').style.display='grid';		
+
+
+				}
+				function clearEffects(){
+					document.getElementById('effects_page').style.display='none';
+					document.getElementById('presets-grid-container').style.display='none';		
+
+				}
+				function showEffects(){
+					document.getElementById('effects_page').style.display='block';
+					document.getElementById('presets-grid-container').style.display='grid';		
+
+				}
+				function clearMapping(){
+					document.getElementById('mapping_page').style.display='none';
+					renderer.domElement.style.zIndex=-1;
+					document.getElementById('mapping-controls-grid-container').style.display='none';
+
+				}
+				function showMapping(){
+					document.getElementById('mapping_page').style.display='block';
+					renderer.domElement.style.zIndex=0;
+					document.getElementById('mapping-controls-grid-container').style.display='grid';
+					selectObject( globalController.selectedObject, "mapping-controls-grid-item-"+parseInt(globalController.selectedObject+1) );
+				}
+			}
+			
 			function createGrid(deck){
 				if(deck=="A"){
 					var gridContainer=document.getElementById("grid-container-A")
@@ -253,7 +1470,7 @@
 					gridItem.presetNumber=x;
 					gridItem.style.borderColor="grey";
 					gridItem.innerHTML=x;
-					if(currentPresetNumber==x){
+					if(x==parseInt(globalController.PresetName.substring(globalController.PresetName.length-1,globalController.PresetName.length))){
 						gridItem.style.backgroundColor="grey"
 					}else{
 						gridItem.style.backgroundColor="black"
@@ -289,6 +1506,8 @@
 				}
 				globalState["Mask"+deck]=maskNumber;
 				console.log("MaskNumber:"+maskNumber+" Deck:"+deck);
+				changeMask(1);
+				changeMask(2);
 			}
 
 			function selectDMXPreset(dmxPatternNumber){
@@ -301,98 +1520,29 @@
 				}
 				globalState.DMX_Pattern=dmxPatternNumber;
 			}
-		
-			function setCurrentPresetNumber(presetNumber){
-				var requestBody=parseInt(presetNumber);
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/currentPreset.txt", true);
-				xmlhttp.send(requestBody);
-				xmlhttp.onload = function(e){
-					console.log("Changed current preset number")
-				}
-			}
 
-			function selectGlobalPreset(presetNumber){
-				currentPresetNumber=presetNumber;
-				isMidPresetChange=true;
-				recallState();
-				for(var x=1; x<=8; x++){
-					if(parseInt(presetNumber)==x){
-						document.getElementById("PresetsGridItem"+x).style.backgroundColor="grey"
-						console.log("Setting currentPreset to: "+parseInt(presetNumber));
-						setCurrentPresetNumber(parseInt(presetNumber));
-					}else{
-						document.getElementById("PresetsGridItem"+x).style.backgroundColor="black"
-					}
-				}
-			}
-			
-			function getCurrentPresetNumber(){
+			function getCurrentPresetName(){
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentPreset.txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
-					currentPresetNumber=parseInt(xmlhttp.response);
-					if(initDone==false){
-						recallState();
-					}
+					globalController.PresetName="GlobalPreset"+parseInt(xmlhttp.response);
+					recallState();
 				}
 			}
 
-			function recallState(){
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+"GlobalPreset"+currentPresetNumber+".txt", true);
-				xmlhttp.send();
-				xmlhttp.onload = function(e){
-					statesArray=JSON.parse(xmlhttp.response).storage;
-					globalState=JSON.parse(xmlhttp.response).global;
-					if(initDone==false){
-						init();
-					}
-					if(isMidPresetChange==true){
-						isMidPresetChange=false;
-						updateView();
-						saveState();
-					}
-				}
-			}	
-		
-			function saveState(){
-				globalState.BrightnessA=document.getElementById("slider1a").value/1000;
-				globalState.BrightnessB=document.getElementById("slider1b").value/1000;
-				globalState.DMX_Brightness=document.getElementById("slider2").value/1000;
-				globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
-				globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
-				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+"GlobalPreset"+currentPresetNumber+".txt", true);
-				xmlhttp.send(requestBody);
-				xmlhttp.onload = function(e){
-					console.log(xmlhttp.response.status)
-					if(isMidPresetChange==false){
-						setTimeout(function(){
-							saveState();
-						}, 200);
-					}
-				}
+			function initController(){
+				document.getElementById('VJ_Button').style.backgroundColor='grey';
+				createGrid("A");
+				createGrid("B");
+				createDMXGrid();
+				createPresetsGrid();
+				initControllerDone=true;
+				updateControllerView();
+				saveState();
 			}
-			
-			function requestFullScreen() {
-				// Supports most browsers and their versions.
-				var element = document.body; // Make the body go full screen.
-				var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
-			
-				if (requestMethod) { // Native full screen.
-					requestMethod.call(element);
-				} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
-					var wscript = new ActiveXObject("WScript.Shell");
-					if (wscript !== null) {
-						wscript.SendKeys("{F11}");
-					}
-				}
-			}
-		
-			function updateView(){
+
+			function updateControllerView(){
 				for(var x=1; x<=52; x++){
 					if(parseInt(globalState.ShaderA)==x){
 						document.getElementById("GridItem"+x+"_DeckA").style.opacity=".2"
@@ -434,6 +1584,33 @@
 				document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
 				document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
 			}
+		
+			function selectGlobalPreset(presetNumber){
+				globalController.PresetName="GlobalPreset"+parseInt(presetNumber);
+				isMidPresetChange=true;
+				recallState();
+				for(var x=1; x<=8; x++){
+					if(parseInt(presetNumber)==x){
+						document.getElementById("PresetsGridItem"+x).style.backgroundColor="grey"
+						console.log("Setting currentPreset to: "+parseInt(presetNumber));
+						setCurrentPresetNumber(parseInt(presetNumber));
+					}else{
+						document.getElementById("PresetsGridItem"+x).style.backgroundColor="black"
+					}
+				}
+			}
+		
+			function setCurrentPresetNumber(presetNumber){
+				globalController.PresetName="GlobalPreset"+presetNumber;
+				var requestBody=parseInt(presetNumber);
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Changed current preset number")
+				}
+			}
+
 		</script>
 	</body>
 </html>

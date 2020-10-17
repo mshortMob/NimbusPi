@@ -10,7 +10,7 @@ uniform sampler2D maskTexture;
 
 void main( void ) {
 
-	vec2 position = -1.0+2.*vUv;
+	vec2 position = gl_FragCoord.xy/1444.;
 		position=position*position*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
 
 	float color = 0.0;
