@@ -563,6 +563,7 @@
 				isMidPresetChange=false;
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
+				highlightSelectedVertice();
 			}
 			
 			function initShaderMaterial(uniforms1){
@@ -1034,6 +1035,7 @@
 						var listOfCornerVertices=[4,0,20,24];
 						selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
 						// console.log("Selected Vertice:"+selectedVertice);
+						highlightSelectedVertice();
 					}
 				}
 			}
@@ -1112,6 +1114,7 @@
 							var listOfCornerVertices=[4,0,20,24];
 							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
 							// console.log("Selected Vertice:"+selectedVertice);
+							highlightSelectedVertice();
 						}
 					}
 			}
@@ -1612,6 +1615,20 @@
 				}
 			}
 
+			function highlightSelectedVertice(){
+				listOfCornerVertices=[4,0,20,24];
+				console.log(selectedVertice)
+				for(var y=0; y<displayObjects.length; y++){
+					for(var x=0; x<4; x++){
+						if(parseInt(x)==parseInt(selectedVertice)){
+							displayObjects[y].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":0.0, "b":1.0}
+						}else{
+							displayObjects[y].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":1.0, "b":1.0}
+						}
+					}
+				}
+				// syncObjectsToJson();
+			}
 		</script>
 	</body>
 </html>
