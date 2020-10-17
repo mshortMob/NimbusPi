@@ -16,7 +16,7 @@ struct {
   char ssid[256] = "NimbusPi"; // This is what gets stored in EEPROM if you uncomment 
   char password[256] = "NimbusPi123"; //  EEPROM.put and EEPROM.commit in setup
   char universe[32] = "1";
-  char startChan[32] = "20";
+  char startChan[32] = "1";
 }epdata;
 Adafruit_NeoPixel leds = Adafruit_NeoPixel(num_leds, led_pin, NEO_GRBW + NEO_KHZ800);
 ArtnetWifi artnet;
@@ -93,22 +93,20 @@ void setup() {
 
 void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* data)
 {
-  // int filterUniverse=atoi(epdata.universe);
-  // int filterChan=atoi(epdata.startChan)-1;
-  // Serial.print("Filtering for universe:");
-  // Serial.println(filterUniverse);
-  if(universe==0){
-    for(int i=0;i<6;i++){
-      doSOmethingWithEyes(data)
+  int filterUniverse=atoi(epdata.universe);
+  int filterChan=atoi(epdata.startChan)-1;
+  Serial.print("Filtering for universe:");
+  Serial.println(filterUniverse);
+  if(universe==filterUniverse){
+    Serial.print("Received artnet data for universe:");
+    Serial.println(universe);
+    for(int i=0;i<num_leds;i++){
+      leds.setPixelColor(i, data[filterChan+0+(i*3)], data[filterChan+1+(i*3)], data[filterChan+2+(i*3)]);  
     }
+    leds.setBrightness(255); 
+    leds.show(); 
   }
 }
-
-void doSOmethingWithEyes(uint8_t* data){
-
-
-}
-
 
 void loop() {
   if(startupMode){
