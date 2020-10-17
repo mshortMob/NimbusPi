@@ -430,8 +430,8 @@ void main()	{
 				globalFolder.add( globalController, "BrightnessA", 0.0,1.0,.001 ).onChange(function(){updateControlsValues();});			
 				globalFolder.add( globalController, "BrightnessB", 0.0,1.0,.001 ).onChange(function(){updateControlsValues();});	
 				globalFolder.add( globalController, "VolumeThreshold", .0001,.1,.0001 ).onChange(function(){updateControlsValues();});	
-				globalFolder.add( globalController, "Camera_X", -1.0,1.0,.001 ).onChange(function(){camera.position.x=globalController.Camera_X*window.innerWidth/3; updateControlsValues();});
-				globalFolder.add( globalController, "Camera_Y", -1.0,1.0,.001 ).onChange(function(){camera.position.y=globalController.Camera_Y*window.innerHeight/3; updateControlsValues();});		
+				// globalFolder.add( globalController, "Camera_X", -1.0,1.0,.001 ).onChange(function(){camera.position.x=globalController.Camera_X*window.innerWidth/3; updateControlsValues();});
+				// globalFolder.add( globalController, "Camera_Y", -1.0,1.0,.001 ).onChange(function(){camera.position.y=globalController.Camera_Y*window.innerHeight/3; updateControlsValues();});		
 				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
 				controlsFolder.add( objectController, "Visible", true ).onChange(function(){updateControlsValues();syncObjectsToJson();});	
@@ -468,7 +468,7 @@ void main()	{
 			function initSlaveMode(){
 				if(slaveModeInterval==-1){
 					console.log("starting slaveModeInterval");
-					slaveModeInterval=setInterval(function(){getControllerData();getCurrentPresetNumber();},  200);
+					slaveModeInterval=setInterval(function(){getControllerData();getCurrentPresetNumber();},  125);
 				}
 			}
 
@@ -482,8 +482,8 @@ void main()	{
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
 							for(var y=0; y<25; y++){
-								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*1.5;
-								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*1.5;
+								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*2;
+								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*2;
 								// temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]+window.innerWidth*.04;
 								// temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]-window.innerHeight*.09;
 							}						
@@ -1006,8 +1006,8 @@ void main()	{
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
 							for(var y=0; y<25; y++){
-								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*1.5;
-								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*1.5;
+								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*2;
+								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*2;
 								// temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]+window.innerWidth*.04;
 								// temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]-window.innerHeight*.09;
 							}						

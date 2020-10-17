@@ -563,6 +563,7 @@
 				isMidPresetChange=false;
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
+				highlightSelectedVertice();
 			}
 			
 			function initShaderMaterial(uniforms1){
@@ -791,7 +792,7 @@
 					//var  geo = new THREE.BoxGeometry( 35, 35, 0 );
 					//var mat = new THREE.PointsMaterial( { size: 300, vertexColors: THREE.VertexColors , color: 0xffffff } );
 					//var mesh1 = new THREE.Mesh( geo, mat );
-					mesh1 = new THREE.Mesh( new THREE.CircleGeometry(40, 40, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}))
+					mesh1 = new THREE.Mesh( new THREE.CircleGeometry(60, 60, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}))
 					mesh1.name="vertice"+x;
 					mesh1.isCorner=false;
 					if (x == 0 || x == 4 || x == 24 || x == 20) {
@@ -1034,6 +1035,7 @@
 						var listOfCornerVertices=[4,0,20,24];
 						selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
 						// console.log("Selected Vertice:"+selectedVertice);
+						highlightSelectedVertice();
 					}
 				}
 			}
@@ -1112,6 +1114,7 @@
 							var listOfCornerVertices=[4,0,20,24];
 							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
 							// console.log("Selected Vertice:"+selectedVertice);
+							highlightSelectedVertice();
 						}
 					}
 			}
@@ -1185,7 +1188,7 @@
 								saveState();
 							}, 200);
 						}
-					}, 200);
+					}, 125);
 				}
 			}
 			
@@ -1202,8 +1205,8 @@
 							for(var y=0; y<25; y++){
 								// temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]-window.innerWidth*.04;
 								// temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]+window.innerHeight*.09;
-								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]/1.5;
-								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]/1.5;
+								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]/2;
+								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]/2;
 
 							}						
 						}
@@ -1612,6 +1615,20 @@
 				}
 			}
 
+			function highlightSelectedVertice(){
+				listOfCornerVertices=[4,0,20,24];
+				console.log(selectedVertice)
+				for(var y=0; y<displayObjects.length; y++){
+					for(var x=0; x<4; x++){
+						if(parseInt(x)==parseInt(selectedVertice)){
+							displayObjects[y].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":0.0, "b":1.0}
+						}else{
+							displayObjects[y].children[listOfCornerVertices[x]].material.color={"r":1.0, "g":1.0, "b":1.0}
+						}
+					}
+				}
+				// syncObjectsToJson();
+			}
 		</script>
 	</body>
 </html>
