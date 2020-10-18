@@ -441,7 +441,7 @@
 			<button id="mapping-controls-selected-shader" onclick="updateObject('shader');" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Shader AB</button>		
 			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">ZValue:</button>
 			<input type="range" min="-20" max="20" value="0" onchange="updateObject('zValue');" id="zSlider" style="">
-			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Course / Fine</button>
+			<button id="courseFineButton" class="mapping-controls-grid-item" onclick="toggleFineMapping();" style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Course / Fine</button>
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
 			<!-- <button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Menu</button> -->
@@ -515,6 +515,7 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				fineMappingEnabled=false;
 				slaveModeInterval=-1;
 				controllerModeInterval=-1;
 				getCanvasYFlip();
@@ -578,6 +579,15 @@
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+			}
+			
+			function toggleFineMapping(){
+				fineMappingEnabled=!fineMappingEnabled;
+				if(fineMappingEnabled){
+					document.getElementById("courseFineButton").style.backgroundColor='grey';
+				}else{
+					document.getElementById("courseFineButton").style.backgroundColor='black';
+				}
 			}
 			
 			function initShaderMaterial(uniforms1){
