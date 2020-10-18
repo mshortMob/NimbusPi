@@ -78,6 +78,19 @@
 					padding:0px;
 					left:0%;
 				}
+				.mapping-controls-grid-container-top{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto;
+					background-color: #777777;
+					width:96%;
+					height:5%;
+					top:0%;
+					left:3.5%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
 				.menu-grid-container{
 						display: grid;
 						grid-template-columns: auto;
@@ -271,6 +284,19 @@
 					padding:0px;
 					left:0%;
 				}
+				.mapping-controls-grid-container-top{
+					display: grid;
+					grid-template-columns: auto auto auto auto auto;
+					background-color: #777777;
+					width:94%;
+					height:5%;
+					top:0%;
+					left:5%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
 				.menu-grid-container{
 						display: grid;
 						grid-template-columns: auto;
@@ -443,6 +469,13 @@
 			<input type="range" min="-20" max="20" value="0" onchange="updateObject('zValue');" id="zSlider" style="">
 			<button id="courseFineButton" class="mapping-controls-grid-item" onclick="toggleFineMapping();" style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Course / Fine</button>
 		</div>
+		<div class="mapping-controls-grid-container-top" id="mapping-controls-grid-container-top" style="z-index:1; display:none;">
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Selected Vertice:</button>
+			<button id="selectVertice1" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">1</button>
+			<button id="selectVertice2" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
+			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
+			<button id="selectVertice4" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
+		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
 			<!-- <button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Menu</button> -->
 			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
@@ -586,6 +619,15 @@
 				highlightSelectedVertice();
 			}
 			
+			function selectVertice(verticeNum, elem){
+				for(var x=1; x<5; x++){
+					document.getElementById("selectVertice"+x).style.backgroundColor="black"
+				}
+				elem.style.backgroundColor="grey";
+				selectedVertice=verticeNum;
+				highlightSelectedVertice();
+			}
+
 			function toggleFineMapping(){
 				fineMappingEnabled=!fineMappingEnabled;
 				if(fineMappingEnabled){
@@ -1470,12 +1512,13 @@
 					document.getElementById('mapping_page').style.display='none';
 					renderer.domElement.style.zIndex=-1;
 					document.getElementById('mapping-controls-grid-container').style.display='none';
-
+					document.getElementById('mapping-controls-grid-container-top').style.display='none';
 				}
 				function showMapping(){
 					document.getElementById('mapping_page').style.display='block';
 					renderer.domElement.style.zIndex=0;
 					document.getElementById('mapping-controls-grid-container').style.display='grid';
+					document.getElementById('mapping-controls-grid-container-top').style.display='grid';
 					selectObject( globalController.selectedObject, "mapping-controls-grid-item-"+parseInt(globalController.selectedObject+1) );
 				}
 			}
