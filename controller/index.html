@@ -80,7 +80,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: auto auto auto auto auto;
+					grid-template-columns: auto auto auto auto auto auto;
 					background-color: #777777;
 					width:96%;
 					height:5%;
@@ -286,7 +286,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: auto auto auto auto auto;
+					grid-template-columns: auto auto auto auto auto auto;
 					background-color: #777777;
 					width:94%;
 					height:5%;
@@ -475,6 +475,8 @@
 			<button id="selectVertice2" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="selectVertice4" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
+			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save To All Presets</button>
+
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
 			<!-- <button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Menu</button> -->
@@ -1361,14 +1363,31 @@
 				}
 			}	
 			
-			function clonePreset5(destinationPresetNumber){
+			function saveMapForAllPresets(destinationPresetNumber){
 				if(destinationPresetNumber<9){
-					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
 					var xmlhttp=new XMLHttpRequest();
-					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
-					xmlhttp.send(requestBody);
+					xmlhttp.open("GET", "../php/read.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
+					xmlhttp.send();
 					xmlhttp.onload = function(e){
-						clonePreset5(destinationPresetNumber+1);
+						var tempAllStates=JSON.parse(xmlhttp.response);
+						for(var x=0; x<4; x++){
+							for(var y=0; y<25; y++){
+								tempAllStates.storage[x]["VerticeX"+y]=statesArray[x]["VerticeX"+y];
+								tempAllStates.storage[x]["VerticeY"+y]=statesArray[x]["VerticeY"+y];
+
+							}
+							tempAllStates.storage[x].ZValue=statesArray[x].ZValue;
+							tempAllStates.storage[x].Visible=statesArray[x].Visible;
+							tempAllStates.storage[x].Shader=statesArray[x].Shader;
+						}
+						tempAllStates.global.SavedByController=true;
+						
+						var xmlhttp2=new XMLHttpRequest();
+						xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
+						xmlhttp2.send(JSON.stringify(tempAllStates));
+						xmlhttp2.onload = function(e){
+							saveMapForAllPresets(destinationPresetNumber+1);
+						}
 					}
 				}
 			}
