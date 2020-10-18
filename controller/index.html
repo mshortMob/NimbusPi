@@ -994,73 +994,80 @@
 			}
 			
 			function onDocumentTouchMove(event){
-				if (SELECTED) {
-					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
-						console.log(SELECTED)
-						SELECTED.parent.updateCorners();
-					}
-				}
-                mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
-                mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
-
-				uniforms1.mousey={ value: mouse.y };
-				uniforms2.mousey={ value: mouse.y };
-				uniforms1.mousex={ value: mouse.x };
-				uniforms2.mousex={ value: mouse.x };
-				raycaster.setFromCamera( mouse, camera );
-				if ( SELECTED ) {
-					
-					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
-						    console.log(SELECTED.name)
-							SELECTED.position.copy(intersection.sub( offset ));
-							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
-							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
-							SELECTED.parent.geometry.verticesNeedUpdate = true;
-							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+				if(fineMappingEnabled==false){
+					if (SELECTED) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+							console.log(SELECTED)
+							SELECTED.parent.updateCorners();
 						}
 					}
-					return;
 				}
-				var intersects = raycaster.intersectObjects( objects);
-				if ( intersects.length > 0 ) {
-					if ( INTERSECTED != intersects[ 0 ].object ) {
-						INTERSECTED = intersects[ 0 ].object;
-						plane.setFromNormalAndCoplanarPoint(
-							camera.getWorldDirection( plane.normal ),
-							INTERSECTED.position );
+
+				mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
+                mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
+				
+				if(fineMappingEnabled==false){
+					uniforms1.mousey={ value: mouse.y };
+					uniforms2.mousey={ value: mouse.y };
+					uniforms1.mousex={ value: mouse.x };
+					uniforms2.mousex={ value: mouse.x };
+					raycaster.setFromCamera( mouse, camera );
+					if ( SELECTED ) {
+						
+						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+								console.log(SELECTED.name)
+								SELECTED.position.copy(intersection.sub( offset ));
+								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
+								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
+								SELECTED.parent.geometry.verticesNeedUpdate = true;
+								statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+								statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+							}
+						}
+						return;
 					}
-					container.style.cursor = 'pointer';
-				} else {
-					INTERSECTED = null;
-					container.style.cursor = 'auto';
+					var intersects = raycaster.intersectObjects( objects);
+					if ( intersects.length > 0 ) {
+						if ( INTERSECTED != intersects[ 0 ].object ) {
+							INTERSECTED = intersects[ 0 ].object;
+							plane.setFromNormalAndCoplanarPoint(
+								camera.getWorldDirection( plane.normal ),
+								INTERSECTED.position );
+						}
+						container.style.cursor = 'pointer';
+					} else {
+						INTERSECTED = null;
+						container.style.cursor = 'auto';
+					}
 				}
 			}
 
 			function onDocumentTouchStart(event){
 				mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
                 mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
-				requestFullScreen();
-                raycaster.setFromCamera( mouse, camera );
-				intersects = raycaster.intersectObjects( objects);
-				if ( intersects.length > 0 ) {
-					SELECTED = intersects[ 0 ].object;
-					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-						offset.copy( intersection ).sub( SELECTED.position );
+				if(fineMappingEnabled==false){
+					requestFullScreen();
+					raycaster.setFromCamera( mouse, camera );
+					intersects = raycaster.intersectObjects( objects);
+					if ( intersects.length > 0 ) {
+						SELECTED = intersects[ 0 ].object;
+						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+							offset.copy( intersection ).sub( SELECTED.position );
+						}
+						container.style.cursor = 'move';
 					}
-					container.style.cursor = 'move';
-				}
-				if (SELECTED) {
-					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
-						// console.log(SELECTED)
-						SELECTED.parent.updateCorners();
+					if (SELECTED) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+							// console.log(SELECTED)
+							SELECTED.parent.updateCorners();
 
-						var listOfCornerVertices=[4,0,20,24];
-						selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
-						// console.log("Selected Vertice:"+selectedVertice);
-						highlightSelectedVertice();
-					}
+							var listOfCornerVertices=[4,0,20,24];
+							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
+							// console.log("Selected Vertice:"+selectedVertice);
+							highlightSelectedVertice();
+						}
+					}	
 				}
 			}
 
@@ -1077,50 +1084,55 @@
 			}
 				         			
 			function onDocumentMouseMove( event ) {
-				if (SELECTED) {
-					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
-						console.log(SELECTED)
-						SELECTED.parent.updateCorners();
+				if(fineMappingEnabled==false){
+					if (SELECTED) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+							console.log(SELECTED)
+							SELECTED.parent.updateCorners();
+						}
 					}
 				}
 				mouse.x = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
 				mouse.y = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
-				uniforms1.mousey={ value: mouse.y };
-				uniforms2.mousey={ value: mouse.y };
-				uniforms1.mousex={ value: mouse.x };
-				uniforms2.mousex={ value: mouse.x };
-				raycaster.setFromCamera( mouse, camera );
-				if ( SELECTED ) {
-					
-					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
-						    console.log(SELECTED.name)
-							SELECTED.position.copy(intersection.sub( offset ));
-							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
-							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
-							SELECTED.parent.geometry.verticesNeedUpdate = true;
-							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+				if(fineMappingEnabled==false){
+					uniforms1.mousey={ value: mouse.y };
+					uniforms2.mousey={ value: mouse.y };
+					uniforms1.mousex={ value: mouse.x };
+					uniforms2.mousex={ value: mouse.x };
+					raycaster.setFromCamera( mouse, camera );
+					if ( SELECTED ) {
+						
+						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+								console.log(SELECTED.name)
+								SELECTED.position.copy(intersection.sub( offset ));
+								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
+								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
+								SELECTED.parent.geometry.verticesNeedUpdate = true;
+								statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+								statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+							}
 						}
+						return;
 					}
-					return;
-				}
-				var intersects = raycaster.intersectObjects( objects);
-				if ( intersects.length > 0 ) {
-					if ( INTERSECTED != intersects[ 0 ].object ) {
-						INTERSECTED = intersects[ 0 ].object;
-						plane.setFromNormalAndCoplanarPoint(
-							camera.getWorldDirection( plane.normal ),
-							INTERSECTED.position );
+					var intersects = raycaster.intersectObjects( objects);
+					if ( intersects.length > 0 ) {
+						if ( INTERSECTED != intersects[ 0 ].object ) {
+							INTERSECTED = intersects[ 0 ].object;
+							plane.setFromNormalAndCoplanarPoint(
+								camera.getWorldDirection( plane.normal ),
+								INTERSECTED.position );
+						}
+						container.style.cursor = 'pointer';
+					} else {
+						INTERSECTED = null;
+						container.style.cursor = 'auto';
 					}
-					container.style.cursor = 'pointer';
-				} else {
-					INTERSECTED = null;
-					container.style.cursor = 'auto';
 				}
 			}
 			
 			function onDocumentMouseDown( event ) {
+				if(fineMappingEnabled==false){
 					raycaster.setFromCamera( mouse, camera );
 					intersects = raycaster.intersectObjects( objects);
 					if ( intersects.length > 0 ) {
@@ -1141,6 +1153,7 @@
 							highlightSelectedVertice();
 						}
 					}
+				}
 			}
 			
 			function onDocumentMouseUp( event ) {
