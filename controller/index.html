@@ -515,6 +515,11 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				lastMouseX=0;
+				lastMouseY=0;
+				mouseVelX=0;
+				mouseVelY=0;
+				mouseIsDown=false;
 				fineMappingEnabled=false;
 				slaveModeInterval=-1;
 				controllerModeInterval=-1;
@@ -743,7 +748,7 @@
 			function syncObjectsToJson(includGlobal){
 				for(var x=0;x<displayObjects.length;x++){
 					displayObjects[x].setState(statesArray[x])
-					displayObjects[x].hideChildren();
+					// displayObjects[x].hideChildren();
 				}
 				// displayObjects[globalController.selectedObject].showChildren();
 
@@ -994,6 +999,7 @@
 			}
 			
 			function onDocumentTouchMove(event){
+
 				if(fineMappingEnabled==false){
 					if (SELECTED) {
 						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
@@ -1006,6 +1012,20 @@
 				mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
                 mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
 				
+				if(fineMappingEnabled==true){
+					if(mouseIsDown==true){
+						mouseVelX=(lastMouseX-mouse.x)*100;
+						mouseVelY=(lastMouseY-mouse.y)*100;
+						lastMouseX=mouse.x;
+						lastMouseY=mouse.y;
+						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+				}
+
 				if(fineMappingEnabled==false){
 					uniforms1.mousey={ value: mouse.y };
 					uniforms2.mousey={ value: mouse.y };
@@ -1044,6 +1064,12 @@
 			}
 
 			function onDocumentTouchStart(event){
+				if(fineMappingEnabled==true){
+					mouseIsDown=true;
+					lastMouseX = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
+					lastMouseY = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
+				}
+
 				mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
                 mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
 				if(fineMappingEnabled==false){
@@ -1072,6 +1098,9 @@
 			}
 
             function onDocumentTouchEnd(event){
+				if(fineMappingEnabled==true){
+					mouseIsDown=false;
+				}
 				SELECTED = null;
 				//event.preventDefault();
 				if (SELECTED) {
@@ -1092,8 +1121,24 @@
 						}
 					}
 				}
+				
 				mouse.x = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
 				mouse.y = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
+
+				if(fineMappingEnabled==true){
+					if(mouseIsDown==true){
+						mouseVelX=(lastMouseX-mouse.x)*100;
+						mouseVelY=(lastMouseY-mouse.y)*100;
+						lastMouseX=mouse.x;
+						lastMouseY=mouse.y;
+						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+				}
+
 				if(fineMappingEnabled==false){
 					uniforms1.mousey={ value: mouse.y };
 					uniforms2.mousey={ value: mouse.y };
@@ -1132,6 +1177,11 @@
 			}
 			
 			function onDocumentMouseDown( event ) {
+				if(fineMappingEnabled==true){
+					mouseIsDown=true;
+					lastMouseX = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
+					lastMouseY = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
+				}
 				if(fineMappingEnabled==false){
 					raycaster.setFromCamera( mouse, camera );
 					intersects = raycaster.intersectObjects( objects);
@@ -1157,6 +1207,9 @@
 			}
 			
 			function onDocumentMouseUp( event ) {
+				if(fineMappingEnabled==true){
+					mouseIsDown=false;
+				}
 				//event.preventDefault();
 				if (SELECTED) {
 					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
