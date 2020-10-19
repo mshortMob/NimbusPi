@@ -67,7 +67,7 @@
 				}
 				.mapping-controls-grid-container{
 					display: grid;
-					grid-template-columns: auto auto auto auto auto auto auto;
+					grid-template-columns: 10% 5% 5% 5% 5% 10% 10% 10% 10% 20% 10%;
 					background-color: #777777;
 					width:99.25%;
 					height:9%;
@@ -77,6 +77,19 @@
 					margin:0px;
 					padding:0px;
 					left:0%;
+				}
+				.mapping-controls-grid-container-top{
+					display: grid;
+					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
+					background-color: #777777;
+					width:96%;
+					height:5%;
+					top:0%;
+					left:3.5%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
 				}
 				.menu-grid-container{
 						display: grid;
@@ -260,7 +273,7 @@
 				}
 				.mapping-controls-grid-container{
 					display: grid;
-					grid-template-columns: auto auto auto auto auto auto auto;
+					grid-template-columns: 10% 5% 5% 5% 5% 10% 10% 10% 10% 20% 10%;
 					background-color: #777777;
 					width:98.75%;
 					height:9%;
@@ -270,6 +283,19 @@
 					margin:0px;
 					padding:0px;
 					left:0%;
+				}
+				.mapping-controls-grid-container-top{
+					display: grid;
+					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
+					background-color: #777777;
+					width:94%;
+					height:5%;
+					top:0%;
+					left:5%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
 				}
 				.menu-grid-container{
 						display: grid;
@@ -354,10 +380,20 @@
 					margin:0;
 					font-size:.5em;
 				}
-				.customSlider::-webkit-slider-thumb,#zSlider::-webkit-slider-thumb{
+				.customSlider::-webkit-slider-thumb{
 					-webkit-appearance: none;
 					appearance: none;
 					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				#zSlider::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 18px;
 					height: 100%;
 					background: slategray;
 					cursor: pointer;
@@ -421,13 +457,26 @@
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
 		<div class="mapping-controls-grid-container" id="mapping-controls-grid-container" style="z-index:1; display:none;">
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Objects:</button>
 			<button id="mapping-controls-grid-item-1" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">1</button>
 			<button id="mapping-controls-grid-item-2" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="mapping-controls-grid-item-3" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="mapping-controls-grid-item-4" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Object Settings:</button>			
 			<button id="mapping-controls-selected-visibility" onclick="updateObject('visible');" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Visible</button>
 			<button id="mapping-controls-selected-shader" onclick="updateObject('shader');" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Shader AB</button>		
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">ZValue:</button>
 			<input type="range" min="-20" max="20" value="0" onchange="updateObject('zValue');" id="zSlider" style="">
+			<button id="courseFineButton" class="mapping-controls-grid-item" onclick="toggleFineMapping();" style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Course / Fine</button>
+		</div>
+		<div class="mapping-controls-grid-container-top" id="mapping-controls-grid-container-top" style="z-index:1; display:none;">
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Selected Vertice:</button>
+			<button id="selectVertice1" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">1</button>
+			<button id="selectVertice2" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
+			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
+			<button id="selectVertice4" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
+			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save To All Presets</button>
+			<button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button>
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
 			<!-- <button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Menu</button> -->
@@ -501,6 +550,12 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				lastMouseX=0;
+				lastMouseY=0;
+				mouseVelX=0;
+				mouseVelY=0;
+				mouseIsDown=false;
+				fineMappingEnabled=false;
 				slaveModeInterval=-1;
 				controllerModeInterval=-1;
 				getCanvasYFlip();
@@ -508,7 +563,7 @@
 				lastMaskAValue=-1;
 				lastMaskBValue=-1;
 				fade_Position=0;
-				// setTimeout(function(){recallState();},10);
+				// setTimeout(function(){recallState(false);},10);
 				initGlobalController();
 				dmxInterval=0;
 				maxNumDMXScenes=8;
@@ -564,6 +619,59 @@
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+			}
+			
+			function resetToDefaultPreset(){
+				var presetNumber=1;
+				globalController.PresetName="GlobalPreset"+parseInt(presetNumber);
+				isMidPresetChange=true;
+				recallState(true);
+				for(var x=1; x<=8; x++){
+					if(parseInt(presetNumber)==x){
+						document.getElementById("PresetsGridItem"+x).style.backgroundColor="grey"
+						console.log("Setting currentPreset to: "+parseInt(presetNumber));
+						setCurrentPresetNumber(parseInt(presetNumber));
+					}else{
+						document.getElementById("PresetsGridItem"+x).style.backgroundColor="black"
+					}
+				}
+			}
+			
+			function resetToDefaultAllPresets(destinationPresetNumber){
+				if(destinationPresetNumber<9){
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("GET", "../php/read.php?fn=globalPresets/GlobalPreset1.txt", true);
+					xmlhttp.send();
+					xmlhttp.onload = function(e){
+						var tempAllStates=JSON.parse(xmlhttp.response);
+						tempAllStates.global.SavedByController=true;
+						
+						var xmlhttp2=new XMLHttpRequest();
+						xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
+						xmlhttp2.send(JSON.stringify(tempAllStates));
+						xmlhttp2.onload = function(e){
+							resetToDefaultAllPresets(destinationPresetNumber+1);
+						}
+					}
+				}
+			}
+			
+			function selectVertice(verticeNum, elem){
+				for(var x=1; x<5; x++){
+					document.getElementById("selectVertice"+x).style.backgroundColor="black"
+				}
+				elem.style.backgroundColor="grey";
+				selectedVertice=verticeNum;
+				highlightSelectedVertice();
+			}
+
+			function toggleFineMapping(){
+				fineMappingEnabled=!fineMappingEnabled;
+				if(fineMappingEnabled){
+					document.getElementById("courseFineButton").style.backgroundColor='grey';
+				}else{
+					document.getElementById("courseFineButton").style.backgroundColor='black';
+				}
 			}
 			
 			function initShaderMaterial(uniforms1){
@@ -719,7 +827,7 @@
 			function syncObjectsToJson(includGlobal){
 				for(var x=0;x<displayObjects.length;x++){
 					displayObjects[x].setState(statesArray[x])
-					displayObjects[x].hideChildren();
+					// displayObjects[x].hideChildren();
 				}
 				// displayObjects[globalController.selectedObject].showChildren();
 
@@ -970,77 +1078,108 @@
 			}
 			
 			function onDocumentTouchMove(event){
-				if (SELECTED) {
-					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
-						console.log(SELECTED)
-						SELECTED.parent.updateCorners();
-					}
-				}
-                mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
-                mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
 
-				uniforms1.mousey={ value: mouse.y };
-				uniforms2.mousey={ value: mouse.y };
-				uniforms1.mousex={ value: mouse.x };
-				uniforms2.mousex={ value: mouse.x };
-				raycaster.setFromCamera( mouse, camera );
-				if ( SELECTED ) {
-					
-					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
-						    console.log(SELECTED.name)
-							SELECTED.position.copy(intersection.sub( offset ));
-							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
-							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
-							SELECTED.parent.geometry.verticesNeedUpdate = true;
-							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+				if(fineMappingEnabled==false){
+					if (SELECTED) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+							console.log(SELECTED)
+							SELECTED.parent.updateCorners();
 						}
 					}
-					return;
 				}
-				var intersects = raycaster.intersectObjects( objects);
-				if ( intersects.length > 0 ) {
-					if ( INTERSECTED != intersects[ 0 ].object ) {
-						INTERSECTED = intersects[ 0 ].object;
-						plane.setFromNormalAndCoplanarPoint(
-							camera.getWorldDirection( plane.normal ),
-							INTERSECTED.position );
+
+				mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
+                mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
+				
+				if(fineMappingEnabled==true){
+					if(mouseIsDown==true){
+						mouseVelX=(lastMouseX-mouse.x)*100;
+						mouseVelY=(lastMouseY-mouse.y)*100;
+						lastMouseX=mouse.x;
+						lastMouseY=mouse.y;
+						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
 					}
-					container.style.cursor = 'pointer';
-				} else {
-					INTERSECTED = null;
-					container.style.cursor = 'auto';
+				}
+
+				if(fineMappingEnabled==false){
+					uniforms1.mousey={ value: mouse.y };
+					uniforms2.mousey={ value: mouse.y };
+					uniforms1.mousex={ value: mouse.x };
+					uniforms2.mousex={ value: mouse.x };
+					raycaster.setFromCamera( mouse, camera );
+					if ( SELECTED ) {
+						
+						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+								console.log(SELECTED.name)
+								SELECTED.position.copy(intersection.sub( offset ));
+								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
+								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
+								SELECTED.parent.geometry.verticesNeedUpdate = true;
+								statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+								statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+							}
+						}
+						return;
+					}
+					var intersects = raycaster.intersectObjects( objects);
+					if ( intersects.length > 0 ) {
+						if ( INTERSECTED != intersects[ 0 ].object ) {
+							INTERSECTED = intersects[ 0 ].object;
+							plane.setFromNormalAndCoplanarPoint(
+								camera.getWorldDirection( plane.normal ),
+								INTERSECTED.position );
+						}
+						container.style.cursor = 'pointer';
+					} else {
+						INTERSECTED = null;
+						container.style.cursor = 'auto';
+					}
 				}
 			}
 
 			function onDocumentTouchStart(event){
+				if(fineMappingEnabled==true){
+					mouseIsDown=true;
+					lastMouseX = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
+					lastMouseY = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
+				}
+
 				mouse.x = ( event.touches[0].clientX / window.innerWidth ) * 2.0 - 1.0;
                 mouse.y = - ( event.touches[0].clientY / window.innerHeight ) * 2.0 + 1.0;
-				requestFullScreen();
-                raycaster.setFromCamera( mouse, camera );
-				intersects = raycaster.intersectObjects( objects);
-				if ( intersects.length > 0 ) {
-					SELECTED = intersects[ 0 ].object;
-					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-						offset.copy( intersection ).sub( SELECTED.position );
+				if(fineMappingEnabled==false){
+					requestFullScreen();
+					raycaster.setFromCamera( mouse, camera );
+					intersects = raycaster.intersectObjects( objects);
+					if ( intersects.length > 0 ) {
+						SELECTED = intersects[ 0 ].object;
+						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+							offset.copy( intersection ).sub( SELECTED.position );
+						}
+						container.style.cursor = 'move';
 					}
-					container.style.cursor = 'move';
-				}
-				if (SELECTED) {
-					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
-						// console.log(SELECTED)
-						SELECTED.parent.updateCorners();
+					if (SELECTED) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+							// console.log(SELECTED)
+							SELECTED.parent.updateCorners();
 
-						var listOfCornerVertices=[4,0,20,24];
-						selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
-						// console.log("Selected Vertice:"+selectedVertice);
-						highlightSelectedVertice();
-					}
+							var listOfCornerVertices=[4,0,20,24];
+							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
+							// console.log("Selected Vertice:"+selectedVertice);
+							highlightSelectedVertice();
+						}
+					}	
 				}
 			}
 
             function onDocumentTouchEnd(event){
+				if(fineMappingEnabled==true){
+					mouseIsDown=false;
+				}
 				SELECTED = null;
 				//event.preventDefault();
 				if (SELECTED) {
@@ -1053,50 +1192,76 @@
 			}
 				         			
 			function onDocumentMouseMove( event ) {
-				if (SELECTED) {
-					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
-						console.log(SELECTED)
-						SELECTED.parent.updateCorners();
-					}
-				}
-				mouse.x = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
-				mouse.y = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
-				uniforms1.mousey={ value: mouse.y };
-				uniforms2.mousey={ value: mouse.y };
-				uniforms1.mousex={ value: mouse.x };
-				uniforms2.mousex={ value: mouse.x };
-				raycaster.setFromCamera( mouse, camera );
-				if ( SELECTED ) {
-					
-					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
-						    console.log(SELECTED.name)
-							SELECTED.position.copy(intersection.sub( offset ));
-							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
-							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
-							SELECTED.parent.geometry.verticesNeedUpdate = true;
-							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+				if(fineMappingEnabled==false){
+					if (SELECTED) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+							console.log(SELECTED)
+							SELECTED.parent.updateCorners();
 						}
 					}
-					return;
 				}
-				var intersects = raycaster.intersectObjects( objects);
-				if ( intersects.length > 0 ) {
-					if ( INTERSECTED != intersects[ 0 ].object ) {
-						INTERSECTED = intersects[ 0 ].object;
-						plane.setFromNormalAndCoplanarPoint(
-							camera.getWorldDirection( plane.normal ),
-							INTERSECTED.position );
+				
+				mouse.x = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
+				mouse.y = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
+
+				if(fineMappingEnabled==true){
+					if(mouseIsDown==true){
+						mouseVelX=(lastMouseX-mouse.x)*100;
+						mouseVelY=(lastMouseY-mouse.y)*100;
+						lastMouseX=mouse.x;
+						lastMouseY=mouse.y;
+						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
 					}
-					container.style.cursor = 'pointer';
-				} else {
-					INTERSECTED = null;
-					container.style.cursor = 'auto';
+				}
+
+				if(fineMappingEnabled==false){
+					uniforms1.mousey={ value: mouse.y };
+					uniforms2.mousey={ value: mouse.y };
+					uniforms1.mousex={ value: mouse.x };
+					uniforms2.mousex={ value: mouse.x };
+					raycaster.setFromCamera( mouse, camera );
+					if ( SELECTED ) {
+						
+						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
+							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+								console.log(SELECTED.name)
+								SELECTED.position.copy(intersection.sub( offset ));
+								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
+								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
+								SELECTED.parent.geometry.verticesNeedUpdate = true;
+								statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+								statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+							}
+						}
+						return;
+					}
+					var intersects = raycaster.intersectObjects( objects);
+					if ( intersects.length > 0 ) {
+						if ( INTERSECTED != intersects[ 0 ].object ) {
+							INTERSECTED = intersects[ 0 ].object;
+							plane.setFromNormalAndCoplanarPoint(
+								camera.getWorldDirection( plane.normal ),
+								INTERSECTED.position );
+						}
+						container.style.cursor = 'pointer';
+					} else {
+						INTERSECTED = null;
+						container.style.cursor = 'auto';
+					}
 				}
 			}
 			
 			function onDocumentMouseDown( event ) {
+				if(fineMappingEnabled==true){
+					mouseIsDown=true;
+					lastMouseX = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
+					lastMouseY = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
+				}
+				if(fineMappingEnabled==false){
 					raycaster.setFromCamera( mouse, camera );
 					intersects = raycaster.intersectObjects( objects);
 					if ( intersects.length > 0 ) {
@@ -1117,9 +1282,13 @@
 							highlightSelectedVertice();
 						}
 					}
+				}
 			}
 			
 			function onDocumentMouseUp( event ) {
+				if(fineMappingEnabled==true){
+					mouseIsDown=false;
+				}
 				//event.preventDefault();
 				if (SELECTED) {
 					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
@@ -1192,9 +1361,13 @@
 				}
 			}
 			
-			function recallState(){
+			function recallState(isResetToDefault){
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				if(isResetToDefault==true){
+					xmlhttp.open("GET", "../php/read.php?fn=globalPresets/DefaultPreset.txt", true);
+				}else{
+					xmlhttp.open("GET", "../php/read.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				}
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
 
@@ -1226,17 +1399,37 @@
 					}
 					changeMask(1);
 					changeMask(2);
+					if(isResetToDefault==true){
+						resetToDefaultAllPresets(1);
+					}
 				}
 			}	
 			
-			function clonePreset5(destinationPresetNumber){
+			function saveMapForAllPresets(destinationPresetNumber){
 				if(destinationPresetNumber<9){
-					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
 					var xmlhttp=new XMLHttpRequest();
-					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
-					xmlhttp.send(requestBody);
+					xmlhttp.open("GET", "../php/read.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
+					xmlhttp.send();
 					xmlhttp.onload = function(e){
-						clonePreset5(destinationPresetNumber+1);
+						var tempAllStates=JSON.parse(xmlhttp.response);
+						for(var x=0; x<4; x++){
+							for(var y=0; y<25; y++){
+								tempAllStates.storage[x]["VerticeX"+y]=statesArray[x]["VerticeX"+y];
+								tempAllStates.storage[x]["VerticeY"+y]=statesArray[x]["VerticeY"+y];
+
+							}
+							tempAllStates.storage[x].ZValue=statesArray[x].ZValue;
+							tempAllStates.storage[x].Visible=statesArray[x].Visible;
+							tempAllStates.storage[x].Shader=statesArray[x].Shader;
+						}
+						tempAllStates.global.SavedByController=true;
+						
+						var xmlhttp2=new XMLHttpRequest();
+						xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
+						xmlhttp2.send(JSON.stringify(tempAllStates));
+						xmlhttp2.onload = function(e){
+							saveMapForAllPresets(destinationPresetNumber+1);
+						}
 					}
 				}
 			}
@@ -1380,12 +1573,13 @@
 					document.getElementById('mapping_page').style.display='none';
 					renderer.domElement.style.zIndex=-1;
 					document.getElementById('mapping-controls-grid-container').style.display='none';
-
+					document.getElementById('mapping-controls-grid-container-top').style.display='none';
 				}
 				function showMapping(){
 					document.getElementById('mapping_page').style.display='block';
 					renderer.domElement.style.zIndex=0;
 					document.getElementById('mapping-controls-grid-container').style.display='grid';
+					document.getElementById('mapping-controls-grid-container-top').style.display='grid';
 					selectObject( globalController.selectedObject, "mapping-controls-grid-item-"+parseInt(globalController.selectedObject+1) );
 				}
 			}
@@ -1531,7 +1725,7 @@
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
 					globalController.PresetName="GlobalPreset"+parseInt(xmlhttp.response);
-					recallState();
+					recallState(false);
 				}
 			}
 
@@ -1592,7 +1786,7 @@
 			function selectGlobalPreset(presetNumber){
 				globalController.PresetName="GlobalPreset"+parseInt(presetNumber);
 				isMidPresetChange=true;
-				recallState();
+				recallState(false);
 				for(var x=1; x<=8; x++){
 					if(parseInt(presetNumber)==x){
 						document.getElementById("PresetsGridItem"+x).style.backgroundColor="grey"
