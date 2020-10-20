@@ -474,7 +474,7 @@
 			<input type="range" min="-20" max="20" value="0" onchange="updateObject('zValue');" id="zSlider" style="">
 			<button id="courseFineButton" class="mapping-controls-grid-item" onclick="toggleFineMapping();" style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Course / Fine</button>
 		</div>
-		<div id="mapping_mode_right_border" style="height:100%; width:5px; right:0px; top:0px; position:absolute; display:none; z-index:1; background-color:grey" ></div>
+		<div id="mapping_mode_right_border" style="height:100%; width:5px; right:0px; top:0px; position:absolute; display:none; z-index:1; background-color:grey;" ></div>
 
 		<div class="mapping-controls-grid-container-top" id="mapping-controls-grid-container-top" style="z-index:1; display:none;">
 			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Selected Vertice:</button>
@@ -494,6 +494,8 @@
 		<div class="menu-page" id="menu_page"></div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="effects_page"></div>
+
+		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:48px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
 
 		<script id="vertexShader" type="x-shader/x-vertex">
 			precision mediump float;
@@ -557,6 +559,7 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				checkDeviceOrientation();
 				lastMouseX=0;
 				lastMouseY=0;
 				mouseVelX=0;
@@ -626,6 +629,23 @@
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+			}
+			
+			function checkDeviceOrientation(){
+				var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+				if (orientation.indexOf("landscape")!=-1) {
+					document.getElementById("orientation_overlay").style.display="none";
+				}else{
+					document.getElementById("orientation_overlay").style.display="block";
+				}
+				window.addEventListener("orientationchange", function() {
+					var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+					if (orientation.indexOf("landscape")!=-1) {
+						document.getElementById("orientation_overlay").style.display="none";
+					}else{
+						document.getElementById("orientation_overlay").style.display="block";
+					}
+				}, false);
 			}
 			
 			function resetToDefaultPreset(){
