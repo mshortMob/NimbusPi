@@ -80,7 +80,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
+					grid-template-columns: 20% 10% 10% 10% 10% 40%;
 					background-color: #777777;
 					width:96%;
 					height:5%;
@@ -206,6 +206,7 @@
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+					background-color: black;
 				}
 			}
 			@media only screen and (max-width:800px){
@@ -286,7 +287,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
+					grid-template-columns: 20% 10% 10% 10% 10% 40%;
 					background-color: #777777;
 					width:94%;
 					height:5%;
@@ -422,6 +423,7 @@
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+					background-color: black;
 				}
 			}
 		</style>
@@ -476,10 +478,10 @@
 			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="selectVertice4" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
 			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save To All Presets</button>
-			<button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button>
+			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
-			<!-- <button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Menu</button> -->
+			<button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">Menu</button>
 			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
 			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
 			<!-- <button class="menu-grid-container-item"  id="Effects_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">Effects</button> -->
@@ -1496,7 +1498,7 @@
 
 			function selectPage(buttonElement){
 				console.log("Selected Page:"+buttonElement.id)
-				// document.getElementById('Menu_Button').style.backgroundColor='black';
+				document.getElementById('Menu_Button').style.backgroundColor='black';
 				document.getElementById('VJ_Button').style.backgroundColor='black';
 				document.getElementById('Mapping_Button').style.backgroundColor='black';
 				// document.getElementById('Effects_Button').style.backgroundColor='black';
