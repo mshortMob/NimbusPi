@@ -2,7 +2,7 @@
 	<head>
 		<title>ShaderMapper</title>
 		<style>
-			@media only screen and (min-width:801px){
+			@media only screen and (min-width:1001px){
 				body{
 					margin:0px;
 					background-color:black;
@@ -51,6 +51,7 @@
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+					z-index: 5;
 				}
 				.presets-grid-container{
 					display: grid;
@@ -58,7 +59,7 @@
 					background-color: #777777;
 					width:99.25%;
 					height:9%;
-					top:88.75%;
+					bottom:0%;
 					position:absolute;
 					border:5px solid grey;
 					margin:0px;
@@ -71,7 +72,7 @@
 					background-color: #777777;
 					width:99.25%;
 					height:9%;
-					top:88.75%;
+					bottom:0%;
 					position:absolute;
 					border:5px solid grey;
 					margin:0px;
@@ -80,7 +81,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
+					grid-template-columns: 20% 10% 10% 10% 10% 40%;
 					background-color: #777777;
 					width:96%;
 					height:5%;
@@ -133,7 +134,7 @@
 				.customSlider {
 					border:2.5px solid grey;
 					-webkit-appearance: none;
-					width: 80%;
+					width:80%;
 					left:20%;
 					display:inline;
 					height: 20%;
@@ -164,7 +165,7 @@
 				}
 				.sliderLabel{
 					border:2.5px solid grey;
-					height:19%;
+					height:18%;
 					width:20%;
 					background-color: black;
 					z-index: 0;
@@ -174,7 +175,7 @@
 					margin:0;
 					font-size:.5em;
 				}
-				.customSlider::-webkit-slider-thumb,#zSlider::-webkit-slider-thumb{
+				.customSlider::-webkit-slider-thumb,.dmxOverrideSliders::-webkit-slider-thumb,#zSlider::-webkit-slider-thumb{
 					-webkit-appearance: none;
 					appearance: none;
 					width: 40px;
@@ -192,7 +193,7 @@
 					height:5%;
 					position:absolute;
 					border:5px solid grey;
-					font-size:.6em;
+					font-size:.88em;
 				}
 				button:focus{
 					outline: none;
@@ -206,9 +207,65 @@
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+					background-color: black;
+				}
+				#dmxOverrideContainer{
+					display: grid;
+					grid-template-columns: auto;
+					background-color: #777777;
+					width:48%;
+					height:87%;
+					top:5%;
+					left:2.5%;
+					position:relative;
+					margin:0%;
+					padding:0%;
+					z-index: 5;
+				}
+				.dmxOverrideSliders{
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					width:90%;
+					left:10%;
+					/* display:inline; */
+					top:0%;
+					height: 85%;
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin-left:5%;
+					margin-top:-2%;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				#dmxOverrideContainerLabel{
+					display:block;
+					position:relative;
+					height:5%;
+					top:42%;
+					padding-left:5.5%;
+				}
+				#miscMenuContainer{
+					background-color:grey;
+					width:46%;
+					height:87%;
+					top:5%;
+					left:52%;
+					position:absolute;
+					margin:0%;
+					padding:0%;
+					z-index: 5;
+				}
+				#miscMenuContainerLabel{
+					display:block;
+					position:relative;
+					height:5%;
+					top:11%;
+					padding-left:5.5%;
 				}
 			}
-			@media only screen and (max-width:800px){
+			@media only screen and (max-width:1000px){
 				body{
 					margin:0px;
 					background-color:black;
@@ -247,11 +304,12 @@
 					position:absolute;
 				}
 				.dmx-grid-container{
+					z-index: 5;
 					display: grid;
 					grid-template-columns: auto auto auto auto auto auto auto auto;
 					background-color: #777777;
 					width:46.5%;
-					height:32%;
+					height:31%;
 					top:56%;
 					position:absolute;
 					border:5px solid grey;
@@ -264,7 +322,7 @@
 					background-color: #777777;
 					width:98.75%;
 					height:9%;
-					top:88.75%;
+					bottom:0%;
 					position:absolute;
 					border:5px solid grey;
 					margin:0px;
@@ -277,7 +335,7 @@
 					background-color: #777777;
 					width:98.75%;
 					height:9%;
-					top:88.75%;
+					bottom:0%;
 					position:absolute;
 					border:5px solid grey;
 					margin:0px;
@@ -286,7 +344,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
+					grid-template-columns: 20% 10% 10% 10% 10% 40%;
 					background-color: #777777;
 					width:94%;
 					height:5%;
@@ -301,8 +359,8 @@
 						display: grid;
 						grid-template-columns: auto;
 						background-color: #777777;
-						height:87.75%;
-						width:4.125%;
+						height:87.375%;
+						width:4.75%;
 						top:0%;
 						left:0%;
 						position:absolute;
@@ -312,6 +370,9 @@
 				}	
 				.menu-grid-container-item{
 					font-size: 0.4em;
+				}
+				#Menu_Button{
+					font-size: 0.1em;
 				}
 				.grid-item:hover{
 					background-color: rgba(150, 150, 200, 0.8);
@@ -329,7 +390,7 @@
 				.slider-container{
 					background-color: darkgrey;
 					width:47.5%;
-					height:32%;
+					height:31.75%;
 					top:56%;
 					position:absolute;
 					border:5px solid grey;
@@ -370,7 +431,7 @@
 				}
 				.sliderLabel{
 					border:2.5px solid grey;
-					height:19%;
+					height:17%;
 					width:20%;
 					background-color: black;
 					z-index: 0;
@@ -378,9 +439,9 @@
 					position:absolute;
 					color:white;
 					margin:0;
-					font-size:.5em;
+					font-size:.35em;
 				}
-				.customSlider::-webkit-slider-thumb{
+				.customSlider::-webkit-slider-thumb,.dmxOverrideSliders::-webkit-slider-thumb{
 					-webkit-appearance: none;
 					appearance: none;
 					width: 40px;
@@ -415,13 +476,69 @@
 				}
 				.menu-page{
 					display:none;
-					width:95.5%;
+					width:93.5%;
 					height:87.75%;
 					top:0%;
 					position:absolute;
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+					background-color: black;
+				}
+				#dmxOverrideContainer{
+					display: grid;
+					grid-template-columns: auto;
+					background-color: #777777;
+					width:48%;
+					height:87%;
+					top:5%;
+					left:2.5%;
+					position:relative;
+					margin:0%;
+					padding:0%;
+					z-index: 5;
+				}
+				.dmxOverrideSliders{
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					width:90%;
+					left:10%;
+					/* display:inline; */
+					top:0%;
+					height: 85%;
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin-left:5%;
+					margin-top:-2%;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				#dmxOverrideContainerLabel{
+					display:block;
+					position:relative;
+					height:5%;
+					top:40%;
+					padding-left:5.5%;
+				}
+				#miscMenuContainer{
+					background-color:grey;
+					width:46%;
+					height:87%;
+					top:5%;
+					left:52%;
+					position:absolute;
+					margin:0%;
+					padding:0%;
+					z-index: 5;
+				}
+				#miscMenuContainerLabel{
+					display:block;
+					position:relative;
+					height:5%;
+					top:11%;
+					padding-left:5.5%;
 				}
 			}
 		</style>
@@ -451,8 +568,8 @@
 			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider2" style="top:40%">		
 			<div class="sliderLabel"  style="top:60%"><span style="position:relative; top:35%;height:50%;">DMX Speed</span></div>
 			<input type="range" min="0" max="4000" value="50" class="customSlider" id="slider3" style="top:60%">		
-			<div class="sliderLabel"  style="top:80%"><span style="font-size: .85em;position:relative; top:35%;height:50%;">Volume Threshold</span></div>
-			<input type="range" min="1" max="100" value="50" class="customSlider" id="slider4" style="top:80%">		
+			<div class="sliderLabel"  style="top:80%; z-index:3"><span style="font-size: .85em;position:relative; top:40%; height:60%; z-index:2;">Volume Threshold</span></div>
+			<input type="range" min="1" max="100" value="50" class="customSlider" id="slider4" style="top:80%; z-index:4;">		
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
@@ -469,24 +586,42 @@
 			<input type="range" min="-20" max="20" value="0" onchange="updateObject('zValue');" id="zSlider" style="">
 			<button id="courseFineButton" class="mapping-controls-grid-item" onclick="toggleFineMapping();" style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Course / Fine</button>
 		</div>
+		<div id="mapping_mode_right_border" style="height:100%; width:5px; right:0px; top:0px; position:absolute; display:block; z-index:1; background-color:grey;" ></div>
+
 		<div class="mapping-controls-grid-container-top" id="mapping-controls-grid-container-top" style="z-index:1; display:none;">
 			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Selected Vertice:</button>
 			<button id="selectVertice1" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">1</button>
 			<button id="selectVertice2" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="selectVertice4" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
-			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save To All Presets</button>
-			<button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button>
+			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save Map for All Presets</button>
+			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
-			<!-- <button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Menu</button> -->
+			<button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Menu</button>
 			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
 			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
 			<!-- <button class="menu-grid-container-item"  id="Effects_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">Effects</button> -->
 		</div>
-		<div class="menu-page" id="menu_page"></div>
+		<div class="menu-page" id="menu_page">
+			<div id="dmxOverrideContainer">
+				<div id="dmxOverrideContainerLabel" >DMX Override Channels:</div>
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1" onclick="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider2" onclick="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider3" onclick="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider4" onclick="updateDMXOverrideSliders();">
+			</div>
+			<div id="miscMenuContainer">
+				<div id="miscMenuContainerLabel" >Misc:</div>
+					<button id="globalResetAllButton" onclick="resetToDefaultPreset();" style="position: absolute; width:95%; height: 15%; top:21%; left:2.5%; background-color: darkgrey;">Reset All Presets</button>
+			</div>
+
+			</div>
+		</div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="effects_page"></div>
+
+		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:48px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
 
 		<script id="vertexShader" type="x-shader/x-vertex">
 			precision mediump float;
@@ -550,6 +685,7 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				checkDeviceOrientation();
 				lastMouseX=0;
 				lastMouseY=0;
 				mouseVelX=0;
@@ -619,6 +755,30 @@
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+			}
+			
+			function updateDMXOverrideSliders(){
+				globalState.DMX_X1=parseInt(document.getElementById("dmxOverrideSlider1").value);
+				globalState.DMX_Y1=parseInt(document.getElementById("dmxOverrideSlider2").value);
+				globalState.DMX_X2=parseInt(document.getElementById("dmxOverrideSlider3").value);
+				globalState.DMX_Y2=parseInt(document.getElementById("dmxOverrideSlider4").value);
+			}
+			
+			function checkDeviceOrientation(){
+				var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+				if (orientation.indexOf("landscape")!=-1) {
+					document.getElementById("orientation_overlay").style.display="none";
+				}else{
+					document.getElementById("orientation_overlay").style.display="block";
+				}
+				window.addEventListener("orientationchange", function() {
+					var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+					if (orientation.indexOf("landscape")!=-1) {
+						document.getElementById("orientation_overlay").style.display="none";
+					}else{
+						document.getElementById("orientation_overlay").style.display="block";
+					}
+				}, false);
 			}
 			
 			function resetToDefaultPreset(){
@@ -1496,7 +1656,7 @@
 
 			function selectPage(buttonElement){
 				console.log("Selected Page:"+buttonElement.id)
-				// document.getElementById('Menu_Button').style.backgroundColor='black';
+				document.getElementById('Menu_Button').style.backgroundColor='black';
 				document.getElementById('VJ_Button').style.backgroundColor='black';
 				document.getElementById('Mapping_Button').style.backgroundColor='black';
 				// document.getElementById('Effects_Button').style.backgroundColor='black';
@@ -1534,6 +1694,7 @@
 					document.getElementById('sectionLabelC').style.display='none';	
 					document.getElementById('sectionLabelD').style.display='none';	
 					document.getElementById('presets-grid-container').style.display='none';	
+					document.getElementById("mapping_mode_right_border").style.display="none";
 				}
 				function showVJ(){
 					document.getElementById('grid-container-A').style.display='grid';
@@ -1547,6 +1708,7 @@
 					document.getElementById('sectionLabelC').style.display='grid';	
 					document.getElementById('sectionLabelD').style.display='grid';	
 					document.getElementById('presets-grid-container').style.display='grid';		
+					document.getElementById("mapping_mode_right_border").style.display="block";
 				}
 				function clearMenu(){
 					document.getElementById('menu_page').style.display='none';
@@ -1574,6 +1736,7 @@
 					renderer.domElement.style.zIndex=-1;
 					document.getElementById('mapping-controls-grid-container').style.display='none';
 					document.getElementById('mapping-controls-grid-container-top').style.display='none';
+					document.getElementById("mapping_mode_right_border").style.display="none";
 				}
 				function showMapping(){
 					document.getElementById('mapping_page').style.display='block';
@@ -1581,6 +1744,7 @@
 					document.getElementById('mapping-controls-grid-container').style.display='grid';
 					document.getElementById('mapping-controls-grid-container-top').style.display='grid';
 					selectObject( globalController.selectedObject, "mapping-controls-grid-item-"+parseInt(globalController.selectedObject+1) );
+					document.getElementById("mapping_mode_right_border").style.display="block";
 				}
 			}
 			
@@ -1781,6 +1945,10 @@
 				document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
 				document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
 				document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
+				document.getElementById("dmxOverrideSlider1").value=globalState.DMX_X1;
+				document.getElementById("dmxOverrideSlider2").value=globalState.DMX_Y1;
+				document.getElementById("dmxOverrideSlider3").value=globalState.DMX_X2;
+				document.getElementById("dmxOverrideSlider4").value=globalState.DMX_Y2;
 			}
 		
 			function selectGlobalPreset(presetNumber){
