@@ -606,10 +606,10 @@
 		<div class="menu-page" id="menu_page">
 			<div id="dmxOverrideContainer">
 				<div id="dmxOverrideContainerLabel" >DMX Override Channels:</div>
-				<input type="range" min="0" max="1000" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1">
-				<input type="range" min="0" max="1000" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider2">
-				<input type="range" min="0" max="1000" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider3">	
-				<input type="range" min="0" max="4000" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider4">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1" onclick="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider2" onclick="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider3" onclick="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider4" onclick="updateDMXOverrideSliders();">
 			</div>
 			<div id="miscMenuContainer">
 				<div id="miscMenuContainerLabel" >Misc:</div>
@@ -755,6 +755,13 @@
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+			}
+			
+			function updateDMXOverrideSliders(){
+				globalState.DMX_X1=parseInt(document.getElementById("dmxOverrideSlider1").value);
+				globalState.DMX_Y1=parseInt(document.getElementById("dmxOverrideSlider2").value);
+				globalState.DMX_X2=parseInt(document.getElementById("dmxOverrideSlider3").value);
+				globalState.DMX_Y2=parseInt(document.getElementById("dmxOverrideSlider4").value);
 			}
 			
 			function checkDeviceOrientation(){
@@ -1938,6 +1945,10 @@
 				document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
 				document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
 				document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
+				document.getElementById("dmxOverrideSlider1").value=globalState.DMX_X1;
+				document.getElementById("dmxOverrideSlider2").value=globalState.DMX_Y1;
+				document.getElementById("dmxOverrideSlider3").value=globalState.DMX_X2;
+				document.getElementById("dmxOverrideSlider4").value=globalState.DMX_Y2;
 			}
 		
 			function selectGlobalPreset(presetNumber){
