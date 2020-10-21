@@ -606,10 +606,10 @@
 		<div class="menu-page" id="menu_page">
 			<div id="dmxOverrideContainer">
 				<div id="dmxOverrideContainerLabel" >DMX Override Channels:</div>
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1" onclick="updateDMXOverrideSliders();">
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider2" onclick="updateDMXOverrideSliders();">
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider3" onclick="updateDMXOverrideSliders();">
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider4" onclick="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider2" onchange="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider3" onchange="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider4" onchange="updateDMXOverrideSliders();">
 			</div>
 			<div id="miscMenuContainer">
 				<div id="miscMenuContainerLabel" >Misc:</div>
@@ -1583,6 +1583,10 @@
 							tempAllStates.storage[x].Shader=statesArray[x].Shader;
 						}
 						tempAllStates.global.SavedByController=true;
+						tempAllStates.global.DMX_X1=globalState.DMX_X1;
+						tempAllStates.global.DMX_Y1=globalState.DMX_Y1;
+						tempAllStates.global.DMX_X2=globalState.DMX_X2;
+						tempAllStates.global.DMX_Y2=globalState.DMX_Y2;
 						
 						var xmlhttp2=new XMLHttpRequest();
 						xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
