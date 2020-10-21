@@ -913,6 +913,7 @@
 				renderer.setClearColor( 0x000000 , 1);
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.domElement.style.display="none";
 				renderer.sortObjects = true;
 				container.appendChild( renderer.domElement );
 				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
@@ -1739,6 +1740,7 @@
 				}
 				function clearMapping(){
 					document.getElementById('mapping_page').style.display='none';
+					renderer.domElement.style.display="none";
 					renderer.domElement.style.zIndex=-1;
 					document.getElementById('mapping-controls-grid-container').style.display='none';
 					document.getElementById('mapping-controls-grid-container-top').style.display='none';
@@ -1746,6 +1748,7 @@
 				}
 				function showMapping(){
 					document.getElementById('mapping_page').style.display='block';
+					renderer.domElement.style.display="block";
 					renderer.domElement.style.zIndex=0;
 					document.getElementById('mapping-controls-grid-container').style.display='grid';
 					document.getElementById('mapping-controls-grid-container-top').style.display='grid';
