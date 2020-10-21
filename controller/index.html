@@ -1587,6 +1587,8 @@
 						tempAllStates.global.DMX_Y1=globalState.DMX_Y1;
 						tempAllStates.global.DMX_X2=globalState.DMX_X2;
 						tempAllStates.global.DMX_Y2=globalState.DMX_Y2;
+						tempAllStates.global.MaskA=globalState.MaskA;
+						tempAllStates.global.MaskB=globalState.MaskB;
 						
 						var xmlhttp2=new XMLHttpRequest();
 						xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
