@@ -175,7 +175,7 @@
 					margin:0;
 					font-size:.5em;
 				}
-				.customSlider::-webkit-slider-thumb,#zSlider::-webkit-slider-thumb{
+				.customSlider::-webkit-slider-thumb,.dmxOverrideSliders::-webkit-slider-thumb,#zSlider::-webkit-slider-thumb{
 					-webkit-appearance: none;
 					appearance: none;
 					width: 40px;
@@ -208,6 +208,61 @@
 					margin:0px;
 					padding:0px;
 					background-color: black;
+				}
+				#dmxOverrideContainer{
+					display: grid;
+					grid-template-columns: auto;
+					background-color: #777777;
+					width:48%;
+					height:87%;
+					top:5%;
+					left:2.5%;
+					position:relative;
+					margin:0%;
+					padding:0%;
+					z-index: 5;
+				}
+				.dmxOverrideSliders{
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					width:90%;
+					left:10%;
+					/* display:inline; */
+					top:0%;
+					height: 85%;
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin-left:5%;
+					margin-top:-2%;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				#dmxOverrideContainerLabel{
+					display:block;
+					position:relative;
+					height:5%;
+					top:42%;
+					padding-left:5.5%;
+				}
+				#miscMenuContainer{
+					background-color:grey;
+					width:46%;
+					height:87%;
+					top:5%;
+					left:52%;
+					position:absolute;
+					margin:0%;
+					padding:0%;
+					z-index: 5;
+				}
+				#miscMenuContainerLabel{
+					display:block;
+					position:relative;
+					height:5%;
+					top:11%;
+					padding-left:5.5%;
 				}
 			}
 			@media only screen and (max-width:1000px){
@@ -386,7 +441,7 @@
 					margin:0;
 					font-size:.35em;
 				}
-				.customSlider::-webkit-slider-thumb{
+				.customSlider::-webkit-slider-thumb,.dmxOverrideSliders::-webkit-slider-thumb{
 					-webkit-appearance: none;
 					appearance: none;
 					width: 40px;
@@ -429,6 +484,61 @@
 					margin:0px;
 					padding:0px;
 					background-color: black;
+				}
+				#dmxOverrideContainer{
+					display: grid;
+					grid-template-columns: auto;
+					background-color: #777777;
+					width:48%;
+					height:87%;
+					top:5%;
+					left:2.5%;
+					position:relative;
+					margin:0%;
+					padding:0%;
+					z-index: 5;
+				}
+				.dmxOverrideSliders{
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					width:90%;
+					left:10%;
+					/* display:inline; */
+					top:0%;
+					height: 85%;
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin-left:5%;
+					margin-top:-2%;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				#dmxOverrideContainerLabel{
+					display:block;
+					position:relative;
+					height:5%;
+					top:40%;
+					padding-left:5.5%;
+				}
+				#miscMenuContainer{
+					background-color:grey;
+					width:46%;
+					height:87%;
+					top:5%;
+					left:52%;
+					position:absolute;
+					margin:0%;
+					padding:0%;
+					z-index: 5;
+				}
+				#miscMenuContainerLabel{
+					display:block;
+					position:relative;
+					height:5%;
+					top:11%;
+					padding-left:5.5%;
 				}
 			}
 		</style>
@@ -493,7 +603,21 @@
 			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
 			<!-- <button class="menu-grid-container-item"  id="Effects_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">Effects</button> -->
 		</div>
-		<div class="menu-page" id="menu_page"></div>
+		<div class="menu-page" id="menu_page">
+			<div id="dmxOverrideContainer">
+				<div id="dmxOverrideContainerLabel" >DMX Override Channels:</div>
+				<input type="range" min="0" max="1000" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1">
+				<input type="range" min="0" max="1000" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider2">
+				<input type="range" min="0" max="1000" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider3">	
+				<input type="range" min="0" max="4000" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider4">
+			</div>
+			<div id="miscMenuContainer">
+				<div id="miscMenuContainerLabel" >Misc:</div>
+					<button id="globalResetAllButton" onclick="resetToDefaultPreset();" style="position: absolute; width:95%; height: 15%; top:21%; left:2.5%; background-color: darkgrey;">Reset All Presets</button>
+			</div>
+
+			</div>
+		</div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="effects_page"></div>
 
