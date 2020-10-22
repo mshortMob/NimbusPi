@@ -211,6 +211,7 @@ void main()	{
 			}
 
 			function initGlobalVars(){
+				checkForForceInitControllerMode();
 				slaveModeInterval=-1;
 				controllerModeInterval=-1;
 				getCanvasYFlip();
@@ -499,6 +500,33 @@ void main()	{
 				}
 			}
 
+			function checkForForceInitControllerMode(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/forceInitControllerMode.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					if(xmlhttp.response=="true"){
+						console.log("Controller Mode Remotely Activated");
+						initSlaveMode();
+						resetForceInitControllerMode();
+
+					}
+					setTimeout(function(){
+						checkForForceInitControllerMode();
+					}, 10000);
+				}
+			}
+
+			function resetForceInitControllerMode(){
+				var requestBody="false"
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/forceInitControllerMode.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Wrote 'false' to forceInitControllerMode");
+				}
+			}
+			
 			function getCurrentPresetNumber(){
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("GET", "php/read.php?fn=globalPresets/currentPreset.txt", true);

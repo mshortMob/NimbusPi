@@ -660,7 +660,7 @@
 				<button id="miscMenuContainerLabel" class="miscButtons" >Misc:</button>
 				<button id="globalResetAllButton" class="miscButtons" onclick="resetToDefaultPreset();">Reset All Presets</button>
 				<button id="miscButton2" class="miscButtons" onclick="saveDMXOverridesForAllPresets(1);" >Save DMX Overrides for All Presets</button>
-				<button id="miscButton3" class="miscButtons" onclick="requestFullScreen();" >Init Controller Mode</button>
+				<button id="miscButton3" class="miscButtons" onclick="forceInitControllerMode();" >Init Controller Mode</button>
 				<button id="miscButton4" class="miscButtons" onclick="requestFullScreen();" >Fullscreen</button>
 			</div>
 
@@ -803,6 +803,16 @@
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+			}
+			
+			function forceInitControllerMode(){
+				var requestBody="true"
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/forceInitControllerMode.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Wrote 'true' to forceInitControllerMode");
+				}
 			}
 			
 			function updateDMXOverrideSliders(){
