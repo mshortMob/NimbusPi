@@ -659,9 +659,9 @@
 			<div id="miscMenuContainer">
 				<button id="miscMenuContainerLabel" class="miscButtons" >Misc:</button>
 				<button id="globalResetAllButton" class="miscButtons" onclick="resetToDefaultPreset();">Reset All Presets</button>
-				<button id="miscButton2" class="miscButtons" >Misc</button>
-				<button id="miscButton3" class="miscButtons" >Misc</button>
-				<button id="miscButton4" class="miscButtons" >Misc</button>
+				<button id="miscButton2" class="miscButtons" onclick="saveDMXOverridesForAllPresets(1);" >Save DMX Overrides for All Presets</button>
+				<button id="miscButton3" class="miscButtons" onclick="requestFullScreen();" >Init Controller Mode</button>
+				<button id="miscButton4" class="miscButtons" onclick="requestFullScreen();" >Fullscreen</button>
 			</div>
 
 			</div>
@@ -1632,10 +1632,10 @@
 							tempAllStates.storage[x].Shader=statesArray[x].Shader;
 						}
 						tempAllStates.global.SavedByController=true;
-						tempAllStates.global.DMX_X1=globalState.DMX_X1;
-						tempAllStates.global.DMX_Y1=globalState.DMX_Y1;
-						tempAllStates.global.DMX_X2=globalState.DMX_X2;
-						tempAllStates.global.DMX_Y2=globalState.DMX_Y2;
+						// tempAllStates.global.DMX_X1=globalState.DMX_X1;
+						// tempAllStates.global.DMX_Y1=globalState.DMX_Y1;
+						// tempAllStates.global.DMX_X2=globalState.DMX_X2;
+						// tempAllStates.global.DMX_Y2=globalState.DMX_Y2;
 						tempAllStates.global.MaskA=globalState.MaskA;
 						tempAllStates.global.MaskB=globalState.MaskB;
 						
@@ -1649,7 +1649,30 @@
 				}
 			}
 	
-            function getNumberOfShadersAndPresets(){
+			function saveDMXOverridesForAllPresets(destinationPresetNumber){
+				if(destinationPresetNumber<9){
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("GET", "../php/read.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
+					xmlhttp.send();
+					xmlhttp.onload = function(e){
+						var tempAllStates=JSON.parse(xmlhttp.response);
+						tempAllStates.global.SavedByController=true;
+						tempAllStates.global.DMX_X1=globalState.DMX_X1;
+						tempAllStates.global.DMX_Y1=globalState.DMX_Y1;
+						tempAllStates.global.DMX_X2=globalState.DMX_X2;
+						tempAllStates.global.DMX_Y2=globalState.DMX_Y2;
+						
+						var xmlhttp2=new XMLHttpRequest();
+						xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
+						xmlhttp2.send(JSON.stringify(tempAllStates));
+						xmlhttp2.onload = function(e){
+							saveDMXOverridesForAllPresets(destinationPresetNumber+1);
+						}
+					}
+				}
+			}
+	
+	        function getNumberOfShadersAndPresets(){
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("GET", "../php/read.php?fn=fragmentShaders/numberOfShaders.txt", true);
 				xmlhttp.send();
