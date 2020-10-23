@@ -146,7 +146,7 @@
 			}
 			
 			function initGlobalVars(){
-				getCurrentApp();
+				setCurrentApp("fm");
 				getCanvasYFlip();
 				selectedVertice=0;
 				clr=new colorObject();
@@ -977,9 +977,19 @@
 				syncObjectsToJson();
 			}
 		
+			function setCurrentApp(appInitials){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=globalPresets/currentApp.txt", true);
+				xmlhttp.send(appInitials);
+				xmlhttp.onload = function(e){
+					console.log("setCurrentApp:"+appInitials);
+					getCurrentApp();
+				}
+			}
+			
 			function getCurrentApp(){
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentApp.txt", true);
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/currentApp.txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
 					currentApp=xmlhttp.response;
