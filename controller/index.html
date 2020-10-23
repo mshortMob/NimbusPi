@@ -646,9 +646,9 @@
 			<button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button>
 			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
 			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
-			<!-- <button class="menu-grid-container-item"  id="Effects_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">Effects</button> -->
+			<button class="menu-grid-container-item"  id="FM_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">FM</button>
 		</div>
-		<div class="menu-page" id="menu_page">
+		<div class="menu-page" id="misc_page">
 			<div id="dmxOverrideContainer">
 				<button id="dmxOverrideContainerLabel" class="dmxOverrideSliders" >DMX Override Channels:</button>
 				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
@@ -667,7 +667,7 @@
 			</div>
 		</div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
-		<div class="menu-page" id="effects_page"></div>
+		<div class="menu-page" id="fm_page"></div>
 
 		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:48px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
 
@@ -1747,28 +1747,28 @@
 				document.getElementById('Menu_Button').style.backgroundColor='black';
 				document.getElementById('VJ_Button').style.backgroundColor='black';
 				document.getElementById('Mapping_Button').style.backgroundColor='black';
-				// document.getElementById('Effects_Button').style.backgroundColor='black';
+				document.getElementById('FM_Button').style.backgroundColor='black';
 				buttonElement.style.backgroundColor='grey';
 				if(buttonElement.id=="Menu_Button"){
 					clearVJ();
-					clearEffects();
+					clearFM();
 					clearMapping();
 					showMenu();
 				}else if(buttonElement.id=="VJ_Button"){
 					clearMenu();
-					clearEffects();
+					clearFM();
 					clearMapping();
 					showVJ();
 				}else if(buttonElement.id=="Mapping_Button"){
 					clearVJ();
 					clearMenu();
-					clearEffects();
+					clearFM();
 					showMapping();
-				}else if(buttonElement.id=="Effects_Button"){
+				}else if(buttonElement.id=="FM_Button"){
 					clearVJ();
 					clearMenu();
 					clearMapping();
-					showEffects();
+					showFM();
 				}
 				function clearVJ(){
 					document.getElementById('grid-container-A').style.display='none';
@@ -1799,23 +1799,23 @@
 					document.getElementById("mapping_mode_right_border").style.display="block";
 				}
 				function clearMenu(){
-					document.getElementById('menu_page').style.display='none';
+					document.getElementById('misc_page').style.display='none';
 					document.getElementById('presets-grid-container').style.display='none';		
 
 				}
 				function showMenu(){
-					document.getElementById('menu_page').style.display='block';
+					document.getElementById('misc_page').style.display='block';
 					document.getElementById('presets-grid-container').style.display='grid';		
 
 
 				}
-				function clearEffects(){
-					document.getElementById('effects_page').style.display='none';
+				function clearFM(){
+					document.getElementById('fm_page').style.display='none';
 					document.getElementById('presets-grid-container').style.display='none';		
 
 				}
-				function showEffects(){
-					document.getElementById('effects_page').style.display='block';
+				function showFM(){
+					document.getElementById('fm_page').style.display='block';
 					document.getElementById('presets-grid-container').style.display='grid';		
 
 				}
