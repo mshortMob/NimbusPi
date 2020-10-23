@@ -211,6 +211,7 @@ void main()	{
 			}
 
 			function initGlobalVars(){
+				getCurrentApp();
 				checkForForceInitControllerMode();
 				slaveModeInterval=-1;
 				controllerModeInterval=-1;
@@ -1532,6 +1533,23 @@ void main()	{
 					}
 				}
 				syncObjectsToJson();
+			}
+		
+			function getCurrentApp(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentApp.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					currentApp=xmlhttp.response;
+					// console.log("getCurrentApp:"+xmlhttp.response);
+					if(currentApp=="fm" && slaveModeInterval!=-1){
+						window.location.replace("http://"+location.hostname+"/FlowMapper.html");
+					}else{
+						setTimeout(function(){
+							getCurrentApp();
+						},5000);
+					}
+				}
 			}
 		</script>
 	</body>

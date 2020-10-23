@@ -146,6 +146,7 @@
 			}
 			
 			function initGlobalVars(){
+				getCurrentApp();
 				getCanvasYFlip();
 				selectedVertice=0;
 				clr=new colorObject();
@@ -974,6 +975,23 @@
 					}
 				}
 				syncObjectsToJson();
+			}
+		
+			function getCurrentApp(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentApp.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					currentApp=xmlhttp.response;
+					// console.log("getCurrentApp:"+xmlhttp.response);
+					if(currentApp=="sm"){
+						window.location.replace("http://"+location.hostname+"/ShaderMapper.html");
+					}else{
+						setTimeout(function(){
+							getCurrentApp();
+						},5000);
+					}
+				}
 			}
 		</script>
 	</body>
