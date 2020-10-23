@@ -586,6 +586,28 @@
 					text-decoration: underline;
 				}
 			}
+			#fm_page{
+				background-color:grey;
+				width:48.5%;
+				height:83.5%;
+				top:1.5%;
+				left:6.5%;
+				position:absolute;
+				display:grid;
+				grid-template-columns: auto auto;
+				margin:0%;
+				padding:0%;
+				padding-top:1%;
+				z-index: 5;
+				border:1px solid darkgrey;
+				display: none;
+			}
+			.fm_controls{
+				border:2.5px solid grey;
+				-webkit-appearance: none;
+				outline: none;
+				background-color: darkgrey;
+			}
 		</style>
 	</head>
 	<body>
@@ -667,7 +689,24 @@
 			</div>
 		</div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
-		<div class="menu-page" id="fm_page"></div>
+		<div class="menu-page" id="fm_page">
+			<!-- <button id="fmPageLabel" class="fm_controls" >FlowMapper Controls:</button> -->
+			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider1" onchange="">
+			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider2" onchange="">
+			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider3" onchange="">
+			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider4" onchange="">
+			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider5" onchange="">
+			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider6" onchange="">
+			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider7" onchange="">
+			<button class="fm_controls" >Brightness Sensitivity:</button>
+			<button class="fm_controls" >Motion Sensitivity:</button>
+			<button class="fm_controls" >Fade Time:</button>
+			<button class="fm_controls" >Color Mix:</button>
+			<button class="fm_controls" >Color Rate:</button>
+			<button class="fm_controls" >Color Hop:</button>
+			<button class="fm_controls" >Kalidoscope:</button>
+
+		</div>
 
 		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:48px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
 
@@ -803,6 +842,7 @@
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+				forceInitControllerMode();
 			}
 			
 			function forceInitControllerMode(){
