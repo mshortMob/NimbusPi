@@ -623,7 +623,7 @@
 				outline: none;
 				background-color: #666666;				
 			}
-			.fm-presets-grid-container{
+			.fm-scene-grid-container{
 					display: none;
 					grid-template-columns: auto auto auto auto auto;
 					background-color: #777777;
@@ -636,7 +636,7 @@
 					padding:0px;
 					left:0%;
 			}
-			.fm-presets-grid-container-item{
+			.fm-scene-grid-container-item{
 				background-color: black;
 				color:white;
 				font-size: .7em;
@@ -673,12 +673,12 @@
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
-		<div class="fm-presets-grid-container" id="fm-presets-grid-container" style="z-index:1;">
-			<button class="fm-presets-grid-container-item">Flowmapper Presets:</button>
-			<button class="fm-presets-grid-container-item">1</button>
-			<button class="fm-presets-grid-container-item">2</button>
-			<button class="fm-presets-grid-container-item">3</button>
-			<button class="fm-presets-grid-container-item">4</button>
+		<div class="fm-scene-grid-container" id="fm-scene-grid-container" style="z-index:1;">
+			<button class="fm-scene-grid-container-item">Flowmapper Scenes:</button>
+			<button class="fm-scene-grid-container-item">1</button>
+			<button class="fm-scene-grid-container-item">2</button>
+			<button class="fm-scene-grid-container-item">3</button>
+			<button class="fm-scene-grid-container-item">4</button>
 		</div>
 		<div class="mapping-controls-grid-container" id="mapping-controls-grid-container" style="z-index:1; display:none;">
 			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Objects:</button>
@@ -1894,12 +1894,12 @@
 				function clearFM(){
 					document.getElementById('fm_page').style.display='none';
 					document.getElementById('presets-grid-container').style.display='none';		
-					document.getElementById('fm-presets-grid-container').style.display='none';
+					document.getElementById('fm-scene-grid-container').style.display='none';
 				}
 				function showFM(){
 					setCurrentApp("fm");
 					document.getElementById('fm_page').style.display='grid';
-					document.getElementById('fm-presets-grid-container').style.display='grid';
+					document.getElementById('fm-scene-grid-container').style.display='grid';
 				}
 				function clearMapping(){
 					document.getElementById('mapping_page').style.display='none';
