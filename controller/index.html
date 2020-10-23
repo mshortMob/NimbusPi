@@ -286,7 +286,60 @@
 					font-size:1em;
 					text-decoration: underline;
 				}
-
+				#fm_page{
+					background-color:grey;
+					width:94%;
+					height:86%;
+					top:1.5%;
+					left:5%;
+					position:absolute;
+					display:grid;
+					grid-template-columns: 30% 70%;
+					z-index: 5;
+					border:1px solid darkgrey;
+					display: none;
+				}
+				.fm_controls{
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: darkgrey;
+				}
+				.fm_controls::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				.fm_controls_slider_label{
+					/* color:white; */
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: #666666;				
+				}
+				.fm-scene-grid-container{
+						display: none;
+						grid-template-columns: auto auto auto auto auto;
+						background-color: #777777;
+						width:98.75%;
+						height:9%;
+						bottom:0%;
+						position:absolute;
+						border:5px solid grey;
+						margin:0px;
+						padding:0px;
+						left:0%;
+				}
+				.fm-scene-grid-container-item{
+					background-color: black;
+					color:white;
+					font-size: .7em;
+				}
 			}
 			@media only screen and (max-width:1000px){
 				body{
@@ -585,14 +638,12 @@
 					font-size:1em;
 					text-decoration: underline;
 				}
-			}
-
 			#fm_page{
 				background-color:grey;
-				width:94%;
+				width:92%;
 				height:86%;
 				top:1.5%;
-				left:5%;
+				left:6.5%;
 				position:absolute;
 				display:grid;
 				grid-template-columns: 30% 70%;
@@ -641,6 +692,7 @@
 				color:white;
 				font-size: .7em;
 			}
+			}
 		</style>
 	</head>
 	<body>
@@ -675,10 +727,10 @@
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
 		<div class="fm-scene-grid-container" id="fm-scene-grid-container" style="z-index:1;">
 			<button class="fm-scene-grid-container-item">Flowmapper Scenes:</button>
-			<button class="fm-scene-grid-container-item">1</button>
-			<button class="fm-scene-grid-container-item">2</button>
-			<button class="fm-scene-grid-container-item">3</button>
-			<button class="fm-scene-grid-container-item">4</button>
+			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(0,this)" >1</button>
+			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(1,this)" >2</button>
+			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(2,this)" >3</button>
+			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(3,this)" >4</button>
 		</div>
 		<div class="mapping-controls-grid-container" id="mapping-controls-grid-container" style="z-index:1; display:none;">
 			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Objects:</button>
@@ -1897,6 +1949,7 @@
 					document.getElementById('fm-scene-grid-container').style.display='none';
 				}
 				function showFM(){
+					getCurrentFMScene();
 					setCurrentApp("fm");
 					document.getElementById('fm_page').style.display='grid';
 					document.getElementById('fm-scene-grid-container').style.display='grid';
@@ -2172,6 +2225,35 @@
 				}
 				// syncObjectsToJson();
 			}
+		
+			function setCurrentFMScene(sceneNum, buttonElem){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=flowMapperPresets/currentScene.txt", true);
+				xmlhttp.send(sceneNum);
+				xmlhttp.onload = function(e){
+					console.log("setCurrentFMScene:"+sceneNum);
+					var elemsList=document.getElementsByClassName("fm-scene-grid-container-item");
+					for(var x=1; x<elemsList.length; x++){
+						elemsList[x].style.backgroundColor="black";
+					}
+					buttonElem.style.backgroundColor="grey";
+				}
+			}
+			
+			function getCurrentFMScene(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=flowMapperPresets/currentScene.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					console.log("getCurrentFMScene:"+parseInt(xmlhttp.response));
+					var elemsList=document.getElementsByClassName("fm-scene-grid-container-item");
+					for(var x=1; x<elemsList.length; x++){
+						elemsList[x].style.backgroundColor="black";
+					}
+					elemsList[(parseInt(xmlhttp.response)+1)].style.backgroundColor="grey";
+				}
+			}
+		
 		</script>
 	</body>
 </html>
