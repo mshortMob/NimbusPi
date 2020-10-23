@@ -1785,6 +1785,7 @@
 					document.getElementById("mapping_mode_right_border").style.display="none";
 				}
 				function showVJ(){
+					setCurrentApp("sm");
 					document.getElementById('grid-container-A').style.display='grid';
 					document.getElementById('grid-container-B').style.display='grid';
 					document.getElementById('mask-container-A').style.display='grid';
@@ -1815,6 +1816,7 @@
 
 				}
 				function showFM(){
+					setCurrentApp("fm");
 					document.getElementById('fm_page').style.display='block';
 					document.getElementById('presets-grid-container').style.display='grid';		
 
@@ -1835,6 +1837,15 @@
 					document.getElementById('mapping-controls-grid-container-top').style.display='grid';
 					selectObject( globalController.selectedObject, "mapping-controls-grid-item-"+parseInt(globalController.selectedObject+1) );
 					document.getElementById("mapping_mode_right_border").style.display="block";
+				}
+			}
+
+			function setCurrentApp(appInitials){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/currentApp.txt", true);
+				xmlhttp.send(appInitials);
+				xmlhttp.onload = function(e){
+					console.log("setCurrentApp:"+appInitials);
 				}
 			}
 			
