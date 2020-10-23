@@ -586,18 +586,16 @@
 					text-decoration: underline;
 				}
 			}
+
 			#fm_page{
 				background-color:grey;
-				width:48.5%;
-				height:83.5%;
+				width:94%;
+				height:86%;
 				top:1.5%;
-				left:6.5%;
+				left:5%;
 				position:absolute;
 				display:grid;
-				grid-template-columns: auto auto;
-				margin:0%;
-				padding:0%;
-				padding-top:1%;
+				grid-template-columns: 30% 70%;
 				z-index: 5;
 				border:1px solid darkgrey;
 				display: none;
@@ -607,6 +605,41 @@
 				-webkit-appearance: none;
 				outline: none;
 				background-color: darkgrey;
+			}
+			.fm_controls::-webkit-slider-thumb{
+				-webkit-appearance: none;
+				appearance: none;
+				width: 40px;
+				height: 100%;
+				background: slategray;
+				cursor: pointer;
+				border-left:1px solid darkslategray;
+				border-right:1px solid darkslategray;
+			}
+			.fm_controls_slider_label{
+				/* color:white; */
+				border:2.5px solid grey;
+				-webkit-appearance: none;
+				outline: none;
+				background-color: #666666;				
+			}
+			.fm-presets-grid-container{
+					display: none;
+					grid-template-columns: auto auto auto auto auto;
+					background-color: #777777;
+					width:98.75%;
+					height:9%;
+					bottom:0%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+					left:0%;
+			}
+			.fm-presets-grid-container-item{
+				background-color: black;
+				color:white;
+				font-size: .7em;
 			}
 		</style>
 	</head>
@@ -640,6 +673,13 @@
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
+		<div class="fm-presets-grid-container" id="fm-presets-grid-container" style="z-index:1;">
+			<button class="fm-presets-grid-container-item">Flowmapper Presets:</button>
+			<button class="fm-presets-grid-container-item">1</button>
+			<button class="fm-presets-grid-container-item">2</button>
+			<button class="fm-presets-grid-container-item">3</button>
+			<button class="fm-presets-grid-container-item">4</button>
+		</div>
 		<div class="mapping-controls-grid-container" id="mapping-controls-grid-container" style="z-index:1; display:none;">
 			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Objects:</button>
 			<button id="mapping-controls-grid-item-1" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">1</button>
@@ -691,21 +731,22 @@
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="fm_page">
 			<!-- <button id="fmPageLabel" class="fm_controls" >FlowMapper Controls:</button> -->
+			<button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
 			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider1" onchange="">
+			<button class="fm_controls_slider_label" >Motion Sensitivity:</button>
 			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider2" onchange="">
+			<button class="fm_controls_slider_label" >Fade Time:</button>
 			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider3" onchange="">
+			<button class="fm_controls_slider_label" >Color Mix:</button>
 			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider4" onchange="">
+			<button class="fm_controls_slider_label" >Color Rate:</button>
 			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider5" onchange="">
+			<button class="fm_controls_slider_label" >Color Hop:</button>
 			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider6" onchange="">
+			<button class="fm_controls_slider_label" >Kalidoscope:</button>
 			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider7" onchange="">
-			<button class="fm_controls" >Brightness Sensitivity:</button>
-			<button class="fm_controls" >Motion Sensitivity:</button>
-			<button class="fm_controls" >Fade Time:</button>
-			<button class="fm_controls" >Color Mix:</button>
-			<button class="fm_controls" >Color Rate:</button>
-			<button class="fm_controls" >Color Hop:</button>
-			<button class="fm_controls" >Kalidoscope:</button>
-
+			<button class="fm_controls_slider_label" >Scene Rate:</button>
+			<input type="range" min="0" max="255" value="50" class="fm_controls" id="fm_controls_slider8" onchange="">
 		</div>
 
 		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:48px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
@@ -1853,13 +1894,12 @@
 				function clearFM(){
 					document.getElementById('fm_page').style.display='none';
 					document.getElementById('presets-grid-container').style.display='none';		
-
+					document.getElementById('fm-presets-grid-container').style.display='none';
 				}
 				function showFM(){
 					setCurrentApp("fm");
-					document.getElementById('fm_page').style.display='block';
-					document.getElementById('presets-grid-container').style.display='grid';		
-
+					document.getElementById('fm_page').style.display='grid';
+					document.getElementById('fm-presets-grid-container').style.display='grid';
 				}
 				function clearMapping(){
 					document.getElementById('mapping_page').style.display='none';
