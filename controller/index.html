@@ -1019,6 +1019,22 @@
 						}
 					}
 				}
+				if(destinationPresetNumber==1){
+					var xmlhttp3=new XMLHttpRequest();
+					xmlhttp3.open("GET", "../php/read.php?fn=flowMapperPresets/Default_Preset.txt", true);
+					xmlhttp3.send();
+					xmlhttp3.onload = function(e){
+						var tempAllStates=JSON.parse(xmlhttp3.response);
+						tempAllStates.SavedByController=true;
+						
+						var xmlhttp4=new XMLHttpRequest();
+						xmlhttp4.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
+						xmlhttp4.send(JSON.stringify(tempAllStates));
+						xmlhttp4.onload = function(e){
+							console.log("Reset FM presets");
+						}
+					}
+				}
 			}
 			
 			function selectVertice(verticeNum, elem){
