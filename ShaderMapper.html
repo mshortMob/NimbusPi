@@ -521,7 +521,7 @@ void main()	{
 			function resetForceInitControllerMode(){
 				var requestBody="false"
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/forceInitControllerMode.txt", true);
+				xmlhttp.open("POST", "php/write.php?fn=globalPresets/forceInitControllerMode.txt", true);
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){
 					console.log("Wrote 'false' to forceInitControllerMode");
