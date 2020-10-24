@@ -794,7 +794,7 @@
 			<button class="fm_controls_slider_label" >Kalidoscope:</button>
 			<input type="range" min="1" max="4" value="1" class="fm_controls" id="KaleidoScope" onchange="updateFMState();">
 			<button class="fm_controls_slider_label" >Scene Rate:</button>
-			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="SceneRate" onchange="updateFMState();">
+			<input type="range" min="0" max="150" value="0" class="fm_controls" id="SceneRate" onchange="updateFMState();">
 		</div>
 
 		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:48px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
@@ -1788,7 +1788,7 @@
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
 				}else{				
-					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState, "SavedByController": true})
+					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState, "SavedByController": true, "SceneRate": document.getElementById("SceneRate").value/1000 })
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
 				}

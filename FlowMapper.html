@@ -146,6 +146,7 @@
 			}
 			
 			function initGlobalVars(){
+				controllerSceneRate=0;
 				setCurrentApp("fm");
 				checkForForceInitControllerMode();
 				slaveModeInterval=-1;
@@ -346,9 +347,17 @@
 				xmlhttp.open("GET", "php/read.php?fn=flowMapperPresets/currentScene.txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
-					globalController.selectedScene=parseInt(xmlhttp.response);
-					gui.__folders.Global.__controllers.filter(obj => { return obj.property == "selectedScene"})[0].updateDisplay();
-					updateControlsView();
+					if(controllerSceneRate==0){
+						globalController.selectedScene=parseInt(xmlhttp.response);
+						gui.__folders.Global.__controllers.filter(obj => { return obj.property == "selectedScene"})[0].updateDisplay();
+						globalController.sceneRate=0;
+						gui.__folders.Global.__controllers.filter(obj => { return obj.property == "sceneRate"})[0].updateDisplay();
+						updateControlsView();						
+					}else{
+						globalController.sceneRate=controllerSceneRate;
+						gui.__folders.Global.__controllers.filter(obj => { return obj.property == "sceneRate"})[0].updateDisplay();
+						updateControlsView();	
+					}
 				}
 			}
 
@@ -359,6 +368,7 @@
 				xmlhttp.onload = function(e){
 					statesArray=JSON.parse(xmlhttp.response).storage
 					presetsArray=JSON.parse(xmlhttp.response).storage2
+					controllerSceneRate=JSON.parse(xmlhttp.response).SceneRate;
 					if(JSON.parse(xmlhttp.response).SavedByController==true){
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
