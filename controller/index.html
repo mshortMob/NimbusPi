@@ -856,6 +856,22 @@
 			}	
 		</script>
 
+		<script id="fragmentShader3" type="x-shader/x-fragment">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform float time;
+			varying vec2 vUv;
+			uniform sampler2D maskTexture;
+			uniform sampler2D maskTexture2;
+			
+			void main( void ) {
+				vec3 mask = texture2D( maskTexture, vUv ).rgb;
+				gl_FragColor = vec4( vec3(  0.0, 1.0, 0.0), 1.0 );
+			
+			}	
+		</script>
+
 		<script>
 
 			initGlobalVars();
@@ -1025,7 +1041,7 @@
 			
 			function initShaderMaterial(uniforms1){
 				matList=[];
-				for(var x=1;x<=2;x++){
+				for(var x=1;x<=3;x++){
 					if(x==1){
 						var material = new THREE.RawShaderMaterial( {
 							uniforms: uniforms1,
@@ -1265,7 +1281,12 @@
 			  object.setState=function(savedJSON){
 				object.visible=savedJSON.Visible;
 				object.position.z= savedJSON.ZValue;
-				object.material=materialsList[parseInt(savedJSON.Shader-1)];
+				if(currentApp=="sm"){
+					object.material=materialsList[parseInt(savedJSON.Shader-1)];
+				}
+				if(currentApp=="fm"){
+					object.material=materialsList[2];
+				}
 				object.shaderNumber=parseInt(savedJSON.Shader-1);
 				for(var x=0;x<object.geometry.vertices.length;x++){
 					object.geometry.vertices[x].x=savedJSON["VerticeX"+x]
@@ -1361,36 +1382,55 @@
 			function updateObject(controlType){
 
 				if(controlType=="shader"){
-					console.log('AA')
-					if(displayObjects[globalController.selectedObject].shaderNumber==0){
-						displayObjects[globalController.selectedObject].material=materialsList[1];
-						displayObjects[globalController.selectedObject].shaderNumber=1;
-						document.getElementById("mapping-controls-selected-shader").style.backgroundColor="grey";
-						statesArray[globalController.selectedObject].Shader=2;
-					}else{
-						displayObjects[globalController.selectedObject].material=materialsList[0];
-						displayObjects[globalController.selectedObject].shaderNumber=0;
-						document.getElementById("mapping-controls-selected-shader").style.backgroundColor="black";
-						statesArray[globalController.selectedObject].Shader=1;
+					if(currentApp=="sm"){
+						if(displayObjects[globalController.selectedObject].shaderNumber==0){
+							displayObjects[globalController.selectedObject].material=materialsList[1];
+							displayObjects[globalController.selectedObject].shaderNumber=1;
+							document.getElementById("mapping-controls-selected-shader").style.backgroundColor="grey";
+							statesArray[globalController.selectedObject].Shader=2;
+						}else{
+							displayObjects[globalController.selectedObject].material=materialsList[0];
+							displayObjects[globalController.selectedObject].shaderNumber=0;
+							document.getElementById("mapping-controls-selected-shader").style.backgroundColor="black";
+							statesArray[globalController.selectedObject].Shader=1;
+						}
 					}
 				}
 
 				if(controlType=="visible"){
-					console.log('BB')
-					if(displayObjects[globalController.selectedObject].visible==true){
-						displayObjects[globalController.selectedObject].visible=false;
-						document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="black";
-						statesArray[globalController.selectedObject].Visible=false;
-					}else{
-						displayObjects[globalController.selectedObject].visible=true
-						document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="grey";
-						statesArray[globalController.selectedObject].Visible=true;
+					if(currentApp=="sm"){
+						if(displayObjects[globalController.selectedObject].visible==true){
+							displayObjects[globalController.selectedObject].visible=false;
+							document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="black";
+							statesArray[globalController.selectedObject].Visible=false;
+						}else{
+							displayObjects[globalController.selectedObject].visible=true
+							document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="grey";
+							statesArray[globalController.selectedObject].Visible=true;
+						}
+					}
+					if(currentApp=="fm"){
+						if(displayObjects[globalController.selectedObject].visible==true){
+							displayObjects[globalController.selectedObject].visible=false;
+							document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="black";
+							fm_statesArray[globalController.selectedObject].Visible=false;
+						}else{
+							displayObjects[globalController.selectedObject].visible=true
+							document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="grey";
+							fm_statesArray[globalController.selectedObject].Visible=true;
+						}
 					}
 				}
 
 				if(controlType=="zValue"){
-					displayObjects[globalController.selectedObject].position.z=document.getElementById("zSlider").value;
-					statesArray[globalController.selectedObject].ZValue=document.getElementById("zSlider").value;
+					if(currentApp=="sm"){
+						displayObjects[globalController.selectedObject].position.z=document.getElementById("zSlider").value;
+						statesArray[globalController.selectedObject].ZValue=document.getElementById("zSlider").value;
+					}
+					if(currentApp=="fm"){
+						displayObjects[globalController.selectedObject].position.z=document.getElementById("zSlider").value;
+						fm_statesArray[globalController.selectedObject].ZValue=document.getElementById("zSlider").value;
+					}
 				}
 
 			}
