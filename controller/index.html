@@ -702,14 +702,14 @@
 		<script src="../dependancies/NURBSSurface.js"></script>
 		<script src="../dependancies/NURBSUtils.js"></script>
 		<script src="../dependancies/TrackballControls.js"></script> 
-		<div class="sectionLabel" id="sectionLabelA" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderA</span></div>
-		<div class="sectionLabel" id="sectionLabelB" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderB</span></div>
+		<div class="sectionLabel" id="sectionLabelA" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%; text-decoration: underline;">ShaderA</span></div>
+		<div class="sectionLabel" id="sectionLabelB" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%; text-decoration: underline;">ShaderB</span></div>
 		<div class="grid-container" id="grid-container-A"></div>
 		<div class="grid-container" id="grid-container-B"></div>
 		<div class="mask-container" id="mask-container-A"></div>
 		<div class="mask-container" id="mask-container-B"></div>
-		<div class="sectionLabel" id="sectionLabelC" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
-		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
+		<div class="sectionLabel" id="sectionLabelC" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%; text-decoration: underline;">Global Controls</span></div>
+		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%; text-decoration: underline;">DMX Patterns</span></div>
 		<div class="slider-container" id="slider-container">
 			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">ShaderA Level</span></div>
 			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider1a" style="top:0%">
@@ -725,28 +725,28 @@
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
 		<div class="fm-scene-grid-container" id="fm-scene-grid-container" style="z-index:1;">
-			<button class="fm-scene-grid-container-item">Flowmapper Scenes:</button>
+			<button class="fm-scene-grid-container-item" style="text-decoration: underline;">Flowmapper Scenes:</button>
 			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(0,this)" >1</button>
 			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(1,this)" >2</button>
 			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(2,this)" >3</button>
 			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(3,this)" >4</button>
 		</div>
 		<div class="mapping-controls-grid-container" id="mapping-controls-grid-container" style="z-index:1; display:none;">
-			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Objects:</button>
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">Objects:</button>
 			<button id="mapping-controls-grid-item-1" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">1</button>
 			<button id="mapping-controls-grid-item-2" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="mapping-controls-grid-item-3" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="mapping-controls-grid-item-4" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
-			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Object Settings:</button>			
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">Object Settings:</button>			
 			<button id="mapping-controls-selected-visibility" onclick="updateObject('visible');" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Visible</button>
 			<button id="mapping-controls-selected-shader" onclick="updateObject('shader');" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Shader AB</button>		
-			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">ZValue:</button>
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">ZValue:</button>
 			<input type="range" min="-20" max="20" value="0" onchange="updateObject('zValue');" id="zSlider" style="">
 			<button id="courseFineButton" class="mapping-controls-grid-item" onclick="toggleFineMapping();" style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Course / Fine</button>
 		</div>
 		<div id="mapping_mode_right_border" style="height:100%; width:5px; right:0px; top:0px; position:absolute; display:block; z-index:1; background-color:grey;" ></div>
 		<div class="mapping-controls-grid-container-top" id="mapping-controls-grid-container-top" style="z-index:1; display:none;">
-			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Selected Vertice:</button>
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">Selected Vertice:</button>
 			<button id="selectVertice1" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">1</button>
 			<button id="selectVertice2" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
@@ -781,19 +781,19 @@
 		<div class="menu-page" id="fm_page">
 			<button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="BrightnessSensitivity" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" >Motion Sensitivity:</button>
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Motion Sensitivity:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="VelocitySensitivity" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" >Fade Time:</button>
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Fade Time:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="FadeTime" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" >Color Mix:</button>
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Mix:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorMix" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" >Color Rate:</button>
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Rate:</button>
 			<input type="range" min="0" max="700" value="50" class="fm_controls" id="ColorRate" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" >Color Hop:</button>
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Hop:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorHop" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" >Kalidoscope:</button>
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Kalidoscope:</button>
 			<input type="range" min="1" max="4" value="1" class="fm_controls" id="KaleidoScope" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" >Scene Rate:</button>
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Scene Rate:</button>
 			<input type="range" min="0" max="150" value="0" class="fm_controls" id="SceneRate" onchange="updateFMState();">
 		</div>
 
@@ -2171,9 +2171,10 @@
 				labelItem.id="presetGridLabel"
 				labelItem.style.borderColor="grey";
 				labelItem.style.backgroundColor="black";
-				labelItem.innerHTML="Global Presets";
+				labelItem.innerHTML="Global Presets:";
 				labelItem.style.color="white";
 				labelItem.style.fontSize=".5em";
+				labelItem.style.textDecoration="underline";
 				presetGridContainer.appendChild(labelItem);
 				for(var x=1; x<=8; x++){
 					var gridItem=document.createElement('button')
