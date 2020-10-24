@@ -788,11 +788,11 @@
 			<button class="fm_controls_slider_label" >Color Mix:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorMix" onchange="updateFMState();">
 			<button class="fm_controls_slider_label" >Color Rate:</button>
-			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorRate" onchange="updateFMState();">
+			<input type="range" min="0" max="700" value="50" class="fm_controls" id="ColorRate" onchange="updateFMState();">
 			<button class="fm_controls_slider_label" >Color Hop:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorHop" onchange="updateFMState();">
 			<button class="fm_controls_slider_label" >Kalidoscope:</button>
-			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="KaleidoScope" onchange="updateFMState();">
+			<input type="range" min="1" max="4" value="1" class="fm_controls" id="KaleidoScope" onchange="updateFMState();">
 			<button class="fm_controls_slider_label" >Scene Rate:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="SceneRate" onchange="updateFMState();">
 		</div>
@@ -2342,11 +2342,11 @@
 					}
 					buttonElem.style.backgroundColor="grey";
 					document.getElementById("BrightnessSensitivity").value=fm_globalState[currentFMScene].BrightnessSensitivity*1000;
-					document.getElementById("ColorHop").value=fm_globalState[currentFMScene].ColorHop*1000;
+					document.getElementById("ColorHop").value=fm_globalState[currentFMScene].ColorHop*100;
 					document.getElementById("ColorMix").value=fm_globalState[currentFMScene].ColorMix*1000;
 					document.getElementById("ColorRate").value=fm_globalState[currentFMScene].ColorRate*1000;
 					document.getElementById("FadeTime").value=fm_globalState[currentFMScene].FadeTime*1000;
-					document.getElementById("KaleidoScope").value=fm_globalState[currentFMScene].KaleidoScope*1000;
+					document.getElementById("KaleidoScope").value=fm_globalState[currentFMScene].KaleidoScope;
 					document.getElementById("VelocitySensitivity").value=fm_globalState[currentFMScene].VelocitySensitivity*1000;
 				}
 			}
@@ -2390,11 +2390,11 @@
 
 
 						document.getElementById("BrightnessSensitivity").value=fm_globalState[currentFMScene].BrightnessSensitivity*1000;
-						document.getElementById("ColorHop").value=fm_globalState[currentFMScene].ColorHop*1000;
+						document.getElementById("ColorHop").value=fm_globalState[currentFMScene].ColorHop*100;
 						document.getElementById("ColorMix").value=fm_globalState[currentFMScene].ColorMix*1000;
 						document.getElementById("ColorRate").value=fm_globalState[currentFMScene].ColorRate*1000;
 						document.getElementById("FadeTime").value=fm_globalState[currentFMScene].FadeTime*1000;
-						document.getElementById("KaleidoScope").value=fm_globalState[currentFMScene].KaleidoScope*1000;
+						document.getElementById("KaleidoScope").value=fm_globalState[currentFMScene].KaleidoScope;
 						document.getElementById("VelocitySensitivity").value=fm_globalState[currentFMScene].VelocitySensitivity*1000;
 					}
 				}
@@ -2402,11 +2402,11 @@
 		
 			function updateFMState(){
 				fm_globalState[currentFMScene].BrightnessSensitivity=document.getElementById("BrightnessSensitivity").value/1000;
-				fm_globalState[currentFMScene].ColorHop=document.getElementById("ColorHop").value/1000;
+				fm_globalState[currentFMScene].ColorHop=document.getElementById("ColorHop").value/100;
 				fm_globalState[currentFMScene].ColorMix=document.getElementById("ColorMix").value/1000;
 				fm_globalState[currentFMScene].ColorRate=document.getElementById("ColorRate").value/1000;
 				fm_globalState[currentFMScene].FadeTime=document.getElementById("FadeTime").value/1000;
-				fm_globalState[currentFMScene].KaleidoScope=document.getElementById("KaleidoScope").value/1000;
+				fm_globalState[currentFMScene].KaleidoScope=document.getElementById("KaleidoScope").value;
 				fm_globalState[currentFMScene].VelocitySensitivity=document.getElementById("VelocitySensitivity").value/1000;
 			}
 		</script>
