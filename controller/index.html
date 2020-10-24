@@ -2011,7 +2011,7 @@
 				}
 				function showVJ(){
 					setCurrentApp("sm");
-					forceInitControllerMode();
+					setTimeout(function(){forceInitControllerMode();},2000);
 					document.getElementById('grid-container-A').style.display='grid';
 					document.getElementById('grid-container-B').style.display='grid';
 					document.getElementById('mask-container-A').style.display='grid';
@@ -2047,9 +2047,9 @@
 					document.getElementById('fm-scene-grid-container').style.display='none';
 				}
 				function showFM(){
-					getCurrentFMScene();
-					forceInitControllerMode();
 					setCurrentApp("fm");
+					setTimeout(function(){forceInitControllerMode();},2000);
+					getCurrentFMScene();
 					document.getElementById('fm_page').style.display='grid';
 					document.getElementById('fm-scene-grid-container').style.display='grid';
 				}
