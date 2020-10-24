@@ -84,7 +84,7 @@
 					grid-template-columns: 20% 10% 10% 10% 10% 40%;
 					background-color: #777777;
 					width:96%;
-					height:5%;
+					height:6.5%;
 					top:0%;
 					left:3.5%;
 					position:absolute;
@@ -286,7 +286,60 @@
 					font-size:1em;
 					text-decoration: underline;
 				}
-
+				#fm_page{
+					background-color:grey;
+					width:94%;
+					height:86%;
+					top:1.5%;
+					left:5%;
+					position:absolute;
+					display:grid;
+					grid-template-columns: 30% 70%;
+					z-index: 5;
+					border:1px solid darkgrey;
+					display: none;
+				}
+				.fm_controls{
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: darkgrey;
+				}
+				.fm_controls::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				.fm_controls_slider_label{
+					/* color:white; */
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: #666666;				
+				}
+				.fm-scene-grid-container{
+						display: none;
+						grid-template-columns: auto auto auto auto auto;
+						background-color: #777777;
+						width:98.75%;
+						height:9%;
+						bottom:0%;
+						position:absolute;
+						border:5px solid grey;
+						margin:0px;
+						padding:0px;
+						left:0%;
+				}
+				.fm-scene-grid-container-item{
+					background-color: black;
+					color:white;
+					font-size: .7em;
+				}
 			}
 			@media only screen and (max-width:1000px){
 				body{
@@ -370,7 +423,7 @@
 					grid-template-columns: 20% 10% 10% 10% 10% 40%;
 					background-color: #777777;
 					width:94%;
-					height:5%;
+					height:6.5%;
 					top:0%;
 					left:5%;
 					position:absolute;
@@ -585,6 +638,60 @@
 					font-size:1em;
 					text-decoration: underline;
 				}
+				#fm_page{
+					background-color:grey;
+					width:92%;
+					height:86%;
+					top:1.5%;
+					left:6.5%;
+					position:absolute;
+					display:grid;
+					grid-template-columns: 30% 70%;
+					z-index: 5;
+					border:1px solid darkgrey;
+					display: none;
+				}
+				.fm_controls{
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: darkgrey;
+				}
+				.fm_controls::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				.fm_controls_slider_label{
+					/* color:white; */
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: #666666;				
+				}
+				.fm-scene-grid-container{
+						display: none;
+						grid-template-columns: auto auto auto auto auto;
+						background-color: #777777;
+						width:98.75%;
+						height:9%;
+						bottom:0%;
+						position:absolute;
+						border:5px solid grey;
+						margin:0px;
+						padding:0px;
+						left:0%;
+				}
+				.fm-scene-grid-container-item{
+					background-color: black;
+					color:white;
+					font-size: .7em;
+				}
 			}
 		</style>
 	</head>
@@ -595,46 +702,51 @@
 		<script src="../dependancies/NURBSSurface.js"></script>
 		<script src="../dependancies/NURBSUtils.js"></script>
 		<script src="../dependancies/TrackballControls.js"></script> 
-
-		<div class="sectionLabel" id="sectionLabelA" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderA</span></div>
-		<div class="sectionLabel" id="sectionLabelB" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%;">ShaderB</span></div>
+		<div class="sectionLabel" id="sectionLabelA" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%; text-decoration: underline;">ShaderA</span></div>
+		<div class="sectionLabel" id="sectionLabelB" style="top:0%" onclick="requestFullScreen();"><span style="position:absolute;top:15%;height:50%;color:white;left:45%; text-decoration: underline;">ShaderB</span></div>
 		<div class="grid-container" id="grid-container-A"></div>
 		<div class="grid-container" id="grid-container-B"></div>
 		<div class="mask-container" id="mask-container-A"></div>
 		<div class="mask-container" id="mask-container-B"></div>
-		<div class="sectionLabel" id="sectionLabelC" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%;">Global Controls</span></div>
-		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%;">DMX Patterns</span></div>
+		<div class="sectionLabel" id="sectionLabelC" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%; text-decoration: underline;">Global Controls</span></div>
+		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%; text-decoration: underline;">DMX Patterns</span></div>
 		<div class="slider-container" id="slider-container">
-			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;">ShaderA Level</span></div>
+			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;text-decoration: underline;">ShaderA Level</span></div>
 			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider1a" style="top:0%">
-			<div class="sliderLabel" style="top:20%"><span style="position:relative; top:35%;height:50%;">ShaderB Level</span></div>
+			<div class="sliderLabel" style="top:20%"><span style="position:relative; top:35%;height:50%;text-decoration: underline;">ShaderB Level</span></div>
 			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider1b" style="top:20%">		
-			<div class="sliderLabel" style="top:40%"><span style="position:relative; top:35%;height:50%;">DMX Level</span></div>
+			<div class="sliderLabel" style="top:40%"><span style="position:relative; top:35%;height:50%;text-decoration: underline;">DMX Level</span></div>
 			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider2" style="top:40%">		
-			<div class="sliderLabel"  style="top:60%"><span style="position:relative; top:35%;height:50%;">DMX Speed</span></div>
+			<div class="sliderLabel"  style="top:60%"><span style="position:relative; top:35%;height:50%;text-decoration: underline;">DMX Speed</span></div>
 			<input type="range" min="0" max="4000" value="50" class="customSlider" id="slider3" style="top:60%">		
-			<div class="sliderLabel"  style="top:80%; z-index:3"><span style="font-size: .85em;position:relative; top:40%; height:60%; z-index:2;">Volume Threshold</span></div>
+			<div class="sliderLabel"  style="top:80%; z-index:3"><span style="font-size: .85em;position:relative; top:40%; height:60%; z-index:2;text-decoration: underline;">Volume Threshold</span></div>
 			<input type="range" min="1" max="100" value="50" class="customSlider" id="slider4" style="top:80%; z-index:4;">		
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
+		<div class="fm-scene-grid-container" id="fm-scene-grid-container" style="z-index:1;">
+			<button class="fm-scene-grid-container-item" style="text-decoration: underline;">Flowmapper Scenes:</button>
+			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(0,this)" >1</button>
+			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(1,this)" >2</button>
+			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(2,this)" >3</button>
+			<button class="fm-scene-grid-container-item" onclick="setCurrentFMScene(3,this)" >4</button>
+		</div>
 		<div class="mapping-controls-grid-container" id="mapping-controls-grid-container" style="z-index:1; display:none;">
-			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Objects:</button>
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">Objects:</button>
 			<button id="mapping-controls-grid-item-1" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">1</button>
 			<button id="mapping-controls-grid-item-2" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="mapping-controls-grid-item-3" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="mapping-controls-grid-item-4" onclick="selectObject(this.getAttribute('intValue'),this.id);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
-			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Object Settings:</button>			
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">Object Settings:</button>			
 			<button id="mapping-controls-selected-visibility" onclick="updateObject('visible');" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Visible</button>
 			<button id="mapping-controls-selected-shader" onclick="updateObject('shader');" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Shader AB</button>		
-			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">ZValue:</button>
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">ZValue:</button>
 			<input type="range" min="-20" max="20" value="0" onchange="updateObject('zValue');" id="zSlider" style="">
 			<button id="courseFineButton" class="mapping-controls-grid-item" onclick="toggleFineMapping();" style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Course / Fine</button>
 		</div>
 		<div id="mapping_mode_right_border" style="height:100%; width:5px; right:0px; top:0px; position:absolute; display:block; z-index:1; background-color:grey;" ></div>
-
 		<div class="mapping-controls-grid-container-top" id="mapping-controls-grid-container-top" style="z-index:1; display:none;">
-			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Selected Vertice:</button>
+			<button class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">Selected Vertice:</button>
 			<button id="selectVertice1" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="0" class="mapping-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">1</button>
 			<button id="selectVertice2" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
@@ -646,9 +758,9 @@
 			<button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button>
 			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
 			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
-			<!-- <button class="menu-grid-container-item"  id="Effects_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">Effects</button> -->
+			<button class="menu-grid-container-item"  id="FM_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">FM</button>
 		</div>
-		<div class="menu-page" id="menu_page">
+		<div class="menu-page" id="misc_page">
 			<div id="dmxOverrideContainer">
 				<button id="dmxOverrideContainerLabel" class="dmxOverrideSliders" >DMX Override Channels:</button>
 				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
@@ -664,10 +776,26 @@
 				<button id="miscButton4" class="miscButtons" onclick="requestFullScreen();" >Fullscreen</button>
 			</div>
 
-			</div>
 		</div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
-		<div class="menu-page" id="effects_page"></div>
+		<div class="menu-page" id="fm_page">
+			<button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
+			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="BrightnessSensitivity" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Motion Sensitivity:</button>
+			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="VelocitySensitivity" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Fade Time:</button>
+			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="FadeTime" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Mix:</button>
+			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorMix" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Rate:</button>
+			<input type="range" min="0" max="700" value="50" class="fm_controls" id="ColorRate" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Hop:</button>
+			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorHop" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Kalidoscope:</button>
+			<input type="range" min="1" max="4" value="1" class="fm_controls" id="KaleidoScope" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Scene Rate:</button>
+			<input type="range" min="0" max="150" value="0" class="fm_controls" id="SceneRate" onchange="updateFMState();">
+		</div>
 
 		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:48px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
 
@@ -728,11 +856,28 @@
 			}	
 		</script>
 
+		<script id="fragmentShader3" type="x-shader/x-fragment">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform float time;
+			varying vec2 vUv;
+			uniform sampler2D maskTexture;
+			uniform sampler2D maskTexture2;
+			
+			void main( void ) {
+				vec3 mask = texture2D( maskTexture, vUv ).rgb;
+				gl_FragColor = vec4( vec3(  0.0, 1.0, 0.0), 1.0 );
+			
+			}	
+		</script>
+
 		<script>
 
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				currentApp="sm";
 				checkDeviceOrientation();
 				lastMouseX=0;
 				lastMouseY=0;
@@ -803,6 +948,8 @@
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+				forceInitControllerMode();
+				getCurrentFMScene();
 			}
 			
 			function forceInitControllerMode(){
@@ -872,6 +1019,24 @@
 						}
 					}
 				}
+				if(destinationPresetNumber==1){
+					var xmlhttp3=new XMLHttpRequest();
+					xmlhttp3.open("GET", "../php/read.php?fn=flowMapperPresets/Default_Preset.txt", true);
+					xmlhttp3.send();
+					xmlhttp3.onload = function(e){
+						var tempAllStates=JSON.parse(xmlhttp3.response);
+						tempAllStates.SavedByController=true;
+						
+						var xmlhttp4=new XMLHttpRequest();
+						xmlhttp4.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
+						xmlhttp4.send(JSON.stringify(tempAllStates));
+						xmlhttp4.onload = function(e){
+						console.log("Reset FM presets");
+
+						getCurrentFMScene();
+						}
+					}
+				}
 			}
 			
 			function selectVertice(verticeNum, elem){
@@ -894,7 +1059,7 @@
 			
 			function initShaderMaterial(uniforms1){
 				matList=[];
-				for(var x=1;x<=2;x++){
+				for(var x=1;x<=3;x++){
 					if(x==1){
 						var material = new THREE.RawShaderMaterial( {
 							uniforms: uniforms1,
@@ -1044,17 +1209,15 @@
 			}
 
 			function syncObjectsToJson(includGlobal){
-				for(var x=0;x<displayObjects.length;x++){
-					displayObjects[x].setState(statesArray[x])
-					// displayObjects[x].hideChildren();
+				if(currentApp=="sm"){
+					for(var x=0;x<displayObjects.length;x++){
+						displayObjects[x].setState(statesArray[x])
+					}
 				}
-				// displayObjects[globalController.selectedObject].showChildren();
-
-				//--------------------------
-				if(includGlobal){
-					camera.position.x=globalController.Camera_X*window.innerWidth/3;
-					camera.position.y=globalController.Camera_Y*window.innerHeight/3;
-
+				if(currentApp=="fm"){
+					for(var x=0;x<displayObjects.length;x++){
+						displayObjects[x].setState(fm_statesArray[x])
+					}
 				}
 			}
 			
@@ -1136,7 +1299,12 @@
 			  object.setState=function(savedJSON){
 				object.visible=savedJSON.Visible;
 				object.position.z= savedJSON.ZValue;
-				object.material=materialsList[parseInt(savedJSON.Shader-1)];
+				if(currentApp=="sm"){
+					object.material=materialsList[parseInt(savedJSON.Shader-1)];
+				}
+				if(currentApp=="fm"){
+					object.material=materialsList[2];
+				}
 				object.shaderNumber=parseInt(savedJSON.Shader-1);
 				for(var x=0;x<object.geometry.vertices.length;x++){
 					object.geometry.vertices[x].x=savedJSON["VerticeX"+x]
@@ -1209,8 +1377,15 @@
 						if(object.children[x].name.indexOf("vertice"!=0)){
 							object.children[x].position.x=object.geometry.vertices[x].x;
 							object.children[x].position.y=object.geometry.vertices[x].y;
-							statesArray[globalController.selectedObject]["VerticeX"+x]=object.geometry.vertices[x].x;
-							statesArray[globalController.selectedObject]["VerticeY"+x]=object.geometry.vertices[x].y;
+							if(currentApp=="sm"){
+								console.log("ZZZZZZ")
+								statesArray[globalController.selectedObject]["VerticeX"+x]=object.geometry.vertices[x].x;
+								statesArray[globalController.selectedObject]["VerticeY"+x]=object.geometry.vertices[x].y;
+							}else if(currentApp=="fm"){
+								console.log("SSSSS")
+								fm_statesArray[globalController.selectedObject]["VerticeX"+x]=object.geometry.vertices[x].x;
+								fm_statesArray[globalController.selectedObject]["VerticeY"+x]=object.geometry.vertices[x].y;
+							}
 						}		
 					}
 					
@@ -1225,36 +1400,55 @@
 			function updateObject(controlType){
 
 				if(controlType=="shader"){
-					console.log('AA')
-					if(displayObjects[globalController.selectedObject].shaderNumber==0){
-						displayObjects[globalController.selectedObject].material=materialsList[1];
-						displayObjects[globalController.selectedObject].shaderNumber=1;
-						document.getElementById("mapping-controls-selected-shader").style.backgroundColor="grey";
-						statesArray[globalController.selectedObject].Shader=2;
-					}else{
-						displayObjects[globalController.selectedObject].material=materialsList[0];
-						displayObjects[globalController.selectedObject].shaderNumber=0;
-						document.getElementById("mapping-controls-selected-shader").style.backgroundColor="black";
-						statesArray[globalController.selectedObject].Shader=1;
+					if(currentApp=="sm"){
+						if(displayObjects[globalController.selectedObject].shaderNumber==0){
+							displayObjects[globalController.selectedObject].material=materialsList[1];
+							displayObjects[globalController.selectedObject].shaderNumber=1;
+							document.getElementById("mapping-controls-selected-shader").style.backgroundColor="grey";
+							statesArray[globalController.selectedObject].Shader=2;
+						}else{
+							displayObjects[globalController.selectedObject].material=materialsList[0];
+							displayObjects[globalController.selectedObject].shaderNumber=0;
+							document.getElementById("mapping-controls-selected-shader").style.backgroundColor="black";
+							statesArray[globalController.selectedObject].Shader=1;
+						}
 					}
 				}
 
 				if(controlType=="visible"){
-					console.log('BB')
-					if(displayObjects[globalController.selectedObject].visible==true){
-						displayObjects[globalController.selectedObject].visible=false;
-						document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="black";
-						statesArray[globalController.selectedObject].Visible=false;
-					}else{
-						displayObjects[globalController.selectedObject].visible=true
-						document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="grey";
-						statesArray[globalController.selectedObject].Visible=true;
+					if(currentApp=="sm"){
+						if(displayObjects[globalController.selectedObject].visible==true){
+							displayObjects[globalController.selectedObject].visible=false;
+							document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="black";
+							statesArray[globalController.selectedObject].Visible=false;
+						}else{
+							displayObjects[globalController.selectedObject].visible=true
+							document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="grey";
+							statesArray[globalController.selectedObject].Visible=true;
+						}
+					}
+					if(currentApp=="fm"){
+						if(displayObjects[globalController.selectedObject].visible==true){
+							displayObjects[globalController.selectedObject].visible=false;
+							document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="black";
+							fm_statesArray[globalController.selectedObject].Visible=false;
+						}else{
+							displayObjects[globalController.selectedObject].visible=true
+							document.getElementById("mapping-controls-selected-visibility").style.backgroundColor="grey";
+							fm_statesArray[globalController.selectedObject].Visible=true;
+						}
 					}
 				}
 
 				if(controlType=="zValue"){
-					displayObjects[globalController.selectedObject].position.z=document.getElementById("zSlider").value;
-					statesArray[globalController.selectedObject].ZValue=document.getElementById("zSlider").value;
+					if(currentApp=="sm"){
+						displayObjects[globalController.selectedObject].position.z=document.getElementById("zSlider").value;
+						statesArray[globalController.selectedObject].ZValue=document.getElementById("zSlider").value;
+					}
+					if(currentApp=="fm"){
+						displayObjects[globalController.selectedObject].position.z=document.getElementById("zSlider").value;
+						fm_statesArray[globalController.selectedObject].ZValue=document.getElementById("zSlider").value;
+					}
 				}
 
 			}
@@ -1317,8 +1511,14 @@
 						lastMouseX=mouse.x;
 						lastMouseY=mouse.y;
 						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
-						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;
+						if(currentApp=="sm"){
+							statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+							statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						}	
+						if(currentApp=="fm"){
+							fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+							fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						}
 						syncObjectsToJson();
 						displayObjects[globalController.selectedObject].updateCorners();
 					}
@@ -1339,8 +1539,14 @@
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
 								SELECTED.parent.geometry.verticesNeedUpdate = true;
-								statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-								statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+								if(currentApp=="sm"){
+									statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+									statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+								}	
+								if(currentApp=="fm"){
+									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+								}				
 							}
 						}
 						return;
@@ -1430,8 +1636,14 @@
 						lastMouseX=mouse.x;
 						lastMouseY=mouse.y;
 						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
-						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;
+						if(currentApp=="sm"){
+							statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+							statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						}	
+						if(currentApp=="fm"){
+							fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+							fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						}	
 						syncObjectsToJson();
 						displayObjects[globalController.selectedObject].updateCorners();
 					}
@@ -1452,8 +1664,15 @@
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
 								SELECTED.parent.geometry.verticesNeedUpdate = true;
-								statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-								statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+								if(currentApp=="sm"){
+									statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+									statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+								}	
+								if(currentApp=="fm"){
+									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+								}		
+								SELECTED.parent.updateCorners();	
 							}
 						}
 						return;
@@ -1558,15 +1777,21 @@
 			}
 		
 			function saveState(){
-				globalState.BrightnessA=document.getElementById("slider1a").value/1000;
-				globalState.BrightnessB=document.getElementById("slider1b").value/1000;
-				globalState.DMX_Brightness=document.getElementById("slider2").value/1000;
-				globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
-				globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
-				globalState.SavedByController=true;
-				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				if(currentApp=="sm"){
+					globalState.BrightnessA=document.getElementById("slider1a").value/1000;
+					globalState.BrightnessB=document.getElementById("slider1b").value/1000;
+					globalState.DMX_Brightness=document.getElementById("slider2").value/1000;
+					globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
+					globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
+					globalState.SavedByController=true;
+					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				}else{				
+					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState, "SavedByController": true, "SceneRate": document.getElementById("SceneRate").value/1000 })
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
+				}
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){
 					console.log(xmlhttp.response.status);
@@ -1747,28 +1972,28 @@
 				document.getElementById('Menu_Button').style.backgroundColor='black';
 				document.getElementById('VJ_Button').style.backgroundColor='black';
 				document.getElementById('Mapping_Button').style.backgroundColor='black';
-				// document.getElementById('Effects_Button').style.backgroundColor='black';
+				document.getElementById('FM_Button').style.backgroundColor='black';
 				buttonElement.style.backgroundColor='grey';
 				if(buttonElement.id=="Menu_Button"){
 					clearVJ();
-					clearEffects();
+					clearFM();
 					clearMapping();
 					showMenu();
 				}else if(buttonElement.id=="VJ_Button"){
 					clearMenu();
-					clearEffects();
+					clearFM();
 					clearMapping();
 					showVJ();
 				}else if(buttonElement.id=="Mapping_Button"){
 					clearVJ();
 					clearMenu();
-					clearEffects();
+					clearFM();
 					showMapping();
-				}else if(buttonElement.id=="Effects_Button"){
+				}else if(buttonElement.id=="FM_Button"){
 					clearVJ();
 					clearMenu();
 					clearMapping();
-					showEffects();
+					showFM();
 				}
 				function clearVJ(){
 					document.getElementById('grid-container-A').style.display='none';
@@ -1785,6 +2010,8 @@
 					document.getElementById("mapping_mode_right_border").style.display="none";
 				}
 				function showVJ(){
+					setCurrentApp("sm");
+					setTimeout(function(){forceInitControllerMode();},2000);
 					document.getElementById('grid-container-A').style.display='grid';
 					document.getElementById('grid-container-B').style.display='grid';
 					document.getElementById('mask-container-A').style.display='grid';
@@ -1799,25 +2026,32 @@
 					document.getElementById("mapping_mode_right_border").style.display="block";
 				}
 				function clearMenu(){
-					document.getElementById('menu_page').style.display='none';
+					document.getElementById('misc_page').style.display='none';
 					document.getElementById('presets-grid-container').style.display='none';		
 
 				}
 				function showMenu(){
-					document.getElementById('menu_page').style.display='block';
+					document.getElementById('misc_page').style.display='block';
 					document.getElementById('presets-grid-container').style.display='grid';		
-
+					if(currentApp=="sm"){
+						document.getElementById('VJ_Button').style.backgroundColor='darkblue';
+					}
+					if(currentApp=="fm"){
+						document.getElementById('FM_Button').style.backgroundColor='darkblue';
+					}
 
 				}
-				function clearEffects(){
-					document.getElementById('effects_page').style.display='none';
+				function clearFM(){
+					document.getElementById('fm_page').style.display='none';
 					document.getElementById('presets-grid-container').style.display='none';		
-
+					document.getElementById('fm-scene-grid-container').style.display='none';
 				}
-				function showEffects(){
-					document.getElementById('effects_page').style.display='block';
-					document.getElementById('presets-grid-container').style.display='grid';		
-
+				function showFM(){
+					setCurrentApp("fm");
+					setTimeout(function(){forceInitControllerMode();},2000);
+					getCurrentFMScene();
+					document.getElementById('fm_page').style.display='grid';
+					document.getElementById('fm-scene-grid-container').style.display='grid';
 				}
 				function clearMapping(){
 					document.getElementById('mapping_page').style.display='none';
@@ -1835,6 +2069,31 @@
 					document.getElementById('mapping-controls-grid-container-top').style.display='grid';
 					selectObject( globalController.selectedObject, "mapping-controls-grid-item-"+parseInt(globalController.selectedObject+1) );
 					document.getElementById("mapping_mode_right_border").style.display="block";
+					if(currentApp=="sm"){
+						document.getElementById("mapping-controls-selected-shader").style.display="block"
+						document.getElementById("mapping-controls-grid-container").style.gridTemplateColumns="10% 5% 5% 5% 5% 10% 10% 10% 10% 20% 10%"
+						document.getElementById("duplicateSaveMap").style.display="block"
+						document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 40%"
+						document.getElementById('VJ_Button').style.backgroundColor='darkblue';
+					}
+					if(currentApp=="fm"){
+						document.getElementById("mapping-controls-selected-shader").style.display="none"
+						document.getElementById("mapping-controls-grid-container").style.gridTemplateColumns="10% 5% 5% 5% 5% 10% 20% 10% 20% 10%"
+						document.getElementById("duplicateSaveMap").style.display="none"
+						document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
+						document.getElementById('FM_Button').style.backgroundColor='darkblue';
+					}
+				}
+			}
+
+			function setCurrentApp(appInitials){
+				currentApp=appInitials;
+				syncObjectsToJson();
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/currentApp.txt", true);
+				xmlhttp.send(appInitials);
+				xmlhttp.onload = function(e){
+					console.log("setCurrentApp:"+appInitials);
 				}
 			}
 			
@@ -1912,9 +2171,10 @@
 				labelItem.id="presetGridLabel"
 				labelItem.style.borderColor="grey";
 				labelItem.style.backgroundColor="black";
-				labelItem.innerHTML="Global Presets";
+				labelItem.innerHTML="Global Presets:";
 				labelItem.style.color="white";
 				labelItem.style.fontSize=".5em";
+				labelItem.style.textDecoration="underline";
 				presetGridContainer.appendChild(labelItem);
 				for(var x=1; x<=8; x++){
 					var gridItem=document.createElement('button')
@@ -2079,7 +2339,96 @@
 						}
 					}
 				}
-				// syncObjectsToJson();
+				for(var x=1; x<5; x++){
+					if(parseInt(x-1)==parseInt(selectedVertice)){
+						document.getElementById("selectVertice"+x).style.backgroundColor="grey"
+					}else{
+						document.getElementById("selectVertice"+x).style.backgroundColor="black"
+					}
+				}
+			}
+		
+			function setCurrentFMScene(sceneNum, buttonElem){
+				var xmlhttp=new XMLHttpRequest();
+				currentFMScene=sceneNum;
+				xmlhttp.open("POST", "../php/write.php?fn=flowMapperPresets/currentScene.txt", true);
+				xmlhttp.send(sceneNum);
+				xmlhttp.onload = function(e){
+					console.log("setCurrentFMScene:"+sceneNum);
+					var elemsList=document.getElementsByClassName("fm-scene-grid-container-item");
+					for(var x=1; x<elemsList.length; x++){
+						elemsList[x].style.backgroundColor="black";
+					}
+					buttonElem.style.backgroundColor="grey";
+					document.getElementById("BrightnessSensitivity").value=fm_globalState[currentFMScene].BrightnessSensitivity*1000;
+					document.getElementById("ColorHop").value=fm_globalState[currentFMScene].ColorHop*100;
+					document.getElementById("ColorMix").value=fm_globalState[currentFMScene].ColorMix*1000;
+					document.getElementById("ColorRate").value=fm_globalState[currentFMScene].ColorRate*1000;
+					document.getElementById("FadeTime").value=fm_globalState[currentFMScene].FadeTime*1000;
+					document.getElementById("KaleidoScope").value=fm_globalState[currentFMScene].KaleidoScope;
+					document.getElementById("VelocitySensitivity").value=fm_globalState[currentFMScene].VelocitySensitivity*1000;
+				}
+			}
+			
+			function getCurrentFMScene(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=flowMapperPresets/currentScene.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					console.log("getCurrentFMScene:"+parseInt(xmlhttp.response));
+					currentFMScene=parseInt(xmlhttp.response);
+					var elemsList=document.getElementsByClassName("fm-scene-grid-container-item");
+					for(var x=1; x<elemsList.length; x++){
+						elemsList[x].style.backgroundColor="black";
+					}
+					elemsList[(parseInt(xmlhttp.response)+1)].style.backgroundColor="grey";
+
+					var xmlhttp2=new XMLHttpRequest();
+					xmlhttp2.open("GET", "../php/read.php?fn=flowMapperPresets/Preset_1.txt", true);
+					xmlhttp2.send();
+					xmlhttp2.onload = function(e){
+						fm_statesArray=JSON.parse(xmlhttp2.response).storage;
+						fm_globalState=JSON.parse(xmlhttp2.response).storage2;
+
+						if(JSON.parse(xmlhttp2.response).SavedByController==false){
+							console.log("Not saved by controller, scaling now");
+						// 	var temp=JSON.parse(xmlhttp.response).storage;
+							for(var x=0; x<4; x++){
+								for(var y=0; y<25; y++){
+									// temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]-window.innerWidth*.04;
+									// temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]+window.innerHeight*.09;
+									fm_statesArray[x]["VerticeX"+y]=fm_statesArray[x]["VerticeX"+y]/2;
+									fm_statesArray[x]["VerticeY"+y]=fm_statesArray[x]["VerticeY"+y]/2;
+
+								}						
+							}
+						// 	fm_statesArray=temp;
+						// }else{
+						// 	fm_statesArray=JSON.parse(xmlhttp.response).storage
+						}		
+
+
+						document.getElementById("BrightnessSensitivity").value=fm_globalState[currentFMScene].BrightnessSensitivity*1000;
+						document.getElementById("ColorHop").value=fm_globalState[currentFMScene].ColorHop*100;
+						document.getElementById("ColorMix").value=fm_globalState[currentFMScene].ColorMix*1000;
+						document.getElementById("ColorRate").value=fm_globalState[currentFMScene].ColorRate*1000;
+						document.getElementById("FadeTime").value=fm_globalState[currentFMScene].FadeTime*1000;
+						document.getElementById("KaleidoScope").value=fm_globalState[currentFMScene].KaleidoScope;
+						document.getElementById("VelocitySensitivity").value=fm_globalState[currentFMScene].VelocitySensitivity*1000;
+
+						syncObjectsToJson();
+					}
+				}
+			}
+		
+			function updateFMState(){
+				fm_globalState[currentFMScene].BrightnessSensitivity=document.getElementById("BrightnessSensitivity").value/1000;
+				fm_globalState[currentFMScene].ColorHop=document.getElementById("ColorHop").value/100;
+				fm_globalState[currentFMScene].ColorMix=document.getElementById("ColorMix").value/1000;
+				fm_globalState[currentFMScene].ColorRate=document.getElementById("ColorRate").value/1000;
+				fm_globalState[currentFMScene].FadeTime=document.getElementById("FadeTime").value/1000;
+				fm_globalState[currentFMScene].KaleidoScope=document.getElementById("KaleidoScope").value;
+				fm_globalState[currentFMScene].VelocitySensitivity=document.getElementById("VelocitySensitivity").value/1000;
 			}
 		</script>
 	</body>

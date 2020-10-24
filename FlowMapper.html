@@ -146,6 +146,11 @@
 			}
 			
 			function initGlobalVars(){
+				controllerSceneRate=0;
+				setCurrentApp("fm");
+				checkForForceInitControllerMode();
+				slaveModeInterval=-1;
+				controllerModeInterval=-1;
 				getCanvasYFlip();
 				selectedVertice=0;
 				clr=new colorObject();
@@ -304,6 +309,85 @@
 				utilsFolder.add({ 'OrbitMapper':function(){ window.location.replace("http://"+location.hostname+"/OrbitMapper.html"); }},'OrbitMapper');
 			}
 									
+			function checkForForceInitControllerMode(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/forceInitControllerMode.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					if(xmlhttp.response=="true"){
+						console.log("Controller Mode Remotely Activated");
+						initSlaveMode();
+						resetForceInitControllerMode();
+					}
+					setTimeout(function(){
+						checkForForceInitControllerMode();
+					}, 2000);
+				}
+			}
+
+			function resetForceInitControllerMode(){
+				var requestBody="false"
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=globalPresets/forceInitControllerMode.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Wrote 'false' to forceInitControllerMode");
+				}
+			}
+			
+			function initSlaveMode(){
+				if(slaveModeInterval==-1){
+					console.log("starting slaveModeInterval");
+					slaveModeInterval=setInterval(function(){getControllerData();getCurrentSceneNumber();},  125);
+				}
+			}
+			
+			function getCurrentSceneNumber(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=flowMapperPresets/currentScene.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					if(controllerSceneRate==0){
+						globalController.selectedScene=parseInt(xmlhttp.response);
+						gui.__folders.Global.__controllers.filter(obj => { return obj.property == "selectedScene"})[0].updateDisplay();
+						globalController.sceneRate=0;
+						gui.__folders.Global.__controllers.filter(obj => { return obj.property == "sceneRate"})[0].updateDisplay();
+						updateControlsView();						
+					}else{
+						globalController.sceneRate=controllerSceneRate;
+						gui.__folders.Global.__controllers.filter(obj => { return obj.property == "sceneRate"})[0].updateDisplay();
+						updateControlsView();	
+					}
+				}
+			}
+
+			function getControllerData(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=flowMapperPresets/Preset_1.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					statesArray=JSON.parse(xmlhttp.response).storage
+					presetsArray=JSON.parse(xmlhttp.response).storage2
+					controllerSceneRate=JSON.parse(xmlhttp.response).SceneRate;
+					if(JSON.parse(xmlhttp.response).SavedByController==true){
+						var temp=JSON.parse(xmlhttp.response).storage;
+						for(var x=0; x<4; x++){
+							for(var y=0; y<25; y++){
+								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*2;
+								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*2;
+							}						
+						}
+						statesArray=temp;
+					}else{
+						statesArray=JSON.parse(xmlhttp.response).storage
+					}
+
+					updateControlsView();
+					syncObjectsToJson(true);
+					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
+				}
+			}
+			
 			function keyHandler(event){
 				if(event.key=="<"){
 					if(globalController.selectedObject>0){
@@ -897,7 +981,7 @@
 			}
 			
 			function saveState(){
-				var requestBody=JSON.stringify({"storage" : statesArray, "storage2": presetsArray})
+				var requestBody=JSON.stringify({"storage" : statesArray, "storage2": presetsArray, "SavedByController": false})
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "php/write.php?fn=flowMapperPresets/"+globalController.PresetName+".txt", true);
 				xmlhttp.send(requestBody);
@@ -911,6 +995,18 @@
 				xmlhttp.onload = function(e){
 					statesArray=JSON.parse(xmlhttp.response).storage
 					presetsArray=JSON.parse(xmlhttp.response).storage2
+					if(JSON.parse(xmlhttp.response).SavedByController==true){
+						var temp=JSON.parse(xmlhttp.response).storage;
+						for(var x=0; x<4; x++){
+							for(var y=0; y<25; y++){
+								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*2;
+								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*2;
+							}						
+						}
+						statesArray=temp;
+					}else{
+						statesArray=JSON.parse(xmlhttp.response).storage
+					}
 					updateControlsView();
 					syncObjectsToJson();
 					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
@@ -974,6 +1070,33 @@
 					}
 				}
 				syncObjectsToJson();
+			}
+		
+			function setCurrentApp(appInitials){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=globalPresets/currentApp.txt", true);
+				xmlhttp.send(appInitials);
+				xmlhttp.onload = function(e){
+					console.log("setCurrentApp:"+appInitials);
+					getCurrentApp();
+				}
+			}
+			
+			function getCurrentApp(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/currentApp.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					currentApp=xmlhttp.response;
+					// console.log("getCurrentApp:"+xmlhttp.response);
+					if(currentApp=="sm"){
+						window.location.replace("http://"+location.hostname+"/ShaderMapper.html");
+					}else{
+						setTimeout(function(){
+							getCurrentApp();
+						},2000);
+					}
+				}
 			}
 		</script>
 	</body>
