@@ -1031,7 +1031,9 @@
 						xmlhttp4.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
 						xmlhttp4.send(JSON.stringify(tempAllStates));
 						xmlhttp4.onload = function(e){
-							console.log("Reset FM presets");
+						console.log("Reset FM presets");
+
+						getCurrentFMScene();
 						}
 					}
 				}
@@ -2412,6 +2414,8 @@
 						document.getElementById("FadeTime").value=fm_globalState[currentFMScene].FadeTime*1000;
 						document.getElementById("KaleidoScope").value=fm_globalState[currentFMScene].KaleidoScope;
 						document.getElementById("VelocitySensitivity").value=fm_globalState[currentFMScene].VelocitySensitivity*1000;
+
+						syncObjectsToJson();
 					}
 				}
 			}
