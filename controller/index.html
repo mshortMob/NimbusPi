@@ -1175,17 +1175,15 @@
 			}
 
 			function syncObjectsToJson(includGlobal){
-				for(var x=0;x<displayObjects.length;x++){
-					displayObjects[x].setState(statesArray[x])
-					// displayObjects[x].hideChildren();
+				if(currentApp=="sm"){
+					for(var x=0;x<displayObjects.length;x++){
+						displayObjects[x].setState(statesArray[x])
+					}
 				}
-				// displayObjects[globalController.selectedObject].showChildren();
-
-				//--------------------------
-				if(includGlobal){
-					camera.position.x=globalController.Camera_X*window.innerWidth/3;
-					camera.position.y=globalController.Camera_Y*window.innerHeight/3;
-
+				if(currentApp=="fm"){
+					for(var x=0;x<displayObjects.length;x++){
+						displayObjects[x].setState(fm_statesArray[x])
+					}
 				}
 			}
 			
@@ -1340,8 +1338,15 @@
 						if(object.children[x].name.indexOf("vertice"!=0)){
 							object.children[x].position.x=object.geometry.vertices[x].x;
 							object.children[x].position.y=object.geometry.vertices[x].y;
-							statesArray[globalController.selectedObject]["VerticeX"+x]=object.geometry.vertices[x].x;
-							statesArray[globalController.selectedObject]["VerticeY"+x]=object.geometry.vertices[x].y;
+							if(currentApp=="sm"){
+								console.log("ZZZZZZ")
+								statesArray[globalController.selectedObject]["VerticeX"+x]=object.geometry.vertices[x].x;
+								statesArray[globalController.selectedObject]["VerticeY"+x]=object.geometry.vertices[x].y;
+							}else if(currentApp=="fm"){
+								console.log("SSSSS")
+								fm_statesArray[globalController.selectedObject]["VerticeX"+x]=object.geometry.vertices[x].x;
+								fm_statesArray[globalController.selectedObject]["VerticeY"+x]=object.geometry.vertices[x].y;
+							}
 						}		
 					}
 					
@@ -1448,8 +1453,14 @@
 						lastMouseX=mouse.x;
 						lastMouseY=mouse.y;
 						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
-						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;
+						if(currentApp=="sm"){
+							statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+							statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						}	
+						if(currentApp=="fm"){
+							fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+							fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						}
 						syncObjectsToJson();
 						displayObjects[globalController.selectedObject].updateCorners();
 					}
@@ -1470,8 +1481,14 @@
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
 								SELECTED.parent.geometry.verticesNeedUpdate = true;
-								statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-								statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+								if(currentApp=="sm"){
+									statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+									statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+								}	
+								if(currentApp=="fm"){
+									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+								}				
 							}
 						}
 						return;
@@ -1561,8 +1578,14 @@
 						lastMouseX=mouse.x;
 						lastMouseY=mouse.y;
 						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
-						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;
+						if(currentApp=="sm"){
+							statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+							statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						}	
+						if(currentApp=="fm"){
+							fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+							fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						}	
 						syncObjectsToJson();
 						displayObjects[globalController.selectedObject].updateCorners();
 					}
@@ -1583,8 +1606,15 @@
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
 								SELECTED.parent.geometry.verticesNeedUpdate = true;
-								statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-								statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
+								if(currentApp=="sm"){
+									statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+									statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+								}	
+								if(currentApp=="fm"){
+									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+								}		
+								SELECTED.parent.updateCorners();	
 							}
 						}
 						return;
@@ -1699,8 +1729,8 @@
 					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
-				}else{
-					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState})
+				}else{				
+					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState, "SavedByController": true})
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
 				}
@@ -1981,6 +2011,7 @@
 
 			function setCurrentApp(appInitials){
 				currentApp=appInitials;
+				syncObjectsToJson();
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/currentApp.txt", true);
 				xmlhttp.send(appInitials);
@@ -2230,7 +2261,13 @@
 						}
 					}
 				}
-				// syncObjectsToJson();
+				for(var x=1; x<5; x++){
+					if(parseInt(x-1)==parseInt(selectedVertice)){
+						document.getElementById("selectVertice"+x).style.backgroundColor="grey"
+					}else{
+						document.getElementById("selectVertice"+x).style.backgroundColor="black"
+					}
+				}
 			}
 		
 			function setCurrentFMScene(sceneNum, buttonElem){
@@ -2274,6 +2311,25 @@
 					xmlhttp2.onload = function(e){
 						fm_statesArray=JSON.parse(xmlhttp2.response).storage;
 						fm_globalState=JSON.parse(xmlhttp2.response).storage2;
+
+						if(JSON.parse(xmlhttp2.response).SavedByController==false){
+							console.log("Not saved by controller, scaling now");
+						// 	var temp=JSON.parse(xmlhttp.response).storage;
+							for(var x=0; x<4; x++){
+								for(var y=0; y<25; y++){
+									// temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]-window.innerWidth*.04;
+									// temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]+window.innerHeight*.09;
+									fm_statesArray[x]["VerticeX"+y]=fm_statesArray[x]["VerticeX"+y]/2;
+									fm_statesArray[x]["VerticeY"+y]=fm_statesArray[x]["VerticeY"+y]/2;
+
+								}						
+							}
+						// 	fm_statesArray=temp;
+						// }else{
+						// 	fm_statesArray=JSON.parse(xmlhttp.response).storage
+						}		
+
+
 						document.getElementById("BrightnessSensitivity").value=fm_globalState[currentFMScene].BrightnessSensitivity*1000;
 						document.getElementById("ColorHop").value=fm_globalState[currentFMScene].ColorHop*1000;
 						document.getElementById("ColorMix").value=fm_globalState[currentFMScene].ColorMix*1000;
