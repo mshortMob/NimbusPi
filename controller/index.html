@@ -2015,7 +2015,12 @@
 				function showMenu(){
 					document.getElementById('misc_page').style.display='block';
 					document.getElementById('presets-grid-container').style.display='grid';		
-
+					if(currentApp=="sm"){
+						document.getElementById('VJ_Button').style.backgroundColor='darkblue';
+					}
+					if(currentApp=="fm"){
+						document.getElementById('FM_Button').style.backgroundColor='darkblue';
+					}
 
 				}
 				function clearFM(){
