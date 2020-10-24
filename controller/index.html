@@ -861,6 +861,7 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				currentApp="sm";
 				checkDeviceOrientation();
 				lastMouseX=0;
 				lastMouseY=0;
@@ -932,6 +933,7 @@
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
 				forceInitControllerMode();
+				getCurrentFMScene();
 			}
 			
 			function forceInitControllerMode(){
@@ -1687,15 +1689,21 @@
 			}
 		
 			function saveState(){
-				globalState.BrightnessA=document.getElementById("slider1a").value/1000;
-				globalState.BrightnessB=document.getElementById("slider1b").value/1000;
-				globalState.DMX_Brightness=document.getElementById("slider2").value/1000;
-				globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
-				globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
-				globalState.SavedByController=true;
-				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				if(currentApp=="sm"){
+					globalState.BrightnessA=document.getElementById("slider1a").value/1000;
+					globalState.BrightnessB=document.getElementById("slider1b").value/1000;
+					globalState.DMX_Brightness=document.getElementById("slider2").value/1000;
+					globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
+					globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
+					globalState.SavedByController=true;
+					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
+				}else{
+					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState})
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
+				}
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){
 					console.log(xmlhttp.response.status);
@@ -1915,6 +1923,7 @@
 				}
 				function showVJ(){
 					setCurrentApp("sm");
+					forceInitControllerMode();
 					document.getElementById('grid-container-A').style.display='grid';
 					document.getElementById('grid-container-B').style.display='grid';
 					document.getElementById('mask-container-A').style.display='grid';
@@ -1946,6 +1955,7 @@
 				}
 				function showFM(){
 					getCurrentFMScene();
+					forceInitControllerMode();
 					setCurrentApp("fm");
 					document.getElementById('fm_page').style.display='grid';
 					document.getElementById('fm-scene-grid-container').style.display='grid';
@@ -1970,6 +1980,7 @@
 			}
 
 			function setCurrentApp(appInitials){
+				currentApp=appInitials;
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/currentApp.txt", true);
 				xmlhttp.send(appInitials);
@@ -2261,6 +2272,7 @@
 					xmlhttp2.open("GET", "../php/read.php?fn=flowMapperPresets/Preset_1.txt", true);
 					xmlhttp2.send();
 					xmlhttp2.onload = function(e){
+						fm_statesArray=JSON.parse(xmlhttp2.response).storage;
 						fm_globalState=JSON.parse(xmlhttp2.response).storage2;
 						document.getElementById("BrightnessSensitivity").value=fm_globalState[currentFMScene].BrightnessSensitivity*1000;
 						document.getElementById("ColorHop").value=fm_globalState[currentFMScene].ColorHop*1000;
