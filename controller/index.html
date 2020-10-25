@@ -358,12 +358,17 @@
 				.grid-container{
 					display: grid;
 					grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto auto auto;
-					background-color: #777777;
+					background-color:grey;
 					padding: 5px;
 					width:46.5%;
-					height:37%;
+					height:36%;
 					top:5.5%;
 					position:absolute;
+					z-index: 10;
+				}
+				#grid-container-A{
+					width:45.5%;
+					left:5.5%;
 				}
 				.mask-container{
 					display: grid;
@@ -528,7 +533,7 @@
 					font-size: 14px;
 					text-align: center;
 				}
-				#grid-container-A,#mask-container-A,#sectionLabelA,#sectionLabelC,.slider-container,.menu-page{
+				#mask-container-A,#sectionLabelA,#sectionLabelC,.slider-container,.menu-page{
 					left:5%;
 				}
 				#grid-container-B,#mask-container-B,#sectionLabelB,#sectionLabelD,.dmx-grid-container{
@@ -587,6 +592,7 @@
 					color:white;
 					margin:0;
 					font-size:.35em;
+					z-index: 10;
 				}
 				.customSlider::-webkit-slider-thumb,.dmxOverrideSliders::-webkit-slider-thumb{
 					-webkit-appearance: none;
