@@ -820,7 +820,7 @@
 			<div class="sliderLabel"  style="top:80%; z-index:3"><span style="font-size: .85em;position:relative; top:40%; height:60%; z-index:2;text-decoration: underline;">Volume Threshold</span></div>
 			<input type="range" min="1" max="100" value="50" class="customSlider" id="slider4" style="top:80%; z-index:4;">		
 		</div>
-		<div class="dmx-grid-container" id="dmx-grid-container"></div>
+		<div class="dmx-grid-container" id="dmx-grid-container" style="display:grid"></div>
 		<div class="dmx-overrides-container" id="dmx-overrides-container">
 			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
 			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider2" onchange="updateDMXOverrideSliders();">
@@ -864,7 +864,7 @@
 			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
-			<button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button>
+			<!-- <button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button> -->
 			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
 			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
 			<button class="menu-grid-container-item"  id="FM_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">FM</button>
@@ -986,7 +986,7 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
-				currentDMXPage="preset";
+				currentDMXPage="presets";
 				currentApp="sm";
 				checkDeviceOrientation();
 				lastMouseX=0;
@@ -2099,7 +2099,7 @@
 
 			function selectPage(buttonElement){
 				console.log("Selected Page:"+buttonElement.id)
-				document.getElementById('Menu_Button').style.backgroundColor='black';
+				// document.getElementById('Menu_Button').style.backgroundColor='black';
 				document.getElementById('VJ_Button').style.backgroundColor='black';
 				document.getElementById('Mapping_Button').style.backgroundColor='black';
 				document.getElementById('FM_Button').style.backgroundColor='black';
