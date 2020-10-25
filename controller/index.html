@@ -762,9 +762,9 @@
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<div id="dmxPageSelectorContainer">
-			<button class="dmxPageSelectorButtons" style="background-color: grey;">Presets</button>
-			<button class="dmxPageSelectorButtons">Overrides</button>
-			<button class="dmxPageSelectorButtons">Misc</button>
+			<button class="dmxPageSelectorButtons" id="dmxPageButton1" style="background-color: grey;" onclick="selectDMXPage(this,'presets');" >Presets</button>
+			<button class="dmxPageSelectorButtons" id="dmxPageButton2"  onclick="selectDMXPage(this,'overrides');" >Overrides</button>
+			<button class="dmxPageSelectorButtons" id="dmxPageButton3"  onclick="selectDMXPage(this,'misc');" >Misc</button>
 		</div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
 		<div class="fm-scene-grid-container" id="fm-scene-grid-container" style="z-index:1;">
@@ -995,6 +995,22 @@
 				getCurrentFMScene();
 			}
 			
+			function selectDMXPage(elem,mode){
+				document.getElementById("dmxPageButton1").style.backgroundColor="black";
+				document.getElementById("dmxPageButton2").style.backgroundColor="black";
+				document.getElementById("dmxPageButton3").style.backgroundColor="black";
+				elem.style.backgroundColor="grey";
+				if(mode=="presets"){
+					document.getElementById("dmx-grid-container").style.display="grid";
+				}
+				if(mode=="overrides"){
+					document.getElementById("dmx-grid-container").style.display="none";
+				}
+				if(mode=="misc"){
+					document.getElementById("dmx-grid-container").style.display="none";
+				}
+			}
+
 			function forceInitControllerMode(){
 				var requestBody="true"
 				var xmlhttp=new XMLHttpRequest();
