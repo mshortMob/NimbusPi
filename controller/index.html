@@ -727,16 +727,16 @@
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container" style="display:grid"></div>
 		<div class="dmx-overrides-container" id="dmx-overrides-container">
-			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
-			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider2" onchange="updateDMXOverrideSliders();">
-			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider3" onchange="updateDMXOverrideSliders();">
-			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider4" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="10" max="2550" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="10" max="2550" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider2" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="10" max="2550" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider3" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="10" max="2550" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider4" onchange="updateDMXOverrideSliders();">
 		</div>
 		<div id="dmx-misc-container" id="dmx-misc-container" style="display:none;">
 			<button id="globalResetAllButton" class="dmxMiscButtons" onclick="resetToDefaultPreset();">Reset All Presets</button>
 			<button id="miscButton2" class="dmxMiscButtons" onclick="saveDMXOverridesForAllPresets(1);" >Save DMX Overrides for All Presets</button>
 			<button id="miscButton3" class="dmxMiscButtons" onclick="forceInitControllerMode();" >Init Controller Mode</button>
-			<button id="miscButton4" class="dmxMiscButtons" onclick="requestFullScreen();" >Fullscreen</button>
+			<button id="miscButton4" class="dmxMiscButtons" onclick="toggleDMXOverridesCourseFine();" >DMX Overrides Course/Fine</button>
 		</div>
 		<div id="dmxPageSelectorContainer">
 			<button class="dmxPageSelectorButtons" id="dmxPageButton1" style="background-color: grey;" onclick="selectDMXPage(this,'presets');" >Presets</button>
@@ -881,6 +881,11 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				dmxOverridesMouseDownArray=[false,false,false,false];
+				dmxOverridesTouchDownArray=[false,false,false,false];
+				dmxOverridesLastMouseXPositions=[0,0,0,0];
+				dmxOverridesCourseFine=false;
+				initDMXOverridesFineCourseListeners();
 				currentDMXPage="presets";
 				currentApp="sm";
 				checkDeviceOrientation();
@@ -957,6 +962,83 @@
 				getCurrentFMScene();
 			}
 			
+			function initDMXOverridesFineCourseListeners(){
+				document.onmouseup=function(){
+					if(dmxOverridesCourseFine==true){
+						for(var x=0; x<4; x++){
+							dmxOverridesMouseDownArray[x]=false;
+						}
+						console.log("dmxOverridesMouseDownArray:"+dmxOverridesMouseDownArray);
+					}
+				}
+				for(var x=0; x<4; x++){
+					document.getElementById("dmxOverrideSlider"+parseInt(x+1)).onmousedown=function(event){
+						if(dmxOverridesCourseFine==true){
+							event.preventDefault();
+							var x=event.path[0].id;
+							x=parseInt(x.substring(x.length-1,x.length))-1;
+							dmxOverridesMouseDownArray[x]=true;
+							console.log("dmxOverridesMouseDownArray:"+dmxOverridesMouseDownArray);
+						}
+					}
+					document.getElementById("dmxOverrideSlider"+parseInt(x+1)).onmousemove=function(event){
+						if(dmxOverridesCourseFine==true){
+							event.preventDefault();
+							var x=event.path[0].id;
+							x=parseInt(x.substring(x.length-1,x.length))-1;
+							var overrideVelocity=(event.screenX-dmxOverridesLastMouseXPositions[x])/2;
+							if(dmxOverridesMouseDownArray[x]==true){
+								document.getElementById(event.path[0].id).value=parseInt(document.getElementById(event.path[0].id).value)+overrideVelocity;
+							}
+							dmxOverridesLastMouseXPositions[x]=event.screenX;
+						}
+					}
+				}
+			
+				document.ontouchend=function(){
+					if(dmxOverridesCourseFine==true){
+						for(var x=0; x<4; x++){
+							dmxOverridesTouchDownArray[x]=false;
+						}
+						console.log("dmxOverridesTouchDownArray:"+dmxOverridesTouchDownArray);
+					}
+				}
+				for(var x=0; x<4; x++){
+					document.getElementById("dmxOverrideSlider"+parseInt(x+1)).ontouchstart=function(event){
+						if(dmxOverridesCourseFine==true){
+							event.preventDefault();
+							var x=event.path[0].id;
+							x=parseInt(x.substring(x.length-1,x.length))-1;
+							dmxOverridesTouchDownArray[x]=true;
+							console.log("dmxOverridesTouchDownArray:"+dmxOverridesTouchDownArray);
+							dmxOverridesLastMouseXPositions[x]=event.touches[0].screenX;
+						}
+					}
+					document.getElementById("dmxOverrideSlider"+parseInt(x+1)).ontouchmove=function(event){
+						if(dmxOverridesCourseFine==true){
+							event.preventDefault();
+							var x=event.path[0].id;
+							x=parseInt(x.substring(x.length-1,x.length))-1;
+							var overrideVelocity=(event.touches[0].screenX-dmxOverridesLastMouseXPositions[x])/2;
+							if(dmxOverridesTouchDownArray[x]==true){
+								document.getElementById(event.path[0].id).value=parseInt(document.getElementById(event.path[0].id).value)+overrideVelocity;
+							}
+							dmxOverridesLastMouseXPositions[x]=event.touches[0].screenX;
+						}
+					}
+				}
+			}
+			
+			function toggleDMXOverridesCourseFine(){
+				if(dmxOverridesCourseFine==false){
+					document.getElementById("miscButton4").style.backgroundColor="lightgrey";
+					dmxOverridesCourseFine=true;
+				}else{
+					document.getElementById("miscButton4").style.backgroundColor="darkgrey";
+					dmxOverridesCourseFine=false;
+				}
+			}
+
 			function selectDMXPage(elem,mode){
 				currentDMXPage=mode;
 				document.getElementById("dmxPageButton1").style.backgroundColor="black";
@@ -991,10 +1073,10 @@
 			}
 			
 			function updateDMXOverrideSliders(){
-				globalState.DMX_X1=parseInt(document.getElementById("dmxOverrideSlider1").value);
-				globalState.DMX_Y1=parseInt(document.getElementById("dmxOverrideSlider2").value);
-				globalState.DMX_X2=parseInt(document.getElementById("dmxOverrideSlider3").value);
-				globalState.DMX_Y2=parseInt(document.getElementById("dmxOverrideSlider4").value);
+				globalState.DMX_X1=parseInt(document.getElementById("dmxOverrideSlider1").value)/10;
+				globalState.DMX_Y1=parseInt(document.getElementById("dmxOverrideSlider2").value)/10;
+				globalState.DMX_X2=parseInt(document.getElementById("dmxOverrideSlider3").value)/10;
+				globalState.DMX_Y2=parseInt(document.getElementById("dmxOverrideSlider4").value)/10;
 			}
 			
 			function checkDeviceOrientation(){
@@ -2341,10 +2423,10 @@
 				document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
 				document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
 				document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
-				document.getElementById("dmxOverrideSlider1").value=globalState.DMX_X1;
-				document.getElementById("dmxOverrideSlider2").value=globalState.DMX_Y1;
-				document.getElementById("dmxOverrideSlider3").value=globalState.DMX_X2;
-				document.getElementById("dmxOverrideSlider4").value=globalState.DMX_Y2;
+				document.getElementById("dmxOverrideSlider1").value=globalState.DMX_X1*10;
+				document.getElementById("dmxOverrideSlider2").value=globalState.DMX_Y1*10;
+				document.getElementById("dmxOverrideSlider3").value=globalState.DMX_X2*10;
+				document.getElementById("dmxOverrideSlider4").value=globalState.DMX_Y2*10;
 			}
 		
 			function selectGlobalPreset(presetNumber){
