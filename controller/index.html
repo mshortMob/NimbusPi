@@ -44,7 +44,7 @@
 					display: grid;
 					grid-template-columns: auto auto auto auto auto auto auto auto;
 					background-color: #777777;
-					width:47.5%;
+					width:40.5%;
 					height:32%;
 					top:56%;
 					position:absolute;
@@ -52,6 +52,25 @@
 					margin:0px;
 					padding:0px;
 					z-index: 5;
+				}
+				#dmxPageSelectorContainer{
+					display: grid;
+					grid-template-columns: auto;
+					background-color: #777777;
+					width:6.25%;
+					height:32%;
+					top:56%;
+					left:92.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+					z-index: 5;
+				}
+				.dmxPageSelectorButtons{
+					background-color: black;
+					color:white;
+					font-size: .4em;
 				}
 				.presets-grid-container{
 					display: grid;
@@ -384,13 +403,32 @@
 					display: grid;
 					grid-template-columns: auto auto auto auto auto auto auto auto;
 					background-color: #777777;
-					width:46.5%;
+					width:35.5%;
 					height:31%;
 					top:56%;
 					position:absolute;
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+				}
+				#dmxPageSelectorContainer{
+					display: grid;
+					grid-template-columns: auto;
+					background-color: #777777;
+					width:10.5%;
+					height:31%;
+					top:56%;
+					left:88%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+					z-index: 5;
+				}
+				.dmxPageSelectorButtons{
+					background-color: black;
+					color:white;
+					font-size: .4em;
 				}
 				.presets-grid-container{
 					display: grid;
@@ -709,7 +747,7 @@
 		<div class="mask-container" id="mask-container-A"></div>
 		<div class="mask-container" id="mask-container-B"></div>
 		<div class="sectionLabel" id="sectionLabelC" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%; text-decoration: underline;">Global Controls</span></div>
-		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%; text-decoration: underline;">DMX Patterns</span></div>
+		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%; text-decoration: underline;">DMX</span></div>
 		<div class="slider-container" id="slider-container">
 			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;text-decoration: underline;">ShaderA Level</span></div>
 			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider1a" style="top:0%">
@@ -723,6 +761,11 @@
 			<input type="range" min="1" max="100" value="50" class="customSlider" id="slider4" style="top:80%; z-index:4;">		
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
+		<div id="dmxPageSelectorContainer">
+			<button class="dmxPageSelectorButtons" style="background-color: grey;">Presets</button>
+			<button class="dmxPageSelectorButtons">Overrides</button>
+			<button class="dmxPageSelectorButtons">Misc</button>
+		</div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
 		<div class="fm-scene-grid-container" id="fm-scene-grid-container" style="z-index:1;">
 			<button class="fm-scene-grid-container-item" style="text-decoration: underline;">Flowmapper Scenes:</button>
@@ -1996,6 +2039,7 @@
 					showFM();
 				}
 				function clearVJ(){
+					document.getElementById('dmxPageSelectorContainer').style.display='none';
 					document.getElementById('grid-container-A').style.display='none';
 					document.getElementById('grid-container-B').style.display='none';
 					document.getElementById('mask-container-A').style.display='none';
@@ -2012,6 +2056,7 @@
 				function showVJ(){
 					setCurrentApp("sm");
 					setTimeout(function(){forceInitControllerMode();},2000);
+					document.getElementById('dmxPageSelectorContainer').style.display='grid';
 					document.getElementById('grid-container-A').style.display='grid';
 					document.getElementById('grid-container-B').style.display='grid';
 					document.getElementById('mask-container-A').style.display='grid';
