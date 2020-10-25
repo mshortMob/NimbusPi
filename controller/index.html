@@ -44,7 +44,7 @@
 					display: grid;
 					grid-template-columns: auto auto auto auto auto auto auto auto;
 					background-color: #777777;
-					width:47.5%;
+					width:40.5%;
 					height:32%;
 					top:56%;
 					position:absolute;
@@ -52,6 +52,79 @@
 					margin:0px;
 					padding:0px;
 					z-index: 5;
+				}
+				#dmxPageSelectorContainer{
+					display: grid;
+					grid-template-columns: auto;
+					background-color: #777777;
+					width:6.25%;
+					height:32%;
+					top:56%;
+					left:92.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+					z-index: 5;
+				}
+				.dmxPageSelectorButtons{
+					background-color: black;
+					color:white;
+					font-size: .4em;
+					border:1pt solid grey;
+					border-top:1pt solid darkgrey;
+					border-bottom:1pt solid darkgrey;
+				}
+				#dmx-overrides-container{
+					z-index: 5;
+					display: none;
+					grid-template-columns: auto;
+					background-color: grey;
+					width:40.5%;
+					height:31%;
+					top:56.5%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.dmx-overrides-controls{
+					border:1.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: darkgrey;
+				}
+				.dmx-overrides-controls::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				#dmx-misc-container{
+					z-index: 5;
+					display: none;
+					grid-template-columns: auto;
+					background-color: grey;
+					width:40.5%;
+					height:31%;
+					top:56.5%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.dmxMiscButtons{
+					background-color: darkgrey;
+					font-size: .7em;
+				}
+				.dmxMiscButtons::active{
+					background-color: lightgrey;
 				}
 				.presets-grid-container{
 					display: grid;
@@ -209,94 +282,17 @@
 					padding:0px;
 					background-color: black;
 				}
-				#dmxOverrideContainer{
-					background-color:grey;
-					width:48.75%;
-					height:93%;
-					top:1.5%;
-					left:.75%;
-					position:absolute;
-					display:grid;
-					grid-template-columns: auto;
-					margin:0%;
-					padding:0%;
-					padding-top:1%;
-					z-index: 5;
-					border:3px solid darkgrey;
-				}
-				.dmxOverrideSliders{
-					border:2.5px solid grey;
-					-webkit-appearance: none;
-					width:90%;
-					left:10%;
-					top:10%;
-					height:80%;
-					outline: none;
-					opacity: 1;
-					-webkit-transition: .2s;
-					transition: opacity .2s;
-					margin-left:5%;
-					margin-top:-1.25%;
-					padding:0px;
-					background-color: darkgrey;
-				}
-				#dmxOverrideContainerLabel{
-					background-color: grey;
-					text-align: left;
-					font-size:1em;
-					text-decoration: underline;
-				}
-				#miscMenuContainer{
-					background-color:grey;
-					width:48.5%;
-					height:93%;
-					top:1.5%;
-					left:50.5%;
-					position:absolute;
-					display:grid;
-					grid-template-columns: auto;
-					margin:0%;
-					padding:0%;
-					padding-top:1%;
-					z-index: 5;
-					border:3px solid darkgrey;
-				}
-				.miscButtons{
-					border:2.5px solid grey;
-					-webkit-appearance: none;
-					width:90%;
-					left:10%;
-					top:10%;
-					height:80%;
-					outline: none;
-					opacity: 1;
-					-webkit-transition: .2s;
-					transition: opacity .2s;
-					margin-left:5%;
-					margin-top:-1.25%;
-					padding:0px;
-					background-color: darkgrey;
-				}
-				.miscButtons:active{
-					background-color: lightgrey;
-				}
-				#miscMenuContainerLabel{
-					background-color: grey;
-					text-align: left;
-					font-size:1em;
-					text-decoration: underline;
-				}
 				#fm_page{
 					background-color:grey;
-					width:94%;
-					height:86%;
-					top:1.5%;
-					left:5%;
+					width:95.5%;
+					height:89.25%;
+					top:0%;
+					left:3.75%;
 					position:absolute;
 					display:grid;
 					grid-template-columns: 30% 70%;
-					z-index: 5;
-					border:1px solid darkgrey;
+					z-index: 0;
+					border:5px solid grey;
 					display: none;
 				}
 				.fm_controls{
@@ -326,7 +322,7 @@
 						display: none;
 						grid-template-columns: auto auto auto auto auto;
 						background-color: #777777;
-						width:98.75%;
+						width:99.25%;
 						height:9%;
 						bottom:0%;
 						position:absolute;
@@ -338,7 +334,7 @@
 				.fm-scene-grid-container-item{
 					background-color: black;
 					color:white;
-					font-size: .7em;
+					font-size: .5em;
 				}
 			}
 			@media only screen and (max-width:1000px){
@@ -365,8 +361,8 @@
 					background-color: #777777;
 					padding: 5px;
 					width:46.5%;
-					height:36.5%;
-					top:5%;
+					height:37%;
+					top:5.5%;
 					position:absolute;
 				}
 				.mask-container{
@@ -382,15 +378,89 @@
 				.dmx-grid-container{
 					z-index: 5;
 					display: grid;
-					grid-template-columns: auto auto auto auto auto auto auto auto;
+					grid-template-columns: auto auto auto auto;
 					background-color: #777777;
-					width:46.5%;
+					width:32%;
 					height:31%;
 					top:56%;
 					position:absolute;
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+				}
+				#dmxPageSelectorContainer{
+					display: grid;
+					grid-template-columns: auto;
+					background-color: #777777;
+					width:13.875%;
+					height:31%;
+					top:56%;
+					left:84.5%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+					z-index: 5;
+				}
+				.dmxPageSelectorButtons{
+					background-color: black;
+					color:white;
+					font-size: .4em;
+					border:1pt solid grey;
+					border-top:1pt solid grey;
+					border-bottom:1pt solid grey;
+				}
+				#dmx-overrides-container{
+					z-index: 5;
+					display: none;
+					grid-template-columns: auto;
+					background-color: grey;
+					width:32%;
+					height:31%;
+					top:56%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.dmx-overrides-controls{
+					border:1.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: darkgrey;
+				}
+				.dmx-overrides-controls::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				#dmx-misc-container{
+					z-index: 5;
+					display: none;
+					grid-template-columns: auto;
+					background-color: grey;
+					width:32%;
+					height:31%;
+					top:56%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.dmxMiscButtons{
+					background-color: darkgrey;
+					font-size: .4em;
+					border:1px solid black;
+				}
+				.dmxMiscButtons:active{
+					background-color: lightgrey;
 				}
 				.presets-grid-container{
 					display: grid;
@@ -434,8 +504,8 @@
 				.menu-grid-container{
 						display: grid;
 						grid-template-columns: auto;
-						background-color: #777777;
-						height:87.375%;
+						background-color: grey;
+						height:87.25%;
 						width:4.75%;
 						top:0%;
 						left:0%;
@@ -446,8 +516,9 @@
 				}	
 				.menu-grid-container-item{
 					font-size: 0.4em;
+					border:1px solid grey;
 				}
-				#Menu_Button{
+				#Misc_Button{
 					font-size: 0.1em;
 				}
 				.grid-item:hover{
@@ -561,94 +632,17 @@
 					padding:0px;
 					background-color: black;
 				}
-				#dmxOverrideContainer{
-					background-color:grey;
-					width:48.25%;
-					height:93%;
-					top:1.5%;
-					left:1.25%;
-					position:absolute;
-					display:grid;
-					grid-template-columns: auto;
-					margin:0%;
-					padding:0%;
-					padding-top:1%;
-					z-index: 5;
-					border:1px solid darkgrey;
-				}
-				.dmxOverrideSliders{
-					border:2.5px solid grey;
-					-webkit-appearance: none;
-					width:90%;
-					left:10%;
-					top:10%;
-					height:80%;
-					outline: none;
-					opacity: 1;
-					-webkit-transition: .2s;
-					transition: opacity .2s;
-					margin-left:5%;
-					margin-top:-1.25%;
-					padding:0px;
-					background-color: darkgrey;
-				}
-				#dmxOverrideContainerLabel{
-					background-color: grey;
-					text-align: left;
-					font-size:1em;
-					text-decoration: underline;
-				}
-				#miscMenuContainer{
-					background-color:grey;
-					width:48.5%;
-					height:93%;
-					top:1.5%;
-					left:50.5%;
-					position:absolute;
-					display:grid;
-					grid-template-columns: auto;
-					margin:0%;
-					padding:0%;
-					padding-top:1%;
-					z-index: 5;
-					border:1px solid darkgrey;
-				}
-				.miscButtons{
-					border:2.5px solid grey;
-					-webkit-appearance: none;
-					width:90%;
-					left:10%;
-					top:10%;
-					height:80%;
-					outline: none;
-					opacity: 1;
-					-webkit-transition: .2s;
-					transition: opacity .2s;
-					margin-left:5%;
-					margin-top:-1.25%;
-					padding:0px;
-					background-color: darkgrey;
-				}
-				.miscButtons:active{
-					background-color: lightgrey;
-				}
-				#miscMenuContainerLabel{
-					background-color: grey;
-					text-align: left;
-					font-size:1em;
-					text-decoration: underline;
-				}
 				#fm_page{
 					background-color:grey;
-					width:92%;
-					height:86%;
-					top:1.5%;
-					left:6.5%;
+					width:93.75%;
+					height:87.25%;
+					top:0%;
+					left:5.25%;
 					position:absolute;
 					display:grid;
 					grid-template-columns: 30% 70%;
-					z-index: 5;
-					border:1px solid darkgrey;
+					z-index: 1;
+					border:5px solid grey;
 					display: none;
 				}
 				.fm_controls{
@@ -677,7 +671,6 @@
 				.fm-scene-grid-container{
 						display: none;
 						grid-template-columns: auto auto auto auto auto;
-						background-color: #777777;
 						width:98.75%;
 						height:9%;
 						bottom:0%;
@@ -686,11 +679,15 @@
 						margin:0px;
 						padding:0px;
 						left:0%;
+						z-index: 1;
 				}
 				.fm-scene-grid-container-item{
 					background-color: black;
 					color:white;
-					font-size: .7em;
+					font-size: .5em;
+					border:1pt solid grey;
+					border-left:1pt solid grey;
+					border-right:1pt solid grey;
 				}
 			}
 		</style>
@@ -709,7 +706,7 @@
 		<div class="mask-container" id="mask-container-A"></div>
 		<div class="mask-container" id="mask-container-B"></div>
 		<div class="sectionLabel" id="sectionLabelC" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:40%; text-decoration: underline;">Global Controls</span></div>
-		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%; text-decoration: underline;">DMX Patterns</span></div>
+		<div class="sectionLabel" id="sectionLabelD" style="top:50%" onclick="requestFullScreen();"><span style="position:absolute;top:20.5%;height:50%;color:white;left:42%; text-decoration: underline;">DMX</span></div>
 		<div class="slider-container" id="slider-container">
 			<div class="sliderLabel" style="top:0%"><span style="position:relative; top:35%;height:50%;text-decoration: underline;">ShaderA Level</span></div>
 			<input type="range" min="0" max="1000" value="50" class="customSlider" id="slider1a" style="top:0%">
@@ -722,7 +719,24 @@
 			<div class="sliderLabel"  style="top:80%; z-index:3"><span style="font-size: .85em;position:relative; top:40%; height:60%; z-index:2;text-decoration: underline;">Volume Threshold</span></div>
 			<input type="range" min="1" max="100" value="50" class="customSlider" id="slider4" style="top:80%; z-index:4;">		
 		</div>
-		<div class="dmx-grid-container" id="dmx-grid-container"></div>
+		<div class="dmx-grid-container" id="dmx-grid-container" style="display:grid"></div>
+		<div class="dmx-overrides-container" id="dmx-overrides-container">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider2" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider3" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider4" onchange="updateDMXOverrideSliders();">
+		</div>
+		<div id="dmx-misc-container" id="dmx-misc-container" style="display:none;">
+			<button id="globalResetAllButton" class="dmxMiscButtons" onclick="resetToDefaultPreset();">Reset All Presets</button>
+			<button id="miscButton2" class="dmxMiscButtons" onclick="saveDMXOverridesForAllPresets(1);" >Save DMX Overrides for All Presets</button>
+			<button id="miscButton3" class="dmxMiscButtons" onclick="forceInitControllerMode();" >Init Controller Mode</button>
+			<button id="miscButton4" class="dmxMiscButtons" onclick="requestFullScreen();" >Fullscreen</button>
+		</div>
+		<div id="dmxPageSelectorContainer">
+			<button class="dmxPageSelectorButtons" id="dmxPageButton1" style="background-color: grey;" onclick="selectDMXPage(this,'presets');" >Presets</button>
+			<button class="dmxPageSelectorButtons" id="dmxPageButton2"  onclick="selectDMXPage(this,'overrides');" >Overrides</button>
+			<button class="dmxPageSelectorButtons" id="dmxPageButton3"  onclick="selectDMXPage(this,'misc');" >Misc</button>
+		</div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
 		<div class="fm-scene-grid-container" id="fm-scene-grid-container" style="z-index:1;">
 			<button class="fm-scene-grid-container-item" style="text-decoration: underline;">Flowmapper Scenes:</button>
@@ -755,28 +769,12 @@
 			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
-			<button class="menu-grid-container-item" id="Menu_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button>
+			<!-- <button class="menu-grid-container-item" id="Misc_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button> -->
 			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
 			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
 			<button class="menu-grid-container-item"  id="FM_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">FM</button>
 		</div>
-		<div class="menu-page" id="misc_page">
-			<div id="dmxOverrideContainer">
-				<button id="dmxOverrideContainerLabel" class="dmxOverrideSliders" >DMX Override Channels:</button>
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider2" onchange="updateDMXOverrideSliders();">
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider3" onchange="updateDMXOverrideSliders();">
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider4" onchange="updateDMXOverrideSliders();">
-			</div>
-			<div id="miscMenuContainer">
-				<button id="miscMenuContainerLabel" class="miscButtons" >Misc:</button>
-				<button id="globalResetAllButton" class="miscButtons" onclick="resetToDefaultPreset();">Reset All Presets</button>
-				<button id="miscButton2" class="miscButtons" onclick="saveDMXOverridesForAllPresets(1);" >Save DMX Overrides for All Presets</button>
-				<button id="miscButton3" class="miscButtons" onclick="forceInitControllerMode();" >Init Controller Mode</button>
-				<button id="miscButton4" class="miscButtons" onclick="requestFullScreen();" >Fullscreen</button>
-			</div>
-
-		</div>
+		<div class="menu-page" id="misc_page"></div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="fm_page">
 			<button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
@@ -877,6 +875,7 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				currentDMXPage="presets";
 				currentApp="sm";
 				checkDeviceOrientation();
 				lastMouseX=0;
@@ -952,6 +951,29 @@
 				getCurrentFMScene();
 			}
 			
+			function selectDMXPage(elem,mode){
+				currentDMXPage=mode;
+				document.getElementById("dmxPageButton1").style.backgroundColor="black";
+				document.getElementById("dmxPageButton2").style.backgroundColor="black";
+				document.getElementById("dmxPageButton3").style.backgroundColor="black";
+				elem.style.backgroundColor="grey";
+				if(mode=="presets"){
+					document.getElementById("dmx-grid-container").style.display="grid";
+					document.getElementById("dmx-overrides-container").style.display="none";
+					document.getElementById("dmx-misc-container").style.display="none";
+				}
+				if(mode=="overrides"){
+					document.getElementById("dmx-grid-container").style.display="none";
+					document.getElementById("dmx-overrides-container").style.display="grid";
+					document.getElementById("dmx-misc-container").style.display="none";
+				}
+				if(mode=="misc"){
+					document.getElementById("dmx-grid-container").style.display="none";
+					document.getElementById("dmx-overrides-container").style.display="none";
+					document.getElementById("dmx-misc-container").style.display="grid";
+				}
+			}
+
 			function forceInitControllerMode(){
 				var requestBody="true"
 				var xmlhttp=new XMLHttpRequest();
@@ -1969,12 +1991,12 @@
 
 			function selectPage(buttonElement){
 				console.log("Selected Page:"+buttonElement.id)
-				document.getElementById('Menu_Button').style.backgroundColor='black';
+				// document.getElementById('Misc_Button').style.backgroundColor='black';
 				document.getElementById('VJ_Button').style.backgroundColor='black';
 				document.getElementById('Mapping_Button').style.backgroundColor='black';
 				document.getElementById('FM_Button').style.backgroundColor='black';
 				buttonElement.style.backgroundColor='grey';
-				if(buttonElement.id=="Menu_Button"){
+				if(buttonElement.id=="Misc_Button"){
 					clearVJ();
 					clearFM();
 					clearMapping();
@@ -1996,12 +2018,15 @@
 					showFM();
 				}
 				function clearVJ(){
+					document.getElementById('dmxPageSelectorContainer').style.display='none';
 					document.getElementById('grid-container-A').style.display='none';
 					document.getElementById('grid-container-B').style.display='none';
 					document.getElementById('mask-container-A').style.display='none';
 					document.getElementById('mask-container-B').style.display='none';
 					document.getElementById('slider-container').style.display='none';
-					document.getElementById('dmx-grid-container').style.display='none';
+					document.getElementById('dmx-grid-container').style.display='none';	
+					document.getElementById('dmx-overrides-container').style.display='none';	
+					document.getElementById('dmx-misc-container').style.display='none';	
 					document.getElementById('sectionLabelA').style.display='none';	
 					document.getElementById('sectionLabelB').style.display='none';	
 					document.getElementById('sectionLabelC').style.display='none';	
@@ -2012,12 +2037,27 @@
 				function showVJ(){
 					setCurrentApp("sm");
 					setTimeout(function(){forceInitControllerMode();},2000);
+					document.getElementById('dmxPageSelectorContainer').style.display='grid';
 					document.getElementById('grid-container-A').style.display='grid';
 					document.getElementById('grid-container-B').style.display='grid';
 					document.getElementById('mask-container-A').style.display='grid';
 					document.getElementById('mask-container-B').style.display='grid';
 					document.getElementById('slider-container').style.display='grid';
-					document.getElementById('dmx-grid-container').style.display='grid';	
+					if(currentDMXPage=="presets"){
+						document.getElementById('dmx-grid-container').style.display='grid';	
+						document.getElementById('dmx-overrides-container').style.display='none';
+						document.getElementById("dmx-misc-container").style.display="none";	
+					}
+					if(currentDMXPage=="overrides"){
+						document.getElementById('dmx-grid-container').style.display='none';	
+						document.getElementById('dmx-overrides-container').style.display='grid';
+						document.getElementById("dmx-misc-container").style.display="none";
+					}
+					if(currentDMXPage=="misc"){
+						document.getElementById('dmx-grid-container').style.display='none';	
+						document.getElementById('dmx-overrides-container').style.display='none';
+						document.getElementById("dmx-misc-container").style.display="grid";
+					}
 					document.getElementById('sectionLabelA').style.display='grid';	
 					document.getElementById('sectionLabelB').style.display='grid';	
 					document.getElementById('sectionLabelC').style.display='grid';	
