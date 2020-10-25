@@ -74,9 +74,9 @@
 				}
 				#dmx-overrides-container{
 					z-index: 5;
-					display: grid;
+					display: none;
 					grid-template-columns: auto;
-					background-color: red;
+					background-color: grey;
 					width:40.5%;
 					height:31%;
 					top:56.5%;
@@ -85,6 +85,22 @@
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+				}
+				.dmx-overrides-controls{
+					border:1.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: darkgrey;
+				}
+				.dmx-overrides-controls::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
 				}
 				.presets-grid-container{
 					display: grid;
@@ -444,6 +460,36 @@
 					color:white;
 					font-size: .4em;
 				}
+				#dmx-overrides-container{
+					z-index: 5;
+					display: none;
+					grid-template-columns: auto;
+					background-color: grey;
+					width:35.5%;
+					height:31%;
+					top:56.5%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.dmx-overrides-controls{
+					border:1.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: darkgrey;
+				}
+				.dmx-overrides-controls::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
 				.presets-grid-container{
 					display: grid;
 					grid-template-columns: auto auto auto auto auto auto auto auto auto;
@@ -776,12 +822,10 @@
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<div class="dmx-overrides-container" id="dmx-overrides-container">
-			<!-- <button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
-			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="BrightnessSensitivity" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Motion Sensitivity:</button>
-			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="VelocitySensitivity" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Fade Time:</button>
-			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="FadeTime" onchange="updateFMState();"> -->
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="or1" onchange="">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="or2" onchange="">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="or3" onchange="">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="or4" onchange="">
 		</div>
 		<div id="dmxPageSelectorContainer">
 			<button class="dmxPageSelectorButtons" id="dmxPageButton1" style="background-color: grey;" onclick="selectDMXPage(this,'presets');" >Presets</button>
@@ -1024,12 +1068,15 @@
 				elem.style.backgroundColor="grey";
 				if(mode=="presets"){
 					document.getElementById("dmx-grid-container").style.display="grid";
+					document.getElementById("dmx-overrides-container").style.display="none";
 				}
 				if(mode=="overrides"){
 					document.getElementById("dmx-grid-container").style.display="none";
+					document.getElementById("dmx-overrides-container").style.display="grid";
 				}
 				if(mode=="misc"){
 					document.getElementById("dmx-grid-container").style.display="none";
+					document.getElementById("dmx-overrides-container").style.display="grid";
 				}
 			}
 
