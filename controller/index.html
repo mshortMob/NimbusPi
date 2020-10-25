@@ -735,7 +735,7 @@
 		<div id="dmx-misc-container" id="dmx-misc-container" style="display:none;">
 			<button id="globalResetAllButton" class="dmxMiscButtons" onclick="resetToDefaultPreset();">Reset All Presets</button>
 			<button id="miscButton2" class="dmxMiscButtons" onclick="saveDMXOverridesForAllPresets(1);" >Save DMX Overrides for All Presets</button>
-			<button id="miscButton3" class="dmxMiscButtons" onclick="forceInitControllerMode();" >Init Controller Mode</button>
+			<button id="miscButton3" class="dmxMiscButtons" onclick="rebootPi();" >Reboot Pi</button>
 			<button id="miscButton4" class="dmxMiscButtons" onclick="toggleDMXOverridesCourseFine();" >DMX Overrides Course/Fine</button>
 		</div>
 		<div id="dmxPageSelectorContainer">
@@ -992,6 +992,7 @@
 							}
 							dmxOverridesLastMouseXPositions[x]=event.screenX;
 						}
+						updateDMXOverrideSliders();
 					}
 				}
 			
@@ -1025,6 +1026,7 @@
 							}
 							dmxOverridesLastMouseXPositions[x]=event.touches[0].screenX;
 						}
+						updateDMXOverrideSliders();
 					}
 				}
 			}
@@ -2558,6 +2560,14 @@
 				fm_globalState[currentFMScene].KaleidoScope=document.getElementById("KaleidoScope").value;
 				fm_globalState[currentFMScene].VelocitySensitivity=document.getElementById("VelocitySensitivity").value/1000;
 			}
+		
+			function rebootPi(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/reboot.php", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+			}
+		
 		</script>
 	</body>
 </html>
