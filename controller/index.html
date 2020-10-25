@@ -71,6 +71,9 @@
 					background-color: black;
 					color:white;
 					font-size: .4em;
+					border:1pt solid grey;
+					border-top:1pt solid darkgrey;
+					border-bottom:1pt solid darkgrey;
 				}
 				#dmx-overrides-container{
 					z-index: 5;
@@ -331,7 +334,7 @@
 				.fm-scene-grid-container-item{
 					background-color: black;
 					color:white;
-					font-size: .7em;
+					font-size: .5em;
 				}
 			}
 			@media only screen and (max-width:1000px){
@@ -358,8 +361,8 @@
 					background-color: #777777;
 					padding: 5px;
 					width:46.5%;
-					height:36.5%;
-					top:5%;
+					height:37%;
+					top:5.5%;
 					position:absolute;
 				}
 				.mask-container{
@@ -375,9 +378,9 @@
 				.dmx-grid-container{
 					z-index: 5;
 					display: grid;
-					grid-template-columns: auto auto auto auto auto auto auto auto;
+					grid-template-columns: auto auto auto auto;
 					background-color: #777777;
-					width:35.5%;
+					width:32%;
 					height:31%;
 					top:56%;
 					position:absolute;
@@ -389,10 +392,10 @@
 					display: grid;
 					grid-template-columns: auto;
 					background-color: #777777;
-					width:10.5%;
+					width:13.875%;
 					height:31%;
 					top:56%;
-					left:88%;
+					left:84.5%;
 					position:absolute;
 					border:5px solid grey;
 					margin:0px;
@@ -403,15 +406,18 @@
 					background-color: black;
 					color:white;
 					font-size: .4em;
+					border:1pt solid grey;
+					border-top:1pt solid grey;
+					border-bottom:1pt solid grey;
 				}
 				#dmx-overrides-container{
 					z-index: 5;
 					display: none;
 					grid-template-columns: auto;
 					background-color: grey;
-					width:35.5%;
+					width:32%;
 					height:31%;
-					top:56.5%;
+					top:56%;
 					left:51.75%;
 					position:absolute;
 					border:5px solid grey;
@@ -439,9 +445,9 @@
 					display: none;
 					grid-template-columns: auto;
 					background-color: grey;
-					width:35.5%;
+					width:32%;
 					height:31%;
-					top:56.5%;
+					top:56%;
 					left:51.75%;
 					position:absolute;
 					border:5px solid grey;
@@ -451,8 +457,9 @@
 				.dmxMiscButtons{
 					background-color: darkgrey;
 					font-size: .4em;
+					border:1px solid black;
 				}
-				.dmxMiscButtons::active{
+				.dmxMiscButtons:active{
 					background-color: lightgrey;
 				}
 				.presets-grid-container{
@@ -497,8 +504,8 @@
 				.menu-grid-container{
 						display: grid;
 						grid-template-columns: auto;
-						background-color: #777777;
-						height:87.375%;
+						background-color: grey;
+						height:87.25%;
 						width:4.75%;
 						top:0%;
 						left:0%;
@@ -509,6 +516,7 @@
 				}	
 				.menu-grid-container-item{
 					font-size: 0.4em;
+					border:1px solid grey;
 				}
 				#Misc_Button{
 					font-size: 0.1em;
@@ -626,15 +634,15 @@
 				}
 				#fm_page{
 					background-color:grey;
-					width:92%;
-					height:86%;
-					top:1.5%;
-					left:6.5%;
+					width:93.75%;
+					height:87.25%;
+					top:0%;
+					left:5.25%;
 					position:absolute;
 					display:grid;
 					grid-template-columns: 30% 70%;
-					z-index: 5;
-					border:1px solid darkgrey;
+					z-index: 1;
+					border:5px solid grey;
 					display: none;
 				}
 				.fm_controls{
@@ -663,7 +671,6 @@
 				.fm-scene-grid-container{
 						display: none;
 						grid-template-columns: auto auto auto auto auto;
-						background-color: #777777;
 						width:98.75%;
 						height:9%;
 						bottom:0%;
@@ -672,11 +679,15 @@
 						margin:0px;
 						padding:0px;
 						left:0%;
+						z-index: 1;
 				}
 				.fm-scene-grid-container-item{
 					background-color: black;
 					color:white;
-					font-size: .7em;
+					font-size: .5em;
+					border:1pt solid grey;
+					border-left:1pt solid grey;
+					border-right:1pt solid grey;
 				}
 			}
 		</style>
