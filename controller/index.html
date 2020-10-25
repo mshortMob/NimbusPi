@@ -986,6 +986,7 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				currentDMXPage="preset";
 				currentApp="sm";
 				checkDeviceOrientation();
 				lastMouseX=0;
@@ -1062,6 +1063,7 @@
 			}
 			
 			function selectDMXPage(elem,mode){
+				currentDMXPage=mode;
 				document.getElementById("dmxPageButton1").style.backgroundColor="black";
 				document.getElementById("dmxPageButton2").style.backgroundColor="black";
 				document.getElementById("dmxPageButton3").style.backgroundColor="black";
@@ -2130,7 +2132,8 @@
 					document.getElementById('mask-container-A').style.display='none';
 					document.getElementById('mask-container-B').style.display='none';
 					document.getElementById('slider-container').style.display='none';
-					document.getElementById('dmx-grid-container').style.display='none';
+					document.getElementById('dmx-grid-container').style.display='none';	
+					document.getElementById('dmx-overrides-container').style.display='none';	
 					document.getElementById('sectionLabelA').style.display='none';	
 					document.getElementById('sectionLabelB').style.display='none';	
 					document.getElementById('sectionLabelC').style.display='none';	
@@ -2147,7 +2150,18 @@
 					document.getElementById('mask-container-A').style.display='grid';
 					document.getElementById('mask-container-B').style.display='grid';
 					document.getElementById('slider-container').style.display='grid';
-					document.getElementById('dmx-grid-container').style.display='grid';	
+					if(currentDMXPage=="presets"){
+						document.getElementById('dmx-grid-container').style.display='grid';	
+						document.getElementById('dmx-overrides-container').style.display='none';	
+					}
+					if(currentDMXPage=="overrides"){
+						document.getElementById('dmx-grid-container').style.display='none';	
+						document.getElementById('dmx-overrides-container').style.display='grid';
+					}
+					if(currentDMXPage=="misc"){
+						document.getElementById('dmx-grid-container').style.display='none';	
+						document.getElementById('dmx-overrides-container').style.display='grid';
+					}
 					document.getElementById('sectionLabelA').style.display='grid';	
 					document.getElementById('sectionLabelB').style.display='grid';	
 					document.getElementById('sectionLabelC').style.display='grid';	
