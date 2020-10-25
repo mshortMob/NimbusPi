@@ -822,10 +822,10 @@
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
 		<div class="dmx-overrides-container" id="dmx-overrides-container">
-			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="or1" onchange="">
-			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="or2" onchange="">
-			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="or3" onchange="">
-			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="or4" onchange="">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider2" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider3" onchange="updateDMXOverrideSliders();">
+			<input type="range" min="0" max="1000" value="50" class="dmx-overrides-controls" id="dmxOverrideSlider4" onchange="updateDMXOverrideSliders();">
 		</div>
 		<div id="dmxPageSelectorContainer">
 			<button class="dmxPageSelectorButtons" id="dmxPageButton1" style="background-color: grey;" onclick="selectDMXPage(this,'presets');" >Presets</button>
@@ -872,10 +872,10 @@
 		<div class="menu-page" id="misc_page">
 			<div id="dmxOverrideContainer">
 				<button id="dmxOverrideContainerLabel" class="dmxOverrideSliders" >DMX Override Channels:</button>
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
+				<!-- <input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider1" onchange="updateDMXOverrideSliders();">
 				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider2" onchange="updateDMXOverrideSliders();">
 				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider3" onchange="updateDMXOverrideSliders();">
-				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider4" onchange="updateDMXOverrideSliders();">
+				<input type="range" min="0" max="255" value="50" class="dmxOverrideSliders" id="dmxOverrideSlider4" onchange="updateDMXOverrideSliders();"> -->
 			</div>
 			<div id="miscMenuContainer">
 				<button id="miscMenuContainerLabel" class="miscButtons" >Misc:</button>
