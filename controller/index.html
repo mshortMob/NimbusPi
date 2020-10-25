@@ -72,6 +72,20 @@
 					color:white;
 					font-size: .4em;
 				}
+				#dmx-overrides-container{
+					z-index: 5;
+					display: grid;
+					grid-template-columns: auto;
+					background-color: red;
+					width:40.5%;
+					height:31%;
+					top:56.5%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
 				.presets-grid-container{
 					display: grid;
 					grid-template-columns: auto auto auto auto auto auto auto auto auto;
@@ -761,6 +775,14 @@
 			<input type="range" min="1" max="100" value="50" class="customSlider" id="slider4" style="top:80%; z-index:4;">		
 		</div>
 		<div class="dmx-grid-container" id="dmx-grid-container"></div>
+		<div class="dmx-overrides-container" id="dmx-overrides-container">
+			<!-- <button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
+			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="BrightnessSensitivity" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Motion Sensitivity:</button>
+			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="VelocitySensitivity" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Fade Time:</button>
+			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="FadeTime" onchange="updateFMState();"> -->
+		</div>
 		<div id="dmxPageSelectorContainer">
 			<button class="dmxPageSelectorButtons" id="dmxPageButton1" style="background-color: grey;" onclick="selectDMXPage(this,'presets');" >Presets</button>
 			<button class="dmxPageSelectorButtons" id="dmxPageButton2"  onclick="selectDMXPage(this,'overrides');" >Overrides</button>
