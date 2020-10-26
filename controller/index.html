@@ -775,7 +775,7 @@
 			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
-			<!-- <button class="menu-grid-container-item" id="Misc_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button> -->
+			<button class="menu-grid-container-item" id="Misc_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button>
 			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
 			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
 			<button class="menu-grid-container-item"  id="FM_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">FM</button>
@@ -881,6 +881,12 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				miscXYCurrentMouseX=0;
+				miscXYCurrentMouseY=0;
+				miscXYLastMouseX=0;
+				miscXYLastMouseY=0;
+				miscXYIsSelected=false;
+				createXYHandleOnMiscPage();
 				dmxOverridesMouseDownArray=[false,false,false,false];
 				dmxOverridesTouchDownArray=[false,false,false,false];
 				dmxOverridesLastMouseXPositions=[0,0,0,0];
@@ -962,6 +968,49 @@
 				getCurrentFMScene();
 			}
 			
+			function createXYHandleOnMiscPage(){
+				var xyHandleElement=document.createElement('div');
+				xyHandleElement.id="xyHandleElement";
+				xyHandleElement.style.backgroundColor="blue";
+				xyHandleElement.style.position="absolute";
+				xyHandleElement.style.width="40px";
+				xyHandleElement.style.height="40px";
+				xyHandleElement.style.left="0px";
+				xyHandleElement.style.top="0px";
+				xyHandleElement.style.borderRadius="20px";
+				document.getElementById("misc_page").appendChild(xyHandleElement);
+				
+				xyHandleElement.onmousedown=function(event){
+					miscXYLastMouseX=event.clientX;
+					miscXYLastMouseY=event.clientY;
+					miscXYIsSelected=true;
+				}
+
+				xyHandleElement.onmouseup=function(event){
+					miscXYIsSelected=false;
+				}
+
+				document.getElementById("misc_page").onmouseleave=function(event){
+					miscXYIsSelected=false;
+				}
+
+				document.getElementById("misc_page").onmousemove=function(event){
+					if(miscXYIsSelected==true){
+						var velocityX=event.clientX-miscXYLastMouseX;
+						var velocityY=event.clientY-miscXYLastMouseY;
+						xyHandleElement.style.left=parseInt(parseInt(xyHandleElement.style.left.substring(0,xyHandleElement.style.left.length-2))+velocityX)+"px";
+						xyHandleElement.style.top=parseInt(parseInt(xyHandleElement.style.top.substring(0,xyHandleElement.style.top.length-2))+velocityY)+"px";
+						miscXYLastMouseX=event.clientX;
+						miscXYLastMouseY=event.clientY;
+						miscXYCurrentMouseX=parseInt(xyHandleElement.style.left.substring(0,xyHandleElement.style.left.length-2));
+						miscXYCurrentMouseY=parseInt(xyHandleElement.style.top.substring(0,xyHandleElement.style.top.length-2));
+						globalState.xyPadX=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.1);
+						globalState.xyPadY=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.5)
+						// console.log( Math.abs(miscXYCurrentMouseX/window.innerWidth*1.1) +"  "+ Math.abs(miscXYCurrentMouseY/window.innerHeight*1.5) )
+					}
+				}
+			}
+
 			function initDMXOverridesFineCourseListeners(){
 				document.onmouseup=function(){
 					if(dmxOverridesCourseFine==true){
@@ -1955,6 +2004,8 @@
 					}
 					changeMask(1);
 					changeMask(2);
+					document.getElementById("xyHandleElement").style.left=parseInt(globalState.xyPadX/1.1*window.innerWidth)+"px";
+					document.getElementById("xyHandleElement").style.top=parseInt(globalState.xyPadY/1.5*window.innerHeight)+"px";
 					if(isResetToDefault==true){
 						resetToDefaultAllPresets(1);
 					}
@@ -2081,7 +2132,7 @@
 
 			function selectPage(buttonElement){
 				console.log("Selected Page:"+buttonElement.id)
-				// document.getElementById('Misc_Button').style.backgroundColor='black';
+				document.getElementById('Misc_Button').style.backgroundColor='black';
 				document.getElementById('VJ_Button').style.backgroundColor='black';
 				document.getElementById('Mapping_Button').style.backgroundColor='black';
 				document.getElementById('FM_Button').style.backgroundColor='black';
