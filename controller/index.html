@@ -1649,6 +1649,8 @@
 				camera.bottom = - frustumSize / 2;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.getElementById("xyHandleElement").style.left=parseInt(globalState.xyPadX/1.1*window.innerWidth)+"px";
+				document.getElementById("xyHandleElement").style.top=parseInt(globalState.xyPadY/1.5*window.innerHeight)+"px";
 			}
 			
 			function onDocumentTouchMove(event){
