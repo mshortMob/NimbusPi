@@ -21,7 +21,7 @@ void main( void ) {
 	color *= sin( time / 500.0 ) * 1.5;
 	
 
-	vec2 position2 = ( -2.5 - (2.5 * abs(audioVolume))  )/2.0 - ( -2.5 - (2.5 * abs(audioVolume))  ) * vUv;
+	vec2 position2 = ( -2.5 - (2.5 * abs(audioVolume)*0.0)  )/2.0 - ( -2.5 - (2.5 * abs(audioVolume)*0.0)  ) * vUv;
 	float red = 1.0 * ( sin( position2.x * position2.y - time / 1.5 ) );
 	float green = 1.0 * ( sin( position2.x * position2.y + time / 1.2 ) );
 	float blue = 1.0 * ( sin( position2.x * position2.y + time / 1.1) );
