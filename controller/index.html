@@ -1019,8 +1019,16 @@
 				}
 
 				xyBackdrop.ontouchstart=function(event){
-					miscXYLastMouseX=event.clientX;
-					miscXYLastMouseY=event.clientY;
+					miscXYCurrentMouseX=event.touches[0].clientX-window.innerWidth*.1;
+					miscXYCurrentMouseY=event.touches[0].clientY-window.innerHeight*.06;
+					if(miscXYCurrentMouseX > window.innerWidth*.05 && miscXYCurrentMouseX < window.innerWidth*.825){
+						if(miscXYCurrentMouseY > window.innerHeight*.09 && miscXYCurrentMouseY < window.innerHeight*.68){
+							xyHandleElement.style.left=miscXYCurrentMouseX+"px";
+							xyHandleElement.style.top=miscXYCurrentMouseY+"px";
+							globalState.xyPadX=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.1);
+							globalState.xyPadY=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.5);
+						}
+					}
 				}
 				
 				xyBackdrop.ontouchmove=function(event){
