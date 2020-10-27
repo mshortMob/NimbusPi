@@ -911,10 +911,11 @@ void main()	{
 				}
 				mouse.x = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
 				mouse.y = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
-				uniforms1.mousey={ value: mouse.y };
-				uniforms2.mousey={ value: mouse.y };
-				uniforms1.mousex={ value: mouse.x };
-				uniforms2.mousex={ value: mouse.x };
+				// console.log(event.clientX / window.innerWidth+"  "+event.clientY / window.innerHeight)
+				uniforms1.mousey={ value: event.clientY / window.innerHeight };
+				uniforms2.mousey={ value: event.clientY / window.innerHeight };
+				uniforms1.mousex={ value: event.clientX / window.innerWidth };
+				uniforms2.mousex={ value: event.clientX / window.innerWidth };
 				raycaster.setFromCamera( mouse, camera );
 				if ( SELECTED ) {
 					
