@@ -1171,6 +1171,14 @@
 						document.getElementById("orientation_overlay").style.display="block";
 					}
 				}, false);
+				window.addEventListener("resume", function() {
+					var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+					if (orientation.indexOf("landscape")!=-1) {
+						document.getElementById("orientation_overlay").style.display="none";
+					}else{
+						document.getElementById("orientation_overlay").style.display="block";
+					}
+				}, false);
 			}
 			
 			function resetToDefaultPreset(){
