@@ -211,6 +211,12 @@ void main()	{
 			}
 
 			function initGlobalVars(){
+				mouseLastMovedTime=new Date().getTime();
+				setInterval(function(){
+					if( ( (new Date().getTime())-mouseLastMovedTime ) > 5000 ){
+						renderer.domElement.style.cursor = "none";
+					}
+				},4000);
 				setCurrentApp("sm");
 				checkForForceInitControllerMode();
 				slaveModeInterval=-1;
@@ -366,6 +372,7 @@ void main()	{
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.sortObjects = true;
+				renderer.domElement.style.cursor = "none";
 				container.appendChild( renderer.domElement );
 				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
@@ -901,8 +908,12 @@ void main()	{
 				
 				container.style.cursor = 'auto';
 			}
-		
+
 			function onDocumentMouseMove( event ) {
+
+				renderer.domElement.style.cursor = "default";
+				mouseLastMovedTime=new Date().getTime();
+
 				if (SELECTED) {
 					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
 						console.log(SELECTED)
