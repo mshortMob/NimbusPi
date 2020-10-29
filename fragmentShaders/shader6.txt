@@ -17,6 +17,15 @@ vec3 hueRotate(vec3 colorIn){
     return colorOut;
 }
 
+vec3 strips (vec3 colorIn) {
+    vec2 st = vUv;
+    st *= 2.0; // Scale the coordinate system by 10
+    vec2 ipos = floor(st);  // get the integer coords
+    vec2 fpos = fract(st);  // get the fractional coords
+    vec3 temp= vec3(fract(sin(dot(st.xy, vec2(10.7222724+sin(time)*1.,10.53111424+sin(time)*1.))) ) );
+    return mix(colorIn,temp*colorIn,mousey);
+}
+
 
 void main( void ) {
 
@@ -29,6 +38,7 @@ void main( void ) {
 	color += sin( position.x * sin( time / 25.0 ) * 10.0 ) + sin( position.y * sin( time / 35.0 ) * 110.0 );
 	color *= sin( time / 500.0 ) * 1.5;
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( hueRotate( vec3( color * 16.0,  color * 6.0,  0.0 )), mask.r*brightness );
+        gl_FragColor = vec4( strips(hueRotate( vec3( color * 16.0,  color * 6.0,  0.0 ) ) ), mask.r*brightness );
+	//gl_FragColor = vec4( hueRotate( vec3( color * 16.0,  color * 6.0,  0.0 ) ), mask.r*brightness );
 
 }
