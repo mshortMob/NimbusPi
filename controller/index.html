@@ -1002,6 +1002,27 @@
 				getCurrentFMScene();
 			}
 			
+			function enableDisableXYPadControls(shaderChannel,elem){
+				if(shaderChannel=="A"){
+					if(enableMiscXYA==true){
+						enableMiscXYA=false;
+						elem.style.backgroundColor="black";
+					}else{
+						enableMiscXYA=true;
+						elem.style.backgroundColor="grey";
+					}
+				}
+				if(shaderChannel=="B"){
+					if(enableMiscXYB==true){
+						enableMiscXYB=false;
+						elem.style.backgroundColor="black";
+					}else{
+						enableMiscXYB=true;
+						elem.style.backgroundColor="grey";
+					}					
+				}
+			}
+			
 			function createXYHandleOnMiscPage(){
 				var xyBackdrop=document.createElement('div');
 				xyBackdrop.id="xyBackdrop";
