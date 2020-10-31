@@ -336,6 +336,19 @@
 					color:white;
 					font-size: .5em;
 				}
+				.miscXY-grid-container-top{
+					display: grid;
+					grid-template-columns: auto auto auto;
+					background-color: #777777;
+					width:96%;
+					height:6.5%;
+					top:0%;
+					left:3.5%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
 			}
 			@media only screen and (max-width:1000px){
 				body{
@@ -695,6 +708,19 @@
 					border-left:1pt solid grey;
 					border-right:1pt solid grey;
 				}
+				.miscXY-grid-container-top{
+					display: grid;
+					grid-template-columns: auto auto auto;
+					background-color: #777777;
+					width:94%;
+					height:6.5%;
+					top:0%;
+					left:5%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
 			}
 		</style>
 	</head>
@@ -781,6 +807,11 @@
 			<button class="menu-grid-container-item"  id="FM_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">FM</button>
 		</div>
 		<div class="menu-page" id="misc_page"></div>
+		<div class="miscXY-grid-container-top" id="miscXY-grid-container-top" style="display:none;">
+			<button class="enableMiscXYLabel"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">Enable/Disable XY controls:</button>
+			<button id="enableMiscXYAButton" onclick="enableDisableXYPadControls('A',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderA FX</button>
+			<button id="enableMiscXYBButton" onclick="enableDisableXYPadControls('B',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderB FX</button>
+		</div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="fm_page">
 			<button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
@@ -881,11 +912,14 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				enableMiscXYA=true;
+				enableMiscXYB=true;
 				miscXYCurrentMouseX=0;
 				miscXYCurrentMouseY=0;
 				miscXYLastMouseX=0;
 				miscXYLastMouseY=0;
-				miscXYIsSelected=false;
+				miscXYIsSelectedA=false;
+				miscXYIsSelectedB=false;
 				createXYHandleOnMiscPage();
 				dmxOverridesMouseDownArray=[false,false,false,false];
 				dmxOverridesTouchDownArray=[false,false,false,false];
@@ -975,45 +1009,83 @@
 				xyBackdrop.style.border="1px solid grey";
 				xyBackdrop.style.position="absolute";
 				xyBackdrop.style.width="90%";
-				xyBackdrop.style.height="80%";
+				xyBackdrop.style.height="77%";
 				xyBackdrop.style.left="5%";
-				xyBackdrop.style.top="10%";
+				xyBackdrop.style.top="15%";
 				document.getElementById("misc_page").appendChild(xyBackdrop);
 
-				var xyHandleElement=document.createElement('div');
-				xyHandleElement.id="xyHandleElement";
-				xyHandleElement.style.backgroundColor="blue";
-				xyHandleElement.style.position="absolute";
-				xyHandleElement.style.width="40px";
-				xyHandleElement.style.height="40px";
-				xyHandleElement.style.left="0px";
-				xyHandleElement.style.top="0px";
-				xyHandleElement.style.borderRadius="20px";
-				document.getElementById("misc_page").appendChild(xyHandleElement);
+				var xyHandleElementA=document.createElement('div');
+				xyHandleElementA.id="xyHandleElementA";
+				xyHandleElementA.style.backgroundColor="blue";
+				xyHandleElementA.style.position="absolute";
+				xyHandleElementA.style.width="40px";
+				xyHandleElementA.style.height="40px";
+				xyHandleElementA.style.left="0px";
+				xyHandleElementA.style.top="0px";
+				xyHandleElementA.style.borderRadius="20px";
+				document.getElementById("misc_page").appendChild(xyHandleElementA);
+
+				var xyHandleElementB=document.createElement('div');
+				xyHandleElementB.id="xyHandleElementB";
+				xyHandleElementB.style.backgroundColor="red";
+				xyHandleElementB.style.position="absolute";
+				xyHandleElementB.style.width="40px";
+				xyHandleElementB.style.height="40px";
+				xyHandleElementB.style.left="0px";
+				xyHandleElementB.style.top="0px";
+				xyHandleElementB.style.borderRadius="20px";
+				document.getElementById("misc_page").appendChild(xyHandleElementB);
 				
-				xyHandleElement.onmousedown=function(event){
+				xyHandleElementA.onmousedown=function(event){
 					miscXYLastMouseX=event.clientX;
 					miscXYLastMouseY=event.clientY;
-					miscXYIsSelected=true;
+					miscXYIsSelectedA=true;
 				}
 
-				xyHandleElement.onmouseup=function(event){
-					miscXYIsSelected=false;
+				xyHandleElementA.onmouseup=function(event){
+					miscXYIsSelectedA=false;
+				}
+
+				xyHandleElementB.onmousedown=function(event){
+					miscXYLastMouseX=event.clientX;
+					miscXYLastMouseY=event.clientY;
+					miscXYIsSelectedB=true;
+				}
+
+				xyHandleElementB.onmouseup=function(event){
+					miscXYIsSelectedB=false;
 				}
 
 				xyBackdrop.onmousemove=function(event){
-					if(miscXYIsSelected==true){
+					if(miscXYIsSelectedA==true){
 						console.log(event)
-						var velocityX=event.clientX-miscXYLastMouseX;
-						var velocityY=event.clientY-miscXYLastMouseY;
-						xyHandleElement.style.left=parseInt(parseInt(xyHandleElement.style.left.substring(0,xyHandleElement.style.left.length-2))+velocityX)+"px";
-						xyHandleElement.style.top=parseInt(parseInt(xyHandleElement.style.top.substring(0,xyHandleElement.style.top.length-2))+velocityY)+"px";
-						miscXYLastMouseX=event.clientX;
-						miscXYLastMouseY=event.clientY;
-						miscXYCurrentMouseX=parseInt(xyHandleElement.style.left.substring(0,xyHandleElement.style.left.length-2));
-						miscXYCurrentMouseY=parseInt(xyHandleElement.style.top.substring(0,xyHandleElement.style.top.length-2));
-						globalState.xyPadX=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.1);
-						globalState.xyPadY=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.5)
+						if(enableMiscXYA==true){
+							var velocityX=event.clientX-miscXYLastMouseX;
+							var velocityY=event.clientY-miscXYLastMouseY;
+							xyHandleElementA.style.left=parseInt(parseInt(xyHandleElementA.style.left.substring(0,xyHandleElementA.style.left.length-2))+velocityX)+"px";
+							xyHandleElementA.style.top=parseInt(parseInt(xyHandleElementA.style.top.substring(0,xyHandleElementA.style.top.length-2))+velocityY)+"px";
+							miscXYLastMouseX=event.clientX;
+							miscXYLastMouseY=event.clientY;
+							miscXYCurrentMouseX=parseInt(xyHandleElementA.style.left.substring(0,xyHandleElementA.style.left.length-2));
+							miscXYCurrentMouseY=parseInt(xyHandleElementA.style.top.substring(0,xyHandleElementA.style.top.length-2));
+							globalState.xyPadXA=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+							globalState.xyPadYA=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							console.log(globalState.xyPadXA+"  "+globalState.xyPadYA)
+						}
+					}
+					if(miscXYIsSelectedB==true){
+						if(enableMiscXYB==true){
+							var velocityX=event.clientX-miscXYLastMouseX;
+							var velocityY=event.clientY-miscXYLastMouseY;
+							xyHandleElementB.style.left=parseInt(parseInt(xyHandleElementB.style.left.substring(0,xyHandleElementB.style.left.length-2))+velocityX)+"px";
+							xyHandleElementB.style.top=parseInt(parseInt(xyHandleElementB.style.top.substring(0,xyHandleElementB.style.top.length-2))+velocityY)+"px";
+							miscXYLastMouseX=event.clientX;
+							miscXYLastMouseY=event.clientY;
+							miscXYCurrentMouseX=parseInt(xyHandleElementB.style.left.substring(0,xyHandleElementB.style.left.length-2));
+							miscXYCurrentMouseY=parseInt(xyHandleElementB.style.top.substring(0,xyHandleElementA.style.top.length-2));
+							globalState.xyPadXB=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+							globalState.xyPadYB=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44)
+						}
 						// console.log( Math.abs(miscXYCurrentMouseX/window.innerWidth*1.1) +"  "+ Math.abs(miscXYCurrentMouseY/window.innerHeight*1.5) )
 					}
 				}
@@ -1022,11 +1094,19 @@
 					miscXYCurrentMouseX=event.touches[0].clientX-window.innerWidth*.1;
 					miscXYCurrentMouseY=event.touches[0].clientY-window.innerHeight*.06;
 					if(miscXYCurrentMouseX > window.innerWidth*.05 && miscXYCurrentMouseX < window.innerWidth*.825){
-						if(miscXYCurrentMouseY > window.innerHeight*.09 && miscXYCurrentMouseY < window.innerHeight*.68){
-							xyHandleElement.style.left=miscXYCurrentMouseX+"px";
-							xyHandleElement.style.top=miscXYCurrentMouseY+"px";
-							globalState.xyPadX=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.1);
-							globalState.xyPadY=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.5);
+						if(miscXYCurrentMouseY > window.innerHeight*.125 && miscXYCurrentMouseY < window.innerHeight*.7){
+							if(enableMiscXYA==true){
+								xyHandleElementA.style.left=miscXYCurrentMouseX+"px";
+								xyHandleElementA.style.top=miscXYCurrentMouseY+"px";
+								globalState.xyPadXA=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+								globalState.xyPadYA=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							}
+							if(enableMiscXYB==true){
+								xyHandleElementB.style.left=miscXYCurrentMouseX+"px";
+								xyHandleElementB.style.top=miscXYCurrentMouseY+"px";
+								globalState.xyPadXB=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+								globalState.xyPadYB=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							}
 						}
 					}
 				}
@@ -1035,16 +1115,25 @@
 					miscXYCurrentMouseX=event.touches[0].clientX-window.innerWidth*.1;
 					miscXYCurrentMouseY=event.touches[0].clientY-window.innerHeight*.06;
 					if(miscXYCurrentMouseX > window.innerWidth*.05 && miscXYCurrentMouseX < window.innerWidth*.825){
-						if(miscXYCurrentMouseY > window.innerHeight*.09 && miscXYCurrentMouseY < window.innerHeight*.68){
-							xyHandleElement.style.left=miscXYCurrentMouseX+"px";
-							xyHandleElement.style.top=miscXYCurrentMouseY+"px";
-							globalState.xyPadX=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.1);
-							globalState.xyPadY=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.5);
+						if(miscXYCurrentMouseY > window.innerHeight*.125 && miscXYCurrentMouseY < window.innerHeight*.7){
+							if(enableMiscXYA==true){
+								xyHandleElementA.style.left=miscXYCurrentMouseX+"px";
+								xyHandleElementA.style.top=miscXYCurrentMouseY+"px";
+								globalState.xyPadXA=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+								globalState.xyPadYA=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							}
+							if(enableMiscXYB==true){
+								xyHandleElementB.style.left=miscXYCurrentMouseX+"px";
+								xyHandleElementB.style.top=miscXYCurrentMouseY+"px";
+								globalState.xyPadXB=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+								globalState.xyPadYB=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							}
 						}
 					}
 				}
+			
 			}
-
+		
 			function initDMXOverridesFineCourseListeners(){
 				document.onmouseup=function(){
 					if(dmxOverridesCourseFine==true){
@@ -1691,8 +1780,10 @@
 				camera.bottom = - frustumSize / 2;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				document.getElementById("xyHandleElement").style.left=parseInt(globalState.xyPadX/1.1*window.innerWidth)+"px";
-				document.getElementById("xyHandleElement").style.top=parseInt(globalState.xyPadY/1.5*window.innerHeight)+"px";
+				document.getElementById("xyHandleElementA").style.left=parseInt(globalState.xyPadXA/1.24*window.innerWidth)+"px";
+				document.getElementById("xyHandleElementA").style.top=parseInt(globalState.xyPadYA/1.44*window.innerHeight)+"px";
+				document.getElementById("xyHandleElementB").style.left=parseInt(globalState.xyPadXB/1.24*window.innerWidth)+"px";
+				document.getElementById("xyHandleElementB").style.top=parseInt(globalState.xyPadYB/1.44*window.innerHeight)+"px";
 			}
 			
 			function onDocumentTouchMove(event){
@@ -2048,8 +2139,10 @@
 					}
 					changeMask(1);
 					changeMask(2);
-					document.getElementById("xyHandleElement").style.left=parseInt(globalState.xyPadX/1.1*window.innerWidth)+"px";
-					document.getElementById("xyHandleElement").style.top=parseInt(globalState.xyPadY/1.5*window.innerHeight)+"px";
+					document.getElementById("xyHandleElementA").style.left=parseInt(globalState.xyPadXA/1.24*window.innerWidth)+"px";
+					document.getElementById("xyHandleElementA").style.top=parseInt(globalState.xyPadYA/1.44*window.innerHeight)+"px";
+					document.getElementById("xyHandleElementB").style.left=parseInt(globalState.xyPadXB/1.24*window.innerWidth)+"px";
+					document.getElementById("xyHandleElementB").style.top=parseInt(globalState.xyPadYB/1.44*window.innerHeight)+"px";
 					if(isResetToDefault==true){
 						resetToDefaultAllPresets(1);
 					}

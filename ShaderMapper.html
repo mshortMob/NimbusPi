@@ -505,10 +505,10 @@ void main()	{
 					updateControlsView();
 					syncObjectsToJson(true);
 					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
-					uniforms1.mousey={ value: globalState.xyPadY };
-					uniforms2.mousey={ value: globalState.xyPadY };
-					uniforms1.mousex={ value: globalState.xyPadX };
-					uniforms2.mousex={ value: globalState.xyPadX };
+					uniforms1.mousey={ value: globalState.xyPadYA };
+					uniforms2.mousey={ value: globalState.xyPadYB };
+					uniforms1.mousex={ value: globalState.xyPadXA };
+					uniforms2.mousex={ value: globalState.xyPadXB };
 				}
 			}
 
