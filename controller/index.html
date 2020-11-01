@@ -439,6 +439,67 @@
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+					z-index: 5;
+				}
+				.dmxPageSelectorButtons{
+					background-color: black;
+					color:white;
+					font-size: .4em;
+					border:1pt solid grey;
+					border-top:1pt solid grey;
+					border-bottom:1pt solid grey;
+				}
+				#dmx-overrides-container{
+					z-index: 5;
+					display: none;
+					grid-template-columns: auto;
+					background-color: grey;
+					width:32%;
+					height:31%;
+					top:56%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.dmx-overrides-controls{
+					border:1.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: darkgrey;
+				}
+				.dmx-overrides-controls::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				#dmx-misc-container{
+					z-index: 5;
+					display: none;
+					grid-template-columns: auto;
+					background-color: grey;
+					width:32%;
+					height:31%;
+					top:56%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.dmxMiscButtons{
+					background-color: darkgrey;
+					font-size: .4em;
+					border:1px solid black;
+				}
+				.dmxMiscButtons:active{
+					background-color: lightgrey;
 				}
 				.dmx-overrides-controls{
 					border:1.5px solid grey;
@@ -810,6 +871,7 @@
 			<button id="enableMiscXYAButton" onclick="enableDisableXYPadControls('A',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderA FX</button>
 			<button id="enableMiscXYBButton" onclick="enableDisableXYPadControls('B',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderB FX</button>
 		</div>
+		<div class="menu-page" id="misc_page"></div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="fm_page">
 			<button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
