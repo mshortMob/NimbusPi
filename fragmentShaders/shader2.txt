@@ -3,10 +3,32 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
+
+vec3 getFXShader(){
+    vec2 position = ( -12.0 - (8.0 * -0.0 * abs(audioVolume))  ) * vUv;
+    float red = abs( sin( position.x + time / .75) );
+    float green = abs( sin( position.x + 3.14/2. + time / .75 ) );
+    float blue = abs( sin( position.x + 3.14/5.5 + time / .75 ) );
+    return vec3(blue*0., 1.2*(green-abs(audioVolume)), 2.0*blue);
+}
+
+vec3 mixShaders(vec3 shaderIn){
+    vec3 shaderOut=mix(shaderIn, getFXShader(), mousey/1.5 );
+    return shaderOut;
+}
+
+
+vec3 hueRotate(vec3 colorIn){
+    vec3 colorOut= vec3(colorIn.b, colorIn.r, colorIn.g);
+    colorOut=mix(colorIn, colorOut, mousex );
+    return colorOut;
+}
 
 void main()	{
 	vec2 position = ( -10.0 - (5.0 * abs(audioVolume))  )/2.0 - ( -10.0 - (5.0 * abs(audioVolume))  ) * vUv;
@@ -14,5 +36,6 @@ void main()	{
 	float green = 1.0 * ( sin( position.x * position.y + time / 1.8 ) );
 	float blue = 1.0 * ( sin( position.x * position.y + time / 1.9) );
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( mask.r*brightness*red*.7, mask.g*green-.7, mask.b*blue*1.2, mask.r*brightness );
+        vec3 color = vec3(mask.r*brightness*red*.7, mask.g*green-.7, mask.b*blue*1.2);
+	gl_FragColor = vec4( hueRotate(mixShaders(color)), mask.r*brightness );
 }

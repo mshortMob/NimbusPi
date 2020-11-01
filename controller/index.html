@@ -71,9 +71,7 @@
 					background-color: black;
 					color:white;
 					font-size: .4em;
-					border:1pt solid grey;
-					border-top:1pt solid darkgrey;
-					border-bottom:1pt solid darkgrey;
+					border:1pt solid #666666;
 				}
 				#dmx-overrides-container{
 					z-index: 5;
@@ -123,7 +121,7 @@
 					background-color: darkgrey;
 					font-size: .7em;
 				}
-				.dmxMiscButtons::active{
+				.dmxMiscButtons:active{
 					background-color: lightgrey;
 				}
 				.presets-grid-container{
@@ -336,6 +334,19 @@
 					color:white;
 					font-size: .5em;
 				}
+				.miscXY-grid-container-top{
+					display: grid;
+					grid-template-columns: auto auto auto;
+					background-color: #777777;
+					width:96%;
+					height:6.5%;
+					top:0%;
+					left:3.5%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
 			}
 			@media only screen and (max-width:1000px){
 				body{
@@ -428,6 +439,67 @@
 					border:5px solid grey;
 					margin:0px;
 					padding:0px;
+					z-index: 5;
+				}
+				.dmxPageSelectorButtons{
+					background-color: black;
+					color:white;
+					font-size: .4em;
+					border:1pt solid grey;
+					border-top:1pt solid grey;
+					border-bottom:1pt solid grey;
+				}
+				#dmx-overrides-container{
+					z-index: 5;
+					display: none;
+					grid-template-columns: auto;
+					background-color: grey;
+					width:32%;
+					height:31%;
+					top:56%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.dmx-overrides-controls{
+					border:1.5px solid grey;
+					-webkit-appearance: none;
+					outline: none;
+					background-color: darkgrey;
+				}
+				.dmx-overrides-controls::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				#dmx-misc-container{
+					z-index: 5;
+					display: none;
+					grid-template-columns: auto;
+					background-color: grey;
+					width:32%;
+					height:31%;
+					top:56%;
+					left:51.75%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
+				.dmxMiscButtons{
+					background-color: darkgrey;
+					font-size: .4em;
+					border:1px solid black;
+				}
+				.dmxMiscButtons:active{
+					background-color: lightgrey;
 				}
 				.dmx-overrides-controls{
 					border:1.5px solid grey;
@@ -695,6 +767,19 @@
 					border-left:1pt solid grey;
 					border-right:1pt solid grey;
 				}
+				.miscXY-grid-container-top{
+					display: grid;
+					grid-template-columns: auto auto auto;
+					background-color: #777777;
+					width:94%;
+					height:6.5%;
+					top:0%;
+					left:5%;
+					position:absolute;
+					border:5px solid grey;
+					margin:0px;
+					padding:0px;
+				}
 			}
 		</style>
 	</head>
@@ -775,10 +860,16 @@
 			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
-			<!-- <button class="menu-grid-container-item" id="Misc_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button> -->
+			<button class="menu-grid-container-item" id="Misc_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Misc</button>
 			<button class="menu-grid-container-item"  id="VJ_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">VJ</button>
 			<button class="menu-grid-container-item"  id="Mapping_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white; ">Map</button>
 			<button class="menu-grid-container-item"  id="FM_Button" onclick="selectPage(this);" style="border-color: grey; background-color: black; color: white;">FM</button>
+		</div>
+		<div class="menu-page" id="misc_page"></div>
+		<div class="miscXY-grid-container-top" id="miscXY-grid-container-top" style="display:none;">
+			<button class="enableMiscXYLabel"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em; text-decoration: underline;">Enable/Disable XY controls:</button>
+			<button id="enableMiscXYAButton" onclick="enableDisableXYPadControls('A',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderA FX</button>
+			<button id="enableMiscXYBButton" onclick="enableDisableXYPadControls('B',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderB FX</button>
 		</div>
 		<div class="menu-page" id="misc_page"></div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
@@ -801,7 +892,7 @@
 			<input type="range" min="0" max="150" value="0" class="fm_controls" id="SceneRate" onchange="updateFMState();">
 		</div>
 
-		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:48px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
+		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:42px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
 
 		<script id="vertexShader" type="x-shader/x-vertex">
 			precision mediump float;
@@ -881,6 +972,15 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				enableMiscXYA=true;
+				enableMiscXYB=true;
+				miscXYCurrentMouseX=0;
+				miscXYCurrentMouseY=0;
+				miscXYLastMouseX=0;
+				miscXYLastMouseY=0;
+				miscXYIsSelectedA=false;
+				miscXYIsSelectedB=false;
+				createXYHandleOnMiscPage();
 				dmxOverridesMouseDownArray=[false,false,false,false];
 				dmxOverridesTouchDownArray=[false,false,false,false];
 				dmxOverridesLastMouseXPositions=[0,0,0,0];
@@ -962,6 +1062,159 @@
 				getCurrentFMScene();
 			}
 			
+			function enableDisableXYPadControls(shaderChannel,elem){
+				if(shaderChannel=="A"){
+					if(enableMiscXYA==true){
+						enableMiscXYA=false;
+						elem.style.backgroundColor="black";
+					}else{
+						enableMiscXYA=true;
+						elem.style.backgroundColor="grey";
+					}
+				}
+				if(shaderChannel=="B"){
+					if(enableMiscXYB==true){
+						enableMiscXYB=false;
+						elem.style.backgroundColor="black";
+					}else{
+						enableMiscXYB=true;
+						elem.style.backgroundColor="grey";
+					}					
+				}
+			}
+			
+			function createXYHandleOnMiscPage(){
+				var xyBackdrop=document.createElement('div');
+				xyBackdrop.id="xyBackdrop";
+				xyBackdrop.style.backgroundColor="black";
+				xyBackdrop.style.border="1px solid grey";
+				xyBackdrop.style.position="absolute";
+				xyBackdrop.style.width="90%";
+				xyBackdrop.style.height="77%";
+				xyBackdrop.style.left="5%";
+				xyBackdrop.style.top="15%";
+				document.getElementById("misc_page").appendChild(xyBackdrop);
+
+				var xyHandleElementA=document.createElement('div');
+				xyHandleElementA.id="xyHandleElementA";
+				xyHandleElementA.style.backgroundColor="blue";
+				xyHandleElementA.style.position="absolute";
+				xyHandleElementA.style.width="40px";
+				xyHandleElementA.style.height="40px";
+				xyHandleElementA.style.left="0px";
+				xyHandleElementA.style.top="0px";
+				xyHandleElementA.style.borderRadius="20px";
+				document.getElementById("misc_page").appendChild(xyHandleElementA);
+
+				var xyHandleElementB=document.createElement('div');
+				xyHandleElementB.id="xyHandleElementB";
+				xyHandleElementB.style.backgroundColor="red";
+				xyHandleElementB.style.position="absolute";
+				xyHandleElementB.style.width="40px";
+				xyHandleElementB.style.height="40px";
+				xyHandleElementB.style.left="0px";
+				xyHandleElementB.style.top="0px";
+				xyHandleElementB.style.borderRadius="20px";
+				document.getElementById("misc_page").appendChild(xyHandleElementB);
+				
+				xyHandleElementA.onmousedown=function(event){
+					miscXYLastMouseX=event.clientX;
+					miscXYLastMouseY=event.clientY;
+					miscXYIsSelectedA=true;
+				}
+
+				xyHandleElementA.onmouseup=function(event){
+					miscXYIsSelectedA=false;
+				}
+
+				xyHandleElementB.onmousedown=function(event){
+					miscXYLastMouseX=event.clientX;
+					miscXYLastMouseY=event.clientY;
+					miscXYIsSelectedB=true;
+				}
+
+				xyHandleElementB.onmouseup=function(event){
+					miscXYIsSelectedB=false;
+				}
+
+				xyBackdrop.onmousemove=function(event){
+					if(miscXYIsSelectedA==true){
+						console.log(event)
+						if(enableMiscXYA==true){
+							var velocityX=event.clientX-miscXYLastMouseX;
+							var velocityY=event.clientY-miscXYLastMouseY;
+							xyHandleElementA.style.left=parseInt(parseInt(xyHandleElementA.style.left.substring(0,xyHandleElementA.style.left.length-2))+velocityX)+"px";
+							xyHandleElementA.style.top=parseInt(parseInt(xyHandleElementA.style.top.substring(0,xyHandleElementA.style.top.length-2))+velocityY)+"px";
+							miscXYLastMouseX=event.clientX;
+							miscXYLastMouseY=event.clientY;
+							miscXYCurrentMouseX=parseInt(xyHandleElementA.style.left.substring(0,xyHandleElementA.style.left.length-2));
+							miscXYCurrentMouseY=parseInt(xyHandleElementA.style.top.substring(0,xyHandleElementA.style.top.length-2));
+							globalState.xyPadXA=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+							globalState.xyPadYA=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							console.log(globalState.xyPadXA+"  "+globalState.xyPadYA)
+						}
+					}
+					if(miscXYIsSelectedB==true){
+						if(enableMiscXYB==true){
+							var velocityX=event.clientX-miscXYLastMouseX;
+							var velocityY=event.clientY-miscXYLastMouseY;
+							xyHandleElementB.style.left=parseInt(parseInt(xyHandleElementB.style.left.substring(0,xyHandleElementB.style.left.length-2))+velocityX)+"px";
+							xyHandleElementB.style.top=parseInt(parseInt(xyHandleElementB.style.top.substring(0,xyHandleElementB.style.top.length-2))+velocityY)+"px";
+							miscXYLastMouseX=event.clientX;
+							miscXYLastMouseY=event.clientY;
+							miscXYCurrentMouseX=parseInt(xyHandleElementB.style.left.substring(0,xyHandleElementB.style.left.length-2));
+							miscXYCurrentMouseY=parseInt(xyHandleElementB.style.top.substring(0,xyHandleElementA.style.top.length-2));
+							globalState.xyPadXB=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+							globalState.xyPadYB=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44)
+						}
+						// console.log( Math.abs(miscXYCurrentMouseX/window.innerWidth*1.1) +"  "+ Math.abs(miscXYCurrentMouseY/window.innerHeight*1.5) )
+					}
+				}
+
+				xyBackdrop.ontouchstart=function(event){
+					miscXYCurrentMouseX=event.touches[0].clientX-window.innerWidth*.1;
+					miscXYCurrentMouseY=event.touches[0].clientY-window.innerHeight*.06;
+					if(miscXYCurrentMouseX > window.innerWidth*.05 && miscXYCurrentMouseX < window.innerWidth*.825){
+						if(miscXYCurrentMouseY > window.innerHeight*.125 && miscXYCurrentMouseY < window.innerHeight*.7){
+							if(enableMiscXYA==true){
+								xyHandleElementA.style.left=miscXYCurrentMouseX+"px";
+								xyHandleElementA.style.top=miscXYCurrentMouseY+"px";
+								globalState.xyPadXA=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+								globalState.xyPadYA=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							}
+							if(enableMiscXYB==true){
+								xyHandleElementB.style.left=miscXYCurrentMouseX+"px";
+								xyHandleElementB.style.top=miscXYCurrentMouseY+"px";
+								globalState.xyPadXB=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+								globalState.xyPadYB=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							}
+						}
+					}
+				}
+				
+				xyBackdrop.ontouchmove=function(event){
+					miscXYCurrentMouseX=event.touches[0].clientX-window.innerWidth*.1;
+					miscXYCurrentMouseY=event.touches[0].clientY-window.innerHeight*.06;
+					if(miscXYCurrentMouseX > window.innerWidth*.05 && miscXYCurrentMouseX < window.innerWidth*.825){
+						if(miscXYCurrentMouseY > window.innerHeight*.125 && miscXYCurrentMouseY < window.innerHeight*.7){
+							if(enableMiscXYA==true){
+								xyHandleElementA.style.left=miscXYCurrentMouseX+"px";
+								xyHandleElementA.style.top=miscXYCurrentMouseY+"px";
+								globalState.xyPadXA=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+								globalState.xyPadYA=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							}
+							if(enableMiscXYB==true){
+								xyHandleElementB.style.left=miscXYCurrentMouseX+"px";
+								xyHandleElementB.style.top=miscXYCurrentMouseY+"px";
+								globalState.xyPadXB=Math.abs(miscXYCurrentMouseX/window.innerWidth*1.24);
+								globalState.xyPadYB=Math.abs(miscXYCurrentMouseY/window.innerHeight*1.44);
+							}
+						}
+					}
+				}
+			
+			}
+		
 			function initDMXOverridesFineCourseListeners(){
 				document.onmouseup=function(){
 					if(dmxOverridesCourseFine==true){
@@ -1089,6 +1342,14 @@
 					document.getElementById("orientation_overlay").style.display="block";
 				}
 				window.addEventListener("orientationchange", function() {
+					var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+					if (orientation.indexOf("landscape")!=-1) {
+						document.getElementById("orientation_overlay").style.display="none";
+					}else{
+						document.getElementById("orientation_overlay").style.display="block";
+					}
+				}, false);
+				window.addEventListener("resume", function() {
 					var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
 					if (orientation.indexOf("landscape")!=-1) {
 						document.getElementById("orientation_overlay").style.display="none";
@@ -1600,6 +1861,10 @@
 				camera.bottom = - frustumSize / 2;
 				camera.updateProjectionMatrix();
 				renderer.setSize( window.innerWidth, window.innerHeight );
+				document.getElementById("xyHandleElementA").style.left=parseInt(globalState.xyPadXA/1.24*window.innerWidth)+"px";
+				document.getElementById("xyHandleElementA").style.top=parseInt(globalState.xyPadYA/1.44*window.innerHeight)+"px";
+				document.getElementById("xyHandleElementB").style.left=parseInt(globalState.xyPadXB/1.24*window.innerWidth)+"px";
+				document.getElementById("xyHandleElementB").style.top=parseInt(globalState.xyPadYB/1.44*window.innerHeight)+"px";
 			}
 			
 			function onDocumentTouchMove(event){
@@ -1911,9 +2176,9 @@
 						if(isMidPresetChange==false){
 							setTimeout(function(){
 								saveState();
-							}, 200);
+							}, 1);
 						}
-					}, 125);
+					}, 100);
 				}
 			}
 			
@@ -1955,6 +2220,10 @@
 					}
 					changeMask(1);
 					changeMask(2);
+					document.getElementById("xyHandleElementA").style.left=parseInt(globalState.xyPadXA/1.24*window.innerWidth)+"px";
+					document.getElementById("xyHandleElementA").style.top=parseInt(globalState.xyPadYA/1.44*window.innerHeight)+"px";
+					document.getElementById("xyHandleElementB").style.left=parseInt(globalState.xyPadXB/1.24*window.innerWidth)+"px";
+					document.getElementById("xyHandleElementB").style.top=parseInt(globalState.xyPadYB/1.44*window.innerHeight)+"px";
 					if(isResetToDefault==true){
 						resetToDefaultAllPresets(1);
 					}
@@ -2080,8 +2349,11 @@
 			}
 
 			function selectPage(buttonElement){
+				if(navigator.userAgent.indexOf("Mac OS X")==-1){
+					requestFullScreen();
+				}
 				console.log("Selected Page:"+buttonElement.id)
-				// document.getElementById('Misc_Button').style.backgroundColor='black';
+				document.getElementById('Misc_Button').style.backgroundColor='black';
 				document.getElementById('VJ_Button').style.backgroundColor='black';
 				document.getElementById('Mapping_Button').style.backgroundColor='black';
 				document.getElementById('FM_Button').style.backgroundColor='black';
@@ -2158,11 +2430,13 @@
 				function clearMenu(){
 					document.getElementById('misc_page').style.display='none';
 					document.getElementById('presets-grid-container').style.display='none';		
+					document.getElementById('miscXY-grid-container-top').style.display='none';	
 
 				}
 				function showMenu(){
 					document.getElementById('misc_page').style.display='block';
 					document.getElementById('presets-grid-container').style.display='grid';		
+					document.getElementById('miscXY-grid-container-top').style.display='grid';	
 					if(currentApp=="sm"){
 						document.getElementById('VJ_Button').style.backgroundColor='darkblue';
 					}

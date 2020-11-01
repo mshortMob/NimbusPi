@@ -143,9 +143,14 @@
 						console.log('navigator.getUserMedia error: ', error);
 					});
 				}
-			}
-			
+			}	
 			function initGlobalVars(){
+				mouseLastMovedTime=new Date().getTime();
+				setInterval(function(){
+					if( ( (new Date().getTime())-mouseLastMovedTime ) > 5000 ){
+						renderer.domElement.style.cursor = "none";
+					}
+				},4000);
 				controllerSceneRate=0;
 				setCurrentApp("fm");
 				checkForForceInitControllerMode();
@@ -802,6 +807,10 @@
 			}
 			
 			function onDocumentMouseMove( event ) {
+
+				renderer.domElement.style.cursor = "default";
+				mouseLastMovedTime=new Date().getTime();
+
 				if (SELECTED) {
 					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
 						SELECTED.parent.updateCorners();

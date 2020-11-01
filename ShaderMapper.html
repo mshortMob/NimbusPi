@@ -211,6 +211,12 @@ void main()	{
 			}
 
 			function initGlobalVars(){
+				mouseLastMovedTime=new Date().getTime();
+				setInterval(function(){
+					if( ( (new Date().getTime())-mouseLastMovedTime ) > 5000 ){
+						renderer.domElement.style.cursor = "none";
+					}
+				},4000);
 				setCurrentApp("sm");
 				checkForForceInitControllerMode();
 				slaveModeInterval=-1;
@@ -366,6 +372,7 @@ void main()	{
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
 				renderer.sortObjects = true;
+				renderer.domElement.style.cursor = "none";
 				container.appendChild( renderer.domElement );
 				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
@@ -470,7 +477,7 @@ void main()	{
 			function initSlaveMode(){
 				if(slaveModeInterval==-1){
 					console.log("starting slaveModeInterval");
-					slaveModeInterval=setInterval(function(){getControllerData();getCurrentPresetNumber();},  125);
+					slaveModeInterval=setInterval(function(){getControllerData();getCurrentPresetNumber();},  100);
 				}
 			}
 
@@ -498,6 +505,10 @@ void main()	{
 					updateControlsView();
 					syncObjectsToJson(true);
 					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
+					uniforms1.mousey={ value: globalState.xyPadYA };
+					uniforms2.mousey={ value: globalState.xyPadYB };
+					uniforms1.mousex={ value: globalState.xyPadXA };
+					uniforms2.mousex={ value: globalState.xyPadXB };
 				}
 			}
 
@@ -897,8 +908,12 @@ void main()	{
 				
 				container.style.cursor = 'auto';
 			}
-		
+
 			function onDocumentMouseMove( event ) {
+
+				renderer.domElement.style.cursor = "default";
+				mouseLastMovedTime=new Date().getTime();
+
 				if (SELECTED) {
 					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
 						console.log(SELECTED)
@@ -907,10 +922,13 @@ void main()	{
 				}
 				mouse.x = ( event.clientX / window.innerWidth ) * 2.0 - 1.0;
 				mouse.y = - ( event.clientY / window.innerHeight ) * 2.0 + 1.0;
-				uniforms1.mousey={ value: mouse.y };
-				uniforms2.mousey={ value: mouse.y };
-				uniforms1.mousex={ value: mouse.x };
-				uniforms2.mousex={ value: mouse.x };
+				// console.log(event.clientX / window.innerWidth+"  "+event.clientY / window.innerHeight)
+				if(slaveModeInterval==-1){
+					uniforms1.mousey={ value: event.clientY / window.innerHeight };
+					uniforms2.mousey={ value: event.clientY / window.innerHeight };
+					uniforms1.mousex={ value: event.clientX / window.innerWidth };
+					uniforms2.mousex={ value: event.clientX / window.innerWidth };
+				}
 				raycaster.setFromCamera( mouse, camera );
 				if ( SELECTED ) {
 					

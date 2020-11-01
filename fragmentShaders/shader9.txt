@@ -3,13 +3,52 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
+
+vec3 hueRotate(vec3 colorIn){
+    vec3 colorOut= vec3(colorIn.b, colorIn.r, colorIn.g);
+    colorOut=mix(colorIn, colorIn*colorOut, mousex );
+    return colorOut;
+}
+
+float random (in vec2 st) {
+    return fract(sin(dot(st.xy,
+                         vec2(12.9898,78.233)))
+                 * 43758.5453123);
+}
+
+// 2D Noise based on Morgan McGuire @morgan3d
+// https://www.shadertoy.com/view/4dS3Wd
+float noise (in vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    // Four corners in 2D of a tile
+    float a = random(i);
+    float b = random(i + vec2(1.0, 0.0));
+    float c = random(i + vec2(0.0, 1.0));
+    float d = random(i + vec2(1.0, 1.0));
+
+    // Smooth Interpolation
+
+    // Cubic Hermine Curve.  Same as SmoothStep()
+    vec2 u = f*f*(3.0-2.0*f);
+    // u = smoothstep(0.,1.,f);
+
+    // Mix 4 coorners percentages
+    return mix(a, b, u.x) +
+            (c - a)* u.y * (1.0 - u.x) +
+            (d - b) * u.x * u.y;
+}
+
 void main()	{
-	vec2 p = ( -1.0 - (16.0+ 32.0 * abs(audioVolume))  )/2.0 - ( -1.0 - (16.0+ 32.0 * abs(audioVolume))  ) * vUv;
+	vec2 p = ( -1.0 - (16.0+ 32.0 * abs(audioVolume*0.))  )/2.0 - ( -1.0 - (16.0+ 32.0 * abs(audioVolume*0.))  ) * vUv;
 	p=p*p*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
 	p.y*= .02;
 	p.x*= .02;
@@ -23,6 +62,10 @@ void main()	{
 		p=newp;
 	}
 	vec3 col=vec3( 0.0, sin(p.x*1.+p.y), 0.9*sin(12.0*p.y));
+
+        float n = noise(7.*vec2(vUv.x+time/8.,vUv.y));
+
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor=vec4(col.g, col.b+col.g, col.g , mask.r*brightness);
+	gl_FragColor=vec4( hueRotate(vec3(col.g, col.b+col.g, col.g ))-vec3(n*4.*mousey), mask.r*brightness);
+	//gl_FragColor=vec4( vec3(n), mask.r*brightness);
 }	

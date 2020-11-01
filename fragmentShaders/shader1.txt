@@ -3,22 +3,34 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
 void main( void ) {
-
-	vec2 position = gl_FragCoord.xy/1444.;
-		position=position*position*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
+	vec2 position = gl_FragCoord.xy/1000.;
+        position=position*position*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
 
 	float color = 0.0;
 	color += sin( position.x * cos( time / 55.0 ) * 80.0 ) + cos( position.y * cos( time / 15.0 ) * 10.0 );
 	color += sin( position.y * sin( time / 100.0 ) * 40.0 ) + cos( position.x * sin( time / 45.0 ) * 40.0 );
 	color += sin( position.x * sin( time / 25.0 ) * 10.0 ) + sin( position.y * sin( time / 35.0 ) * 30.0 );
 	color *= sin( time / 500.0 ) * 1.5;
-	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( vec3(  color * 9.2 * abs(audioVolume), 2.2*(1.-color) * (1.0-abs(audioVolume)), color * 20.0 * abs(audioVolume) ), mask.r*brightness );
+	
 
+	vec2 position2 = ( -2.5 - (2.5 * abs(audioVolume)*0.0)  )/2.0 - ( -2.5 - (2.5 * abs(audioVolume)*0.0)  ) * vUv;
+	float red = 1.0 * ( sin( position2.x * position2.y - time / 1.5 ) );
+	float green = 1.0 * ( sin( position2.x * position2.y + time / 1.2 ) );
+	float blue = 1.0 * ( sin( position2.x * position2.y + time / 1.1) );
+	vec3 pattern2 = vec3( green, blue*1.2, red*.7 );
+
+        vec3 final = mix(vec3(  color * 9.2 * abs(.5+audioVolume*0.0), 2.2*(1.-color) * (1.0-abs(.5+audioVolume*0.0)), color * 20.0 * abs(.5+audioVolume*0.0) ), pattern2, vec3(mousey,mousey,mousey) );  
+        
+        final = mix(final, vec3(1.0-final.g,1.0-final.b, 1.0-final.r), vec3(mousex,mousex,mousex) );
+
+	vec3 mask = texture2D( maskTexture, vUv ).rgb;
+        gl_FragColor = vec4( final, mask.r*brightness );
 }
