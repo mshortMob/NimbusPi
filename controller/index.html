@@ -1062,6 +1062,61 @@
 				getCurrentFMScene();
 			}
 			
+			function getVideo(action,camNum) {
+				if(action == "init"){
+					numOfCameras=0
+					cameraIds=[]
+					selectedCamera=0;
+					videoElem='video'
+					navigator.mediaDevices.enumerateDevices().then(function(deviceInfos){
+					  for (var i = 0; i !== deviceInfos.length; ++i) {
+						var deviceInfo = deviceInfos[i];
+						if (deviceInfo.kind === 'videoinput') {
+						  numOfCameras=numOfCameras + 1
+						  cameraIds.push(deviceInfo.deviceId);
+						}
+					  }
+					  gui.__folders.Utils.__controllers[gui.__folders.Utils.__controllers.length-1].__max=numOfCameras-1;
+					  selectedCamera=camNum;
+					  if (window.stream) {
+						window.stream.getTracks().forEach(function(track) {
+						  track.stop();
+						});
+					  }
+					  console.log(cameraIds[selectedCamera])
+					  var videoSource = cameraIds[selectedCamera];
+					  var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
+					  navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+						  window.stream = stream; 
+						  document.getElementById(videoElem).srcObject = stream;
+						  return navigator.mediaDevices.enumerateDevices();
+					  }).catch(function(error){
+						  console.log('navigator.getUserMedia error: ', error);
+					  });
+					  }).catch(function(error){
+						console.log('navigator.getUserMedia error: ', error);
+					  });
+				}
+				if(action == "select"){
+					selectedCamera=camNum;
+					if (window.stream) {
+					  window.stream.getTracks().forEach(function(track) {
+						track.stop();
+					  });
+					}
+					console.log(cameraIds[selectedCamera])
+					var videoSource = cameraIds[selectedCamera];
+					var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
+					navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+						window.stream = stream; 
+						document.getElementById(videoElem).srcObject = stream;
+						return navigator.mediaDevices.enumerateDevices();
+					}).catch(function(error){
+						console.log('navigator.getUserMedia error: ', error);
+					});
+				}
+			}	
+			
 			function enableDisableXYPadControls(shaderChannel,elem){
 				if(shaderChannel=="A"){
 					if(enableMiscXYA==true){

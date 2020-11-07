@@ -6,6 +6,18 @@
 			    margin:0px;
 				background-color:black;
 			}	
+			video{
+				opacity: 1;
+				width:100%;
+				height:100%;
+				top:0px;
+				left:0px;
+				z-index:-1;
+				transform:scale(-1,1);
+				position:fixed;
+				float:left;
+				object-fit:fill;
+			}
 			canvas{
 				opacity: 1;
 				width:100%;
@@ -102,6 +114,9 @@
 		<script src="dependancies/NURBSUtils.js"></script>
 		<script src="dependancies/TrackballControls.js"></script> 
 
+		<video id="video" autoplay width='256' height='256' style="display:none;"></video>
+		<canvas id="videoCanvas"  width='256' height='256' style="display:none; z-index:11; "></canvas>
+
 		<script id="vertexShader" type="x-shader/x-vertex">
 precision mediump float;
 precision mediump int;
@@ -173,7 +188,32 @@ void main()	{
 
 		<script>
 			initGlobalVars();
-			 
+
+			function drawMaskHandles(){
+				for(x=0;x<numMaskHandles;x++){
+					var circle = new THREE.Mesh( new THREE.CircleGeometry(20, 20, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}));
+					circle.name="maskHandle"+x;
+					circle.visible=false;
+					scene.add(circle);
+					objects.push(circle);
+					maskHandleObjects.push(circle);
+				}
+			}
+
+			function toggleMaskMode(modeString){
+				if(modeString=="mask"){
+					for(var x=0; x<displayObjects.length; x++){
+						displayObjects[x].visible=false;
+					}
+					for(x=0;x<numMaskHandles;x++){
+						maskHandleObjects[x].visible=true;
+					}
+				}
+				if(modeString=="map"){
+				syncObjectsToJson();
+				}
+			}
+
 			function updateShader(){
 				document.getElementById( 'fragmentShader'+parseInt(globalController.shaderToEdit)).textContent=document.getElementById('frag_shader_text_box').value
 				document.getElementById( 'vertexShader' ).textContent=document.getElementById('vertex_shader_text_box').value
@@ -210,7 +250,72 @@ void main()	{
 				return matList;
 			}
 
+			function takePicture(){
+				context=document.getElementById('videoCanvas').getContext("2d");
+				context.drawImage(document.getElementById('video'),0,0,256,256);
+				var dataTex = new THREE.DataTexture(context.getImageData(0,0,256,256).data, 256, 256);
+				dataTex.needsUpdate = true; 
+				uniforms1.maskTexture.value=dataTex;
+			}
+			
+			function getVideo(action,camNum) {
+				if(action == "init"){
+					numOfCameras=0
+					cameraIds=[]
+					selectedCamera=0;
+					videoElem='video'
+					navigator.mediaDevices.enumerateDevices().then(function(deviceInfos){
+					  for (var i = 0; i !== deviceInfos.length; ++i) {
+						var deviceInfo = deviceInfos[i];
+						if (deviceInfo.kind === 'videoinput') {
+						  numOfCameras=numOfCameras + 1
+						  cameraIds.push(deviceInfo.deviceId);
+						}
+					  }
+					  gui.__folders.Utils.__controllers[gui.__folders.Utils.__controllers.length-1].__max=numOfCameras-1;
+					  selectedCamera=camNum;
+					  if (window.stream) {
+						window.stream.getTracks().forEach(function(track) {
+						  track.stop();
+						});
+					  }
+					  console.log(cameraIds[selectedCamera])
+					  var videoSource = cameraIds[selectedCamera];
+					  var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
+					  navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+						  window.stream = stream; 
+						  document.getElementById(videoElem).srcObject = stream;
+						  return navigator.mediaDevices.enumerateDevices();
+					  }).catch(function(error){
+						  console.log('navigator.getUserMedia error: ', error);
+					  });
+					  }).catch(function(error){
+						console.log('navigator.getUserMedia error: ', error);
+					  });
+				}
+				if(action == "select"){
+					selectedCamera=camNum;
+					if (window.stream) {
+					  window.stream.getTracks().forEach(function(track) {
+						track.stop();
+					  });
+					}
+					console.log(cameraIds[selectedCamera])
+					var videoSource = cameraIds[selectedCamera];
+					var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
+					navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+						window.stream = stream; 
+						document.getElementById(videoElem).srcObject = stream;
+						return navigator.mediaDevices.enumerateDevices();
+					}).catch(function(error){
+						console.log('navigator.getUserMedia error: ', error);
+					});
+				}
+			}	
+
 			function initGlobalVars(){
+				maskHandleObjects=[];
+				numMaskHandles=12;
 				mouseLastMovedTime=new Date().getTime();
 				setInterval(function(){
 					if( ( (new Date().getTime())-mouseLastMovedTime ) > 5000 ){
@@ -306,6 +411,9 @@ void main()	{
 				syncObjectsToJson();
 				window.addEventListener("keypress", keyHandler);
 				highlightSelectedVertice();
+				drawMaskHandles();
+				getVideo("init",0);
+				setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; takePicture()},4000);
 			}
 
 			function getDMXPatternData(patNum,ledStripPatternsArray){
@@ -457,6 +565,8 @@ void main()	{
 				dmxFolder.add( globalController, "DMX_Y2", 1,255,1 ).onChange(function(){globalController.DMX_Y2=parseInt(globalController.DMX_Y2);updateControlsValues();});
 				utilsFolder=gui.addFolder( "Utils" )
 				utilsFolder.open();
+				utilsFolder.add({ 'Mask Mode':function(){ toggleMaskMode("mask"); }},'Mask Mode');
+				utilsFolder.add({ 'Map Mode':function(){ toggleMaskMode("map"); }},'Map Mode');
 				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
 				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');
 				utilsFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
@@ -942,6 +1052,9 @@ void main()	{
 							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
 							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
 						}
+						if(SELECTED.name.indexOf('maskHandle') != -1){
+							SELECTED.position.copy(intersection.sub( offset ));
+						}
 					}
 					return;
 				}
@@ -1339,6 +1452,12 @@ void main()	{
 				}
 				if(event.key==":"){
 					initSlaveMode();
+				}
+				if(event.key=="q"){
+					toggleMaskMode("map");
+				}
+				if(event.key=="Q"){
+					toggleMaskMode("mask");
 				}
 			}
 
