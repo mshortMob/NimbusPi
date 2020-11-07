@@ -565,6 +565,7 @@ void main()	{
 				dmxFolder.add( globalController, "DMX_Y2", 1,255,1 ).onChange(function(){globalController.DMX_Y2=parseInt(globalController.DMX_Y2);updateControlsValues();});
 				utilsFolder=gui.addFolder( "Utils" )
 				utilsFolder.open();
+				utilsFolder.add({ 'Take Picture':function(){takePicture(); }},'Take Picture');
 				utilsFolder.add({ 'Mask Mode':function(){ toggleMaskMode("mask"); }},'Mask Mode');
 				utilsFolder.add({ 'Map Mode':function(){ toggleMaskMode("map"); }},'Map Mode');
 				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
