@@ -298,27 +298,7 @@ void main()	{
 				changeMask(3);
 				//uniforms1.maskTexture.value=dataTex;
 			}
-			
-			function savePictureData(){
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "php/write.php?fn=masks/pictureMaskData.txt", true);
-				xmlhttp.send(JSON.stringify(context.getImageData(0,0,256,256).data));
-				xmlhttp.onload = function(e){
-					console.log("saved picture data to disk");
-				}
-			}
-
-			function getPictureData(){
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "php/read.php?fn=masks/pictureMaskData.txt", true);
-				xmlhttp.send();
-				xmlhttp.onload = function(e){
-					tts=JSON.parse(xmlhttp.response);
-					dataTex = new THREE.DataTexture(tts, 256, 256);
-					dataTex.needsUpdate = true; 
-				}
-			}
-			
+				
 			function getVideo(action,camNum) {
 				if(action == "init"){
 					numOfCameras=0
