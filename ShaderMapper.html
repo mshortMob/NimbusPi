@@ -189,10 +189,117 @@ void main()	{
 		<script>
 			initGlobalVars();
 
+			function initGlobalVars(){
+				maskHandleObjects=[];
+				maskHandleState=[];
+				numMaskHandles=12;
+				mouseLastMovedTime=new Date().getTime();
+				setInterval(function(){
+					if( ( (new Date().getTime())-mouseLastMovedTime ) > 5000 ){
+						renderer.domElement.style.cursor = "none";
+					}
+				},4000);
+				setCurrentApp("sm");
+				checkForForceInitControllerMode();
+				slaveModeInterval=-1;
+				controllerModeInterval=-1;
+				getCanvasYFlip();
+				getNumberOfShadersAndPresets();
+				audioData = new Uint8Array(8);
+				//------------------
+				ledStripAnimationmMasterIndex=0;
+				ledStripPatternsArray=[];
+				getDMXPatternData(1,ledStripPatternsArray);
+				//------------------
+				initAudio();
+				setTimeout(function(){
+					setInterval(function(){  
+						audioVolume=audioData.reduce(function(a, b){return a + b;}, 0)/1024/100; 
+						if(audioVolume>globalController.VolumeThreshold){
+							uniforms1.audioVolume={ value: ((uniforms1.audioVolume.value+.001+audioVolume*400.0)%1.0) };
+							uniforms2.audioVolume={ value: ((uniforms2.audioVolume.value+.001+audioVolume*400.0)%1.0) };
+
+							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+5)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
+
+							//console.log(audioVolume);
+							globalController.DMX_Scene=(globalController.DMX_Scene+.3)%maxNumDMXScenes;
+						}else{
+							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+globalController.DMX_Pattern_Rate)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
+						}
+					} ,100);
+				}, 2000);
+				//------------------
+				lastMaskAValue=-1;
+				lastMaskBValue=-1;
+				fade_Position=0;
+				setTimeout(function(){recallState();loadShaderPreset(1);loadShaderPreset(2);},10);
+				addControls();
+				gui.close();
+				dmxInterval=0;
+				maxNumDMXScenes=8;
+				dmxPresetData=[];
+				initializeDMX();
+				selectedVertice=0;
+				// width=document.getElementById('video').width;
+				// height=document.getElementById('video').height;	
+				width=32;
+				height=32;
+				materialArray=new Uint8Array(width * height * 4);
+				// previousData=new Uint8Array(width * height * 4);
+				// data=new Uint8Array(width * height * 4);
+				isFirstCycle=true;
+				colorCounter=0.0;
+				// getVideo("init",0)
+				container=null;
+				camera=null;
+				controls=null;
+				scene=null;
+				renderer=null;
+				objects = [];
+				displayObjects=[];
+				plane = new THREE.Plane();
+				raycaster = new THREE.Raycaster();
+				mouse = new THREE.Vector2();
+				offset = new THREE.Vector3();
+				intersection = new THREE.Vector3();
+				INTERSECTED=null;
+				SELECTED=null;
+				initScene();
+				animate();
+				statesArray=[];
+				for(var x=0;x<4;x++){
+					var objectJSON ={}
+					for (var key in objectController) {
+						objectJSON[key]=objectController[key]
+					}
+					statesArray.push(objectJSON)
+				}
+				for(var y=0;y<4;y++){
+					addObject();
+				}
+				statesArray[0].Visible=true;
+				//=------
+				globalState={};
+				for (var key in globalController) {
+					globalState[key]=globalController[key]
+				}
+				//=------
+				updateControlsView();
+				syncObjectsToJson();
+				window.addEventListener("keypress", keyHandler);
+				highlightSelectedVertice();
+				drawMaskHandles();
+				getVideo("init",0);
+				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
+				setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; takePicture(); changeMask(3); },4000);
+			}
+			
 			function drawMaskHandles(){
 				for(x=0;x<numMaskHandles;x++){
+					maskHandleState.push({"x":0,"y":0});
 					var circle = new THREE.Mesh( new THREE.CircleGeometry(20, 20, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}));
 					circle.name="maskHandle"+x;
+					circle.num=x;
 					circle.visible=false;
 					scene.add(circle);
 					objects.push(circle);
@@ -353,110 +460,6 @@ void main()	{
 					});
 				}
 			}	
-
-			function initGlobalVars(){
-				maskHandleObjects=[];
-				numMaskHandles=12;
-				mouseLastMovedTime=new Date().getTime();
-				setInterval(function(){
-					if( ( (new Date().getTime())-mouseLastMovedTime ) > 5000 ){
-						renderer.domElement.style.cursor = "none";
-					}
-				},4000);
-				setCurrentApp("sm");
-				checkForForceInitControllerMode();
-				slaveModeInterval=-1;
-				controllerModeInterval=-1;
-				getCanvasYFlip();
-				getNumberOfShadersAndPresets();
-				audioData = new Uint8Array(8);
-				//------------------
-				ledStripAnimationmMasterIndex=0;
-				ledStripPatternsArray=[];
-				getDMXPatternData(1,ledStripPatternsArray);
-				//------------------
-				initAudio();
-				setTimeout(function(){
-					setInterval(function(){  
-						audioVolume=audioData.reduce(function(a, b){return a + b;}, 0)/1024/100; 
-						if(audioVolume>globalController.VolumeThreshold){
-							uniforms1.audioVolume={ value: ((uniforms1.audioVolume.value+.001+audioVolume*400.0)%1.0) };
-							uniforms2.audioVolume={ value: ((uniforms2.audioVolume.value+.001+audioVolume*400.0)%1.0) };
-
-							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+5)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
-
-							//console.log(audioVolume);
-							globalController.DMX_Scene=(globalController.DMX_Scene+.3)%maxNumDMXScenes;
-						}else{
-							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+globalController.DMX_Pattern_Rate)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
-						}
-					} ,100);
-				}, 2000);
-				//------------------
-				lastMaskAValue=-1;
-				lastMaskBValue=-1;
-				fade_Position=0;
-				setTimeout(function(){recallState();loadShaderPreset(1);loadShaderPreset(2);},10);
-				addControls();
-				gui.close();
-				dmxInterval=0;
-				maxNumDMXScenes=8;
-				dmxPresetData=[];
-				initializeDMX();
-				selectedVertice=0;
-				// width=document.getElementById('video').width;
-				// height=document.getElementById('video').height;	
-				width=32;
-				height=32;
-				materialArray=new Uint8Array(width * height * 4);
-				// previousData=new Uint8Array(width * height * 4);
-				// data=new Uint8Array(width * height * 4);
-				isFirstCycle=true;
-				colorCounter=0.0;
-				// getVideo("init",0)
-				container=null;
-				camera=null;
-				controls=null;
-				scene=null;
-				renderer=null;
-				objects = [];
-				displayObjects=[];
-				plane = new THREE.Plane();
-				raycaster = new THREE.Raycaster();
-				mouse = new THREE.Vector2();
-				offset = new THREE.Vector3();
-				intersection = new THREE.Vector3();
-				INTERSECTED=null;
-				SELECTED=null;
-				initScene();
-				animate();
-				statesArray=[];
-				for(var x=0;x<4;x++){
-					var objectJSON ={}
-					for (var key in objectController) {
-						objectJSON[key]=objectController[key]
-					}
-					statesArray.push(objectJSON)
-				}
-				for(var y=0;y<4;y++){
-					addObject();
-				}
-				statesArray[0].Visible=true;
-				//=------
-				globalState={};
-				for (var key in globalController) {
-					globalState[key]=globalController[key]
-				}
-				//=------
-				updateControlsView();
-				syncObjectsToJson();
-				window.addEventListener("keypress", keyHandler);
-				highlightSelectedVertice();
-				drawMaskHandles();
-				getVideo("init",0);
-				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
-				setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; takePicture(); changeMask(3); },4000);
-			}
 
 			function getDMXPatternData(patNum,ledStripPatternsArray){
 				var patternData=[];
@@ -828,6 +831,12 @@ void main()	{
 					camera.position.y=globalController.Camera_Y*window.innerHeight/3;
 
 				}
+
+				for(var x=0;x<maskHandleState.length;x++){
+					maskHandleObjects[x].position.x=maskHandleState[x].x;
+					maskHandleObjects[x].position.y=maskHandleState[x].y;
+				}
+
 			}
 			
 			function addObject(){
@@ -1119,7 +1128,10 @@ void main()	{
 							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
 						}
 						if(SELECTED.name.indexOf('maskHandle') != -1){
+							console.log(SELECTED.name);
 							SELECTED.position.copy(intersection.sub( offset ));
+							maskHandleState[SELECTED.num].x=SELECTED.position.x;
+							maskHandleState[SELECTED.num].y=SELECTED.position.y;
 						}
 					}
 					return;
@@ -1214,7 +1226,7 @@ void main()	{
 		
 			function saveState(){
 				globalState.SavedByController=false;
-				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+				var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState, "maskHandles": maskHandleState})
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
 				xmlhttp.send(requestBody);
@@ -1228,6 +1240,7 @@ void main()	{
 				xmlhttp.onload = function(e){
 
 					globalState=JSON.parse(xmlhttp.response).global;
+					maskHandleState=JSON.parse(xmlhttp.response).maskHandles;
 					if(globalState.SavedByController==true){
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
