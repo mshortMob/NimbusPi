@@ -250,12 +250,73 @@ void main()	{
 				return matList;
 			}
 
+			function updatePictureChroma(){
+				tempData=context.getImageData(0,0,256,256).data;
+				for(var x=0; x<tempData.length; x=x+3){
+					if(globalController.PictureChroma<0){
+						if( (tempData[x]+tempData[x+1]+tempData[x+2])/3 < Math.abs(globalController.PictureChroma)){
+							tempData[x]=0;
+							tempData[x+1]=0;
+							tempData[x+2]=0;
+						}
+					}
+					if(globalController.PictureChroma>0){
+						if( (tempData[x]+tempData[x+1]+tempData[x+2])/3 > 255-globalController.PictureChroma){
+							tempData[x]=0;
+							tempData[x+1]=0;
+							tempData[x+2]=0;
+						}
+					}
+				}
+				dataTex = new THREE.DataTexture(tempData, 256, 256);
+				dataTex.needsUpdate = true; 
+				changeMask(3);
+			}
+			
 			function takePicture(){
 				context=document.getElementById('videoCanvas').getContext("2d");
 				context.drawImage(document.getElementById('video'),0,0,256,256);
-				var dataTex = new THREE.DataTexture(context.getImageData(0,0,256,256).data, 256, 256);
+				tempData=context.getImageData(0,0,256,256).data;
+				for(var x=0; x<tempData.length; x=x+3){
+					if(globalController.PictureChroma<0){
+						if( (tempData[x]+tempData[x+1]+tempData[x+2])/3 < Math.abs(globalController.PictureChroma)){
+							tempData[x]=0;
+							tempData[x+1]=0;
+							tempData[x+2]=0;
+						}
+					}
+					if(globalController.PictureChroma>0){
+						if( (tempData[x]+tempData[x+1]+tempData[x+2])/3 > 255-globalController.PictureChroma){
+							tempData[x]=0;
+							tempData[x+1]=0;
+							tempData[x+2]=0;
+						}
+					}
+				}
+				dataTex = new THREE.DataTexture(tempData, 256, 256);
 				dataTex.needsUpdate = true; 
-				uniforms1.maskTexture.value=dataTex;
+				changeMask(3);
+				//uniforms1.maskTexture.value=dataTex;
+			}
+			
+			function savePictureData(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=masks/pictureMaskData.txt", true);
+				xmlhttp.send(JSON.stringify(context.getImageData(0,0,256,256).data));
+				xmlhttp.onload = function(e){
+					console.log("saved picture data to disk");
+				}
+			}
+
+			function getPictureData(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=masks/pictureMaskData.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					tts=JSON.parse(xmlhttp.response);
+					dataTex = new THREE.DataTexture(tts, 256, 256);
+					dataTex.needsUpdate = true; 
+				}
 			}
 			
 			function getVideo(action,camNum) {
@@ -413,7 +474,8 @@ void main()	{
 				highlightSelectedVertice();
 				drawMaskHandles();
 				getVideo("init",0);
-				setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; takePicture()},4000);
+				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
+				setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; takePicture(); changeMask(3); },4000);
 			}
 
 			function getDMXPatternData(patNum,ledStripPatternsArray){
@@ -521,6 +583,7 @@ void main()	{
 					BrightnessA:1.0,
 					BrightnessB:1.0,
 					SavedByController:false,
+					PictureChroma:150,
 				}
 				objectController  = {
 					 Visible:false,
@@ -566,6 +629,7 @@ void main()	{
 				utilsFolder=gui.addFolder( "Utils" )
 				utilsFolder.open();
 				utilsFolder.add({ 'Take Picture':function(){takePicture(); }},'Take Picture');
+				utilsFolder.add( globalController, "PictureChroma", -255,255, 1).onChange(function(){updatePictureChroma();});	
 				utilsFolder.add({ 'Mask Mode':function(){ toggleMaskMode("mask"); }},'Mask Mode');
 				utilsFolder.add({ 'Map Mode':function(){ toggleMaskMode("map"); }},'Map Mode');
 				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
@@ -684,13 +748,34 @@ void main()	{
 			function changeMask(changedMask){
 				if(changedMask==1){
 					if(parseInt(globalController.MaskA)!=lastMaskAValue){
-						uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.MaskA)+'.jpg' ) };
-						lastMaskAValue=parseInt(globalController.MaskA);
+						if(parseInt(globalController.MaskA)<numberOfMasks+1){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.MaskA)+'.jpg' ) };
+							lastMaskAValue=parseInt(globalController.MaskA);
+						}else{
+							uniforms1.maskTexture.value=dataTex;
+							lastMaskAValue=parseInt(globalController.MaskA);							
+						}
 					}
-				}else{
+				}
+				if(changedMask==2){
 					if(parseInt(globalController.MaskB)!=lastMaskBValue){
-						uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.MaskB)+'.jpg' ) };
-						lastMaskBValue=parseInt(globalController.MaskB);
+						if(parseInt(globalController.MaskB)<numberOfMasks+1){
+							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.MaskB)+'.jpg' ) };
+							lastMaskBValue=parseInt(globalController.MaskB);
+						}else{
+							uniforms2.maskTexture=dataTex;
+							lastMaskBValue=parseInt(globalController.MaskB);							
+						}
+					}
+				}
+				if(changedMask==3){
+					if(parseInt(globalController.MaskA)==numberOfMasks+1){
+						uniforms1.maskTexture.value=dataTex;
+						lastMaskAValue=parseInt(globalController.MaskA);							
+					}
+					if(parseInt(globalController.MaskB)==numberOfMasks+1){
+						uniforms2.maskTexture.value=dataTex;
+						lastMaskBValue=parseInt(globalController.MaskB);							
 					}
 				}
 			}
@@ -1624,9 +1709,9 @@ void main()	{
 				xmlhttp3.onload = function(e){
                     numberOfMasks=parseInt(xmlhttp3.response);
                     console.log("get number of masks: "+numberOfMasks)
-                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "MaskA"})[0].__max=numberOfMasks;
+                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "MaskA"})[0].__max=parseInt(1+numberOfMasks);
                     gui.__folders.Global.__controllers.filter(obj => { return obj.property == "MaskA"})[0].updateDisplay()			
-                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "MaskB"})[0].__max=numberOfMasks;
+                    gui.__folders.Global.__controllers.filter(obj => { return obj.property == "MaskB"})[0].__max=parseInt(1+numberOfMasks);
                     gui.__folders.Global.__controllers.filter(obj => { return obj.property == "MaskB"})[0].updateDisplay()					
 				}
 				var xmlhttp4=new XMLHttpRequest();
