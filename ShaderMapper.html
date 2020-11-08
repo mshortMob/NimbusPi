@@ -834,7 +834,7 @@ void main()	{
 
 				for(var x=0;x<maskHandleState.length;x++){
 					maskHandleObjects[x].position.x=maskHandleState[x].x;
-					maskHandleObjects[x].position.y=maskHandleState[x].y;
+					maskHandleObjects[x].position.y=maskHandleState[x].y*-1;
 				}
 
 			}
@@ -1131,7 +1131,22 @@ void main()	{
 							console.log(SELECTED.name);
 							SELECTED.position.copy(intersection.sub( offset ));
 							maskHandleState[SELECTED.num].x=SELECTED.position.x;
-							maskHandleState[SELECTED.num].y=SELECTED.position.y;
+							maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
+							context.clearRect(0,0,innerWidth,innerHeight);
+							context.fillStyle = '#f00';
+							context.beginPath();
+							context.moveTo(maskHandleState[0].x/3, maskHandleState[0].y/3);
+							for(var x=1;x<maskHandleState.length;x++){
+								context.lineTo(maskHandleState[x].x/3,maskHandleState[x].y/3);
+							}
+							context.lineTo(maskHandleState[0].x/3,maskHandleState[0].y/3);
+							context.closePath();
+							context.fill();
+
+							tempData=context.getImageData(0,0,256,256).data;
+							dataTex = new THREE.DataTexture(tempData, 256, 256);
+							dataTex.needsUpdate = true;
+							changeMask(3);
 						}
 					}
 					return;
