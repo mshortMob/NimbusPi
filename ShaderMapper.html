@@ -298,7 +298,7 @@ void main()	{
 					var circle = new THREE.Mesh( new THREE.CircleGeometry(20, 20, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}));
 					circle.name="maskHandle"+x;
 					circle.num=x;
-					circle.visible=false;
+					circle.visible=true;
 					scene2.add(circle);
 					objects.push(circle);
 					maskHandleObjects.push(circle);
@@ -307,15 +307,11 @@ void main()	{
 
 			function toggleMaskMode(modeString){
 				if(modeString=="mask"){
-					for(var x=0; x<displayObjects.length; x++){
-						displayObjects[x].visible=false;
-					}
-					for(x=0;x<numMaskHandles;x++){
-						maskHandleObjects[x].visible=true;
-					}
+					scene=scene2;
 				}
 				if(modeString=="map"){
-				syncObjectsToJson();
+					scene=scene1;
+					syncObjectsToJson();
 				}
 			}
 
