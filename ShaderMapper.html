@@ -249,7 +249,6 @@ void main()	{
 				// data=new Uint8Array(width * height * 4);
 				isFirstCycle=true;
 				colorCounter=0.0;
-				// getVideo("init",0)
 				container=null;
 				camera=null;
 				controls=null;
@@ -289,9 +288,8 @@ void main()	{
 				window.addEventListener("keypress", keyHandler);
 				highlightSelectedVertice();
 				drawMaskHandles();
-				getVideo("init",0);
 				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
-				setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; takePicture(); changeMask(3); },4000);
+				// setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; changeMask(3); },4000);
 			}
 			
 			function drawMaskHandles(){
@@ -301,7 +299,7 @@ void main()	{
 					circle.name="maskHandle"+x;
 					circle.num=x;
 					circle.visible=false;
-					scene.add(circle);
+					scene2.add(circle);
 					objects.push(circle);
 					maskHandleObjects.push(circle);
 				}
@@ -379,33 +377,7 @@ void main()	{
 				dataTex.needsUpdate = true; 
 				changeMask(3);
 			}
-			
-			function takePicture(){
-				context=document.getElementById('videoCanvas').getContext("2d");
-				context.drawImage(document.getElementById('video'),0,0,256,256);
-				tempData=context.getImageData(0,0,256,256).data;
-				for(var x=0; x<tempData.length; x=x+3){
-					if(globalController.PictureChroma<0){
-						if( (tempData[x]+tempData[x+1]+tempData[x+2])/3 < Math.abs(globalController.PictureChroma)){
-							tempData[x]=0;
-							tempData[x+1]=0;
-							tempData[x+2]=0;
-						}
-					}
-					if(globalController.PictureChroma>0){
-						if( (tempData[x]+tempData[x+1]+tempData[x+2])/3 > 255-globalController.PictureChroma){
-							tempData[x]=0;
-							tempData[x+1]=0;
-							tempData[x+2]=0;
-						}
-					}
-				}
-				dataTex = new THREE.DataTexture(tempData, 256, 256);
-				dataTex.needsUpdate = true; 
-				changeMask(3);
-				//uniforms1.maskTexture.value=dataTex;
-			}
-				
+					
 			function getVideo(action,camNum) {
 				if(action == "init"){
 					numOfCameras=0
@@ -517,9 +489,13 @@ void main()	{
 				camera.position.z = -1000;
 				controls = new THREE.TrackballControls( camera , container);
 				controls.enabled=false;
-				scene = new THREE.Scene();
-				LIGHTING=new THREE.AmbientLight( 0xffffff ) 
-				scene.add( LIGHTING );
+				LIGHTING1=new THREE.AmbientLight( 0xffffff );
+				LIGHTING2=new THREE.AmbientLight( 0xffffff ) 
+				scene1 = new THREE.Scene();
+				scene1.add( LIGHTING1 );
+				scene2 = new THREE.Scene();
+				scene2.add( LIGHTING2 );
+				scene=scene1;
 				renderer = new THREE.WebGLRenderer( { antialias: true , alpha:true} );
 				renderer.setClearColor( 0x000000 , 1);
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -611,7 +587,6 @@ void main()	{
 				dmxFolder.add( globalController, "DMX_Y2", 1,255,1 ).onChange(function(){globalController.DMX_Y2=parseInt(globalController.DMX_Y2);updateControlsValues();});
 				utilsFolder=gui.addFolder( "Utils" )
 				utilsFolder.open();
-				utilsFolder.add({ 'Take Picture':function(){takePicture(); }},'Take Picture');
 				utilsFolder.add( globalController, "PictureChroma", -255,255, 1).onChange(function(){updatePictureChroma();});	
 				utilsFolder.add({ 'Mask Mode':function(){ toggleMaskMode("mask"); }},'Mask Mode');
 				utilsFolder.add({ 'Map Mode':function(){ toggleMaskMode("map"); }},'Map Mode');
@@ -1132,21 +1107,7 @@ void main()	{
 							SELECTED.position.copy(intersection.sub( offset ));
 							maskHandleState[SELECTED.num].x=SELECTED.position.x;
 							maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
-							context.clearRect(0,0,innerWidth,innerHeight);
-							context.fillStyle = '#f00';
-							context.beginPath();
-							context.moveTo(maskHandleState[0].x/3, maskHandleState[0].y/3);
-							for(var x=1;x<maskHandleState.length;x++){
-								context.lineTo(maskHandleState[x].x/3,maskHandleState[x].y/3);
-							}
-							context.lineTo(maskHandleState[0].x/3,maskHandleState[0].y/3);
-							context.closePath();
-							context.fill();
-
-							tempData=context.getImageData(0,0,256,256).data;
-							dataTex = new THREE.DataTexture(tempData, 256, 256);
-							dataTex.needsUpdate = true;
-							changeMask(3);
+							drawMaskCanvas();
 						}
 					}
 					return;
@@ -1164,6 +1125,25 @@ void main()	{
 					INTERSECTED = null;
 					container.style.cursor = 'auto';
 				}
+			}
+
+			function drawMaskCanvas(){
+				context=document.getElementById('videoCanvas').getContext("2d");
+				context.clearRect(0,0,innerWidth,innerHeight);
+				context.fillStyle = '#f00';
+				context.beginPath();
+				context.moveTo(maskHandleState[0].x/2, maskHandleState[0].y/2+100);
+				for(var x=1;x<maskHandleState.length;x++){
+					context.lineTo(maskHandleState[x].x/2,maskHandleState[x].y/2+100);
+				}
+				context.lineTo(maskHandleState[0].x/2,maskHandleState[0].y/2+100);
+				context.closePath();
+				context.fill();
+
+				tempData=context.getImageData(0,0,256,256).data;
+				dataTex = new THREE.DataTexture(tempData, 256, 256);
+				dataTex.needsUpdate = true;
+				changeMask(3);
 			}
 			
 			function onDocumentMouseDown( event ) {
@@ -1273,6 +1253,7 @@ void main()	{
 
 					updateControlsView();
 					syncObjectsToJson(true);
+					drawMaskCanvas();
 					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
 				}
 			}	
