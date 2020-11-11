@@ -589,8 +589,7 @@ void main()	{
 				utilsFolder=gui.addFolder( "Utils" )
 				utilsFolder.open();
 				// utilsFolder.add( globalController, "PictureChroma", -255,255, 1).onChange(function(){updatePictureChroma();});	
-				utilsFolder.add({ 'Mask Mode':function(){ toggleMaskMode("mask"); }},'Mask Mode');
-				utilsFolder.add({ 'Map Mode':function(){ toggleMaskMode("map"); }},'Map Mode');
+				utilsFolder.add({ 'Mask/Map Mode':function(){ if(isMaskMode==false){toggleMaskMode("mask");}else{toggleMaskMode("map") }; }},'Mask/Map Mode');
 				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
 				utilsFolder.add({ 'PresentationMode':function(){ for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; } ; requestFullScreen(); gui.close();document.getElementsByClassName("close-button")[0].innerHTML=""; setTimeout(function(){ document.getElementsByClassName("close-button")[0].style.width=10; document.getElementsByClassName("close-button")[0].style.right=0;},1000);}},'PresentationMode');
 				utilsFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
@@ -1327,6 +1326,7 @@ void main()	{
 					if(isMaskMode==true){
 						maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x+1;
 						syncObjectsToJson();
+						drawMaskCanvas();
 					}
 				}
 				if(event.key=="s"){
@@ -1340,6 +1340,7 @@ void main()	{
 					if(isMaskMode==true){
 						maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y+1;
 						syncObjectsToJson();
+						drawMaskCanvas();
 					}
 				}
 				if(event.key=="d"){
@@ -1353,6 +1354,7 @@ void main()	{
 					if(isMaskMode==true){
 						maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x-1;
 						syncObjectsToJson();
+						drawMaskCanvas();
 					}
 				}
 				if(event.key=="w"){
@@ -1366,6 +1368,7 @@ void main()	{
 					if(isMaskMode==true){
 						maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y-1;
 						syncObjectsToJson();
+						drawMaskCanvas();
 					}
 				}
 				if(event.key=="A"){
@@ -1379,6 +1382,7 @@ void main()	{
 					if(isMaskMode==true){
 						maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x+20;
 						syncObjectsToJson();
+						drawMaskCanvas();
 					}
 				}
 				if(event.key=="S"){
@@ -1392,6 +1396,7 @@ void main()	{
 					if(isMaskMode==true){
 						maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y+20;
 						syncObjectsToJson();
+						drawMaskCanvas();
 					}
 				}
 				if(event.key=="D"){
@@ -1405,6 +1410,7 @@ void main()	{
 					if(isMaskMode==true){
 						maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x-20;
 						syncObjectsToJson();
+						drawMaskCanvas();
 					}
 				}
 				if(event.key=="W"){
@@ -1418,6 +1424,7 @@ void main()	{
 					if(isMaskMode==true){
 						maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y-20;
 						syncObjectsToJson();
+						drawMaskCanvas();
 					}
 				}
 				if(event.key=="z"){
