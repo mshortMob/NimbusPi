@@ -190,6 +190,7 @@ void main()	{
 			initGlobalVars();
 
 			function initGlobalVars(){
+				isMaskMode=false;
 				maskHandleObjects=[];
 				maskHandleState=[];
 				numMaskHandles=12;
@@ -240,6 +241,7 @@ void main()	{
 				dmxPresetData=[];
 				initializeDMX();
 				selectedVertice=0;
+				selectedMaskHandle=0;
 				// width=document.getElementById('video').width;
 				// height=document.getElementById('video').height;	
 				width=32;
@@ -287,6 +289,7 @@ void main()	{
 				syncObjectsToJson();
 				window.addEventListener("keypress", keyHandler);
 				highlightSelectedVertice();
+				highlightSelectedMaskHandle();
 				drawMaskHandles();
 				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
 				// setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; changeMask(3); },4000);
@@ -307,9 +310,11 @@ void main()	{
 
 			function toggleMaskMode(modeString){
 				if(modeString=="mask"){
+					isMaskMode=true;
 					scene=scene2;
 				}
 				if(modeString=="map"){
+					isMaskMode=false;
 					scene=scene1;
 					syncObjectsToJson();
 				}
@@ -583,7 +588,7 @@ void main()	{
 				dmxFolder.add( globalController, "DMX_Y2", 1,255,1 ).onChange(function(){globalController.DMX_Y2=parseInt(globalController.DMX_Y2);updateControlsValues();});
 				utilsFolder=gui.addFolder( "Utils" )
 				utilsFolder.open();
-				utilsFolder.add( globalController, "PictureChroma", -255,255, 1).onChange(function(){updatePictureChroma();});	
+				// utilsFolder.add( globalController, "PictureChroma", -255,255, 1).onChange(function(){updatePictureChroma();});	
 				utilsFolder.add({ 'Mask Mode':function(){ toggleMaskMode("mask"); }},'Mask Mode');
 				utilsFolder.add({ 'Map Mode':function(){ toggleMaskMode("map"); }},'Map Mode');
 				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
@@ -1009,6 +1014,13 @@ void main()	{
 							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
 							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
 						}
+						if(SELECTED.name.indexOf('maskHandle') != -1){
+							console.log(SELECTED.name);
+							SELECTED.position.copy(intersection.sub( offset ));
+							maskHandleState[SELECTED.num].x=SELECTED.position.x;
+							maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
+							drawMaskCanvas();
+						}
 					}
 					return;
 				}
@@ -1049,6 +1061,10 @@ void main()	{
 						selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
 						// console.log("Selected Vertice:"+selectedVertice);
 						highlightSelectedVertice();
+					}
+					if(SELECTED.name.indexOf('maskHandle') != -1){
+						selectedMaskHandle=SELECTED.num;
+						highlightSelectedMaskHandle();
 					}
 				}
 			}
@@ -1161,6 +1177,10 @@ void main()	{
 							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
 							// console.log("Selected Vertice:"+selectedVertice);
 							highlightSelectedVertice();
+						}
+						if(SELECTED.name.indexOf('maskHandle') != -1){
+							selectedMaskHandle=SELECTED.num;
+							highlightSelectedMaskHandle();
 						}
 					}
 			}
@@ -1390,18 +1410,32 @@ void main()	{
 					syncObjectsToJson();
 				}
 				if(event.key=="," ){
-					if( (selectedVertice-1)>=0){
-						selectedVertice=selectedVertice-1;
-					}else{
-						selectedVertice=3;
+					if(isMaskMode==false){
+						if( (selectedVertice-1)>=0){
+							selectedVertice=selectedVertice-1;
+						}else{
+							selectedVertice=3;
+						}
+						highlightSelectedVertice();
 					}
-					// console.log("Selected Vertice:"+selectedVertice);
-					highlightSelectedVertice();
+					if(isMaskMode==true){
+						if( (selectedMaskHandle-1)>=0){
+							selectedMaskHandle=selectedMaskHandle-1;
+						}else{
+							selectedMaskHandle=numMaskHandles-1;
+						}
+						highlightSelectedMaskHandle();
+					}
 				}
 				if(event.key=="." ){
-					selectedVertice=(selectedVertice+1)%4;
-					// console.log("Selected Vertice:"+selectedVertice);
-					highlightSelectedVertice();
+					if(isMaskMode==false){
+						selectedVertice=(selectedVertice+1)%4;
+						highlightSelectedVertice();
+					}
+					if(isMaskMode==true){
+						selectedMaskHandle=(selectedMaskHandle+1)%numMaskHandles;
+						highlightSelectedMaskHandle();
+					}
 				}
 				keyPressToSlider(event, "0", globalController, "MaskA", 1, gui.__folders.Global, function(){ changeMask(1); updateControlsValues(); } );
 				keyPressToSlider(event, ")", globalController, "MaskA", -1, gui.__folders.Global, function(){ changeMask(1); updateControlsValues(); } );
@@ -1742,7 +1776,17 @@ void main()	{
 				}
 				syncObjectsToJson();
 			}
-		
+
+			function highlightSelectedMaskHandle(){
+				for(var x=0; x<maskHandleObjects.length; x++){
+					if(parseInt(x)==parseInt(selectedMaskHandle)){
+						maskHandleObjects[x].material.color={"r":1.0, "g":0.0, "b":1.0}
+					}else{
+						maskHandleObjects[x].material.color={"r":1.0, "g":1.0, "b":1.0}
+					}
+				}
+			}
+
 			function setCurrentApp(appInitials){
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "php/write.php?fn=globalPresets/currentApp.txt", true);
