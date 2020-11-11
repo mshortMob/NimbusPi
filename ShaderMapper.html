@@ -190,6 +190,7 @@ void main()	{
 			initGlobalVars();
 
 			function initGlobalVars(){
+				haveDrawnMaskHandles=false;
 				isMaskMode=false;
 				maskHandleObjects=[];
 				maskHandleState=[];
@@ -285,18 +286,20 @@ void main()	{
 					globalState[key]=globalController[key]
 				}
 				//=------
+				drawMaskHandles();
 				updateControlsView();
 				syncObjectsToJson();
 				window.addEventListener("keypress", keyHandler);
 				highlightSelectedVertice();
-				drawMaskHandles();
 				highlightSelectedMaskHandle();
 				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
 				// setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; changeMask(3); },4000);
 			}
 			
 			function drawMaskHandles(){
+
 				for(x=0;x<numMaskHandles;x++){
+
 					maskHandleState.push({"x":0,"y":0});
 					var circle = new THREE.Mesh( new THREE.CircleGeometry(20, 20, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}));
 					circle.name="maskHandle"+x;
@@ -306,6 +309,16 @@ void main()	{
 					objects.push(circle);
 					maskHandleObjects.push(circle);
 				}
+
+				maskHandleLinesMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1 } );
+				maskHandleLinesGeometry = new THREE.BufferGeometry();
+				var maskHandleLinesPositions = new Float32Array( numMaskHandles * 3 + 1*3 ); // 3 vertices per point
+				maskHandleLinesGeometry.addAttribute( 'position', new THREE.BufferAttribute( maskHandleLinesPositions, 3 ) );
+				maskHandleLinesGeometry.setDrawRange( 0, numMaskHandles + 1 );
+				maskHandleLinesObject = new THREE.Line( maskHandleLinesGeometry, maskHandleLinesMaterial );
+				scene2.add(maskHandleLinesObject);	
+
+				haveDrawnMaskHandles=true;
 			}
 
 			function toggleMaskMode(modeString){
@@ -511,11 +524,6 @@ void main()	{
                 renderer.domElement.addEventListener( 'touchstart', onDocumentTouchStart, false );
                 renderer.domElement.addEventListener( 'touchend', onDocumentTouchEnd, false );
 				window.addEventListener( 'resize', onWindowResize, false );
-				tempElem=document.body.getElementsByClassName('ac')[0];
-				tempElem.className="";
-				tempElem.style.zIndex='10000000'
-				tempElem.style.position='fixed'
-				tempElem.style.right='0px';
 			}
 				
 			function addControls(){
@@ -810,8 +818,12 @@ void main()	{
 				for(var x=0;x<maskHandleState.length;x++){
 					maskHandleObjects[x].position.x=maskHandleState[x].x;
 					maskHandleObjects[x].position.y=maskHandleState[x].y*-1;
+					maskHandleLinesGeometry.attributes.position.array[x*3]=maskHandleState[x].x;
+					maskHandleLinesGeometry.attributes.position.array[(x*3)+1]=maskHandleState[x].y*-1;
 				}
-
+				maskHandleLinesGeometry.attributes.position.array[(maskHandleState.length)*3]=maskHandleState[0].x;
+				maskHandleLinesGeometry.attributes.position.array[((maskHandleState.length)*3)+1]=maskHandleState[0].y*-1;
+				maskHandleLinesGeometry.attributes.position.needsUpdate = true; 
 			}
 			
 			function addObject(){
@@ -1019,6 +1031,7 @@ void main()	{
 							maskHandleState[SELECTED.num].x=SELECTED.position.x;
 							maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
 							drawMaskCanvas();
+							syncObjectsToJson();
 						}
 					}
 					return;
@@ -1119,6 +1132,7 @@ void main()	{
 							maskHandleState[SELECTED.num].x=SELECTED.position.x;
 							maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
 							drawMaskCanvas();
+							syncObjectsToJson();
 						}
 					}
 					return;
