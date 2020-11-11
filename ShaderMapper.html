@@ -289,8 +289,8 @@ void main()	{
 				syncObjectsToJson();
 				window.addEventListener("keypress", keyHandler);
 				highlightSelectedVertice();
-				highlightSelectedMaskHandle();
 				drawMaskHandles();
+				highlightSelectedMaskHandle();
 				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
 				// setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; changeMask(3); },4000);
 			}
@@ -1317,60 +1317,108 @@ void main()	{
 					gui.open();
 				}
 				if(event.key=="a"){
-					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+1;
-					updateControlsView();
-					syncObjectsToJson();
-					displayObjects[globalController.selectedObject].updateCorners();
+					if(isMaskMode==false){
+						var listOfCornerVertices=[4,0,20,24];
+						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+1;
+						updateControlsView();
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+					if(isMaskMode==true){
+						maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x+1;
+						syncObjectsToJson();
+					}
 				}
 				if(event.key=="s"){
-					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-1;
-					updateControlsView();
-					syncObjectsToJson();
-					displayObjects[globalController.selectedObject].updateCorners();
+					if(isMaskMode==false){
+						var listOfCornerVertices=[4,0,20,24];
+						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-1;
+						updateControlsView();
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+					if(isMaskMode==true){
+						maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y+1;
+						syncObjectsToJson();
+					}
 				}
 				if(event.key=="d"){
-					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]-1;
-					updateControlsView();
-					syncObjectsToJson();
-					displayObjects[globalController.selectedObject].updateCorners();
+					if(isMaskMode==false){
+						var listOfCornerVertices=[4,0,20,24];
+						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]-1;
+						updateControlsView();
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+					if(isMaskMode==true){
+						maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x-1;
+						syncObjectsToJson();
+					}
 				}
 				if(event.key=="w"){
-					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]+1;
-					updateControlsView();
-					syncObjectsToJson();
-					displayObjects[globalController.selectedObject].updateCorners();
+					if(isMaskMode==false){
+						var listOfCornerVertices=[4,0,20,24];
+						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]+1;
+						updateControlsView();
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+					if(isMaskMode==true){
+						maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y-1;
+						syncObjectsToJson();
+					}
 				}
 				if(event.key=="A"){
-					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+40;
-					updateControlsView();
-					syncObjectsToJson();
-					displayObjects[globalController.selectedObject].updateCorners();
+					if(isMaskMode==false){
+						var listOfCornerVertices=[4,0,20,24];
+						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+40;
+						updateControlsView();
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+					if(isMaskMode==true){
+						maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x+20;
+						syncObjectsToJson();
+					}
 				}
 				if(event.key=="S"){
-					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-40;
-					updateControlsView();
-					syncObjectsToJson();
-					displayObjects[globalController.selectedObject].updateCorners();
+					if(isMaskMode==false){
+						var listOfCornerVertices=[4,0,20,24];
+						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-40;
+						updateControlsView();
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+					if(isMaskMode==true){
+						maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y+20;
+						syncObjectsToJson();
+					}
 				}
 				if(event.key=="D"){
-					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]-40;
-					updateControlsView();
-					syncObjectsToJson();
-					displayObjects[globalController.selectedObject].updateCorners();
+					if(isMaskMode==false){
+						var listOfCornerVertices=[4,0,20,24];
+						statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]-40;
+						updateControlsView();
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+					if(isMaskMode==true){
+						maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x-20;
+						syncObjectsToJson();
+					}
 				}
 				if(event.key=="W"){
-					var listOfCornerVertices=[4,0,20,24];
-					statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]+40;
-					updateControlsView();
-					syncObjectsToJson();
-					displayObjects[globalController.selectedObject].updateCorners();
+					if(isMaskMode==false){
+						var listOfCornerVertices=[4,0,20,24];
+						statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]+40;
+						updateControlsView();
+						syncObjectsToJson();
+						displayObjects[globalController.selectedObject].updateCorners();
+					}
+					if(isMaskMode==true){
+						maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y-20;
+						syncObjectsToJson();
+					}
 				}
 				if(event.key=="z"){
 					if(statesArray[globalController.selectedObject].ZValue>-20){
@@ -1517,7 +1565,7 @@ void main()	{
 					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
 					recallState();
 				}					
-				if(event.key=="m"){
+				if(event.key=="n"){
 					globalController.mappingMode=parseInt(globalController.mappingMode+1)%2;
 					if(statesArray[globalController.selectedObject]["Visible"]==true){displayObjects[globalController.selectedObject].hideChildren();displayObjects[globalController.selectedObject].showChildren();};
 				}
@@ -1558,11 +1606,19 @@ void main()	{
 				if(event.key==":"){
 					initSlaveMode();
 				}
-				if(event.key=="q"){
-					toggleMaskMode("map");
+				if(event.key=="m"){
+					if(isMaskMode==false){
+						toggleMaskMode("mask");
+					}else{
+						toggleMaskMode("map");
+					}
 				}
-				if(event.key=="Q"){
-					toggleMaskMode("mask");
+				if(event.key=="M"){
+					if(isMaskMode==false){
+						toggleMaskMode("mask");
+					}else{
+						toggleMaskMode("map");
+					}
 				}
 			}
 
