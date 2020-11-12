@@ -856,6 +856,8 @@
 			<button id="selectVertice2" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="selectVertice4" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
+			<button id="selectMaskHandle1" onclick="selectNextMaskHandle();" intValue="2" class="mapping-controls-grid-item"  style="display:none; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Prev.</button>
+			<button id="selectMaskHandle2" onclick="selectPrevMaskHandle();" intValue="3" class="mapping-controls-grid-item"  style="display:none; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Next</button>
 			<button id="maskMapModeButton" onclick="if(isMaskMode==false){toggleMaskMode('mask');}else{toggleMaskMode('map') };" style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Mask/Map</button>
 			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save Map for All Presets</button>
 			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
@@ -1076,7 +1078,7 @@
 				for(x=0;x<numMaskHandles;x++){
 
 					maskHandleState.push({"x":0,"y":0});
-					var circle = new THREE.Mesh( new THREE.CircleGeometry(20, 20, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}));
+					var circle = new THREE.Mesh( new THREE.CircleGeometry(35, 35, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}));
 					circle.name="maskHandle"+x;
 					circle.num=x;
 					circle.visible=true;
@@ -1095,17 +1097,43 @@
 				haveDrawnMaskHandles=true;
 			}
 
+			function selectNextMaskHandle(){
+				selectedMaskHandle=(selectedMaskHandle+1)%numMaskHandles;
+						highlightSelectedMaskHandle();
+			}
+
+			function selectPrevMaskHandle(){
+				if( (selectedMaskHandle-1)>=0){
+					selectedMaskHandle=selectedMaskHandle-1;
+				}else{
+					selectedMaskHandle=numMaskHandles-1;
+				}
+				highlightSelectedMaskHandle();
+			}
+
 			function toggleMaskMode(modeString){
 				if(modeString=="mask"){
 					isMaskMode=true;
 					scene=scene2;
 					document.getElementById('maskMapModeButton').style.backgroundColor="grey";
+					for(var x=1; x<5; x++){
+						document.getElementById("selectVertice"+x).style.display="none";
+					}
+					document.getElementById("selectMaskHandle1").style.display="block";
+					document.getElementById("selectMaskHandle2").style.display="block";
+					document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
 				}
 				if(modeString=="map"){
 					isMaskMode=false;
 					scene=scene1;
 					syncObjectsToJson();
 					document.getElementById('maskMapModeButton').style.backgroundColor="black";
+					for(var x=1; x<5; x++){
+						document.getElementById("selectVertice"+x).style.display="block";
+					}
+					document.getElementById("selectMaskHandle1").style.display="none";
+					document.getElementById("selectMaskHandle2").style.display="none";
+					document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 20% 20%"
 				}
 			}
 			
