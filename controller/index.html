@@ -1063,6 +1063,8 @@
 					globalState[key]=globalController[key]
 				}
 				//=------
+				drawMaskCanvas();
+				setTimeout(function(){drawMaskCanvas();},1000);
 				syncObjectsToJson();
 				initControllerDone=false;
 				isMidPresetChange=false;
@@ -1585,18 +1587,35 @@
 		
 			function changeMask(changedMask){
 				if(changedMask==1){
-					if(parseInt(globalState.MaskA)!=8){
-						if(parseInt(globalState.MaskA)!=lastMaskAValue){
+					if(parseInt(globalState.MaskA)!=lastMaskAValue){
+						if(parseInt(globalState.MaskA)<numberOfMasks+1){
 							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskA)+'.jpg' ) };
 							lastMaskAValue=parseInt(globalState.MaskA);
+						}else{
+							uniforms1.maskTexture.value=dataTex;
+							lastMaskAValue=parseInt(globalState.MaskA);							
 						}
 					}
-				}else{
-					if(parseInt(globalState.MaskB)!=8){
-						if(parseInt(globalState.MaskB)!=lastMaskBValue){
+				}
+				if(changedMask==2){
+					if(parseInt(globalState.MaskB)!=lastMaskBValue){
+						if(parseInt(globalState.MaskB)<numberOfMasks+1){
 							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskB)+'.jpg' ) };
 							lastMaskBValue=parseInt(globalState.MaskB);
+						}else{
+							uniforms2.maskTexture=dataTex;
+							lastMaskBValue=parseInt(globalState.MaskB);							
 						}
+					}
+				}
+				if(changedMask==3){
+					if(parseInt(globalState.MaskA)==8){
+						uniforms1.maskTexture.value=dataTex;
+						lastMaskAValue=parseInt(globalState.MaskA);							
+					}
+					if(parseInt(globalState.MaskB)==8){
+						uniforms2.maskTexture.value=dataTex;
+						lastMaskBValue=parseInt(globalState.MaskB);							
 					}
 				}
 			}
@@ -2283,11 +2302,11 @@
 				var scaleFactor=3;
 				var offsetY=130;
 				var offsetX=50;
-				context.moveTo(maskHandleState[0].x/scaleFactor, maskHandleState[0].y/scaleFactor+offsetY);
+				context.moveTo(2*maskHandleState[0].x/scaleFactor, 2*maskHandleState[0].y/scaleFactor+offsetY);
 				for(var x=1;x<maskHandleState.length;x++){
-					context.lineTo(maskHandleState[x].x/scaleFactor+offsetX,maskHandleState[x].y/scaleFactor+offsetY);
+					context.lineTo(2*maskHandleState[x].x/scaleFactor+offsetX,2*maskHandleState[x].y/scaleFactor+offsetY);
 				}
-				context.lineTo(maskHandleState[0].x/scaleFactor+offsetX,maskHandleState[0].y/scaleFactor+offsetY);
+				context.lineTo(2*maskHandleState[0].x/scaleFactor+offsetX,2*maskHandleState[0].y/scaleFactor+offsetY);
 				context.closePath();
 				context.fill();
 
