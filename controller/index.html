@@ -2699,6 +2699,7 @@
 					document.getElementById("mapping_mode_right_border").style.display="none";
 				}
 				function showMapping(){
+					drawMaskCanvas();
 					document.getElementById('mapping_page').style.display='block';
 					renderer.domElement.style.display="block";
 					renderer.domElement.style.zIndex=0;
