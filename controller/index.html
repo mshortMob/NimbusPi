@@ -860,6 +860,7 @@
 			<button id="selectMaskHandle2" onclick="selectPrevMaskHandle();" intValue="3" class="mapping-controls-grid-item"  style="display:none; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Next</button>
 			<button id="maskMapModeButton" onclick="if(isMaskMode==false){toggleMaskMode('mask');}else{toggleMaskMode('map') };" style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Mask/Map</button>
 			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save Map for All Presets</button>
+			<button id="resetMaskHandles" onclick="resetMaskHandles();" class="mapping-controls-grid-item"  style="display:none; border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset Mask</button>
 			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
@@ -1089,12 +1090,13 @@
 					maskHandleObjects.push(circle);
 				}
 
-				maskHandleLinesMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1 } );
+				maskHandleLinesMaterial = new THREE.LineBasicMaterial( { color: 0x00ffff, linewidth: 1 } );
 				maskHandleLinesGeometry = new THREE.BufferGeometry();
 				var maskHandleLinesPositions = new Float32Array( numMaskHandles * 3 + 1*3 ); // 3 vertices per point
 				maskHandleLinesGeometry.addAttribute( 'position', new THREE.BufferAttribute( maskHandleLinesPositions, 3 ) );
 				maskHandleLinesGeometry.setDrawRange( 0, numMaskHandles + 1 );
 				maskHandleLinesObject = new THREE.Line( maskHandleLinesGeometry, maskHandleLinesMaterial );
+				maskHandleLinesObject.position.z=20
 				scene2.add(maskHandleLinesObject);	
 				haveDrawnMaskHandles=true;
 			}
@@ -1123,6 +1125,8 @@
 					}
 					document.getElementById("selectMaskHandle1").style.display="block";
 					document.getElementById("selectMaskHandle2").style.display="block";
+					document.getElementById("resetMaskHandles").style.display="block";
+					document.getElementById("duplicateSaveMap").style.display="none";
 					document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
 				}
 				if(modeString=="map"){
@@ -1135,6 +1139,8 @@
 					}
 					document.getElementById("selectMaskHandle1").style.display="none";
 					document.getElementById("selectMaskHandle2").style.display="none";
+					document.getElementById("resetMaskHandles").style.display="none";
+					document.getElementById("duplicateSaveMap").style.display="block";
 					document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 20% 20%"
 				}
 			}
@@ -2440,6 +2446,17 @@
 				}
 			}	
 			
+			function resetMaskHandles(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/DefaultMaskData.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					maskHandleState=JSON.parse(xmlhttp.response).maskHandles;
+					syncObjectsToJson();
+					drawMaskCanvas();
+				}
+			}	
+
 			function saveMapForAllPresets(destinationPresetNumber){
 				if(destinationPresetNumber<9){
 					var xmlhttp=new XMLHttpRequest();
@@ -2705,7 +2722,9 @@
 							document.getElementById("selectVertice1").style.display="none";	
 							document.getElementById("selectVertice2").style.display="none";	
 							document.getElementById("selectVertice3").style.display="none";	
-							document.getElementById("selectVertice4").style.display="none";							
+							document.getElementById("selectVertice4").style.display="none";			
+							document.getElementById("resetMaskHandles").style.display="block";
+							document.getElementById("duplicateSaveMap").style.display="none";				
 						}else{
 							document.getElementById("selectMaskHandle1").style.display="none";
 							document.getElementById("selectMaskHandle2").style.display="none";
@@ -2713,6 +2732,8 @@
 							document.getElementById("selectVertice2").style.display="block";	
 							document.getElementById("selectVertice3").style.display="block";	
 							document.getElementById("selectVertice4").style.display="block";	
+							document.getElementById("resetMaskHandles").style.display="none";
+							document.getElementById("duplicateSaveMap").style.display="block";	
 						}
 						document.getElementById("maskMapModeButton").style.display="block";
 					}
@@ -2720,7 +2741,7 @@
 						document.getElementById("mapping-controls-selected-shader").style.display="none"
 						document.getElementById("mapping-controls-grid-container").style.gridTemplateColumns="10% 5% 5% 5% 5% 10% 20% 10% 20% 10%"
 						document.getElementById("duplicateSaveMap").style.display="none"
-						document.getElementById("duplicateSaveMap").style.display="none"
+						document.getElementById("resetMaskHandles").style.display="none";
 						document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
 						document.getElementById('FM_Button').style.backgroundColor='darkblue';
 						if(isMaskMode==true){
