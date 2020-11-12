@@ -634,6 +634,7 @@ void main()	{
 				xmlhttp.onload = function(e){
 					globalState=JSON.parse(xmlhttp.response).global;
 					if(globalState.SavedByController==true){
+
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
 							for(var y=0; y<25; y++){
@@ -644,6 +645,14 @@ void main()	{
 							}						
 						}
 						statesArray=temp;
+
+						var temp2=JSON.parse(xmlhttp.response).maskHandles;
+						for(var x=0; x<numMaskHandles; x++){
+							temp2[x].x=temp2[x].x*2;
+							temp2[x].y=temp2[x].y*2;
+						}
+						maskHandleState=temp2;
+						
 					}else{
 						statesArray=JSON.parse(xmlhttp.response).storage
 					}
@@ -1274,6 +1283,7 @@ void main()	{
 					globalState=JSON.parse(xmlhttp.response).global;
 					maskHandleState=JSON.parse(xmlhttp.response).maskHandles;
 					if(globalState.SavedByController==true){
+
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
 							for(var y=0; y<25; y++){
@@ -1284,6 +1294,14 @@ void main()	{
 							}						
 						}
 						statesArray=temp;
+
+						var temp2=JSON.parse(xmlhttp.response).maskHandles;
+						for(var x=0; x<numMaskHandles; x++){
+							temp2[x].x=temp2[x].x*2;
+							temp2[x].y=temp2[x].y*2;
+						}
+						maskHandleState=temp2;
+
 					}else{
 						statesArray=JSON.parse(xmlhttp.response).storage
 					}

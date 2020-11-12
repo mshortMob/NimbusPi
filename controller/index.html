@@ -2361,6 +2361,13 @@
 							}						
 						}
 						statesArray=temp;
+
+						var temp2=JSON.parse(xmlhttp.response).maskHandles;
+						for(var x=0; x<numMaskHandles; x++){
+							temp2[x].x=temp2[x].x/2;
+							temp2[x].y=temp2[x].y/2;
+						}
+						maskHandleState=temp2;
 					}else{
 						statesArray=JSON.parse(xmlhttp.response).storage
 					}			
@@ -2403,6 +2410,12 @@
 							tempAllStates.storage[x].Visible=statesArray[x].Visible;
 							tempAllStates.storage[x].Shader=statesArray[x].Shader;
 						}
+
+						for(var x=0; x<numMaskHandles; x++){
+							tempAllStates.maskHandles[x].x=maskHandleState[x].x/2;
+							tempAllStates.maskHandles[x].y=maskHandleState[x].y/2;
+						}
+						
 						tempAllStates.global.SavedByController=true;
 						// tempAllStates.global.DMX_X1=globalState.DMX_X1;
 						// tempAllStates.global.DMX_Y1=globalState.DMX_Y1;
