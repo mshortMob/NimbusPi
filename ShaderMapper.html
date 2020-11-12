@@ -1674,7 +1674,7 @@ void main()	{
 
 			function clonePreset5(destinationPresetNumber){
 				if(destinationPresetNumber<9){
-					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState, "maskHandles":maskHandleState})
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "php/write.php?fn=globalPresets/GlobalPreset"+destinationPresetNumber+".txt", true);
 					xmlhttp.send(requestBody);
