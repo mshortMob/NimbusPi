@@ -115,7 +115,7 @@
 		<script src="dependancies/TrackballControls.js"></script> 
 
 		<video id="video" autoplay width='256' height='256' style="display:none;"></video>
-		<canvas id="videoCanvas"  width='256' height='256' style="display:none; z-index:11; "></canvas>
+		<canvas id="maskCanvas"  width='256' height='256' style="display:none; z-index:11; "></canvas>
 
 		<script id="vertexShader" type="x-shader/x-vertex">
 precision mediump float;
@@ -293,7 +293,7 @@ void main()	{
 				highlightSelectedVertice();
 				highlightSelectedMaskHandle();
 				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
-				// setTimeout(function(){document.getElementById('videoCanvas').style.transform="scale(-1,1)"; changeMask(3); },4000);
+				// setTimeout(function(){document.getElementById('maskCanvas').style.transform="scale(-1,1)"; changeMask(3); },4000);
 			}
 			
 			function drawMaskHandles(){
@@ -1158,7 +1158,7 @@ void main()	{
 			}
 
 			function drawMaskCanvas(){
-				context=document.getElementById('videoCanvas').getContext("2d");
+				context=document.getElementById('maskCanvas').getContext("2d");
 				context.clearRect(0,0,innerWidth,innerHeight);
 				context.fillStyle = '#f00';
 				context.beginPath();

@@ -152,7 +152,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: 20% 10% 10% 10% 10% 40%;
+					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
 					background-color: #777777;
 					width:96%;
 					height:6.5%;
@@ -567,7 +567,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: 20% 10% 10% 10% 10% 40%;
+					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
 					background-color: #777777;
 					width:94%;
 					height:6.5%;
@@ -857,6 +857,7 @@
 			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="selectVertice4" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
 			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save Map for All Presets</button>
+			<button id="maskMapModeButton" onclick="if(isMaskMode==false){toggleMaskMode('mask');}else{toggleMaskMode('map') };" style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Mask/Map</button>
 			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
@@ -871,6 +872,7 @@
 			<button id="enableMiscXYAButton" onclick="enableDisableXYPadControls('A',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderA FX</button>
 			<button id="enableMiscXYBButton" onclick="enableDisableXYPadControls('B',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderB FX</button>
 		</div>
+		<canvas id="maskCanvas"  width='256' height='256' style="display:none; z-index:11; "></canvas>
 		<div class="menu-page" id="misc_page"></div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="fm_page">
@@ -972,6 +974,11 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				haveDrawnMaskHandles=false;
+				isMaskMode=false;
+				maskHandleObjects=[];
+				maskHandleState=[];
+				numMaskHandles=12;
 				enableMiscXYA=true;
 				enableMiscXYB=true;
 				miscXYCurrentMouseX=0;
@@ -1008,6 +1015,7 @@
 				maxNumDMXScenes=8;
 				dmxPresetData=[];
 				selectedVertice=0;
+				selectedMaskHandle=0;
 				// width=document.getElementById('video').width;
 				// height=document.getElementById('video').height;	
 				width=32;
@@ -1033,6 +1041,7 @@
 				INTERSECTED=null;
 				SELECTED=null;
 				initScene();
+				drawMaskHandles();
 				animate();
 				statesArray=[];
 				for(var x=0;x<4;x++){
@@ -1060,6 +1069,43 @@
 				highlightSelectedVertice();
 				forceInitControllerMode();
 				getCurrentFMScene();
+			}
+			
+			function drawMaskHandles(){
+				for(x=0;x<numMaskHandles;x++){
+
+					maskHandleState.push({"x":0,"y":0});
+					var circle = new THREE.Mesh( new THREE.CircleGeometry(20, 20, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}));
+					circle.name="maskHandle"+x;
+					circle.num=x;
+					circle.visible=true;
+					scene2.add(circle);
+					objects.push(circle);
+					maskHandleObjects.push(circle);
+				}
+
+				maskHandleLinesMaterial = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 1 } );
+				maskHandleLinesGeometry = new THREE.BufferGeometry();
+				var maskHandleLinesPositions = new Float32Array( numMaskHandles * 3 + 1*3 ); // 3 vertices per point
+				maskHandleLinesGeometry.addAttribute( 'position', new THREE.BufferAttribute( maskHandleLinesPositions, 3 ) );
+				maskHandleLinesGeometry.setDrawRange( 0, numMaskHandles + 1 );
+				maskHandleLinesObject = new THREE.Line( maskHandleLinesGeometry, maskHandleLinesMaterial );
+				scene2.add(maskHandleLinesObject);	
+				haveDrawnMaskHandles=true;
+			}
+
+			function toggleMaskMode(modeString){
+				if(modeString=="mask"){
+					isMaskMode=true;
+					scene=scene2;
+					document.getElementById('maskMapModeButton').style.backgroundColor="grey";
+				}
+				if(modeString=="map"){
+					isMaskMode=false;
+					scene=scene1;
+					syncObjectsToJson();
+					document.getElementById('maskMapModeButton').style.backgroundColor="black";
+				}
 			}
 			
 			function getVideo(action,camNum) {
@@ -1649,6 +1695,17 @@
 					for(var x=0;x<displayObjects.length;x++){
 						displayObjects[x].setState(statesArray[x])
 					}
+					if(haveDrawnMaskHandles==true){
+						for(var x=0;x<numMaskHandles;x++){
+							maskHandleObjects[x].position.x=maskHandleState[x].x;
+							maskHandleObjects[x].position.y=maskHandleState[x].y*-1;
+							maskHandleLinesGeometry.attributes.position.array[x*3]=maskHandleState[x].x;
+							maskHandleLinesGeometry.attributes.position.array[(x*3)+1]=maskHandleState[x].y*-1;
+						}
+						maskHandleLinesGeometry.attributes.position.array[(maskHandleState.length)*3]=maskHandleState[0].x;
+						maskHandleLinesGeometry.attributes.position.array[((maskHandleState.length)*3)+1]=maskHandleState[0].y*-1;
+						maskHandleLinesGeometry.attributes.position.needsUpdate = true; 
+					}
 				}
 				if(currentApp=="fm"){
 					for(var x=0;x<displayObjects.length;x++){
@@ -2114,6 +2171,14 @@
 								}		
 								SELECTED.parent.updateCorners();	
 							}
+							if(SELECTED.name.indexOf('maskHandle') != -1){
+								console.log(SELECTED.name);
+								SELECTED.position.copy(intersection.sub( offset ));
+								maskHandleState[SELECTED.num].x=SELECTED.position.x;
+								maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
+								drawMaskCanvas();
+								syncObjectsToJson();
+							}
 						}
 						return;
 					}
@@ -2159,6 +2224,10 @@
 							// console.log("Selected Vertice:"+selectedVertice);
 							highlightSelectedVertice();
 						}
+						if(SELECTED.name.indexOf('maskHandle') != -1){
+							selectedMaskHandle=SELECTED.num;
+							highlightSelectedMaskHandle();
+						}
 					}
 				}
 			}
@@ -2177,6 +2246,28 @@
 				container.style.cursor = 'auto';
 			}
 				
+			function drawMaskCanvas(){
+				context=document.getElementById('maskCanvas').getContext("2d");
+				context.clearRect(0,0,innerWidth,innerHeight);
+				context.fillStyle = '#f00';
+				context.beginPath();
+				var scaleFactor=3;
+				var offsetY=130;
+				var offsetX=50;
+				context.moveTo(maskHandleState[0].x/scaleFactor, maskHandleState[0].y/scaleFactor+offsetY);
+				for(var x=1;x<maskHandleState.length;x++){
+					context.lineTo(maskHandleState[x].x/scaleFactor+offsetX,maskHandleState[x].y/scaleFactor+offsetY);
+				}
+				context.lineTo(maskHandleState[0].x/scaleFactor+offsetX,maskHandleState[0].y/scaleFactor+offsetY);
+				context.closePath();
+				context.fill();
+
+				tempData=context.getImageData(0,0,256,256).data;
+				dataTex = new THREE.DataTexture(tempData, 256, 256);
+				dataTex.needsUpdate = true;
+				changeMask(3);
+			}
+			
 			function animate() {
 			    // if(painterController.ColorMix != 0){
 				// 	colorCounter=colorCounter+painterController.ColorRate
@@ -2541,7 +2632,7 @@
 						document.getElementById("mapping-controls-selected-shader").style.display="block"
 						document.getElementById("mapping-controls-grid-container").style.gridTemplateColumns="10% 5% 5% 5% 5% 10% 10% 10% 10% 20% 10%"
 						document.getElementById("duplicateSaveMap").style.display="block"
-						document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 40%"
+						document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 20% 20%"
 						document.getElementById('VJ_Button').style.backgroundColor='darkblue';
 					}
 					if(currentApp=="fm"){
@@ -2816,6 +2907,16 @@
 				}
 			}
 		
+			function highlightSelectedMaskHandle(){
+				for(var x=0; x<maskHandleObjects.length; x++){
+					if(parseInt(x)==parseInt(selectedMaskHandle)){
+						maskHandleObjects[x].material.color={"r":1.0, "g":0.0, "b":1.0}
+					}else{
+						maskHandleObjects[x].material.color={"r":1.0, "g":1.0, "b":1.0}
+					}
+				}
+			}
+
 			function setCurrentFMScene(sceneNum, buttonElem){
 				var xmlhttp=new XMLHttpRequest();
 				currentFMScene=sceneNum;
