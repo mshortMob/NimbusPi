@@ -658,6 +658,7 @@ void main()	{
 					}
 
 					updateControlsView();
+					drawMaskCanvas();
 					syncObjectsToJson(true);
 					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
 					uniforms1.mousey={ value: globalState.xyPadYA };

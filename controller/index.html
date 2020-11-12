@@ -2674,15 +2674,45 @@
 						document.getElementById("mapping-controls-selected-shader").style.display="block"
 						document.getElementById("mapping-controls-grid-container").style.gridTemplateColumns="10% 5% 5% 5% 5% 10% 10% 10% 10% 20% 10%"
 						document.getElementById("duplicateSaveMap").style.display="block"
-						document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 20% 20%"
+						if(isMaskMode==true){
+							document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
+						}else{
+							document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 20% 20%"
+						}
 						document.getElementById('VJ_Button').style.backgroundColor='darkblue';
+						if(isMaskMode==true){
+							document.getElementById("selectMaskHandle1").style.display="block";
+							document.getElementById("selectMaskHandle2").style.display="block";
+							document.getElementById("selectVertice1").style.display="none";	
+							document.getElementById("selectVertice2").style.display="none";	
+							document.getElementById("selectVertice3").style.display="none";	
+							document.getElementById("selectVertice4").style.display="none";							
+						}else{
+							document.getElementById("selectMaskHandle1").style.display="none";
+							document.getElementById("selectMaskHandle2").style.display="none";
+							document.getElementById("selectVertice1").style.display="block";	
+							document.getElementById("selectVertice2").style.display="block";	
+							document.getElementById("selectVertice3").style.display="block";	
+							document.getElementById("selectVertice4").style.display="block";	
+						}
+						document.getElementById("maskMapModeButton").style.display="block";
 					}
 					if(currentApp=="fm"){
 						document.getElementById("mapping-controls-selected-shader").style.display="none"
 						document.getElementById("mapping-controls-grid-container").style.gridTemplateColumns="10% 5% 5% 5% 5% 10% 20% 10% 20% 10%"
 						document.getElementById("duplicateSaveMap").style.display="none"
+						document.getElementById("duplicateSaveMap").style.display="none"
 						document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
 						document.getElementById('FM_Button').style.backgroundColor='darkblue';
+						if(isMaskMode==true){
+							document.getElementById("selectMaskHandle1").style.display="none";
+							document.getElementById("selectMaskHandle2").style.display="none";
+							document.getElementById("selectVertice1").style.display="block";	
+							document.getElementById("selectVertice2").style.display="block";	
+							document.getElementById("selectVertice3").style.display="block";	
+							document.getElementById("selectVertice4").style.display="block";	
+						}
+						document.getElementById("maskMapModeButton").style.display="none";
 					}
 				}
 			}
