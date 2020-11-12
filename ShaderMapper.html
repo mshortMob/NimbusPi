@@ -611,7 +611,7 @@ void main()	{
 				utilsFolder.add({ 'Recall Preset':function(){ recallState() }},'Recall Preset');
 				utilsFolder.add(globalController, 'PresetName').onChange(function(){});
 				utilsFolder.add({ 'Shader Editor':function(){ window.location.replace("http://"+location.hostname+"/editors/shaderEditor.html"); }},'Shader Editor');
-				utilsFolder.add({ 'Shader Controller':function(){ window.location.replace("http://"+location.hostname+"/controller/index.html"); }},'Shader Controller');
+				utilsFolder.add({ 'Controller App':function(){ window.location.replace("http://"+location.hostname+"/controller/index.html"); }},'Controller App');
 				utilsFolder.add({ 'DMX Editor':function(){ window.location.replace("http://"+location.hostname+"/editors/dmxEditor.html"); }},'DMX Editor');
 				utilsFolder.add({ 'FlowMapper':function(){ window.location.replace("http://"+location.hostname+"/FlowMapper.html"); }},'FlowMapper');
 				utilsFolder.add({ 'OrbitMapper':function(){ window.location.replace("http://"+location.hostname+"/OrbitMapper.html"); }},'OrbitMapper');
@@ -1669,6 +1669,9 @@ void main()	{
 					}else{
 						toggleMaskMode("map");
 					}
+				}
+				if(event.key=="R"){
+					resetMaskHandles();
 				}
 			}
 
