@@ -1163,12 +1163,13 @@ void main()	{
 				context.fillStyle = '#f00';
 				context.beginPath();
 				var scaleFactor=3;
-				var offset=130;
-				context.moveTo(maskHandleState[0].x/scaleFactor, maskHandleState[0].y/scaleFactor+offset);
+				var offsetY=130;
+				var offsetX=50;
+				context.moveTo(maskHandleState[0].x/scaleFactor, maskHandleState[0].y/scaleFactor+offsetY);
 				for(var x=1;x<maskHandleState.length;x++){
-					context.lineTo(maskHandleState[x].x/scaleFactor,maskHandleState[x].y/scaleFactor+offset);
+					context.lineTo(maskHandleState[x].x/scaleFactor+offsetX,maskHandleState[x].y/scaleFactor+offsetY);
 				}
-				context.lineTo(maskHandleState[0].x/scaleFactor,maskHandleState[0].y/scaleFactor+offset);
+				context.lineTo(maskHandleState[0].x/scaleFactor+offsetX,maskHandleState[0].y/scaleFactor+offsetY);
 				context.closePath();
 				context.fill();
 
