@@ -2081,7 +2081,7 @@
 							lastMouseY=mouse.y;
 							console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
 							maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x+mouseVelX
-							maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].x-mouseVelY;
+							maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y+mouseVelY;
 							drawMaskCanvas();
 							syncObjectsToJson();
 						}
