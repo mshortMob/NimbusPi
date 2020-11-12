@@ -2216,7 +2216,7 @@
 					globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
 					globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
 					globalState.SavedByController=true;
-					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState, "maskHandles": maskHandleState})
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
 				}else{				
@@ -2248,6 +2248,7 @@
 				xmlhttp.onload = function(e){
 
 					globalState=JSON.parse(xmlhttp.response).global;
+					maskHandleState=JSON.parse(xmlhttp.response).maskHandles;
 					if(globalState.SavedByController==false){
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
