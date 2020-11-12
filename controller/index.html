@@ -856,8 +856,8 @@
 			<button id="selectVertice2" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="selectVertice4" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
-			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save Map for All Presets</button>
 			<button id="maskMapModeButton" onclick="if(isMaskMode==false){toggleMaskMode('mask');}else{toggleMaskMode('map') };" style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Mask/Map</button>
+			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save Map for All Presets</button>
 			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
@@ -1067,6 +1067,7 @@
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+				highlightSelectedMaskHandle();
 				forceInitControllerMode();
 				getCurrentFMScene();
 			}
