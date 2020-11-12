@@ -524,6 +524,11 @@ void main()	{
                 renderer.domElement.addEventListener( 'touchstart', onDocumentTouchStart, false );
                 renderer.domElement.addEventListener( 'touchend', onDocumentTouchEnd, false );
 				window.addEventListener( 'resize', onWindowResize, false );
+				tempElem=document.body.getElementsByClassName('ac')[0];
+				tempElem.className="";
+				tempElem.style.zIndex='10000000'
+				tempElem.style.position='fixed'
+				tempElem.style.right='0px';
 			}
 				
 			function addControls(){
@@ -1157,7 +1162,7 @@ void main()	{
 				context.clearRect(0,0,innerWidth,innerHeight);
 				context.fillStyle = '#f00';
 				context.beginPath();
-				var scaleFactor=2;
+				var scaleFactor=3;
 				var offset=130;
 				context.moveTo(maskHandleState[0].x/scaleFactor, maskHandleState[0].y/scaleFactor+offset);
 				for(var x=1;x<maskHandleState.length;x++){
