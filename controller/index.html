@@ -2057,21 +2057,34 @@
 				
 				if(fineMappingEnabled==true){
 					if(mouseIsDown==true){
-						mouseVelX=(lastMouseX-mouse.x)*15;
-						mouseVelY=(lastMouseY-mouse.y)*15;
-						lastMouseX=mouse.x;
-						lastMouseY=mouse.y;
-						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
-						if(currentApp=="sm"){
-							statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-							statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
-						}	
-						if(currentApp=="fm"){
-							fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-							fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						if(isMaskMode==false){
+							mouseVelX=(lastMouseX-mouse.x)*15;
+							mouseVelY=(lastMouseY-mouse.y)*15;
+							lastMouseX=mouse.x;
+							lastMouseY=mouse.y;
+							console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+							if(currentApp=="sm"){
+								statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+								statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+							}	
+							if(currentApp=="fm"){
+								fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+								fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+							}
+							syncObjectsToJson();
+							displayObjects[globalController.selectedObject].updateCorners();
 						}
-						syncObjectsToJson();
-						displayObjects[globalController.selectedObject].updateCorners();
+						if(isMaskMode==true){
+							mouseVelX=(lastMouseX-mouse.x)*15;
+							mouseVelY=(lastMouseY-mouse.y)*15;
+							lastMouseX=mouse.x;
+							lastMouseY=mouse.y;
+							console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+							maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x+mouseVelX
+							maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].x-mouseVelY;
+							drawMaskCanvas();
+							syncObjectsToJson();
+						}
 					}
 				}
 
@@ -2098,6 +2111,14 @@
 									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
 									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
 								}				
+							}
+							if(SELECTED.name.indexOf('maskHandle') != -1){
+								console.log(SELECTED.name);
+								SELECTED.position.copy(intersection.sub( offset ));
+								maskHandleState[SELECTED.num].x=SELECTED.position.x;
+								maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
+								drawMaskCanvas();
+								syncObjectsToJson();
 							}
 						}
 						return;
@@ -2148,6 +2169,10 @@
 							// console.log("Selected Vertice:"+selectedVertice);
 							highlightSelectedVertice();
 						}
+						if(SELECTED.name.indexOf('maskHandle') != -1){
+							selectedMaskHandle=SELECTED.num;
+							highlightSelectedMaskHandle();
+						}
 					}	
 				}
 			}
@@ -2182,21 +2207,34 @@
 
 				if(fineMappingEnabled==true){
 					if(mouseIsDown==true){
-						mouseVelX=(lastMouseX-mouse.x)*50;
-						mouseVelY=(lastMouseY-mouse.y)*50;
-						lastMouseX=mouse.x;
-						lastMouseY=mouse.y;
-						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
-						if(currentApp=="sm"){
-							statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-							statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
-						}	
-						if(currentApp=="fm"){
-							fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-							fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
-						}	
-						syncObjectsToJson();
-						displayObjects[globalController.selectedObject].updateCorners();
+						if(isMaskMode==false){
+							mouseVelX=(lastMouseX-mouse.x)*50;
+							mouseVelY=(lastMouseY-mouse.y)*50;
+							lastMouseX=mouse.x;
+							lastMouseY=mouse.y;
+							console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+							if(currentApp=="sm"){
+								statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+								statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+							}	
+							if(currentApp=="fm"){
+								fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+								fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+							}	
+							syncObjectsToJson();
+							displayObjects[globalController.selectedObject].updateCorners();
+						}
+						if(isMaskMode==true){
+							mouseVelX=(lastMouseX-mouse.x)*15;
+							mouseVelY=(lastMouseY-mouse.y)*15;
+							lastMouseX=mouse.x;
+							lastMouseY=mouse.y;
+							console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+							maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x+mouseVelX
+							maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y+mouseVelY;
+							drawMaskCanvas();
+							syncObjectsToJson();
+						}
 					}
 				}
 
