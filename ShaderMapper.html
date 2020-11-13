@@ -1178,7 +1178,7 @@ void main()	{
 				var scaleFactor=3;
 				var offsetY=130;
 				var offsetX=50;
-				context.moveTo(maskHandleState[0].x/scaleFactor, maskHandleState[0].y/scaleFactor+offsetY);
+				context.moveTo(maskHandleState[0].x/scaleFactor+offsetX, maskHandleState[0].y/scaleFactor+offsetY);
 				for(var x=1;x<maskHandleState.length;x++){
 					context.lineTo(maskHandleState[x].x/scaleFactor+offsetX,maskHandleState[x].y/scaleFactor+offsetY);
 				}

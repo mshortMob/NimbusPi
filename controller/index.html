@@ -2361,7 +2361,7 @@
 				var scaleFactor=3;
 				var offsetY=130;
 				var offsetX=50;
-				context.moveTo(2*maskHandleState[0].x/scaleFactor, 2*maskHandleState[0].y/scaleFactor+offsetY);
+				context.moveTo(2*maskHandleState[0].x/scaleFactor+offsetX, 2*maskHandleState[0].y/scaleFactor+offsetY);
 				for(var x=1;x<maskHandleState.length;x++){
 					context.lineTo(2*maskHandleState[x].x/scaleFactor+offsetX,2*maskHandleState[x].y/scaleFactor+offsetY);
 				}
