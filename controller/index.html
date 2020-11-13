@@ -1129,6 +1129,9 @@
 					document.getElementById("resetMaskHandles").style.display="block";
 					document.getElementById("duplicateSaveMap").style.display="none";
 					document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
+					for(var x=0; x<numMaskHandles; x++){
+						maskHandleObjects[x].position.z=-500;
+					}
 				}
 				if(modeString=="map"){
 					isMaskMode=false;
@@ -1143,6 +1146,9 @@
 					document.getElementById("resetMaskHandles").style.display="none";
 					document.getElementById("duplicateSaveMap").style.display="block";
 					document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 20% 20%"
+					for(var x=0; x<numMaskHandles; x++){
+						maskHandleObjects[x].position.z=500;
+					}
 				}
 			}
 			
@@ -2098,7 +2104,7 @@
 					if ( SELECTED ) {
 						
 						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1 && isMaskMode==false) {
 								console.log(SELECTED.name)
 								SELECTED.position.copy(intersection.sub( offset ));
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
@@ -2113,7 +2119,7 @@
 									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
 								}				
 							}
-							if(SELECTED.name.indexOf('maskHandle') != -1){
+							if(SELECTED.name.indexOf('maskHandle') != -1 && isMaskMode==true){
 								console.log(SELECTED.name);
 								SELECTED.position.copy(intersection.sub( offset ));
 								maskHandleState[SELECTED.num].x=SELECTED.position.x;
@@ -2161,7 +2167,7 @@
 						container.style.cursor = 'move';
 					}
 					if (SELECTED) {
-						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5 && isMaskMode==false) {
 							// console.log(SELECTED)
 							SELECTED.parent.updateCorners();
 
@@ -2170,7 +2176,7 @@
 							// console.log("Selected Vertice:"+selectedVertice);
 							highlightSelectedVertice();
 						}
-						if(SELECTED.name.indexOf('maskHandle') != -1){
+						if(SELECTED.name.indexOf('maskHandle') != -1 && isMaskMode==true){
 							selectedMaskHandle=SELECTED.num;
 							highlightSelectedMaskHandle();
 						}
@@ -2248,29 +2254,33 @@
 					if ( SELECTED ) {
 						
 						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
-								console.log(SELECTED.name)
-								SELECTED.position.copy(intersection.sub( offset ));
-								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
-								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
-								SELECTED.parent.geometry.verticesNeedUpdate = true;
-								if(currentApp=="sm"){
-									statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-									statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
-								}	
-								if(currentApp=="fm"){
-									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
-								}		
-								SELECTED.parent.updateCorners();	
+							if(isMaskMode==false){
+								if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+									console.log(SELECTED.name)
+									SELECTED.position.copy(intersection.sub( offset ));
+									SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
+									SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
+									SELECTED.parent.geometry.verticesNeedUpdate = true;
+									if(currentApp=="sm"){
+										statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+										statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+									}	
+									if(currentApp=="fm"){
+										fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+										fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+									}		
+									SELECTED.parent.updateCorners();	
+								}
 							}
-							if(SELECTED.name.indexOf('maskHandle') != -1){
-								console.log(SELECTED.name);
-								SELECTED.position.copy(intersection.sub( offset ));
-								maskHandleState[SELECTED.num].x=SELECTED.position.x;
-								maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
-								drawMaskCanvas();
-								syncObjectsToJson();
+							if(isMaskMode==true){
+								if(SELECTED.name.indexOf('maskHandle') != -1){
+									console.log(SELECTED.name);
+									SELECTED.position.copy(intersection.sub( offset ));
+									maskHandleState[SELECTED.num].x=SELECTED.position.x;
+									maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
+									drawMaskCanvas();
+									syncObjectsToJson();
+								}
 							}
 						}
 						return;
@@ -2308,18 +2318,22 @@
 						container.style.cursor = 'move';
 					}
 					if (SELECTED) {
-						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
-							// console.log(SELECTED)
-							SELECTED.parent.updateCorners();
+						if(isMaskMode==false){
+							if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+								// console.log(SELECTED)
+								SELECTED.parent.updateCorners();
 
-							var listOfCornerVertices=[4,0,20,24];
-							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
-							// console.log("Selected Vertice:"+selectedVertice);
-							highlightSelectedVertice();
+								var listOfCornerVertices=[4,0,20,24];
+								selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
+								// console.log("Selected Vertice:"+selectedVertice);
+								highlightSelectedVertice();
+							}
 						}
-						if(SELECTED.name.indexOf('maskHandle') != -1){
-							selectedMaskHandle=SELECTED.num;
-							highlightSelectedMaskHandle();
+						if(isMaskMode==true){
+							if(SELECTED.name.indexOf('maskHandle') != -1){
+								selectedMaskHandle=SELECTED.num;
+								highlightSelectedMaskHandle();
+							}
 						}
 					}
 				}

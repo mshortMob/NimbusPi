@@ -1034,7 +1034,7 @@ void main()	{
 				if ( SELECTED ) {
 					
 					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1 && isMaskMode==false) {
 						    console.log(SELECTED.name)
 							SELECTED.position.copy(intersection.sub( offset ));
 							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
@@ -1043,7 +1043,7 @@ void main()	{
 							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
 							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
 						}
-						if(SELECTED.name.indexOf('maskHandle') != -1){
+						if(SELECTED.name.indexOf('maskHandle') != -1 && isMaskMode==true){
 							console.log(SELECTED.name);
 							SELECTED.position.copy(intersection.sub( offset ));
 							maskHandleState[SELECTED.num].x=SELECTED.position.x;
@@ -1083,7 +1083,7 @@ void main()	{
 					container.style.cursor = 'move';
 				}
 				if (SELECTED) {
-					if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+					if (SELECTED.isCorner==true && globalController.mappingMode<.5 && isMaskMode==false) {
 						// console.log(SELECTED)
 						SELECTED.parent.updateCorners();
 
@@ -1092,7 +1092,7 @@ void main()	{
 						// console.log("Selected Vertice:"+selectedVertice);
 						highlightSelectedVertice();
 					}
-					if(SELECTED.name.indexOf('maskHandle') != -1){
+					if(SELECTED.name.indexOf('maskHandle') != -1 && isMaskMode==true){
 						selectedMaskHandle=SELECTED.num;
 						highlightSelectedMaskHandle();
 					}
@@ -1135,7 +1135,7 @@ void main()	{
 				if ( SELECTED ) {
 					
 					if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+						if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1 && isMaskMode==false) {
 						    console.log(SELECTED.name)
 							SELECTED.position.copy(intersection.sub( offset ));
 							SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
@@ -1144,7 +1144,7 @@ void main()	{
 							statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
 							statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;			
 						}
-						if(SELECTED.name.indexOf('maskHandle') != -1){
+						if(SELECTED.name.indexOf('maskHandle') != -1 && isMaskMode==true){
 							console.log(SELECTED.name);
 							SELECTED.position.copy(intersection.sub( offset ));
 							maskHandleState[SELECTED.num].x=SELECTED.position.x;
@@ -1203,7 +1203,7 @@ void main()	{
 						container.style.cursor = 'move';
 					}
 					if (SELECTED) {
-						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5 && isMaskMode==false) {
 							// console.log(SELECTED)
 							SELECTED.parent.updateCorners();
 
@@ -1212,7 +1212,7 @@ void main()	{
 							// console.log("Selected Vertice:"+selectedVertice);
 							highlightSelectedVertice();
 						}
-						if(SELECTED.name.indexOf('maskHandle') != -1){
+						if(SELECTED.name.indexOf('maskHandle') != -1 && isMaskMode==true){
 							selectedMaskHandle=SELECTED.num;
 							highlightSelectedMaskHandle();
 						}
