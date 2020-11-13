@@ -190,6 +190,7 @@ void main()	{
 			initGlobalVars();
 
 			function initGlobalVars(){
+				maskControllerScalingFactor=1.5;
 				haveDrawnMaskHandles=false;
 				isMaskMode=false;
 				maskHandleObjects=[];
@@ -650,8 +651,8 @@ void main()	{
 
 						var temp2=JSON.parse(xmlhttp.response).maskHandles;
 						for(var x=0; x<numMaskHandles; x++){
-							temp2[x].x=temp2[x].x*2;
-							temp2[x].y=temp2[x].y*2;
+							temp2[x].x=temp2[x].x*maskControllerScalingFactor;
+							temp2[x].y=temp2[x].y*maskControllerScalingFactor;
 						}
 						maskHandleState=temp2;
 						
@@ -1300,8 +1301,8 @@ void main()	{
 
 						var temp2=JSON.parse(xmlhttp.response).maskHandles;
 						for(var x=0; x<numMaskHandles; x++){
-							temp2[x].x=temp2[x].x*2;
-							temp2[x].y=temp2[x].y*2;
+							temp2[x].x=temp2[x].x*maskControllerScalingFactor;
+							temp2[x].y=temp2[x].y*maskControllerScalingFactor;
 						}
 						maskHandleState=temp2;
 
@@ -1931,8 +1932,8 @@ void main()	{
 				xmlhttp.onload = function(e){
 					var temp=JSON.parse(xmlhttp.response).maskHandles;
 					for(var x=0; x<numMaskHandles; x++){
-						temp[x].x=temp[x].x*2;
-						temp[x].y=temp[x].y*2;
+						temp[x].x=temp[x].x*maskControllerScalingFactor;
+						temp[x].y=temp[x].y*maskControllerScalingFactor;
 						}
 					maskHandleState=temp;
 					syncObjectsToJson();

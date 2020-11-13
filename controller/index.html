@@ -977,6 +977,7 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				maskControllerScalingFactor=1.5;
 				haveDrawnMaskHandles=false;
 				isMaskMode=false;
 				maskHandleObjects=[];
@@ -2455,8 +2456,8 @@
 
 						var temp2=JSON.parse(xmlhttp.response).maskHandles;
 						for(var x=0; x<numMaskHandles; x++){
-							temp2[x].x=temp2[x].x/2;
-							temp2[x].y=temp2[x].y/2;
+							temp2[x].x=temp2[x].x/maskControllerScalingFactor;
+							temp2[x].y=temp2[x].y/maskControllerScalingFactor;
 						}
 						maskHandleState=temp2;
 					}else{
