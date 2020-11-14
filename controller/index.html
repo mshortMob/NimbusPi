@@ -32,7 +32,7 @@
 				}
 				.mask-container{
 					display: grid;
-					grid-template-columns: auto auto auto auto auto auto auto;
+					grid-template-columns: auto auto auto auto auto auto auto auto;
 					background-color: #777777;
 					padding: 5px;
 					width:47.5%;
@@ -152,7 +152,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: 20% 10% 10% 10% 10% 40%;
+					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
 					background-color: #777777;
 					width:96%;
 					height:6.5%;
@@ -383,7 +383,7 @@
 				}
 				.mask-container{
 					display: grid;
-					grid-template-columns: auto auto auto auto auto auto auto;
+					grid-template-columns: auto auto auto auto auto auto auto auto;
 					background-color: #777777;
 					padding: 5px;
 					width:46.5%;
@@ -567,7 +567,7 @@
 				}
 				.mapping-controls-grid-container-top{
 					display: grid;
-					grid-template-columns: 20% 10% 10% 10% 10% 40%;
+					grid-template-columns: 20% 10% 10% 10% 10% 20% 20%;
 					background-color: #777777;
 					width:94%;
 					height:6.5%;
@@ -856,7 +856,11 @@
 			<button id="selectVertice2" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="1" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">2</button>
 			<button id="selectVertice3" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="2" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">3</button>
 			<button id="selectVertice4" onclick="selectVertice(this.getAttribute('intValue'),this);" intValue="3" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">4</button>
+			<button id="selectMaskHandle1" onclick="selectNextMaskHandle();" intValue="2" class="mapping-controls-grid-item"  style="display:none; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Prev.</button>
+			<button id="selectMaskHandle2" onclick="selectPrevMaskHandle();" intValue="3" class="mapping-controls-grid-item"  style="display:none; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Next</button>
+			<button id="maskMapModeButton" onclick="if(isMaskMode==false){toggleMaskMode('mask');}else{toggleMaskMode('map') };" style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Mask/Map</button>
 			<button id="duplicateSaveMap" onclick="saveMapForAllPresets(1);" class="mapping-controls-grid-item"  style="border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Save Map for All Presets</button>
+			<button id="resetMaskHandles" onclick="resetMaskHandles();" class="mapping-controls-grid-item"  style="display:none; border-right:3.5px solid grey; border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset Mask</button>
 			<!-- <button id="globalResetAll" onclick="resetToDefaultPreset();" class="mapping-controls-grid-item"  style="border-color: grey; background-color: black; color: white; font-size: 0.5em;">Reset All Presets</button> -->
 		</div>
 		<div class="menu-grid-container" id="menu-grid-container"style="z-index:1;">
@@ -871,6 +875,7 @@
 			<button id="enableMiscXYAButton" onclick="enableDisableXYPadControls('A',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderA FX</button>
 			<button id="enableMiscXYBButton" onclick="enableDisableXYPadControls('B',this)" class="miscXY-controls-grid-item"  style="border-color: grey; background-color: grey; color: white; font-size: 0.5em;">ShaderB FX</button>
 		</div>
+		<canvas id="maskCanvas"  width='256' height='256' style="display:none; z-index:11; "></canvas>
 		<div class="menu-page" id="misc_page"></div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="fm_page">
@@ -972,6 +977,12 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				maskControllerScalingFactor=1.5;
+				haveDrawnMaskHandles=false;
+				isMaskMode=false;
+				maskHandleObjects=[];
+				maskHandleState=[];
+				numMaskHandles=12;
 				enableMiscXYA=true;
 				enableMiscXYB=true;
 				miscXYCurrentMouseX=0;
@@ -1008,6 +1019,7 @@
 				maxNumDMXScenes=8;
 				dmxPresetData=[];
 				selectedVertice=0;
+				selectedMaskHandle=0;
 				// width=document.getElementById('video').width;
 				// height=document.getElementById('video').height;	
 				width=32;
@@ -1033,6 +1045,7 @@
 				INTERSECTED=null;
 				SELECTED=null;
 				initScene();
+				drawMaskHandles();
 				animate();
 				statesArray=[];
 				for(var x=0;x<4;x++){
@@ -1052,15 +1065,147 @@
 					globalState[key]=globalController[key]
 				}
 				//=------
+				drawMaskCanvas();
+				setTimeout(function(){drawMaskCanvas();},1000);
 				syncObjectsToJson();
 				initControllerDone=false;
 				isMidPresetChange=false;
 				getCurrentPresetName();
 				setTimeout(function(){selectObject(0, "mapping-controls-grid-item-1");},1000);
 				highlightSelectedVertice();
+				highlightSelectedMaskHandle();
 				forceInitControllerMode();
 				getCurrentFMScene();
 			}
+			
+			function drawMaskHandles(){
+				for(x=0;x<numMaskHandles;x++){
+
+					maskHandleState.push({"x":0,"y":0});
+					var circle = new THREE.Mesh( new THREE.CircleGeometry(35, 35, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}));
+					circle.name="maskHandle"+x;
+					circle.num=x;
+					circle.visible=true;
+					scene2.add(circle);
+					objects.push(circle);
+					maskHandleObjects.push(circle);
+				}
+
+				maskHandleLinesMaterial = new THREE.LineBasicMaterial( { color: 0x00ffff, linewidth: 1 } );
+				maskHandleLinesGeometry = new THREE.BufferGeometry();
+				var maskHandleLinesPositions = new Float32Array( numMaskHandles * 3 + 1*3 ); // 3 vertices per point
+				maskHandleLinesGeometry.addAttribute( 'position', new THREE.BufferAttribute( maskHandleLinesPositions, 3 ) );
+				maskHandleLinesGeometry.setDrawRange( 0, numMaskHandles + 1 );
+				maskHandleLinesObject = new THREE.Line( maskHandleLinesGeometry, maskHandleLinesMaterial );
+				maskHandleLinesObject.position.z=20
+				scene2.add(maskHandleLinesObject);	
+				haveDrawnMaskHandles=true;
+			}
+
+			function selectNextMaskHandle(){
+				selectedMaskHandle=(selectedMaskHandle+1)%numMaskHandles;
+						highlightSelectedMaskHandle();
+			}
+
+			function selectPrevMaskHandle(){
+				if( (selectedMaskHandle-1)>=0){
+					selectedMaskHandle=selectedMaskHandle-1;
+				}else{
+					selectedMaskHandle=numMaskHandles-1;
+				}
+				highlightSelectedMaskHandle();
+			}
+
+			function toggleMaskMode(modeString){
+				if(modeString=="mask"){
+					isMaskMode=true;
+					scene=scene2;
+					document.getElementById('maskMapModeButton').style.backgroundColor="grey";
+					for(var x=1; x<5; x++){
+						document.getElementById("selectVertice"+x).style.display="none";
+					}
+					document.getElementById("selectMaskHandle1").style.display="block";
+					document.getElementById("selectMaskHandle2").style.display="block";
+					document.getElementById("resetMaskHandles").style.display="block";
+					document.getElementById("duplicateSaveMap").style.display="none";
+					document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
+					for(var x=0; x<numMaskHandles; x++){
+						maskHandleObjects[x].position.z=-500;
+					}
+				}
+				if(modeString=="map"){
+					isMaskMode=false;
+					scene=scene1;
+					syncObjectsToJson();
+					document.getElementById('maskMapModeButton').style.backgroundColor="black";
+					for(var x=1; x<5; x++){
+						document.getElementById("selectVertice"+x).style.display="block";
+					}
+					document.getElementById("selectMaskHandle1").style.display="none";
+					document.getElementById("selectMaskHandle2").style.display="none";
+					document.getElementById("resetMaskHandles").style.display="none";
+					document.getElementById("duplicateSaveMap").style.display="block";
+					document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 20% 20%"
+					for(var x=0; x<numMaskHandles; x++){
+						maskHandleObjects[x].position.z=500;
+					}
+				}
+			}
+			
+			function getVideo(action,camNum) {
+				if(action == "init"){
+					numOfCameras=0
+					cameraIds=[]
+					selectedCamera=0;
+					videoElem='video'
+					navigator.mediaDevices.enumerateDevices().then(function(deviceInfos){
+					  for (var i = 0; i !== deviceInfos.length; ++i) {
+						var deviceInfo = deviceInfos[i];
+						if (deviceInfo.kind === 'videoinput') {
+						  numOfCameras=numOfCameras + 1
+						  cameraIds.push(deviceInfo.deviceId);
+						}
+					  }
+					  gui.__folders.Utils.__controllers[gui.__folders.Utils.__controllers.length-1].__max=numOfCameras-1;
+					  selectedCamera=camNum;
+					  if (window.stream) {
+						window.stream.getTracks().forEach(function(track) {
+						  track.stop();
+						});
+					  }
+					  console.log(cameraIds[selectedCamera])
+					  var videoSource = cameraIds[selectedCamera];
+					  var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
+					  navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+						  window.stream = stream; 
+						  document.getElementById(videoElem).srcObject = stream;
+						  return navigator.mediaDevices.enumerateDevices();
+					  }).catch(function(error){
+						  console.log('navigator.getUserMedia error: ', error);
+					  });
+					  }).catch(function(error){
+						console.log('navigator.getUserMedia error: ', error);
+					  });
+				}
+				if(action == "select"){
+					selectedCamera=camNum;
+					if (window.stream) {
+					  window.stream.getTracks().forEach(function(track) {
+						track.stop();
+					  });
+					}
+					console.log(cameraIds[selectedCamera])
+					var videoSource = cameraIds[selectedCamera];
+					var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
+					navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+						window.stream = stream; 
+						document.getElementById(videoElem).srcObject = stream;
+						return navigator.mediaDevices.enumerateDevices();
+					}).catch(function(error){
+						console.log('navigator.getUserMedia error: ', error);
+					});
+				}
+			}	
 			
 			function enableDisableXYPadControls(shaderChannel,elem){
 				if(shaderChannel=="A"){
@@ -1456,13 +1601,34 @@
 			function changeMask(changedMask){
 				if(changedMask==1){
 					if(parseInt(globalState.MaskA)!=lastMaskAValue){
-						uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskA)+'.jpg' ) };
-						lastMaskAValue=parseInt(globalState.MaskA);
+						if(parseInt(globalState.MaskA)<numberOfMasks+1){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskA)+'.jpg' ) };
+							lastMaskAValue=parseInt(globalState.MaskA);
+						}else{
+							uniforms1.maskTexture.value=dataTex;
+							lastMaskAValue=parseInt(globalState.MaskA);							
+						}
 					}
-				}else{
+				}
+				if(changedMask==2){
 					if(parseInt(globalState.MaskB)!=lastMaskBValue){
-						uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskB)+'.jpg' ) };
-						lastMaskBValue=parseInt(globalState.MaskB);
+						if(parseInt(globalState.MaskB)<numberOfMasks+1){
+							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskB)+'.jpg' ) };
+							lastMaskBValue=parseInt(globalState.MaskB);
+						}else{
+							uniforms2.maskTexture=dataTex;
+							lastMaskBValue=parseInt(globalState.MaskB);							
+						}
+					}
+				}
+				if(changedMask==3){
+					if(parseInt(globalState.MaskA)==8){
+						uniforms1.maskTexture.value=dataTex;
+						lastMaskAValue=parseInt(globalState.MaskA);							
+					}
+					if(parseInt(globalState.MaskB)==8){
+						uniforms2.maskTexture.value=dataTex;
+						lastMaskBValue=parseInt(globalState.MaskB);							
 					}
 				}
 			}
@@ -1502,9 +1668,13 @@
 				camera.position.z = -1000;
 				controls = new THREE.TrackballControls( camera , container);
 				controls.enabled=false;
-				scene = new THREE.Scene();
-				LIGHTING=new THREE.AmbientLight( 0xffffff ) 
-				scene.add( LIGHTING );
+				LIGHTING1=new THREE.AmbientLight( 0xffffff );
+				LIGHTING2=new THREE.AmbientLight( 0xffffff ) 
+				scene1 = new THREE.Scene();
+				scene1.add( LIGHTING1 );
+				scene2 = new THREE.Scene();
+				scene2.add( LIGHTING2 );
+				scene=scene1;
 				renderer = new THREE.WebGLRenderer( { antialias: true , alpha:true} );
 				renderer.setClearColor( 0x000000 , 1);
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -1585,6 +1755,17 @@
 				if(currentApp=="sm"){
 					for(var x=0;x<displayObjects.length;x++){
 						displayObjects[x].setState(statesArray[x])
+					}
+					if(haveDrawnMaskHandles==true){
+						for(var x=0;x<numMaskHandles;x++){
+							maskHandleObjects[x].position.x=maskHandleState[x].x;
+							maskHandleObjects[x].position.y=maskHandleState[x].y*-1;
+							maskHandleLinesGeometry.attributes.position.array[x*3]=maskHandleState[x].x;
+							maskHandleLinesGeometry.attributes.position.array[(x*3)+1]=maskHandleState[x].y*-1;
+						}
+						maskHandleLinesGeometry.attributes.position.array[(maskHandleState.length)*3]=maskHandleState[0].x;
+						maskHandleLinesGeometry.attributes.position.array[((maskHandleState.length)*3)+1]=maskHandleState[0].y*-1;
+						maskHandleLinesGeometry.attributes.position.needsUpdate = true; 
 					}
 				}
 				if(currentApp=="fm"){
@@ -1883,21 +2064,34 @@
 				
 				if(fineMappingEnabled==true){
 					if(mouseIsDown==true){
-						mouseVelX=(lastMouseX-mouse.x)*15;
-						mouseVelY=(lastMouseY-mouse.y)*15;
-						lastMouseX=mouse.x;
-						lastMouseY=mouse.y;
-						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
-						if(currentApp=="sm"){
-							statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-							statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
-						}	
-						if(currentApp=="fm"){
-							fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-							fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+						if(isMaskMode==false){
+							mouseVelX=(lastMouseX-mouse.x)*15;
+							mouseVelY=(lastMouseY-mouse.y)*15;
+							lastMouseX=mouse.x;
+							lastMouseY=mouse.y;
+							console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+							if(currentApp=="sm"){
+								statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+								statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+							}	
+							if(currentApp=="fm"){
+								fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+								fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+							}
+							syncObjectsToJson();
+							displayObjects[globalController.selectedObject].updateCorners();
 						}
-						syncObjectsToJson();
-						displayObjects[globalController.selectedObject].updateCorners();
+						if(isMaskMode==true){
+							mouseVelX=(lastMouseX-mouse.x)*15;
+							mouseVelY=(lastMouseY-mouse.y)*15;
+							lastMouseX=mouse.x;
+							lastMouseY=mouse.y;
+							console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+							maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x+mouseVelX
+							maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y+mouseVelY;
+							drawMaskCanvas();
+							syncObjectsToJson();
+						}
 					}
 				}
 
@@ -1910,7 +2104,7 @@
 					if ( SELECTED ) {
 						
 						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1 && isMaskMode==false) {
 								console.log(SELECTED.name)
 								SELECTED.position.copy(intersection.sub( offset ));
 								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
@@ -1924,6 +2118,14 @@
 									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
 									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
 								}				
+							}
+							if(SELECTED.name.indexOf('maskHandle') != -1 && isMaskMode==true){
+								console.log(SELECTED.name);
+								SELECTED.position.copy(intersection.sub( offset ));
+								maskHandleState[SELECTED.num].x=SELECTED.position.x;
+								maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
+								drawMaskCanvas();
+								syncObjectsToJson();
 							}
 						}
 						return;
@@ -1965,7 +2167,7 @@
 						container.style.cursor = 'move';
 					}
 					if (SELECTED) {
-						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+						if (SELECTED.isCorner==true && globalController.mappingMode<.5 && isMaskMode==false) {
 							// console.log(SELECTED)
 							SELECTED.parent.updateCorners();
 
@@ -1973,6 +2175,10 @@
 							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
 							// console.log("Selected Vertice:"+selectedVertice);
 							highlightSelectedVertice();
+						}
+						if(SELECTED.name.indexOf('maskHandle') != -1 && isMaskMode==true){
+							selectedMaskHandle=SELECTED.num;
+							highlightSelectedMaskHandle();
 						}
 					}	
 				}
@@ -2008,21 +2214,34 @@
 
 				if(fineMappingEnabled==true){
 					if(mouseIsDown==true){
-						mouseVelX=(lastMouseX-mouse.x)*50;
-						mouseVelY=(lastMouseY-mouse.y)*50;
-						lastMouseX=mouse.x;
-						lastMouseY=mouse.y;
-						console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
-						if(currentApp=="sm"){
-							statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-							statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
-						}	
-						if(currentApp=="fm"){
-							fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
-							fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
-						}	
-						syncObjectsToJson();
-						displayObjects[globalController.selectedObject].updateCorners();
+						if(isMaskMode==false){
+							mouseVelX=(lastMouseX-mouse.x)*50;
+							mouseVelY=(lastMouseY-mouse.y)*50;
+							lastMouseX=mouse.x;
+							lastMouseY=mouse.y;
+							console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+							if(currentApp=="sm"){
+								statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+								statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+							}	
+							if(currentApp=="fm"){
+								fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeX"+listOfCornerVertices[selectedVertice]]+mouseVelX;
+								fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]=fm_statesArray[globalController.selectedObject]["VerticeY"+listOfCornerVertices[selectedVertice]]-mouseVelY;	
+							}	
+							syncObjectsToJson();
+							displayObjects[globalController.selectedObject].updateCorners();
+						}
+						if(isMaskMode==true){
+							mouseVelX=(lastMouseX-mouse.x)*15;
+							mouseVelY=(lastMouseY-mouse.y)*15;
+							lastMouseX=mouse.x;
+							lastMouseY=mouse.y;
+							console.log("mouseVelX:"+mouseVelX+" mouseVelY:"+mouseVelY);
+							maskHandleState[selectedMaskHandle].x=maskHandleState[selectedMaskHandle].x+mouseVelX
+							maskHandleState[selectedMaskHandle].y=maskHandleState[selectedMaskHandle].y+mouseVelY;
+							drawMaskCanvas();
+							syncObjectsToJson();
+						}
 					}
 				}
 
@@ -2035,21 +2254,33 @@
 					if ( SELECTED ) {
 						
 						if ( raycaster.ray.intersectPlane( plane, intersection ) ) {
-							if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
-								console.log(SELECTED.name)
-								SELECTED.position.copy(intersection.sub( offset ));
-								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
-								SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
-								SELECTED.parent.geometry.verticesNeedUpdate = true;
-								if(currentApp=="sm"){
-									statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-									statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
-								}	
-								if(currentApp=="fm"){
-									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
-									fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
-								}		
-								SELECTED.parent.updateCorners();	
+							if(isMaskMode==false){
+								if (SELECTED.name.indexOf('vertice') != -1 && SELECTED.name.indexOf('corner') == -1) {
+									console.log(SELECTED.name)
+									SELECTED.position.copy(intersection.sub( offset ));
+									SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].x=SELECTED.position.x;
+									SELECTED.parent.geometry.vertices[SELECTED.name.substring(SELECTED.name.indexOf("ce")+2,SELECTED.name.length)].y=SELECTED.position.y;
+									SELECTED.parent.geometry.verticesNeedUpdate = true;
+									if(currentApp=="sm"){
+										statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+										statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+									}	
+									if(currentApp=="fm"){
+										fm_statesArray[parseInt(globalController.selectedObject)]["VerticeX"+SELECTED.vertNum]=SELECTED.position.x;						
+										fm_statesArray[parseInt(globalController.selectedObject)]["VerticeY"+SELECTED.vertNum]=SELECTED.position.y;	
+									}		
+									SELECTED.parent.updateCorners();	
+								}
+							}
+							if(isMaskMode==true){
+								if(SELECTED.name.indexOf('maskHandle') != -1){
+									console.log(SELECTED.name);
+									SELECTED.position.copy(intersection.sub( offset ));
+									maskHandleState[SELECTED.num].x=SELECTED.position.x;
+									maskHandleState[SELECTED.num].y=SELECTED.position.y*-1;
+									drawMaskCanvas();
+									syncObjectsToJson();
+								}
 							}
 						}
 						return;
@@ -2087,14 +2318,22 @@
 						container.style.cursor = 'move';
 					}
 					if (SELECTED) {
-						if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
-							// console.log(SELECTED)
-							SELECTED.parent.updateCorners();
+						if(isMaskMode==false){
+							if (SELECTED.isCorner==true && globalController.mappingMode<.5) {
+								// console.log(SELECTED)
+								SELECTED.parent.updateCorners();
 
-							var listOfCornerVertices=[4,0,20,24];
-							selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
-							// console.log("Selected Vertice:"+selectedVertice);
-							highlightSelectedVertice();
+								var listOfCornerVertices=[4,0,20,24];
+								selectedVertice=listOfCornerVertices.indexOf(SELECTED.vertNum);
+								// console.log("Selected Vertice:"+selectedVertice);
+								highlightSelectedVertice();
+							}
+						}
+						if(isMaskMode==true){
+							if(SELECTED.name.indexOf('maskHandle') != -1){
+								selectedMaskHandle=SELECTED.num;
+								highlightSelectedMaskHandle();
+							}
 						}
 					}
 				}
@@ -2114,6 +2353,28 @@
 				container.style.cursor = 'auto';
 			}
 				
+			function drawMaskCanvas(){
+				context=document.getElementById('maskCanvas').getContext("2d");
+				context.clearRect(0,0,innerWidth,innerHeight);
+				context.fillStyle = '#f00';
+				context.beginPath();
+				var scaleFactor=4;
+				var offsetY=130;
+				var offsetX=50;
+				context.moveTo(2*maskHandleState[0].x/scaleFactor+offsetX, 2*maskHandleState[0].y/scaleFactor+offsetY);
+				for(var x=1;x<maskHandleState.length;x++){
+					context.lineTo(2*maskHandleState[x].x/scaleFactor+offsetX,2*maskHandleState[x].y/scaleFactor+offsetY);
+				}
+				context.lineTo(2*maskHandleState[0].x/scaleFactor+offsetX,2*maskHandleState[0].y/scaleFactor+offsetY);
+				context.closePath();
+				context.fill();
+
+				tempData=context.getImageData(0,0,256,256).data;
+				dataTex = new THREE.DataTexture(tempData, 256, 256);
+				dataTex.needsUpdate = true;
+				changeMask(3);
+			}
+			
 			function animate() {
 			    // if(painterController.ColorMix != 0){
 				// 	colorCounter=colorCounter+painterController.ColorRate
@@ -2161,7 +2422,7 @@
 					globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
 					globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
 					globalState.SavedByController=true;
-					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState})
+					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState, "maskHandles": maskHandleState})
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
 				}else{				
@@ -2193,6 +2454,7 @@
 				xmlhttp.onload = function(e){
 
 					globalState=JSON.parse(xmlhttp.response).global;
+					maskHandleState=JSON.parse(xmlhttp.response).maskHandles;
 					if(globalState.SavedByController==false){
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
@@ -2205,6 +2467,13 @@
 							}						
 						}
 						statesArray=temp;
+
+						var temp2=JSON.parse(xmlhttp.response).maskHandles;
+						for(var x=0; x<numMaskHandles; x++){
+							temp2[x].x=temp2[x].x/maskControllerScalingFactor;
+							temp2[x].y=temp2[x].y/maskControllerScalingFactor;
+						}
+						maskHandleState=temp2;
 					}else{
 						statesArray=JSON.parse(xmlhttp.response).storage
 					}			
@@ -2230,6 +2499,17 @@
 				}
 			}	
 			
+			function resetMaskHandles(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/DefaultMaskData.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					maskHandleState=JSON.parse(xmlhttp.response).maskHandles;
+					syncObjectsToJson();
+					drawMaskCanvas();
+				}
+			}	
+
 			function saveMapForAllPresets(destinationPresetNumber){
 				if(destinationPresetNumber<9){
 					var xmlhttp=new XMLHttpRequest();
@@ -2247,6 +2527,12 @@
 							tempAllStates.storage[x].Visible=statesArray[x].Visible;
 							tempAllStates.storage[x].Shader=statesArray[x].Shader;
 						}
+
+						for(var x=0; x<numMaskHandles; x++){
+							tempAllStates.maskHandles[x].x=maskHandleState[x].x;
+							tempAllStates.maskHandles[x].y=maskHandleState[x].y;
+						}
+						
 						tempAllStates.global.SavedByController=true;
 						// tempAllStates.global.DMX_X1=globalState.DMX_X1;
 						// tempAllStates.global.DMX_Y1=globalState.DMX_Y1;
@@ -2466,6 +2752,7 @@
 					document.getElementById("mapping_mode_right_border").style.display="none";
 				}
 				function showMapping(){
+					drawMaskCanvas();
 					document.getElementById('mapping_page').style.display='block';
 					renderer.domElement.style.display="block";
 					renderer.domElement.style.zIndex=0;
@@ -2477,15 +2764,49 @@
 						document.getElementById("mapping-controls-selected-shader").style.display="block"
 						document.getElementById("mapping-controls-grid-container").style.gridTemplateColumns="10% 5% 5% 5% 5% 10% 10% 10% 10% 20% 10%"
 						document.getElementById("duplicateSaveMap").style.display="block"
-						document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 40%"
+						if(isMaskMode==true){
+							document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
+						}else{
+							document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 10% 10% 10% 10% 20% 20%"
+						}
 						document.getElementById('VJ_Button').style.backgroundColor='darkblue';
+						if(isMaskMode==true){
+							document.getElementById("selectMaskHandle1").style.display="block";
+							document.getElementById("selectMaskHandle2").style.display="block";
+							document.getElementById("selectVertice1").style.display="none";	
+							document.getElementById("selectVertice2").style.display="none";	
+							document.getElementById("selectVertice3").style.display="none";	
+							document.getElementById("selectVertice4").style.display="none";			
+							document.getElementById("resetMaskHandles").style.display="block";
+							document.getElementById("duplicateSaveMap").style.display="none";				
+						}else{
+							document.getElementById("selectMaskHandle1").style.display="none";
+							document.getElementById("selectMaskHandle2").style.display="none";
+							document.getElementById("selectVertice1").style.display="block";	
+							document.getElementById("selectVertice2").style.display="block";	
+							document.getElementById("selectVertice3").style.display="block";	
+							document.getElementById("selectVertice4").style.display="block";	
+							document.getElementById("resetMaskHandles").style.display="none";
+							document.getElementById("duplicateSaveMap").style.display="block";	
+						}
+						document.getElementById("maskMapModeButton").style.display="block";
 					}
 					if(currentApp=="fm"){
 						document.getElementById("mapping-controls-selected-shader").style.display="none"
 						document.getElementById("mapping-controls-grid-container").style.gridTemplateColumns="10% 5% 5% 5% 5% 10% 20% 10% 20% 10%"
 						document.getElementById("duplicateSaveMap").style.display="none"
+						document.getElementById("resetMaskHandles").style.display="none";
 						document.getElementById("mapping-controls-grid-container-top").style.gridTemplateColumns="20% 20% 20% 20% 20%"
 						document.getElementById('FM_Button').style.backgroundColor='darkblue';
+						if(isMaskMode==true){
+							document.getElementById("selectMaskHandle1").style.display="none";
+							document.getElementById("selectMaskHandle2").style.display="none";
+							document.getElementById("selectVertice1").style.display="block";	
+							document.getElementById("selectVertice2").style.display="block";	
+							document.getElementById("selectVertice3").style.display="block";	
+							document.getElementById("selectVertice4").style.display="block";	
+						}
+						document.getElementById("maskMapModeButton").style.display="none";
 					}
 				}
 			}
@@ -2527,7 +2848,7 @@
 					}
 					gridContainer.appendChild(gridItem);
 				}
-				for(var x=1; x<=7; x++){
+				for(var x=1; x<=8; x++){
 					var maskItem=document.createElement('button')
 					maskItem.id="MaskItem"+x+"_Deck"+deck;
 					maskItem.deck=deck;
@@ -2613,7 +2934,7 @@
 			}
 
 			function selectMask(maskNumber,deck){
-				for(var x=1; x<=7; x++){
+				for(var x=1; x<=8; x++){
 					if(parseInt(maskNumber)==x){
 						document.getElementById("MaskItem"+x+"_Deck"+deck).style.opacity=".2"
 					}else{
@@ -2673,14 +2994,14 @@
 						document.getElementById("GridItem"+x+"_DeckB").style.opacity="1.0"
 					}
 				}
-				for(var x=1; x<=7; x++){
+				for(var x=1; x<=8; x++){
 					if(parseInt(globalState.MaskA)==x){
 						document.getElementById("MaskItem"+x+"_DeckA").style.opacity=".2"
 					}else{
 						document.getElementById("MaskItem"+x+"_DeckA").style.opacity="1.0"
 					}
 				}
-				for(var x=1; x<=7; x++){
+				for(var x=1; x<=8; x++){
 					if(parseInt(globalState.MaskB)==x){
 						document.getElementById("MaskItem"+x+"_DeckB").style.opacity=".2"
 					}else{
@@ -2752,6 +3073,16 @@
 				}
 			}
 		
+			function highlightSelectedMaskHandle(){
+				for(var x=0; x<maskHandleObjects.length; x++){
+					if(parseInt(x)==parseInt(selectedMaskHandle)){
+						maskHandleObjects[x].material.color={"r":1.0, "g":0.0, "b":1.0}
+					}else{
+						maskHandleObjects[x].material.color={"r":1.0, "g":1.0, "b":1.0}
+					}
+				}
+			}
+
 			function setCurrentFMScene(sceneNum, buttonElem){
 				var xmlhttp=new XMLHttpRequest();
 				currentFMScene=sceneNum;
@@ -2845,4 +3176,3 @@
 		</script>
 	</body>
 </html>
-
