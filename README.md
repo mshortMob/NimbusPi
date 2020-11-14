@@ -2,7 +2,7 @@
 
 NimbusPi is a collection of projection mapping, VJ, and lighting design tool built for the Raspberry Pi. 
 
-![NimbusPi Demo Screenshot](http://www.nimbuslaboratory.com/static/NimbusPi/NimbusPi_Demo_Screenshot_v4.png) 
+![NimbusPi Demo Screenshot](http://www.nimbuslaboratory.com/static/NimbusPi/NimbusPi_Demo_Screenshot_v5.png) 
 
 ## Overview
 NimbusPi images currently contains 3 separate applications - ShaderMapper, FlowMapper, and OrbitMapper. You can easily switch between these applications, but only 1 may be run at a time. See the feature sets for each below:
@@ -30,7 +30,7 @@ Just download the latest image [here](http://www.nimbuslaboratory.com/static/Nim
 
 ## Usage Instructions
 
-![NimbusPi User Guide](http://www.nimbuslaboratory.com/static/NimbusPi/NimbusPi%20User%20Guide_v7.jpg) 
+![NimbusPi User Guide](http://www.nimbuslaboratory.com/static/NimbusPi/NimbusPi%20User%20Guide_v8.jpg) 
 
 ### DMX/ArtNet/Wifi Details
 
