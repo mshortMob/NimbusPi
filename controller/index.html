@@ -977,6 +977,7 @@
 			initGlobalVars();
 			
 			function initGlobalVars(){
+				lastSaveStateRequestBody="";
 				maskControllerScalingFactor=1.5;
 				haveDrawnMaskHandles=false;
 				isMaskMode=false;
@@ -2422,7 +2423,7 @@
 					globalState.DMX_Pattern_Rate=document.getElementById("slider3").value/1000;
 					globalState.VolumeThreshold=document.getElementById("slider4").value/1000;
 					globalState.SavedByController=true;
-					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState, "maskHandles": maskHandleState})
+					var requestBody=JSON.stringify({"storage" : statesArray, "global": globalState, "maskHandles": maskHandleState});
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
 				}else{				
@@ -2430,14 +2431,26 @@
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
 				}
-				xmlhttp.send(requestBody);
-				xmlhttp.onload = function(e){
-					console.log(xmlhttp.response.status);
+				if(lastSaveStateRequestBody!=requestBody){
+					xmlhttp.send(requestBody);
+					xmlhttp.onload = function(e){
+						// console.log(xmlhttp.response.status);
+						setTimeout(function(){
+							if(isMidPresetChange==false){
+								setTimeout(function(){
+									saveState();
+								}, 10);
+							}
+						}, 100);
+					}
+					lastSaveStateRequestBody=requestBody;
+					console.log("sent controller data");
+				}else{
 					setTimeout(function(){
 						if(isMidPresetChange==false){
 							setTimeout(function(){
 								saveState();
-							}, 100);
+							}, 10);
 						}
 					}, 200);
 				}
