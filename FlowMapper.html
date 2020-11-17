@@ -146,6 +146,7 @@
 			}	
 			
 			function initGlobalVars(){
+				lastObjectVerticeData="";
 				mouseLastMovedTime=new Date().getTime();
 				setInterval(function(){
 					if( ( (new Date().getTime())-mouseLastMovedTime ) > 5000 ){
@@ -372,25 +373,28 @@
 				xmlhttp.open("GET", "php/read.php?fn=flowMapperPresets/Preset_1.txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
-					statesArray=JSON.parse(xmlhttp.response).storage
-					presetsArray=JSON.parse(xmlhttp.response).storage2
-					controllerSceneRate=JSON.parse(xmlhttp.response).SceneRate;
-					if(JSON.parse(xmlhttp.response).SavedByController==true){
-						var temp=JSON.parse(xmlhttp.response).storage;
-						for(var x=0; x<4; x++){
-							for(var y=0; y<25; y++){
-								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*2;
-								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*2;
-							}						
-						}
-						statesArray=temp;
-					}else{
+					if(lastObjectVerticeData!=xmlhttp.response){
 						statesArray=JSON.parse(xmlhttp.response).storage
-					}
+						presetsArray=JSON.parse(xmlhttp.response).storage2
+						controllerSceneRate=JSON.parse(xmlhttp.response).SceneRate;
+						if(JSON.parse(xmlhttp.response).SavedByController==true){
+							var temp=JSON.parse(xmlhttp.response).storage;
+							for(var x=0; x<4; x++){
+								for(var y=0; y<25; y++){
+									temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*2;
+									temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*2;
+								}						
+							}
+							statesArray=temp;
+						}else{
+							statesArray=JSON.parse(xmlhttp.response).storage
+						}
 
-					updateControlsView();
-					syncObjectsToJson(true);
-					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
+						updateControlsView();
+						syncObjectsToJson(true);
+						for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
+						lastObjectVerticeData=xmlhttp.response;
+					}
 				}
 			}
 			
