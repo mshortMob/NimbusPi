@@ -190,6 +190,7 @@ void main()	{
 			initGlobalVars();
 
 			function initGlobalVars(){
+				lastObjectVerticeData="";
 				maskControllerScalingFactor=1.5;
 				haveDrawnMaskHandles=false;
 				isMaskMode=false;
@@ -635,39 +636,44 @@ void main()	{
 				xmlhttp.open("GET", "php/read.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
-					globalState=JSON.parse(xmlhttp.response).global;
-					if(globalState.SavedByController==true){
+					if(lastObjectVerticeData!=xmlhttp.response){
 
-						var temp=JSON.parse(xmlhttp.response).storage;
-						for(var x=0; x<4; x++){
-							for(var y=0; y<25; y++){
-								temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*2;
-								temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*2;
-								// temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]+window.innerWidth*.04;
-								// temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]-window.innerHeight*.09;
-							}						
-						}
-						statesArray=temp;
+						globalState=JSON.parse(xmlhttp.response).global;
+						if(globalState.SavedByController==true){
 
-						var temp2=JSON.parse(xmlhttp.response).maskHandles;
-						for(var x=0; x<numMaskHandles; x++){
-							temp2[x].x=temp2[x].x*maskControllerScalingFactor;
-							temp2[x].y=temp2[x].y*maskControllerScalingFactor;
+							var temp=JSON.parse(xmlhttp.response).storage;
+							for(var x=0; x<4; x++){
+								for(var y=0; y<25; y++){
+									temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]*2;
+									temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]*2;
+									// temp[x]["VerticeX"+y]=temp[x]["VerticeX"+y]+window.innerWidth*.04;
+									// temp[x]["VerticeY"+y]=temp[x]["VerticeY"+y]-window.innerHeight*.09;
+								}						
+							}
+							statesArray=temp;
+
+							var temp2=JSON.parse(xmlhttp.response).maskHandles;
+							for(var x=0; x<numMaskHandles; x++){
+								temp2[x].x=temp2[x].x*maskControllerScalingFactor;
+								temp2[x].y=temp2[x].y*maskControllerScalingFactor;
+							}
+							maskHandleState=temp2;
+							
+						}else{
+							statesArray=JSON.parse(xmlhttp.response).storage
 						}
-						maskHandleState=temp2;
-						
-					}else{
-						statesArray=JSON.parse(xmlhttp.response).storage
+
+						updateControlsView();
+						drawMaskCanvas();
+						syncObjectsToJson(true);
+						for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
+						uniforms1.mousey={ value: globalState.xyPadYA };
+						uniforms2.mousey={ value: globalState.xyPadYB };
+						uniforms1.mousex={ value: globalState.xyPadXA };
+						uniforms2.mousex={ value: globalState.xyPadXB };
+						lastObjectVerticeData=xmlhttp.response;
+						console.log("responded to controller data");
 					}
-
-					updateControlsView();
-					drawMaskCanvas();
-					syncObjectsToJson(true);
-					for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
-					uniforms1.mousey={ value: globalState.xyPadYA };
-					uniforms2.mousey={ value: globalState.xyPadYB };
-					uniforms1.mousex={ value: globalState.xyPadXA };
-					uniforms2.mousex={ value: globalState.xyPadXB };
 				}
 			}
 
