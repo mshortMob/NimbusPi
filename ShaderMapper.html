@@ -627,7 +627,7 @@ void main()	{
 			function initSlaveMode(){
 				if(slaveModeInterval==-1){
 					console.log("starting slaveModeInterval");
-					slaveModeInterval=setInterval(function(){getControllerData();getCurrentPresetNumber();},  200);
+					slaveModeInterval=setInterval(function(){getControllerData();getCurrentPresetNumber();},  100);
 				}
 			}
 
