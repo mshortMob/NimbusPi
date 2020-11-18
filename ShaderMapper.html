@@ -190,6 +190,7 @@ void main()	{
 			initGlobalVars();
 
 			function initGlobalVars(){
+				haveChangedLocalSettingsInControllerMode=true;
 				lastObjectVerticeData="";
 				maskControllerScalingFactor=1.5;
 				haveDrawnMaskHandles=false;
@@ -627,16 +628,17 @@ void main()	{
 			function initSlaveMode(){
 				if(slaveModeInterval==-1){
 					console.log("starting slaveModeInterval");
-					slaveModeInterval=setInterval(function(){getControllerData();getCurrentPresetNumber();},  200);
+					getControllerData(true);
+					slaveModeInterval=setInterval(function(){getControllerData(false);getCurrentPresetNumber();},  200);
 				}
 			}
 
-			function getControllerData(){
+			function getControllerData(isFirstRun){
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("GET", "php/read.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
-					if(lastObjectVerticeData!=xmlhttp.response){
+					if(lastObjectVerticeData!=xmlhttp.response || isFirstRun || haveChangedLocalSettingsInControllerMode){
 
 						globalState=JSON.parse(xmlhttp.response).global;
 						if(globalState.SavedByController==true){
@@ -672,6 +674,7 @@ void main()	{
 						uniforms1.mousex={ value: globalState.xyPadXA };
 						uniforms2.mousex={ value: globalState.xyPadXB };
 						lastObjectVerticeData=xmlhttp.response;
+						haveChangedLocalSettingsInControllerMode=false;
 						// console.log("responded to controller data");
 					}
 				}
@@ -810,6 +813,7 @@ void main()	{
 			}
 			
 			function updateControlsValues(){  
+				haveChangedLocalSettingsInControllerMode=true;
 				for (var i in gui.__folders.ObjectControls.__controllers) {
 				  statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property]=objectController[gui.__folders.ObjectControls.__controllers[i].property];
 				}
@@ -822,6 +826,7 @@ void main()	{
 			}
 			
 			function syncObjectsToJson(includGlobal){
+				haveChangedLocalSettingsInControllerMode=true;
 				for(var x=0;x<displayObjects.length;x++){
 					displayObjects[x].setState(statesArray[x])
 					displayObjects[x].hideChildren();

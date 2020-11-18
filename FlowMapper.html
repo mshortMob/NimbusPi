@@ -146,6 +146,7 @@
 			}	
 			
 			function initGlobalVars(){
+				haveChangedLocalSettingsInControllerMode=true;
 				lastObjectVerticeData="";
 				mouseLastMovedTime=new Date().getTime();
 				setInterval(function(){
@@ -345,7 +346,8 @@
 			function initSlaveMode(){
 				if(slaveModeInterval==-1){
 					console.log("starting slaveModeInterval");
-					slaveModeInterval=setInterval(function(){getControllerData();getCurrentSceneNumber();},  200);
+					getControllerData(true);
+					slaveModeInterval=setInterval(function(){getControllerData(false);getCurrentSceneNumber();},  200);
 				}
 			}
 			
@@ -368,12 +370,12 @@
 				}
 			}
 
-			function getControllerData(){
+			function getControllerData(isFirstRun){
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("GET", "php/read.php?fn=flowMapperPresets/Preset_1.txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
-					if(lastObjectVerticeData!=xmlhttp.response){
+					if(lastObjectVerticeData!=xmlhttp.response || isFirstRun || haveChangedLocalSettingsInControllerMode){
 						statesArray=JSON.parse(xmlhttp.response).storage
 						presetsArray=JSON.parse(xmlhttp.response).storage2
 						controllerSceneRate=JSON.parse(xmlhttp.response).SceneRate;
@@ -394,6 +396,8 @@
 						syncObjectsToJson(true);
 						for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
 						lastObjectVerticeData=xmlhttp.response;
+						haveChangedLocalSettingsInControllerMode=false;
+						// console.log("responded to controller data");
 					}
 				}
 			}
@@ -608,6 +612,7 @@
 			}
 			
 			function updateControlsValues(){  
+				haveChangedLocalSettingsInControllerMode=true;
 				for (var i in gui.__folders.ObjectControls.__controllers) {
 				  statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property]=objectController[gui.__folders.ObjectControls.__controllers[i].property];
 				}
@@ -619,6 +624,7 @@
 			}
 			
 			function syncObjectsToJson(){
+				haveChangedLocalSettingsInControllerMode=true;
 				for(var x=0;x<displayObjects.length;x++){
 					displayObjects[x].setState(statesArray[x])
 					displayObjects[x].hideChildren();
