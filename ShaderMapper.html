@@ -1931,8 +1931,33 @@ void main()	{
 					}else{
 						setTimeout(function(){
 							getCurrentApp();
-						},2000);
+							getShadersNeedReload();
+						},3000);
 					}
+				}
+			}
+
+			function getShadersNeedReload(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/shadersNeedReload.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					if(xmlhttp.response=="true"){
+						loadShaderPreset(1);
+						loadShaderPreset(2);
+						console.log("reload shaders");
+						resetShadersNeedReload();
+					}
+				}
+			}
+
+			function resetShadersNeedReload(){
+				var requestBody="false";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=globalPresets/shadersNeedReload.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Wrote 'false' to shadersNeedReload");
 				}
 			}
 		

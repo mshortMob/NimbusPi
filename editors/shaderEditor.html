@@ -71,7 +71,7 @@
 				ShaderEditorFolder=gui.addFolder( "ShaderEditor" );
 				ShaderEditorFolder.open();
 				ShaderEditorFolder.add(globalController, "shaderToEdit", 1, 10, 1 ).onChange(function(){globalController.shaderToEdit=parseInt(globalController.shaderToEdit);loadSelectedShader(); });		
-                ShaderEditorFolder.add({ 'Save Preset':function(){ saveState() }},'Save Preset');
+                ShaderEditorFolder.add({ 'Save Preset':function(){ saveState(); setShadersNeedReload(); }},'Save Preset');
 				ShaderEditorFolder.add({ 'Save As New Preset':function(){ addNewShader() }},'Save As New Preset');
                 ShaderEditorFolder.add({ 'Back to Main':function(){ window.location.replace("http://"+location.hostname+"/index.html"); }},'Back to Main');
 				globalFolder=gui.addFolder( "Global Settings" );
@@ -80,6 +80,16 @@
 				globalFolder.add({ 'Use Pi3b':function(){ writeCanvasYFlip(-1); }},'Use Pi3b');
 				globalFolder.add({ 'Reboot':function(){ rebootPi(); }},'Reboot');
 									
+			}
+
+			function setShadersNeedReload(){
+				var requestBody="true";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/shadersNeedReload.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Wrote 'false' to shadersNeedReload");
+				}
 			}
 
             function getNumberOfShaders(){
