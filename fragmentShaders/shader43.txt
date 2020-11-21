@@ -1,5 +1,7 @@
 precision mediump float;
 precision mediump int;
+uniform float mousex;
+uniform float mousey;
 
 uniform float time;
 uniform float brightness;
@@ -9,6 +11,23 @@ varying vec2 vUv;
 uniform sampler2D maskTexture;
 
 #define R(t) mat2(cos(3. * t + vec4(0, 33, 11, 0)))
+
+vec3 fx1(vec3 inCol){
+    vec3 out1=inCol;
+    out1=smoothstep(out1, vec3(0.), vec3(.8) );
+    out1=vec3(out1.r+out1.g+out1.b);
+    if(mousex > .2) out1=mix(inCol, vec3(inCol.g*4., inCol.b, inCol.r)*out1*1., mousex);
+    if(mousex <= .2) out1=inCol;
+    return out1;
+}
+
+vec3 fx2(vec3 inCol){
+    vec3 out1=inCol;
+    if(mousey > .3) out1=mix(inCol, fract(inCol*.5), mousey);
+    if(mousey <= .3) out1=inCol;
+    return out1;
+}
+
 void main()
 {
     vec2 u = .5-1.0*vUv;
@@ -28,5 +47,5 @@ void main()
     vec3 mask = texture2D( maskTexture, vUv ).rgb;
     p.b=p.r*(u.x+sin(time/2.0));
     p.g=p.g*u.y;
-    gl_FragColor = vec4(p*1.5, mask.r*brightness);
+    gl_FragColor = vec4(fx2(fx1(vec3(p)))*1.5, mask.r*brightness);
 }

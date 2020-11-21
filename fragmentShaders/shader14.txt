@@ -3,6 +3,8 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
@@ -24,27 +26,29 @@ float trace(vec3 o, vec3 r) {
 	return t;
 }
 
-void main( void ) {
-
-	vec2 p = ( -1.0 - (8.+ 16. * abs(audioVolume))  )/2.0 - ( -1.0 - (8.+ 16. * abs(audioVolume))  ) * vUv;
+vec3 getShader1(){
+	vec2 p = ( -1.0 - (8.+ 16. * abs(.65))  )/2.0 - ( -1.0 - (8.+ 16. * abs(.65))  ) * vUv;
 	p=p*p*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
 	p.y*= .1;
 	p.x*= .1;
-
-
 	vec2 uv = p;
-
 	uv = uv*2.0 - 1.0;
 	vec3 r = normalize(vec3(uv, 1.0));
-	
 	float the = time * 0.25;
 	r.xz *= mat2(cos(the), -sin(the), sin(the), cos(the));
 	vec3 o = vec3(0.0, time, time);
-	
 	float t = trace(o,r);
-	float fog = 1.0 / (1.0 + t*t*0.1);
+	float fog = 1. / (1.0 + t*t*0.035);
 	vec3 fc = vec3(0.,fog,fog);
+        return fc*1.2;
+}
+
+void main( void ) {
+        vec3 s1=getShader1();
+        vec3 temp2=smoothstep( s1, vec3(.0,.0,.0), vec3(.9-.6*mousey) );
+        vec3 out1=s1+vec3(temp2.b, temp2.b, temp2.b);
+        vec3 out2=mix( out1, 2.*vec3(out1.r, 1.-out1.g, 1.-out1.b), mousex);
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( fc, mask.r*brightness );
+	gl_FragColor = vec4( out2, mask.r*brightness );
 
 }

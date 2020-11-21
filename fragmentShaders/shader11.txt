@@ -13,19 +13,34 @@ uniform sampler2D maskTexture;
 
 vec3 hueRotate(vec3 colorIn){
     vec3 colorOut= vec3(colorIn.b, colorIn.r, colorIn.g);
-    colorOut=mix(colorIn, colorIn*colorOut, mousex );
+    colorOut=mix(colorIn, colorOut, mousex );
     return colorOut;
 }
 
-
-
-void main()	{
+vec3 getShader1(){
 	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(audioVolume))  ) * vUv;
 	float horStripes = abs( sin( position.y/1.0 + 3.14/1.5 + time / .75 ) );
 	float vertStripes = abs( sin( position.x/1.0 + 3.14/1.5 + time / .75 ) );
 	vertStripes=1.0-(2.0*vertStripes*(1.0-abs(audioVolume)));
 	horStripes=1.0-(2.0*horStripes*abs(audioVolume));
 	float checkerGrid=horStripes+vertStripes;
+        return vec3(vertStripes, vertStripes, horStripes);
+}
+
+vec3 getShader2(){
+	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(audioVolume))  ) * (1.-vUv);
+	float horStripes = abs( sin( position.y/1.0 + 3.14/1.5 + time / .75 ) );
+	float vertStripes = abs( sin( position.x/1.0 + 3.14/1.5 + time / .75 ) );
+	vertStripes=1.0-(2.0*vertStripes*(1.0-abs(audioVolume)));
+	horStripes=1.0-(2.0*horStripes*abs(audioVolume));
+	float checkerGrid=horStripes+vertStripes;
+        return vec3(vertStripes, vertStripes, horStripes);
+}
+
+
+
+void main()	{
+
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( hueRotate(vec3(vertStripes, vertStripes, horStripes)), mask.r*brightness );
+	gl_FragColor = vec4( hueRotate(getShader1()+getShader2()*mousey), mask.r*brightness );
 }

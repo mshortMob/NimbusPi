@@ -3,10 +3,25 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
+
+vec3 fx1(vec3 inCol){
+    vec3 out1=inCol;
+    if (mousex > .2) out1=mix(out1, vec3(out1.r+out1.g+out1.b)*.5, mousex);
+    return out1;
+}
+
+vec3 fx2(vec3 inCol){
+    vec3 out1=inCol;
+    if (mousey > .3) out1=mix(out1, fract(out1*4.), mousey/2.);
+    return out1;
+}
+
 
 vec3 lungth(vec2 x,vec3 c){
        return vec3(length(x+c.r),length(x+c.g),length(c.b));
@@ -38,5 +53,5 @@ void main( void ) {
 	color += 	mix(c2, 			vec3(0.1, 0.2, 0.2),  pow(c, 0.1)) * 0.75;
         color *=dd;
         vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( color.b, color.g*0.5, color.r, mask.r*brightness);
+	gl_FragColor = vec4( fx2(fx1(1.5*vec3(color.b, color.g*0.5, color.r))), mask.r*brightness);
 }

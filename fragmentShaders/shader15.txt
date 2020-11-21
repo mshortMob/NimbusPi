@@ -3,18 +3,59 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
-void main( void ) {
+vec3 getS1(){
 	vec3 col = vec3(0.0);
-	
 	col.r = vUv.x+sin(time);
-	col.b = vUv.y+cos(time);		
-	col.g = vUv.y+sin(time+1.57/2.0);
+	col.b = (1.-vUv.y)+cos(time);	
+	col.g = ((1.-vUv.y)+sin(time+1.57/2.0));
+        return col;
+}
+
+vec3 getS2(){
+	vec3 col = vec3(0.0);
+        col.r = abs( .5 * sin( vUv.x*4. + time / .75) );
+        col.r += abs( .5 * sin( (4.-vUv.x*4.) + time / .75) );
+	col.b = col.r;		
+	col.g = col.r;
+        return col;
+}
+
+vec3 getS3(){
+	vec3 col = vec3(0.0);
+	col.r = vUv.x+sin(time)*.5;
+	col.r += (1.-vUv.x)+sin(time)*.5;
+	col.b = (1.-vUv.y)+cos(time)*.5;	
+	col.b += (1.-vUv.y)+cos(time)*.5;	
+	col.g = ((1.-vUv.y)+sin(time+1.57/2.0))*.5;
+	col.g += ((1.-vUv.y)+sin(time+1.57/2.0))*.5;
+        return col;
+}
+
+vec3 getS4(){
+	vec3 col = vec3(0.0);
+        col.r = abs( .5 * sin( vUv.x*13.+ time / .75) ) ;
+        col.r += abs( .5 * sin( (13.-vUv.x*13.+ time / .75) ) );
+	col.b = col.r;		
+	col.g = col.r;
+        return col;
+}
+
+void main( void ) {
+        vec3 s1=getS1();
+        vec3 s2=getS2();
+        vec3 s3=getS3();
+        vec3 s4=getS4();
+        vec3 out1=mix(s1,(s2+s3)*.4,mousex);
+        vec3 out2=mix(out1, out1*s4/1.1, mousey);
+        if (mousey < .3) out2=out1;
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4(col,mask.r*brightness);
+	gl_FragColor = vec4(out2,mask.r*brightness);
 
 }

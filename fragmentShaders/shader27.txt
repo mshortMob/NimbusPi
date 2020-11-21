@@ -3,6 +3,8 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
@@ -18,9 +20,26 @@ vec2 trans(vec2 p){
     return q;
 }
 
+vec3 fx1(vec3 inCol){
+    vec3 out1=inCol;
+    out1=smoothstep(out1, vec3(0.), vec3(.92) );
+    out1=vec3(out1.r+out1.g+out1.b);
+    if(mousex > .2) out1=mix(inCol, inCol*out1*4., mousex);
+    if(mousex <= .2) out1=inCol;
+    return out1;
+}
+
+vec3 fx2(vec3 inCol){
+    vec3 out1=inCol;
+    if(mousey > .3) out1=mix(inCol, fract(inCol), mousey);
+    if(mousey <= .3) out1=inCol;
+    return out1;
+}
+
+
 void main()
 {
-    float t = fract(time*0.5);
+    float t = fract(time*1.5);
     float mode = 6.0;
     float s = -1.0;
     float speed = .02;
@@ -30,7 +49,7 @@ void main()
     p = max(p, 1.0/(1.0 - abs(p)));
     p.x = acos(abs(normalize(p).x));
     p.y = min(sin(p.x),cos(p.x))*length(p);
-    p += p/length(p)*(70.0*sin(time/30.))*s*speed;
+    p += p/length(p)*(70.0*sin(time/10.))*s*speed;
     
     float x = (max(abs(p.x),abs(p.y))==abs(p.x)) ? abs(p.x) : abs(p.y);
     float y = (min(abs(p.x),abs(p.y))==abs(p.y)) ? abs(p.y) : abs(p.x);
@@ -44,5 +63,5 @@ void main()
 	vec3 col = (s < 0.0) ? max(col0, mix(col0, col1, mode/7.0)) : min(col0, mix(col0, col1, mode/7.0));
 
     vec3 mask = texture2D( maskTexture, vUv ).rgb;
-    gl_FragColor = vec4(col.b, col.r/2.0, col.g, mask.r*brightness);
+    gl_FragColor = vec4(fx2(fx1(vec3(col.b, col.r/2.0, col.g))) , mask.r*brightness);
 }

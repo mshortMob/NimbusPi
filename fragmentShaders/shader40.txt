@@ -3,6 +3,8 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
@@ -24,19 +26,19 @@ void main() {
 	float T = time,
         d = max(dot(f, k), f.x);
 	
-	col += smoothstep(0.01, 0.0, abs(d - 0.248* abs(cos(time/8.0)) ));
-	col += smoothstep(0.01, 0.0, abs(d - 0.1* abs(cos(.8+time/7.0)) ));
-	col += smoothstep(0.01, 0.0, abs(d - 0.05* abs(cos(.8+time/12.0))  ));
+	col += smoothstep(0.01+.05*mousey, 0.0, abs(d - 0.248* abs(cos(time/8.0)) ));
+	col += smoothstep(0.01+.05*mousey, 0.0, abs(d - 0.1* abs(cos(.8+time/7.0)) ));
+	col += smoothstep(0.01+.05*mousey, 0.0, abs(d - 0.05* abs(cos(.8+time/12.0))  ));
 	
 	d = max(abs(f.x), abs(f.y));
 	
-	col += smoothstep(0.01, 0., abs(d - 0.17* abs(cos(time/10.0)) ));
-        col += smoothstep(0.01, 0., abs(d - 0.22* abs(cos(time/11.0)) ));
+	col += smoothstep(0.01+.05*mousex, 0., abs(d - 0.17* abs(cos(time/10.0)) ));
+        col += smoothstep(0.01+.05*mousex, 0., abs(d - 0.22* abs(cos(time/11.0)) ));
 
        col.r*=uv.y*abs(sin(time/2.0+0.0));
        col.g*=uv.y*abs(sin(time/2.0+2.09));
        col.b*=uv.y*abs(sin(time/2.0+4.18));
 
         vec3 mask = texture2D( maskTexture, vUv ).rgb;
-        gl_FragColor = vec4(col*4.5, mask.r*brightness);
+        gl_FragColor = vec4(vec3(col.r,col.g*.5,0.)*4.5, mask.r*brightness);
 }

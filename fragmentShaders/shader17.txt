@@ -3,6 +3,8 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
@@ -15,16 +17,52 @@ float circle(in vec2 _st, in float _radius){
                          dot(dist,dist)*4.0);
 }
 
-void main(){
+vec3 getS1(){
 	vec2 st = vUv;
-
-	float r1 = vec3(circle(st,.35*abs(sin(time/5.0)))).r;
-        float g1 = vec3(circle(st,.35*abs(cos(time/5.0)))).g;
+	float r1 = vec3(circle(st,.1*abs(sin(time/5.0)))).r;
+        float g1 = vec3(circle(st,.1*abs(cos(time/5.0)))).g;
 	float r2 = vec3(circle(st,1.25*abs(sin(time/5.0)))).r;
-        float g2 = vec3(circle(st,1.25*abs(cos(time/5.0)))).g;
+        float g2 = vec3(circle(st,1.75*abs(cos(time/5.0)))).g;
         float r=r2-r1;
         float g=g2-g1;
         r=r+1.5*r;
-	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( r, g, (abs(audioVolume)*1.0)-r-g, mask.r*brightness );
+        return vec3(r, g, 1.0-r-g);
 }
+
+vec3 getS2(){
+	vec2 st = vUv;
+	float r1 = vec3(circle(st,.1*abs(sin(time/4.0)))).r;
+        float g1 = vec3(circle(st,.1*abs(cos(time/4.0)))).g;
+	float r2 = vec3(circle(st,1.25*abs(sin(time/4.0)))).r;
+        float g2 = vec3(circle(st,1.75*abs(cos(time/4.0)))).g;
+        float r=r2-r1;
+        float g=g2-g1;
+        r=r+1.5*r;
+        return vec3(g, 1.0-r-g, r);
+}
+
+vec3 getS3(){
+	vec2 st = vUv;
+	float g1 = vec3(circle(st,.5*abs(sin(time/1.0)))).r;
+        float r1 = vec3(circle(st,.3*abs(cos(time/1.0)))).g;
+	float g2 = vec3(circle(st,1.05*abs(sin(time/1.0)))).r;
+        float r2 = vec3(circle(st,1.25*abs(cos(time/1.0)))).g;
+        float r=r2-r1;
+        float g=g2-g1;
+        r=r+1.5*r;
+        vec3 temp=vec3(g, 1.0-r-g, r);
+        return temp;
+}
+
+void main(){
+        vec3 s1=getS1();
+        vec3 s2=getS2();
+        vec3 s3=getS3();
+        if (mousex >.25) s2=s2*mousex;
+        if (mousey >.35) s3=s3*mousey;
+        if (mousex <=.25) s2=s2*0.;
+        if (mousey <=.25) s3=s3*0.;
+	vec3 mask = texture2D( maskTexture, vUv ).rgb;
+	gl_FragColor = vec4( s1+(s2)-(s3), mask.r*brightness );
+}
+

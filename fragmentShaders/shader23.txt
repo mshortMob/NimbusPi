@@ -3,6 +3,8 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
@@ -40,7 +42,7 @@ void main( void ) {
 	
 	len *= len2;
 	
-	float circle = 2.5 / length(vec2(sin(p.x + time), p.y));
+	float circle = .5+mousey*20. / length(vec2(sin(p.x + time), p.y));
 	circle += k2*1.5;
 	
 	len *= circle;
@@ -50,10 +52,10 @@ void main( void ) {
 	float vv3 = smoothstep(0.0,0.11,len+(sin(time*.5-(d-p.y*1.4))*0.09));
 	
 	vec3 color = vec3(0.8*vv3,vv2*0.75,vv*1.1)* vv;
-	
+	color=mix(color, vec3(1.-color.r, 1.-color.g, color.b), mousex);
 	
 	
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4(color,mask.r*brightness);
+	gl_FragColor = vec4(color*1.5,mask.r*brightness);
 
 }
