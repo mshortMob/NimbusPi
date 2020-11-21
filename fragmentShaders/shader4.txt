@@ -17,6 +17,15 @@ vec3 hueRotate(vec3 colorIn){
     return colorOut;
 }
 
+vec3 secondShader(){
+	vec2 position = ( -10.0 - (0.0 * abs(audioVolume))  )/2.0 - ( -10.0 - (0.0 * abs(audioVolume))  ) * vUv;
+	float red = 1.0 * ( sin( position.x * position.y - time / 1.1 ) );
+	float green = 1.0 * ( sin( position.x * position.y + time / 1.8 ) );
+	float blue = 1.0 * ( sin( position.x * position.y + time / 1.9) );
+        vec3 color = vec3(brightness*red*.7, green-.7, blue*1.2);
+        return color*mousey;
+}
+
 
 void main()	{
 	vec2 p = ( -8.0 - (6.0 * abs(audioVolume*0.))  )/2.0 - ( -8.0 - (6.0 * abs(audioVolume*0.))  ) * vUv;
@@ -33,5 +42,5 @@ void main()	{
 	}
 	vec3 col=vec3(2.7*sin(p.x*1.+p.y), 0.3*sin(2.0*p.y), 0.3*sin(2.0*p.y));
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor=vec4(hueRotate(vec3(col.r, col.g, col.r+abs(0.*audioVolume))), mask.r*brightness);
+	gl_FragColor=vec4(secondShader()*vec3(col.r, col.g, col.r+abs(.9))+hueRotate(vec3(col.r, col.g, col.r+abs(.9))), mask.r*brightness);
 }

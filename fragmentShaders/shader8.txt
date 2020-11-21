@@ -1,3 +1,4 @@
+#extension GL_OES_standard_derivatives : enable
 precision mediump float;
 precision mediump int;
 
@@ -10,25 +11,47 @@ uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
+float snow(vec2 uv,float scale)
+{
+	float w=smoothstep(1.,0.,-uv.y*(scale/10.));if(w<.0)return 0.;
+	 uv.y+=time*2./scale; 
+        vec2 uv2=vec2(0.);
+	for(int i=1;i<2;i++)
+	{
+		vec2 newp=uv/2.;
+		float speed = 30.;
+		newp.x+=0.8/float(i)*sin(float(i)*uv.y+time/(100.0/speed)+0.8*float(i))+1.0;
+		newp.y+=0.8/float(i)*sin(float(i)*uv.x+time/(100.0/speed)+0.3*float(i+10))-11.4;
+		uv2=newp;
+	}
 
-vec3 hueRotate(vec3 colorIn){
-    vec3 colorOut= vec3(colorIn.b, colorIn.r, colorIn.g);
-    colorOut=mix(colorIn, colorIn*colorOut, mousex );
-    return colorOut;
+	uv*=scale;vec2 s=floor(uv),f=fract(uv),p;float k=40.,d;
+	p=.5+.35*sin(11.*fract(sin((s+p+scale)*mat2(7,3,6,5))*5.))-f;d=length(p);k=min(d,k);
+	k=smoothstep(0.,k,sin(f.x+f.y)*0.003);
+
+	uv2*=scale;
+	uv2*=scale;vec2 s2=floor(uv2),f2=fract(uv2),p2;float k2=20.,d2;
+	p2=.5+.35*sin(11.*fract(sin((s2+p2+scale)*mat2(7,3,6,5))*5.))-f2;d2=length(p2);k2=min(d2,k2);
+	k2=smoothstep(0.,k2,sin(f2.x+f2.y)*0.003);
+
+
+    	return mix(k*w*1., k2*w*.8, mousey);
+}
+
+vec3 getShader1(){
+	//vec2 uv=(gl_FragCoord.xy*2.-resolution.xy)/min(resolution.x,resolution.y); 
+	vec2 uv=gl_FragCoord.xy/330.;
+	vec3 finalColor=vec3(0.);
+	float c=smoothstep(0.1,0.0,clamp(uv.y*.01+.99,0.,.99));
+	c+=snow(uv,5.)*.7;
+	c+=snow(uv,7.)*.6;
+	c+=snow(uv,9.)*.5;
+	c+=snow(uv,11.)*.4;
+        finalColor=(vec3(c*3.0*(1.-mousex),c*0.2,c*3.0*mousex));
+        return finalColor;
 }
 
 void main()	{
-	vec2 p = ( -1.0 - (6.0 * abs(audioVolume*mousey))  )/2.0 - ( -1.0 - (6.0 * abs(audioVolume*mousey))  ) * vUv;
-
-	for(int i=1;i<5;i++)
-	{
-		vec2 newp=p;
-		float speed = 60.0+30.0; // speed control
-		newp.x+=0.8/float(i)*sin(float(i)*p.y+time/(100.0/speed)+0.8*float(i))+1.0;
-		newp.y+=0.8/float(i)*sin(float(i)*p.x+time/(100.0/speed)+0.3*float(i+10))-11.4;
-		p=newp;
-	}
-	vec3 col=vec3( 0.0, sin(p.x*1.+p.y), 0.9*sin(12.0*p.y));
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor=vec4(hueRotate(col), mask.r*brightness);
+	gl_FragColor=vec4( getShader1()*500., mask.r*brightness);
 }

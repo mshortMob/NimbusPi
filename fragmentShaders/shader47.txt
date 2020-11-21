@@ -3,22 +3,50 @@ precision mediump int;
 
 uniform float time;
 uniform float brightness;
+uniform float mousex;
+uniform float mousey;
 
 uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
-void main() {
+vec3 fx1(vec3 inCol){
+    vec3 out1=inCol;
+    out1=mix(out1, vec3(out1.g,out1.b,out1.r), mousex);
+    return out1;
+}
+
+vec3 s1(){
 	vec2 p = .5-1.0*vUv*1.;
 	float a = atan(p.x,p.y);
 	float r = length(p*10.);
-	r = (sin(abs(4.5*sin(0.5*r-time*2.5)))) - .8*abs(sin(a*5.-time*2.5));
+	r = (sin(abs(4.5*sin(0.5*r-time*1.5)))) - .8*abs(sin(a*5.-time*1.5));
 	//r = fract(r+fract(a)+fract(r));
 	vec4 green = vec4(0.0, 0.0 - r * 0.8, 0.0, 1.0);
 	vec4 yellow = vec4(1.0 - r * 0.2, 1.0 - r * 0.2, 0.0, 0.0);
+	vec4 temp = vec4(yellow + (yellow - green) * r);
+        return vec3(temp.r, temp.g, temp.b);
+}
 
+vec3 s2(){
+	vec2 p = .5-1.0*vUv*1.;
+        p.x=1.-p.x;
+	float a = atan(p.x,p.y);
+	float r = length(p*10.);
+	r = (sin(abs(4.5*sin(0.5*r-time*1.5)))) - .8*abs(sin(a*5.-time*1.5));
+	//r = fract(r+fract(a)+fract(r));
+	vec4 green = vec4(0.0, 0.0 - r * 0.8, 0.0, 1.0);
+	vec4 yellow = vec4(1.0 - r * 0.2, 1.0 - r * 0.2, 0.0, 0.0);
+	vec4 temp = vec4(yellow + (yellow - green) * r);
+        return vec3(temp.g, temp.b, temp.r);
+}
+
+
+void main() {
         vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4(yellow + (yellow - green) * r);
-	gl_FragColor.a = 1.0*brightness*mask.r;
+        vec3 s1=s1();
+        vec3 s2=s2();
+        vec3 out1=mix(s1,s1*s2*.75,mousey);
+	gl_FragColor = vec4(fx1(out1), brightness*mask.r);
 }
 

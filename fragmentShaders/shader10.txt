@@ -11,18 +11,51 @@ varying vec2 vUv;
 uniform sampler2D maskTexture;
 
 
-vec3 hueRotate(vec3 colorIn){
-    vec2 position = ( -12.0 - (8.0 * -0.0 * abs(audioVolume))  ) * vUv;
-    position.x*=2.;
-    float red =( sin( position.y/.9 - time / .775) );
-    return mix(colorIn+vec3(red,red,red)*mousex, colorIn+vec3(red,0.,red)*mousex, mousey) ;
+vec2 hash(vec2 p)
+{
+    mat2 m = mat2(  13.85, 47.77,
+                    99.41, 88.48
+                );
+    return fract(sin(m*p) * 46738.29);
 }
 
-void main()	{
+float voronoi(vec2 p)
+{
+    vec2 g = floor(p);
+    vec2 f = fract(p);
+    float distanceToClosestFeaturePoint = 20.0;
+    for(int y = -1; y <= 1; y++)
+    {
+        for(int x = -1; x <= 1; x++)
+        {
+            vec2 latticePoint = vec2(x, y);
+            float currentDistance = distance(latticePoint + hash(g+latticePoint), f);
+            distanceToClosestFeaturePoint = min(distanceToClosestFeaturePoint, currentDistance);
+        }
+    }
+    return distanceToClosestFeaturePoint;
+}
+
+vec3 getShader1(){
+    vec2 uv = 1.25-2.5*vUv;
+    float offset = voronoi((1.-uv)*4.);
+    float t = 1.0/abs(((uv.x + sin(uv.y + time/2.)) + offset) * (3.0+35.*mousex));
+    float r = voronoi( (1.0-uv) * 1.0 ) * 10.0;
+    return vec3(3.0 * uv.y, 2.0, 1.0 * r) * t;
+}
+
+vec3 getShader2(){
 	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(audioVolume))  ) * vUv;
-	float red = abs( sin( position.y/5. + time / .175) );
-	float green = abs( sin( position.y/5. + 3.14/2. + time / .75 ) );
-	float blue = abs( sin( position.y/.5 + 3.14/1.5 + time / .75 ) );
-	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( hueRotate(vec3( 0.0, 0.0, 2.0*blue*audioVolume )), mask.r*brightness );
+	float red = abs( sin( position.y/200. + time / .75) );
+	float green = abs( sin( position.y/200. + 3.14/2. + time / 4.75 ) );
+	float blue = abs( sin( position.y/200. + 3.14/5.5 + time / 4.75 ) );
+        return vec3(red, green, blue)*mousey;
+}
+
+void main( void )
+{
+    vec3 s1=getShader1();
+    vec3 s2=getShader2();
+    vec3 mask = texture2D( maskTexture, vUv ).rgb;
+    gl_FragColor = vec4( mix(s1+s2, s2-s1, mousex), mask.r*brightness );
 }
