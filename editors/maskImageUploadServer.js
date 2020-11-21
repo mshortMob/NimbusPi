@@ -35,10 +35,13 @@ app.post(
   upload.single("file"),
   (req, res) => {
     const tempPath = req.file.path;
-    const targetPath = path.join(__dirname, "./image.png");
+    const targetPath = path.join(__dirname, "../masks/mask7.jpg");
 
-    if (path.extname(req.file.originalname).toLowerCase() === ".png") {
+    if (path.extname(req.file.originalname).toLowerCase() === ".jpg") {
       fs.rename(tempPath, targetPath, err => {
+        if (err) return handleError(err, res);
+      });
+      fs.copyFile(targetPath, "../controller/maskIcons/mask7.jpg", err => {
         if (err) return handleError(err, res);
 
         res
@@ -53,7 +56,7 @@ app.post(
         res
           .status(403)
           .contentType("text/plain")
-          .end("Only .png files are allowed!");
+          .end("Only .jpg files are allowed!");
       });
     }
   }
