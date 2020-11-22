@@ -7,52 +7,144 @@
 				background-color:black;
 			}
             #saveButton{
-                width:25%;
-                height:8%;
+                width:300px;
+                height:50px;
 				position: absolute;
-				top: 5%;
-				left: 2%;
+				top: 25px;
+				left: 340px;
+            }
+			#pictureButton{
+                width:300px;
+                height:50px;
+				position: absolute;
+				top: 25px;
+				left: 25px;
             }
 			#mainCanvas{
-                width:25%;
-                height:70%;
+                width:300px;
+                height:300px;
 				position: absolute;
-				top: 17%;
-				left: 2%;
+				top: 95px;
+				left: 25px;
+				transform:scale(-1,1);
+			}
+			#video {
+				opacity: 1;
+                width:300px;
+                height:300px;
+				top:95px;
+				left:340px;
+				z-index:-1;
+				transform:scale(-1,1);
+				position:fixed;
+				float:left;
+				object-fit:fill;
 			}
 		</style>
 	</head>
 	<body>
-
-		<button id="saveButton">Save Image</button>
+		<video id="video" autoplay width="300" height="300"></video>
+		<button id="saveButton" onclick="saveCanvasData();">Save Image</button>
+		<button id="pictureButton" onclick="takePicture();">Take Picture</button>
 		<canvas id="mainCanvas" style="background-color: white;"></canvas>
 
 		<script>
-			var canvas = document.getElementById('mainCanvas');
-			var context = canvas.getContext('2d');
-			context.beginPath();
-			context.moveTo(50, 30);
-			context.bezierCurveTo(80, 50, 80, 150, 230, 150);
-			context.bezierCurveTo(250, 180, 200, 180, 200, 150);
-			context.bezierCurveTo(100, 150, 200, 120, 200, 50);
-			context.bezierCurveTo(100, 40, 100, 30, 100, 50);
-			context.bezierCurveTo(100, 5, 100, 20, 200, 50);
-			context.bezierCurveTo(200, 5, 120, 20, 170, 80);
-			context.closePath();
-			context.lineWidth = 5;
-			context.fillStyle = '#8ED6FF';
-			context.fill();
-			context.strokeStyle = 'blue';
-			context.stroke();
+
+			initGlobalVars();
+			function initGlobalVars(){
+				drawCanvasTestData();
+				getVideo("init",0);
+			}
+
+			function drawCanvasTestData(){
+				var canvas = document.getElementById('mainCanvas');
+				var context = canvas.getContext('2d');
+				context.beginPath();
+				context.moveTo(50, 30);
+				context.bezierCurveTo(80, 50, 80, 150, 230, 150);
+				context.bezierCurveTo(250, 180, 200, 180, 200, 150);
+				context.bezierCurveTo(100, 150, 200, 120, 200, 50);
+				context.bezierCurveTo(100, 40, 100, 30, 100, 50);
+				context.bezierCurveTo(100, 5, 100, 20, 200, 50);
+				context.bezierCurveTo(200, 5, 120, 20, 170, 80);
+				context.closePath();
+				context.lineWidth = 5;
+				context.fillStyle = '#8ED6FF';
+				context.fill();
+				context.strokeStyle = 'blue';
+				context.stroke();
+			}
 
 			function saveCanvasData(){
-				var requestBody=JSON.stringify(canvas.toDataURL())
+				var canvas = document.getElementById('mainCanvas');
+				var requestBody=JSON.stringify(canvas.toDataURL());
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "../php/writeBase64.php?fn=test.jpg", true);
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
 			}
-		  </script>
+		  
+			function getVideo(action,camNum) {
+				if(action == "init"){
+					numOfCameras=0
+					cameraIds=[]
+					selectedCamera=0;
+					videoElem='video'
+					navigator.mediaDevices.enumerateDevices().then(function(deviceInfos){
+					  for (var i = 0; i !== deviceInfos.length; ++i) {
+						var deviceInfo = deviceInfos[i];
+						if (deviceInfo.kind === 'videoinput') {
+						  numOfCameras=numOfCameras + 1
+						  cameraIds.push(deviceInfo.deviceId);
+						}
+					  }
+					  selectedCamera=camNum;
+					  if (window.stream) {
+						window.stream.getTracks().forEach(function(track) {
+						  track.stop();
+						});
+					  }
+					  //console.log(cameraIds[selectedCamera])
+					  var videoSource = cameraIds[selectedCamera];
+					  var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
+					  navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+						  window.stream = stream; 
+						  document.getElementById(videoElem).srcObject = stream;
+						  return navigator.mediaDevices.enumerateDevices();
+					  }).catch(function(error){
+						  console.log('navigator.getUserMedia error: ', error);
+					  });
+					  }).catch(function(error){
+						console.log('navigator.getUserMedia error: ', error);
+					  });
+				}
+				if(action == "select"){
+					selectedCamera=camNum;
+					if (window.stream) {
+					  window.stream.getTracks().forEach(function(track) {
+						track.stop();
+					  });
+					}
+					console.log(cameraIds[selectedCamera])
+					var videoSource = cameraIds[selectedCamera];
+					var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
+					navigator.mediaDevices.getUserMedia(constraints).then(function(stream){
+						window.stream = stream; 
+						document.getElementById(videoElem).srcObject = stream;
+						return navigator.mediaDevices.enumerateDevices();
+					}).catch(function(error){
+						console.log('navigator.getUserMedia error: ', error);
+					});
+				}
+			}	
+		
+			function takePicture(){
+				var canvas = document.getElementById("mainCanvas");
+				var context = canvas.getContext("2d");
+				var video=document.getElementById("video");
+				context.drawImage(video, 0, 0, 300, 150);
+			}
+		</script>
 	</body>
 </html>
 
