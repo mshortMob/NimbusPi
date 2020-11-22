@@ -28,6 +28,11 @@
 				left: 25px;
 				transform:scale(-1,1);
 			}
+			#chromaSlider{
+				width:622px;
+				top:410px;
+				position: absolute;
+			}
 			#video {
 				opacity: 1;
                 width:300px;
@@ -39,6 +44,7 @@
 				position:fixed;
 				float:left;
 				object-fit:fill;
+				background-color: white;
 			}
 		</style>
 	</head>
@@ -49,12 +55,13 @@
 		<canvas id="mainCanvas" style="background-color: white;"></canvas>
 		<canvas id="iconImageCanvas" style="display: none;"></canvas>
 		<canvas id="maskImageCanvas" style="display: none;"></canvas>
+		<input id="chromaSlider" type="range" min="0" max="255" value="0"  onchange="setMainCanvasChroma(this.value, event)" onmousemove="setMainCanvasChroma(this.value, event)">
 
 		<script>
 
 			initGlobalVars();
 			function initGlobalVars(){
-				drawCanvasTestData();
+				// drawCanvasTestData();
 				getVideo("init",0);
 			}
 
@@ -120,6 +127,7 @@
 						  track.stop();
 						});
 					  }
+					  setTimeout(function(){ takePicture(); }, 1500);
 					  //console.log(cameraIds[selectedCamera])
 					  var videoSource = cameraIds[selectedCamera];
 					  var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
@@ -159,6 +167,7 @@
 				var context = canvas.getContext("2d");
 				var video=document.getElementById("video");
 				context.drawImage(video, 0, 0, 300, 150);
+				initialMainCanvasImgData=context.getImageData(0, 0, 300, 150);
 				updateMaskImageCanvas();
 				updateIconImageCanvas();
 			}
@@ -171,17 +180,62 @@
 				context.scale(1,-1);
 				context.drawImage(video, 0, 0, 300, -150);
 				context.restore();
+				initialMaskCanvasImgData=context.getImageData(0, 0, 300, 150);
 			}
 
 			function updateIconImageCanvas(){
 				var canvas = document.getElementById("iconImageCanvas");
 				var context = canvas.getContext("2d");
 				var video=document.getElementById("video");
-				context.save();
 				context.scale(-1,1);
 				context.drawImage(video, 0, 0, -300, 150);
 				context.restore();
+				initialIconCanvasImgData=context.getImageData(0, 0, 300, 150);
 			}
+		
+			function setMainCanvasChroma(thresh, event){
+				// console.log(event);
+				if(event.buttons!=0){
+
+					var canvas = document.getElementById("mainCanvas");
+					var context = canvas.getContext("2d");
+					var imgData = context.getImageData(0, 0, 300, 150);
+					for(var x=0; x<imgData.data.length; x++){
+						if(initialMainCanvasImgData.data[x]<thresh){
+							imgData.data[x]=0;
+						}else{
+							imgData.data[x]=initialMainCanvasImgData.data[x];
+						}
+					}
+					context.putImageData(imgData, 0, 0);
+
+					var canvas2 = document.getElementById("maskImageCanvas");
+					var context2 = canvas2.getContext("2d");
+					var imgData2 = context2.getImageData(0, 0, 300, 150);
+					for(var x=0; x<imgData2.data.length; x++){
+						if(initialMaskCanvasImgData.data[x]<thresh){
+							imgData2.data[x]=0;
+						}else{
+							imgData2.data[x]=initialMaskCanvasImgData.data[x];
+						}
+					}
+					context2.putImageData(imgData2, 0, 0);
+
+					var canvas3 = document.getElementById("iconImageCanvas");
+					var context3 = canvas3.getContext("2d");
+					var imgData3 = context3.getImageData(0, 0, 300, 150);
+					for(var x=0; x<imgData3.data.length; x++){
+						if(initialIconCanvasImgData.data[x]<thresh){
+							imgData3.data[x]=0;
+						}else{
+							imgData3.data[x]=initialIconCanvasImgData.data[x];
+						}
+					}
+					context3.putImageData(imgData3, 0, 0);
+
+				}
+			}
+
 		</script>
 	</body>
 </html>
