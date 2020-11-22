@@ -6,27 +6,53 @@
 			    margin:20px;
 				background-color:black;
 			}
-            #pickerButton{
-                width:90px;
-                height:50px;
-            }	
-            #submitButton{
-                width:290px;
-                height:30px;
+            #saveButton{
+                width:25%;
+                height:8%;
+				position: absolute;
+				top: 5%;
+				left: 2%;
             }
+			#mainCanvas{
+                width:25%;
+                height:70%;
+				position: absolute;
+				top: 17%;
+				left: 2%;
+			}
 		</style>
 	</head>
 	<body>
-		
-		<form method="post" enctype="multipart/form-data" action="http://localhost:3000/upload">
-			<input type="file" name="file" id="pickerButton" >
-			<input type="submit" value="Submit" id="submitButton">
-		</form>	
+
+		<button id="saveButton">Save Image</button>
+		<canvas id="mainCanvas" style="background-color: white;"></canvas>
 
 		<script>
+			var canvas = document.getElementById('mainCanvas');
+			var context = canvas.getContext('2d');
+			context.beginPath();
+			context.moveTo(50, 30);
+			context.bezierCurveTo(80, 50, 80, 150, 230, 150);
+			context.bezierCurveTo(250, 180, 200, 180, 200, 150);
+			context.bezierCurveTo(100, 150, 200, 120, 200, 50);
+			context.bezierCurveTo(100, 40, 100, 30, 100, 50);
+			context.bezierCurveTo(100, 5, 100, 20, 200, 50);
+			context.bezierCurveTo(200, 5, 120, 20, 170, 80);
+			context.closePath();
+			context.lineWidth = 5;
+			context.fillStyle = '#8ED6FF';
+			context.fill();
+			context.strokeStyle = 'blue';
+			context.stroke();
 
-	
-		</script>
+			function saveCanvasData(){
+				var requestBody=JSON.stringify(canvas.toDataURL())
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/writeBase64.php?fn=test.jpg", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+			}
+		  </script>
 	</body>
 </html>
 
