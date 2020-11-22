@@ -20,7 +20,7 @@
 				top: 25px;
 				left: 25px;
             }
-			#mainCanvas{
+			canvas{
                 width:300px;
                 height:300px;
 				position: absolute;
@@ -47,6 +47,8 @@
 		<button id="saveButton" onclick="saveCanvasData();">Save Image</button>
 		<button id="pictureButton" onclick="takePicture();">Take Picture</button>
 		<canvas id="mainCanvas" style="background-color: white;"></canvas>
+		<canvas id="iconImageCanvas" style="display: none;"></canvas>
+		<canvas id="maskImageCanvas" style="display: none;"></canvas>
 
 		<script>
 
@@ -76,10 +78,24 @@
 			}
 
 			function saveCanvasData(){
-				var canvas = document.getElementById('mainCanvas');
+				saveIconImage();
+				saveMaskImage();
+			}
+
+			function saveIconImage(){
+				var canvas = document.getElementById('iconImageCanvas');
 				var requestBody=JSON.stringify(canvas.toDataURL());
 				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "../php/writeBase64.php?fn=test.jpg", true);
+				xmlhttp.open("POST", "../php/writeBase64.php?fn=controller/maskIcons/mask7.jpg", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+			}
+
+			function saveMaskImage(){
+				var canvas = document.getElementById('maskImageCanvas');
+				var requestBody=JSON.stringify(canvas.toDataURL());
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/writeBase64.php?fn=masks/mask7.jpg", true);
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
 			}
@@ -143,6 +159,28 @@
 				var context = canvas.getContext("2d");
 				var video=document.getElementById("video");
 				context.drawImage(video, 0, 0, 300, 150);
+				updateMaskImageCanvas();
+				updateIconImageCanvas();
+			}
+
+			function updateMaskImageCanvas(){
+				var canvas = document.getElementById("maskImageCanvas");
+				var context = canvas.getContext("2d");
+				var video=document.getElementById("video");
+				context.save();
+				context.scale(1,-1);
+				context.drawImage(video, 0, 0, 300, -150);
+				context.restore();
+			}
+
+			function updateIconImageCanvas(){
+				var canvas = document.getElementById("iconImageCanvas");
+				var context = canvas.getContext("2d");
+				var video=document.getElementById("video");
+				context.save();
+				context.scale(-1,1);
+				context.drawImage(video, 0, 0, -300, 150);
+				context.restore();
 			}
 		</script>
 	</body>
