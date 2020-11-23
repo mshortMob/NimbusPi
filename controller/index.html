@@ -822,6 +822,7 @@
 			<button id="miscButton2" class="dmxMiscButtons" onclick="saveDMXOverridesForAllPresets(1);" >Save DMX Overrides for All Presets</button>
 			<button id="miscButton3" class="dmxMiscButtons" onclick="rebootPi();" >Reboot Pi</button>
 			<button id="miscButton4" class="dmxMiscButtons" onclick="toggleDMXOverridesCourseFine();" >DMX Overrides Course/Fine</button>
+			<button id="miscButton5" class="dmxMiscButtons" onclick="if(location.host.indexOf('localhost')==-1){window.location.href='https://'+location.host+'/editors/maskEditor.html'}else{window.location.href='http://'+location.host+'/editors/maskEditor.html'}" >Save a Picture as a Mask</button>
 		</div>
 		<div id="dmxPageSelectorContainer">
 			<button class="dmxPageSelectorButtons" id="dmxPageButton1" style="background-color: grey;" onclick="selectDMXPage(this,'presets');" >Presets</button>

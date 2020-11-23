@@ -23,11 +23,19 @@
 				background-color: grey;
 			}
 			#pictureButton{
-				width:97%;
+				width:48.25%;
 				height:8%;
 				position: absolute;
 				top: 2%;
 				left: 1.25%;
+				background-color: grey;
+			}
+			#exitButton{
+				width:48.25%;
+				height:8%;
+				position: absolute;
+				top: 2%;
+				left: 50.25%;
 				background-color: grey;
 			}
 			canvas{
@@ -90,6 +98,7 @@
 		<button id="saveButton" onclick="saveCanvasData();" style="display:none">Save Image</button>
 		<button id="pictureButton" onclick="takePicture();">Take Picture</button>
 		<button id="discardButton" onclick="discardButtonClicked();" style="display:none">Discard Image</button>
+		<button id="exitButton" onclick="window.location.href='http://'+location.host+'/controller/index.html'" style="">Exit / Back</button>
 		<canvas id="mainCanvas" style="background-color: white;" onclick="requestFullScreen();"></canvas>
 		<canvas id="iconImageCanvas" style="display: none;"></canvas>
 		<canvas id="maskImageCanvas" style="display: none;"></canvas>
@@ -191,7 +200,7 @@
 						  track.stop();
 						});
 					  }
-					  setTimeout(function(){ takePicture(); }, 5000);
+					  //setTimeout(function(){ takePicture(); }, 5000);
 					  setTimeout(function(){
 					  if(numOfCameras>1){
 							getVideo("select",1);
@@ -246,6 +255,7 @@
 				setMainCanvasChroma({},true);
 				document.getElementById("video").style.display="none";
 				document.getElementById("pictureButton").style.display="none";
+				document.getElementById("exitButton").style.display="none";
 				document.getElementById("saveButton").style.display="block";
 				document.getElementById("mainCanvas").style.display="block";
 				document.getElementById("discardButton").style.display="block";
@@ -256,6 +266,7 @@
 				document.getElementById("video").style.display="block";
 				document.getElementById("pictureButton").style.display="block";
 				document.getElementById("saveButton").style.display="none";
+				document.getElementById("exitButton").style.display="block";
 				document.getElementById("mainCanvas").style.display="none";
 				document.getElementById("discardButton").style.display="none";	
 				document.getElementById("chromaSlider").style.display="none";			
