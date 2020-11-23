@@ -14,7 +14,7 @@
       "inline": [
         "touch /boot/ssh",
         "sudo rm /etc/xdg/autostart/piwiz.desktop",
-	"sudo apt-get update",
+	      "sudo apt-get update",
         "#sudo apt upgrade -y",
         "#sudo apt-get install git apache2 php ola chromium-browser hostapd dnsmasq pciutils -y",
         "sudo apt-get install git apache2 php ola hostapd dnsmasq pciutils -y",
@@ -91,6 +91,26 @@
     "destination": "/home/pi/boot_config.txt"
    },
    {
+    "type": "file",
+    "source": "files/ssl-params.conf",
+    "destination": "/home/pi/ssl-params.conf"
+   },
+   {
+    "type": "file",
+    "source": "files/default-ssl.conf",
+    "destination": "/home/pi/default-ssl.conf"
+   },
+   {
+    "type": "file",
+    "source": "files/apache-selfsigned.key",
+    "destination": "/home/pi/apache-selfsigned.key"
+   },
+   {
+    "type": "file",
+    "source": "files/apache-selfsigned.crt",
+    "destination": "/home/pi/apache-selfsigned.crt"
+   },
+   {
       "type": "shell",
       "inline": [
         "sudo mv -f /home/pi/dnsmasq.conf /etc/dnsmasq.conf",
@@ -105,6 +125,22 @@
         "sudo mv -f /home/pi/webserver.conf /etc/apache2/sites-enabled/000-default.conf",
         "sudo chown root:root /etc/apache2/sites-enabled/000-default.conf",
         "sudo chmod 755 /etc/apache2/sites-enabled/000-default.conf",
+        "sudo mv -f /home/pi/ssl-params.conf /etc/apache2/conf-available/ssl-params.conf",
+        "sudo chown root:root /etc/apache2/conf-available/ssl-params.conf",
+        "sudo chmod 644 /etc/apache2/conf-available/ssl-params.conf",
+        "sudo mv -f /home/pi/default-ssl.conf /etc/apache2/sites-available/default-ssl.conf",
+        "sudo chown root:root /etc/apache2/sites-available/default-ssl.conf",
+        "sudo chmod 644 /etc/apache2/sites-available/default-ssl.conf",
+        "sudo mv -f /home/pi/apache-selfsigned.crt /etc/ssl/certs/apache-selfsigned.crt",
+        "sudo chown root:root /etc/ssl/certs/apache-selfsigned.crt",
+        "sudo chmod 644 /etc/ssl/certs/apache-selfsigned.crt",
+        "sudo mv -f /home/pi/apache-selfsigned.key /etc/ssl/private/apache-selfsigned.key",
+        "sudo chown root:root /etc/ssl/private/apache-selfsigned.key",
+        "sudo chmod 600 /etc/ssl/private/apache-selfsigned.key",
+        "sudo a2enmod ssl",
+        "sudo a2enmod headers",
+        "sudo a2ensite default-ssl",
+        "sudo a2enconf ssl-params",
         "sudo mv -f /home/pi/autostart /etc/xdg/lxsession/LXDE-pi/autostart",
         "sudo chown root:root /etc/xdg/lxsession/LXDE-pi/autostart",
         "sudo chmod 644 /etc/xdg/lxsession/LXDE-pi/autostart",
