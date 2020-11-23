@@ -986,6 +986,12 @@
 						document.getElementById("MaskItem7_DeckB").style.backgroundImage='url("maskIcons/mask7.jpg?v='+mask7UpdateNumber+'")';
 						mask7UpdateNumber=mask7UpdateNumber+1;
 						resetImageMaskIconNeedsUpdate();
+						if(globalState.MaskA==7){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask7.jpg' ) };
+						}
+						if(globalState.MaskB==7){
+							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask7.jpg' ) };
+						}
 					}
 					setTimeout(function(){
 						watchForMask7ImageUpdates();

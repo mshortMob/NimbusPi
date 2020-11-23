@@ -2,160 +2,98 @@
 	<head>
 		<title>MaskUploader</title>
 		<style>
-			@media only screen and (min-width:991px){
-				body{
-					margin:20px;
-					background-color:black;
-				}
-				#saveButton{
-					width:48.25%;
-					height:8%;
-					position: absolute;
-					top: 4%;
-					left: 50.25%;
-					background-color: grey;
-				}
-				#pictureButton{
-					width:48.25%;
-					height:8%;
-					position: absolute;
-					top: 4%;
-					left: 1.25%;
-					background-color: grey;
-				}
-				canvas{
-					width:48.25%;
-					height:70%;
-					position: absolute;
-					top: 14%;
-					left: 1.25%;
-					transform:scale(-1,1);
-				}
-				#chromaSlider{
-					width:97.5%;
-					height:12%;
-					top:85.5%;
-					left:1.%;
-					position: absolute;
-
-					border:2.5px solid grey;
-					-webkit-appearance: none;
-					display:inline;
-					outline: none;
-					opacity: 1;
-					-webkit-transition: .2s;
-					transition: opacity .2s;
-					margin:0px;
-					padding:0px;
-					background-color: darkgrey;
-				}
-				#chromaSlider::-webkit-slider-thumb{
-					-webkit-appearance: none;
-					appearance: none;
-					width: 40px;
-					height: 100%;
-					background: slategray;
-					cursor: pointer;
-					border-left:1px solid darkslategray;
-					border-right:1px solid darkslategray;
-				}
-				#video {
-					opacity: 1;
-					width:48.25%;
-					height:70%;
-					top: 14%;
-					left: 50.25%;
-					z-index:-1;
-					transform:scale(-1,1);
-					position:fixed;
-					float:left;
-					object-fit:fill;
-					background-color: white;
-				}
+			body{
+				margin:20px;
+				background-color:black;
 			}
-			@media only screen and (max-width:990px){
-				body{
-					margin:20px;
-					background-color:black;
-				}
-				#saveButton{
-					width:48.25%;
-					height:8%;
-					position: absolute;
-					top: 2%;
-					left: 50.25%;
-					background-color: grey;
-				}
-				#pictureButton{
-					width:48.25%;
-					height:8%;
-					position: absolute;
-					top: 2%;
-					left: 1.25%;
-					background-color: grey;
-				}
-				canvas{
-					width:97%;
-					height:35%;
-					position: absolute;
-					top: 49%;
-					left: 1.25%;
-					transform:scale(-1,1);
-				}
-				#chromaSlider{
-					width:97%;
-					height:12%;
-					top:85.5%;
-					left:.75%;
-					position: absolute;
-					border:2.5px solid grey;
-					-webkit-appearance: none;
-					display:inline;
-					outline: none;
-					opacity: 1;
-					-webkit-transition: .2s;
-					transition: opacity .2s;
-					margin:0px;
-					padding:0px;
-					background-color: darkgrey;
-				}
-				#chromaSlider::-webkit-slider-thumb{
-					-webkit-appearance: none;
-					appearance: none;
-					width: 40px;
-					height: 100%;
-					background: slategray;
-					cursor: pointer;
-					border-left:1px solid darkslategray;
-					border-right:1px solid darkslategray;
-				}
-				#video {
-					opacity: 1;
-					width:97%;
-					height:37%;
-					top: 11%;
-					left:1.25%;
-					z-index:-1;
-					transform:scale(-1,1);
-					position:fixed;
-					float:left;
-					object-fit:fill;
-					background-color: white;
-				}
+			#saveButton{
+				width:48.25%;
+				height:8%;
+				position: absolute;
+				top: 2%;
+				left: 50.25%;
+				background-color: grey;
+			}
+			#discardButton{
+				width:48.25%;
+				height:8%;
+				position: absolute;
+				top: 2%;
+				left: 1.25%;
+				background-color: grey;
+			}
+			#pictureButton{
+				width:97%;
+				height:8%;
+				position: absolute;
+				top: 2%;
+				left: 1.25%;
+				background-color: grey;
+			}
+			canvas{
+				width:97%;
+				height:73%;
+				position: absolute;
+				top: 11%;
+				left: 1.25%;
+				transform:scale(-1,1);
+				display:none;
+			}
+			#chromaSlider{
+				width:97%;
+				height:9%;
+				top:87%;
+				left:1.25%;
+				position: absolute;
+				border:2.5px solid grey;
+				-webkit-appearance: none;
+				display:none;
+				outline: none;
+				opacity: 1;
+				-webkit-transition: .2s;
+				transition: opacity .2s;
+				margin:0px;
+				padding:0px;
+				background-color: darkgrey;
+			}
+			#chromaSlider::-webkit-slider-thumb{
+				-webkit-appearance: none;
+				appearance: none;
+				width: 40px;
+				height: 100%;
+				background: slategray;
+				cursor: pointer;
+				border-left:1px solid darkslategray;
+				border-right:1px solid darkslategray;
+			}
+			#video {
+				opacity: 1;
+				width:97%;
+				height:86.5%;
+				top: 11%;
+				left:1.25%;
+				z-index:-1;
+				transform:scale(-1,1);
+				position:fixed;
+				float:left;
+				object-fit:fill;
+				background-color: white;
 			}
 			button{
 				font-size: 1.5em;
+				outline: none;
 			}
 		</style>
 	</head>
 	<body>
-		<video id="video" autoplay width="300" height="300"></video>
-		<button id="saveButton" onclick="saveCanvasData();">Save Image</button>
+		<video id="video" autoplay width="300" height="300" onclick="requestFullScreen();"></video>
+		<button id="saveButton" onclick="saveCanvasData();" style="display:none">Save Image</button>
 		<button id="pictureButton" onclick="takePicture();">Take Picture</button>
-		<canvas id="mainCanvas" style="background-color: white;"></canvas>
+		<button id="discardButton" onclick="discardButtonClicked();" style="display:none">Discard Image</button>
+		<canvas id="mainCanvas" style="background-color: white;" onclick="requestFullScreen();"></canvas>
 		<canvas id="iconImageCanvas" style="display: none;"></canvas>
 		<canvas id="maskImageCanvas" style="display: none;"></canvas>
-		<input id="chromaSlider" type="range" min="0" max="255" value="0"  onchange="setMainCanvasChroma(event)" onmousemove="setMainCanvasChroma(event)">
+		<input id="chromaSlider" type="range" min="-255" max="255" value="0"  onchange="setMainCanvasChroma(event)" onmousemove="setMainCanvasChroma(event)">
 
 		<script>
 
@@ -257,6 +195,7 @@
 					  setTimeout(function(){
 					  if(numOfCameras>1){
 							getVideo("select",1);
+							document.getElementById("video").style.transform="scale(1,1)";
 						}
 					  },1500);
 					  //console.log(cameraIds[selectedCamera])
@@ -297,11 +236,29 @@
 				var canvas = document.getElementById("mainCanvas");
 				var context = canvas.getContext("2d");
 				var video=document.getElementById("video");
-				context.drawImage(video, 0, 0, 300, 150);
+				context.save();
+				context.scale(-1,1);
+				context.drawImage(video, 0, 0, -300, 150);
+				context.restore();
 				initialMainCanvasImgData=context.getImageData(0, 0, 300, 150);
 				updateMaskImageCanvas();
 				updateIconImageCanvas();
 				setMainCanvasChroma({},true);
+				document.getElementById("video").style.display="none";
+				document.getElementById("pictureButton").style.display="none";
+				document.getElementById("saveButton").style.display="block";
+				document.getElementById("mainCanvas").style.display="block";
+				document.getElementById("discardButton").style.display="block";
+				document.getElementById("chromaSlider").style.display="inline";
+			}
+
+			function discardButtonClicked(){
+				document.getElementById("video").style.display="block";
+				document.getElementById("pictureButton").style.display="block";
+				document.getElementById("saveButton").style.display="none";
+				document.getElementById("mainCanvas").style.display="none";
+				document.getElementById("discardButton").style.display="none";	
+				document.getElementById("chromaSlider").style.display="none";			
 			}
 
 			function updateMaskImageCanvas(){
@@ -309,8 +266,8 @@
 				var context = canvas.getContext("2d");
 				var video=document.getElementById("video");
 				context.save();
-				context.scale(1,-1);
-				context.drawImage(video, 0, 0, 300, -150);
+				context.scale(-1,-1);
+				context.drawImage(video, 0, 0, -300, -150);
 				context.restore();
 				initialMaskCanvasImgData=context.getImageData(0, 0, 300, 150);
 			}
@@ -320,8 +277,8 @@
 				var context = canvas.getContext("2d");
 				var video=document.getElementById("video");
 				context.save();
-				context.scale(-1,1);
-				context.drawImage(video, 0, 0, -300, 150);
+				context.scale(1,1);
+				context.drawImage(video, 0, 0, 300, 150);
 				context.restore();
 				initialIconCanvasImgData=context.getImageData(0, 0, 300, 150);
 			}
@@ -338,42 +295,69 @@
 					var canvas = document.getElementById("mainCanvas");
 					var context = canvas.getContext("2d");
 					var imgData = context.getImageData(0, 0, 300, 150);
-					for(var x=0; x<imgData.data.length; x++){
-						if(initialMainCanvasImgData.data[x]<thresh){
-							imgData.data[x]=0;
-						}else{
-							imgData.data[x]=initialMainCanvasImgData.data[x];
-						}
-					}
-					context.putImageData(imgData, 0, 0);
+					context.putImageData(computeChroma(imgData, initialMainCanvasImgData, thresh), 0, 0);
 
 					var canvas2 = document.getElementById("maskImageCanvas");
 					var context2 = canvas2.getContext("2d");
 					var imgData2 = context2.getImageData(0, 0, 300, 150);
-					for(var x=0; x<imgData2.data.length; x++){
-						if(initialMaskCanvasImgData.data[x]<thresh){
-							imgData2.data[x]=0;
-						}else{
-							imgData2.data[x]=initialMaskCanvasImgData.data[x];
-						}
-					}
-					context2.putImageData(imgData2, 0, 0);
+					context2.putImageData(computeChroma(imgData2, initialMaskCanvasImgData, thresh), 0, 0);
 
 					var canvas3 = document.getElementById("iconImageCanvas");
 					var context3 = canvas3.getContext("2d");
 					var imgData3 = context3.getImageData(0, 0, 300, 150);
-					for(var x=0; x<imgData3.data.length; x++){
-						if(initialIconCanvasImgData.data[x]<thresh){
-							imgData3.data[x]=0;
-						}else{
-							imgData3.data[x]=initialIconCanvasImgData.data[x];
-						}
-					}
-					context3.putImageData(imgData3, 0, 0);
+					context3.putImageData(computeChroma(imgData3, initialIconCanvasImgData, thresh), 0, 0);
 
 				}
 			}
 
+			function computeChroma(imgData, initialData, thresh){
+				if(thresh>=0){
+					for(var x=0; x<imgData.data.length; x=x+4){
+						if( ((initialData.data[x]+initialData.data[x+1]+initialData.data[x+2])/3) < thresh){
+							imgData.data[x]=0;
+							imgData.data[x+1]=0;
+							imgData.data[x+2]=0;
+							imgData.data[x+3]=255;
+						}else{
+							imgData.data[x]=initialData.data[x];
+							imgData.data[x+1]=initialData.data[x+1];
+							imgData.data[x+2]=initialData.data[x+2];
+							imgData.data[x+3]=initialData.data[x+3];
+						}
+					}
+				}else{
+					for(var x=0; x<imgData.data.length; x=x+4){
+						if( ((initialData.data[x]+initialData.data[x+1]+initialData.data[x+2])/3) > (255-Math.abs(thresh)) ){
+							imgData.data[x]=0;
+							imgData.data[x+1]=0;
+							imgData.data[x+2]=0;
+							imgData.data[x+3]=255;
+						}else{
+							imgData.data[x]=initialData.data[x];
+							imgData.data[x+1]=initialData.data[x+1];
+							imgData.data[x+2]=initialData.data[x+2];
+							imgData.data[x+3]=initialData.data[x+3];
+						}
+					}
+				}
+				return imgData;
+			}
+
+			function requestFullScreen() {
+				// Supports most browsers and their versions.
+				var element = document.body; // Make the body go full screen.
+				var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+			
+				if (requestMethod) { // Native full screen.
+					requestMethod.call(element);
+				} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+					var wscript = new ActiveXObject("WScript.Shell");
+					if (wscript !== null) {
+						wscript.SendKeys("{F11}");
+					}
+				}
+			}
+		
 		</script>
 	</body>
 </html>
