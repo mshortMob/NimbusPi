@@ -65,6 +65,26 @@
 				getVideo("init",0);
 			}
 
+			function resetImageMaskIconNeedsUpdate(){
+				var requestBody="true";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/imageMaskIconNeedsUpdate.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Set imageMaskNeedsUpdate")
+				}
+			}
+
+			function resetImageMaskNeedsUpdate(){
+				var requestBody="true";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/imageMaskNeedsUpdate.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Set imageMaskNeedsUpdate")
+				}
+			}
+
 			function drawCanvasTestData(){
 				var canvas = document.getElementById('mainCanvas');
 				var context = canvas.getContext('2d');
@@ -95,7 +115,10 @@
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "../php/writeBase64.php?fn=controller/maskIcons/mask7.jpg", true);
 				xmlhttp.send(requestBody);
-				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+				xmlhttp.onload = function(e){
+					console.log(xmlhttp.response.status);
+					resetImageMaskIconNeedsUpdate();
+				}
 			}
 
 			function saveMaskImage(){
@@ -104,7 +127,10 @@
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "../php/writeBase64.php?fn=masks/mask7.jpg", true);
 				xmlhttp.send(requestBody);
-				xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+				xmlhttp.onload = function(e){
+					console.log(xmlhttp.response.status);
+					resetImageMaskNeedsUpdate();
+				}
 			}
 		  
 			function getVideo(action,camNum) {

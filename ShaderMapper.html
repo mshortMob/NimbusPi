@@ -189,7 +189,39 @@ void main()	{
 		<script>
 			initGlobalVars();
 
+			function watchForMask7ImageUpdates(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/imageMaskNeedsUpdate.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					if(xmlhttp.response.indexOf("true")!=-1){
+						if(globalController.MaskA==7){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg' ) };
+						}
+						if(globalController.MaskB==7){
+							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg' ) };
+						}
+						mask7UpdateNumber=mask7UpdateNumber+1;
+						resetImageMaskNeedsUpdate();
+					}
+					setTimeout(function(){
+						watchForMask7ImageUpdates();
+					},10000);
+				}
+			}
+
+			function resetImageMaskNeedsUpdate(){
+				var requestBody="false";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=globalPresets/imageMaskNeedsUpdate.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Reset imageMaskNeedsUpdate")
+				}
+			}
+
 			function initGlobalVars(){
+				mask7UpdateNumber=0;
 				haveChangedLocalSettingsInControllerMode=true;
 				lastObjectVerticeData="";
 				maskControllerScalingFactor=1.5;
@@ -296,6 +328,7 @@ void main()	{
 				highlightSelectedVertice();
 				highlightSelectedMaskHandle();
 				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
+				setTimeout(function(){watchForMask7ImageUpdates();},1000);
 				// setTimeout(function(){document.getElementById('maskCanvas').style.transform="scale(-1,1)"; changeMask(3); },4000);
 			}
 			

@@ -976,7 +976,35 @@
 
 			initGlobalVars();
 			
+			function watchForMask7ImageUpdates(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/imageMaskIconNeedsUpdate.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					if(xmlhttp.response.indexOf("true")!=-1){
+						document.getElementById("MaskItem7_DeckA").style.backgroundImage='url("maskIcons/mask7.jpg?v='+mask7UpdateNumber+'")';
+						document.getElementById("MaskItem7_DeckB").style.backgroundImage='url("maskIcons/mask7.jpg?v='+mask7UpdateNumber+'")';
+						mask7UpdateNumber=mask7UpdateNumber+1;
+						resetImageMaskIconNeedsUpdate();
+					}
+					setTimeout(function(){
+						watchForMask7ImageUpdates();
+					},10000);
+				}
+			}
+
+			function resetImageMaskIconNeedsUpdate(){
+				var requestBody="false";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/imageMaskIconNeedsUpdate.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Reset imageMaskNeedsUpdate")
+				}
+			}
+
 			function initGlobalVars(){
+				mask7UpdateNumber=0;
 				lastSaveStateRequestBody="";
 				maskControllerScalingFactor=1.5;
 				haveDrawnMaskHandles=false;
@@ -1077,6 +1105,7 @@
 				highlightSelectedMaskHandle();
 				forceInitControllerMode();
 				getCurrentFMScene();
+				setTimeout(function(){watchForMask7ImageUpdates();},1000);
 			}
 			
 			function drawMaskHandles(){
