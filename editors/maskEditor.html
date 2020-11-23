@@ -213,6 +213,7 @@
 				var canvas = document.getElementById("iconImageCanvas");
 				var context = canvas.getContext("2d");
 				var video=document.getElementById("video");
+				context.save();
 				context.scale(-1,1);
 				context.drawImage(video, 0, 0, -300, 150);
 				context.restore();
