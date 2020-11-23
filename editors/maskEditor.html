@@ -2,74 +2,149 @@
 	<head>
 		<title>MaskUploader</title>
 		<style>
-			body{
-			    margin:20px;
-				background-color:black;
-			}
-            #saveButton{
-                width:48.25%;
-                height:8%;
-				position: absolute;
-				top: 4%;
-				left: 50.25%;
-				background-color: grey;
-            }
-			#pictureButton{
-                width:48.25%;
-                height:8%;
-				position: absolute;
-				top: 4%;
-				left: 1.25%;
-				background-color: grey;
-            }
-			canvas{
-				width:48.25%;
-                height:70%;
-				position: absolute;
-				top: 14%;
-				left: 1.25%;
-				transform:scale(-1,1);
-			}
-			#chromaSlider{
-				width:97.5%;
-				height:12%;
-				top:85.5%;
-				left:1.%;
-				position: absolute;
+			@media only screen and (min-width:991px){
+				body{
+					margin:20px;
+					background-color:black;
+				}
+				#saveButton{
+					width:48.25%;
+					height:8%;
+					position: absolute;
+					top: 4%;
+					left: 50.25%;
+					background-color: grey;
+				}
+				#pictureButton{
+					width:48.25%;
+					height:8%;
+					position: absolute;
+					top: 4%;
+					left: 1.25%;
+					background-color: grey;
+				}
+				canvas{
+					width:48.25%;
+					height:70%;
+					position: absolute;
+					top: 14%;
+					left: 1.25%;
+					transform:scale(-1,1);
+				}
+				#chromaSlider{
+					width:97.5%;
+					height:12%;
+					top:85.5%;
+					left:1.%;
+					position: absolute;
 
-				border:2.5px solid grey;
-				-webkit-appearance: none;
-				display:inline;
-				outline: none;
-				opacity: 1;
-				-webkit-transition: .2s;
-				transition: opacity .2s;
-				margin:0px;
-				padding:0px;
-				background-color: darkgrey;
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					display:inline;
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin:0px;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				#chromaSlider::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				#video {
+					opacity: 1;
+					width:48.25%;
+					height:70%;
+					top: 14%;
+					left: 50.25%;
+					z-index:-1;
+					transform:scale(-1,1);
+					position:fixed;
+					float:left;
+					object-fit:fill;
+					background-color: white;
+				}
 			}
-			#chromaSlider::-webkit-slider-thumb{
-				-webkit-appearance: none;
-				appearance: none;
-				width: 40px;
-				height: 100%;
-				background: slategray;
-				cursor: pointer;
-				border-left:1px solid darkslategray;
-				border-right:1px solid darkslategray;
+			@media only screen and (max-width:990px){
+				body{
+					margin:20px;
+					background-color:black;
+				}
+				#saveButton{
+					width:48.25%;
+					height:8%;
+					position: absolute;
+					top: 2%;
+					left: 50.25%;
+					background-color: grey;
+				}
+				#pictureButton{
+					width:48.25%;
+					height:8%;
+					position: absolute;
+					top: 2%;
+					left: 1.25%;
+					background-color: grey;
+				}
+				canvas{
+					width:97%;
+					height:35%;
+					position: absolute;
+					top: 49%;
+					left: 1.25%;
+					transform:scale(-1,1);
+				}
+				#chromaSlider{
+					width:97%;
+					height:12%;
+					top:85.5%;
+					left:.75%;
+					position: absolute;
+					border:2.5px solid grey;
+					-webkit-appearance: none;
+					display:inline;
+					outline: none;
+					opacity: 1;
+					-webkit-transition: .2s;
+					transition: opacity .2s;
+					margin:0px;
+					padding:0px;
+					background-color: darkgrey;
+				}
+				#chromaSlider::-webkit-slider-thumb{
+					-webkit-appearance: none;
+					appearance: none;
+					width: 40px;
+					height: 100%;
+					background: slategray;
+					cursor: pointer;
+					border-left:1px solid darkslategray;
+					border-right:1px solid darkslategray;
+				}
+				#video {
+					opacity: 1;
+					width:97%;
+					height:37%;
+					top: 11%;
+					left:1.25%;
+					z-index:-1;
+					transform:scale(-1,1);
+					position:fixed;
+					float:left;
+					object-fit:fill;
+					background-color: white;
+				}
 			}
-			#video {
-				opacity: 1;
-				width:48.25%;
-                height:70%;
-				top: 14%;
-				left: 50.25%;
-				z-index:-1;
-				transform:scale(-1,1);
-				position:fixed;
-				float:left;
-				object-fit:fill;
-				background-color: white;
+			button{
+				font-size: 1.5em;
 			}
 		</style>
 	</head>
@@ -178,7 +253,12 @@
 						  track.stop();
 						});
 					  }
-					  setTimeout(function(){ takePicture(); }, 1500);
+					  setTimeout(function(){ takePicture(); }, 5000);
+					  setTimeout(function(){
+					  if(numOfCameras>1){
+							getVideo("select",1);
+						}
+					  },1500);
 					  //console.log(cameraIds[selectedCamera])
 					  var videoSource = cameraIds[selectedCamera];
 					  var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
