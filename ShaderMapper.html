@@ -190,7 +190,7 @@ void main()	{
 			initGlobalVars();
 
 			function initGlobalVars(){
-				shaderSpeedFactorScale=20;
+				shaderSpeedFactorScale=5;
 				shaderSpeedFactor=0;
 				mask7UpdateNumber=0;
 				haveChangedLocalSettingsInControllerMode=true;
@@ -224,11 +224,7 @@ void main()	{
 					setInterval(function(){  
 						audioVolume=audioData.reduce(function(a, b){return a + b;}, 0)/1024/100; 
 						if(audioVolume>globalController.VolumeThreshold){
-							if(audioVolume>.3){
-								shaderSpeedFactor=.3;
-							}
-							shaderSpeedFactor=audioVolume;
-							// console.log(shaderSpeedFactor);
+							shaderSpeedFactor=.1;
 
 							uniforms1.audioVolume={ value: ((uniforms1.audioVolume.value+.001+audioVolume*400.0)%1.0) };
 							uniforms2.audioVolume={ value: ((uniforms2.audioVolume.value+.001+audioVolume*400.0)%1.0) };
@@ -238,11 +234,7 @@ void main()	{
 							//console.log(audioVolume);
 							globalController.DMX_Scene=(globalController.DMX_Scene+.3)%maxNumDMXScenes;
 						}else{
-							if((shaderSpeedFactor-.1)>0){
-								shaderSpeedFactor=shaderSpeedFactor-.1;
-							}else{
-								shaderSpeedFactor=0;
-							}
+							shaderSpeedFactor=0;
 							// console.log(shaderSpeedFactor);
 							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+globalController.DMX_Pattern_Rate)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
 						}
