@@ -190,7 +190,7 @@ void main()	{
 			initGlobalVars();
 
 			function initGlobalVars(){
-				shaderSpeedFactorScale=6.5;
+				shaderSpeedFactorScale=15;
 				shaderSpeedFactor=0;
 				mask7UpdateNumber=0;
 				haveChangedLocalSettingsInControllerMode=true;
@@ -224,7 +224,11 @@ void main()	{
 					setInterval(function(){  
 						audioVolume=audioData.reduce(function(a, b){return a + b;}, 0)/1024/100; 
 						if(audioVolume>globalController.VolumeThreshold){
-							shaderSpeedFactor=.1;
+							if(audioVolume<.2){
+								shaderSpeedFactor=audioVolume;
+							}else{
+								shaderSpeedFactor=.2;
+							}
 
 							uniforms1.audioVolume={ value: ((uniforms1.audioVolume.value+.001+audioVolume*400.0)%1.0) };
 							uniforms2.audioVolume={ value: ((uniforms2.audioVolume.value+.001+audioVolume*400.0)%1.0) };
