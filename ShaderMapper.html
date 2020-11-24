@@ -228,7 +228,7 @@ void main()	{
 								shaderSpeedFactor=.3;
 							}
 							shaderSpeedFactor=audioVolume;
-							console.log(shaderSpeedFactor);
+							// console.log(shaderSpeedFactor);
 
 							uniforms1.audioVolume={ value: ((uniforms1.audioVolume.value+.001+audioVolume*400.0)%1.0) };
 							uniforms2.audioVolume={ value: ((uniforms2.audioVolume.value+.001+audioVolume*400.0)%1.0) };
@@ -243,7 +243,7 @@ void main()	{
 							}else{
 								shaderSpeedFactor=0;
 							}
-							console.log(shaderSpeedFactor);
+							// console.log(shaderSpeedFactor);
 							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+globalController.DMX_Pattern_Rate)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
 						}
 					} ,100);
