@@ -6,7 +6,7 @@ uniform float brightness;
 uniform float mousex;
 uniform float mousey;
 
-uniform float audioVolume;
+
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
@@ -21,13 +21,13 @@ void main( void ) {
 	color *= sin( time / 500.0 ) * 1.5;
 	
 
-	vec2 position2 = ( -2.5 - (2.5 * abs(audioVolume)*0.0)  )/2.0 - ( -2.5 - (2.5 * abs(audioVolume)*0.0)  ) * gl_FragCoord.xy/1000.;
+	vec2 position2 = ( -2.5 - (2.5 * abs(0.0)*0.0)  )/2.0 - ( -2.5 - (2.5 * abs(0.0)*0.0)  ) * gl_FragCoord.xy/1000.;
 	float red = 1.0 * ( sin( position2.y * position2.y - time / 1.5 ) );
 	float green = 1.0 * ( sin( position2.y * position2.y + time / 1.2 ) );
 	float blue = 1.0 * ( sin( position2.y * position2.y + time / 1.1) );
 	vec3 pattern2 = vec3( green, blue*1.2, red*.7 );
 
-        vec3 final = mix(vec3(  color * 9.2 * abs(.5+audioVolume*0.0), 2.2*(1.-color) * (1.0-abs(.5+audioVolume*0.0)), color * 20.0 * abs(.5+audioVolume*0.0) ), pattern2, vec3(mousey,mousey,mousey) );  
+        vec3 final = mix(vec3(  color * 9.2 * abs(.5+0.0*0.0), 2.2*(1.-color) * (1.0-abs(.5+0.0*0.0)), color * 20.0 * abs(.5+0.0*0.0) ), pattern2, vec3(mousey,mousey,mousey) );  
         
         final = mix(final, vec3(1.0-final.g,1.0-final.b, 1.0-final.r), vec3(mousex,mousex,mousex) );
 

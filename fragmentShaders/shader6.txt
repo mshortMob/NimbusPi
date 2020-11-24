@@ -6,7 +6,7 @@ uniform float brightness;
 uniform float mousex;
 uniform float mousey;
 
-uniform float audioVolume;
+
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
@@ -25,7 +25,7 @@ vec3 getShader1(){
 
 
 vec3 getShader2() {
-	vec2 p = ( -1.0 - (24.0+ 48.0 * abs(audioVolume*0.))  )/2.0 - ( -1.0 - (24.0+ 48.0 * abs(audioVolume*0.))  ) * vUv;
+	vec2 p = ( -1.0 - (24.0+ 48.0 * abs(0.0*0.))  )/2.0 - ( -1.0 - (24.0+ 48.0 * abs(0.0*0.))  ) * vUv;
 	p=p*p*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
 	p.y*= .02;
 	p.x*= .02;

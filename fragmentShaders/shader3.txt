@@ -1,12 +1,12 @@
 precision mediump float;
 precision mediump int;
 
-uniform float time;
+uniform float audioTime;
 uniform float brightness;
 uniform float mousex;
 uniform float mousey;
 
-uniform float audioVolume;
+
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
@@ -42,7 +42,7 @@ bool inSize(vec2 coords)
 {
 	vec2 box = coords.xy-mod(coords.xy, size);
 	vec2 center = box+(size/2.0);
-	float size = (triangleWave((time/1.01 * speed)+(randomize(box*98.0)*2.0))/2.0)*(size);
+	float size = (triangleWave((audioTime/1.01 * speed)+(randomize(box*98.0)*2.0))/2.0)*(size);
 	return (abs(coords.x-center.x) < size && abs(coords.y-center.y) < size);
 }
 
@@ -56,7 +56,7 @@ vec3 subMain(vec3 inputColor){
 void main(void) {
 
 	vec2 p = .675-1.25*vUv;
-        float a = time * (80.0+40.0) ;
+        float a = audioTime * (80.0+40.0) ;
 	float d, e, f, g = 1.0 / 40.0+mousey/15. ,h ,i ,r ,q;
 
 	e = 400.0 * ( p.x * 0.5 + 0.5 );

@@ -6,7 +6,6 @@ uniform float brightness;
 uniform float mousex;
 uniform float mousey;
 
-uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
@@ -18,21 +17,21 @@ vec3 hueRotate(vec3 colorIn){
 }
 
 vec3 getShader1(){
-	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(audioVolume))  ) * vUv;
+	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(0.))  ) * vUv;
 	float horStripes = abs( sin( position.y/1.0 + 3.14/1.5 + time / .75 ) );
 	float vertStripes = abs( sin( position.x/1.0 + 3.14/1.5 + time / .75 ) );
-	vertStripes=1.0-(2.0*vertStripes*(1.0-abs(audioVolume)));
-	horStripes=1.0-(2.0*horStripes*abs(audioVolume));
+	vertStripes=1.0-(2.0*vertStripes*(1.0-abs(0.)));
+	horStripes=1.0-(2.0*horStripes*abs(0.));
 	float checkerGrid=horStripes+vertStripes;
         return vec3(vertStripes, vertStripes, horStripes);
 }
 
 vec3 getShader2(){
-	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(audioVolume))  ) * (1.-vUv);
+	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(0.))  ) * (1.-vUv);
 	float horStripes = abs( sin( position.y/1.0 + 3.14/1.5 + time / .75 ) );
 	float vertStripes = abs( sin( position.x/1.0 + 3.14/1.5 + time / .75 ) );
-	vertStripes=1.0-(2.0*vertStripes*(1.0-abs(audioVolume)));
-	horStripes=1.0-(2.0*horStripes*abs(audioVolume));
+	vertStripes=1.0-(2.0*vertStripes*(1.0-abs(0.)));
+	horStripes=1.0-(2.0*horStripes*abs(0.));
 	float checkerGrid=horStripes+vertStripes;
         return vec3(vertStripes, vertStripes, horStripes);
 }

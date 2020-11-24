@@ -1,12 +1,11 @@
 precision mediump float;
 precision mediump int;
 
-uniform float time;
+uniform float audioTime;
 uniform float brightness;
 uniform float mousex;
 uniform float mousey;
 
-uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
@@ -18,17 +17,17 @@ vec3 hueRotate(vec3 colorIn){
 }
 
 vec3 secondShader(){
-	vec2 position = ( -10.0 - (0.0 * abs(audioVolume))  )/2.0 - ( -10.0 - (0.0 * abs(audioVolume))  ) * vUv;
-	float red = 1.0 * ( sin( position.x * position.y - time / 1.1 ) );
-	float green = 1.0 * ( sin( position.x * position.y + time / 1.8 ) );
-	float blue = 1.0 * ( sin( position.x * position.y + time / 1.9) );
+	vec2 position = ( -10.0 - (0.0 * abs(0.))  )/2.0 - ( -10.0 - (0.0 * abs(0.))  ) * vUv;
+	float red = 1.0 * ( sin( position.x * position.y - audioTime / 1.1 ) );
+	float green = 1.0 * ( sin( position.x * position.y + audioTime / 1.8 ) );
+	float blue = 1.0 * ( sin( position.x * position.y + audioTime / 1.9) );
         vec3 color = vec3(brightness*red*.7, green-.7, blue*1.2);
         return color*mousey;
 }
 
 
 void main()	{
-	vec2 p = ( -8.0 - (6.0 * abs(audioVolume*0.))  )/2.0 - ( -8.0 - (6.0 * abs(audioVolume*0.))  ) * vUv;
+	vec2 p = ( -8.0 - (6.0 * abs(0.*0.))  )/2.0 - ( -8.0 - (6.0 * abs(0.*0.))  ) * vUv;
 	p=p*p*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
 	p.y*= .5;
 	p.x*= .5;
@@ -36,8 +35,8 @@ void main()	{
 	{
 		vec2 newp=p;
 		float speed = 85.0; // speed control
-		newp.x+=0.8/float(i)*sin(float(i)*p.y+time/(100.0/speed)+0.8*float(i))+1.0;
-		newp.y+=0.8/float(i)*sin(float(i)*p.x+time/(100.0/speed)+0.3*float(i+10))-11.4;
+		newp.x+=0.8/float(i)*sin(float(i)*p.y+audioTime/(100.0/speed)+0.8*float(i))+1.0;
+		newp.y+=0.8/float(i)*sin(float(i)*p.x+audioTime/(100.0/speed)+0.3*float(i+10))-11.4;
 		p=newp;
 	}
 	vec3 col=vec3(2.7*sin(p.x*1.+p.y), 0.3*sin(2.0*p.y), 0.3*sin(2.0*p.y));

@@ -6,7 +6,7 @@ uniform float brightness;
 uniform float mousex;
 uniform float mousey;
 
-uniform float audioVolume;
+
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
@@ -34,9 +34,9 @@ void main()	{
 	position=position*position*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
 	position.y*= .02;
 	position.x*= .02;
-	float red = sin(position.x/abs(audioVolume/2.0)+time/18. )+cos(time/8.)-position.y*4.;
-	float green = cos(position.x/abs(audioVolume/2.0)+time )+sin(time/14. )+position.y*8.;
+	float red = sin(position.x/abs(0.0/2.0)+time/18. )+cos(time/8.)-position.y*4.;
+	float green = cos(position.x/abs(0.0/2.0)+time )+sin(time/14. )+position.y*8.;
 	float blue =tan(position.x/.3+time/4. )+sin(time/3.5 )+position.y*4.;
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( secondShader()/20.+hueRotate( vec3( (red-green-blue)*(1.0-abs(0.0*audioVolume/1.5)), (green-red-blue)*abs(0.0*audioVolume/1.5), blue*(1.0-abs(0.0*audioVolume/.5)) ) ), mask.r*brightness );
+	gl_FragColor = vec4( secondShader()/20.+hueRotate( vec3( (red-green-blue)*(1.0-abs(0.0*0.0/1.5)), (green-red-blue)*abs(0.0*0.0/1.5), blue*(1.0-abs(0.0*0.0/.5)) ) ), mask.r*brightness );
 }

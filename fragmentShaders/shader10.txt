@@ -6,7 +6,6 @@ uniform float brightness;
 uniform float mousex;
 uniform float mousey;
 
-uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
@@ -45,7 +44,7 @@ vec3 getShader1(){
 }
 
 vec3 getShader2(){
-	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(audioVolume))  ) * vUv;
+	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(0.))  ) * vUv;
 	float red = abs( sin( position.y/200. + time / .75) );
 	float green = abs( sin( position.y/200. + 3.14/2. + time / 4.75 ) );
 	float blue = abs( sin( position.y/200. + 3.14/5.5 + time / 4.75 ) );

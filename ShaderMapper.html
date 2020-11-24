@@ -227,9 +227,6 @@ void main()	{
 							
 							shaderSpeedFactor=.2;
 
-							uniforms1.audioVolume={ value: ((uniforms1.audioVolume.value+.001+audioVolume*400.0)%1.0) };
-							uniforms2.audioVolume={ value: ((uniforms2.audioVolume.value+.001+audioVolume*400.0)%1.0) };
-
 							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+5)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
 
 							//console.log(audioVolume);
@@ -526,7 +523,7 @@ void main()	{
 					"resolution": [width,height],
 					"mousex": { value: 0.0 },
 					"mousey": { value: 0.0 },
-					"audioVolume": { value: 0.0 },
+					"audioTime": { value: 0.0 },
 					"maskTexture": { value: imgTexture },
 					"brightness": { value: globalController.BrightnessA }
 				};
@@ -535,7 +532,7 @@ void main()	{
 					"resolution": [width,height],
 					"mousex": { value: 0.0 },
 					"mousey": { value: 0.0 },
-					"audioVolume": { value: 0.0 },
+					"audioTime": { value: 0.0 },
 					"maskTexture": { value: imgTexture2 },
 					"brightness": { value: globalController.BrightnessB }
 				};
@@ -1296,8 +1293,10 @@ void main()	{
 			}
 			
 			function render() {
-				uniforms1[ "time" ].value += .05 + shaderSpeedFactor*(.1-globalController.VolumeThreshold)*shaderSpeedFactorScale;
-				uniforms2[ "time" ].value += .05 + shaderSpeedFactor*(.1-globalController.VolumeThreshold)*shaderSpeedFactorScale;
+				uniforms1[ "time" ].value += .05;
+				uniforms2[ "time" ].value += .05;
+				uniforms1[ "audioTime" ].value += .05 + shaderSpeedFactor*(.1-globalController.VolumeThreshold)*shaderSpeedFactorScale;
+				uniforms2[ "audioTime" ].value += .05 + shaderSpeedFactor*(.1-globalController.VolumeThreshold)*shaderSpeedFactorScale;
 				uniforms1[ "brightness" ].value=globalController.BrightnessA;
 				uniforms2[ "brightness" ].value=globalController.BrightnessB;
 				for(var x=0;x<displayObjects.length;x++){
