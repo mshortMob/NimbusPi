@@ -189,38 +189,9 @@ void main()	{
 		<script>
 			initGlobalVars();
 
-			function watchForMask7ImageUpdates(){
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "php/read.php?fn=globalPresets/imageMaskNeedsUpdate.txt", true);
-				xmlhttp.send();
-				xmlhttp.onload = function(e){
-					if(xmlhttp.response.indexOf("true")!=-1){
-						if(globalController.MaskA==7){
-							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg' ) };
-						}
-						if(globalController.MaskB==7){
-							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg' ) };
-						}
-						mask7UpdateNumber=mask7UpdateNumber+1;
-						resetImageMaskNeedsUpdate();
-					}
-					setTimeout(function(){
-						watchForMask7ImageUpdates();
-					},10000);
-				}
-			}
-
-			function resetImageMaskNeedsUpdate(){
-				var requestBody="false";
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("POST", "php/write.php?fn=globalPresets/imageMaskNeedsUpdate.txt", true);
-				xmlhttp.send(requestBody);
-				xmlhttp.onload = function(e){
-					console.log("Reset imageMaskNeedsUpdate")
-				}
-			}
-
 			function initGlobalVars(){
+				shaderSpeedFactorScale=20;
+				shaderSpeedFactor=0;
 				mask7UpdateNumber=0;
 				haveChangedLocalSettingsInControllerMode=true;
 				lastObjectVerticeData="";
@@ -253,6 +224,12 @@ void main()	{
 					setInterval(function(){  
 						audioVolume=audioData.reduce(function(a, b){return a + b;}, 0)/1024/100; 
 						if(audioVolume>globalController.VolumeThreshold){
+							if(audioVolume>.3){
+								shaderSpeedFactor=.3;
+							}
+							shaderSpeedFactor=audioVolume;
+							console.log(shaderSpeedFactor);
+
 							uniforms1.audioVolume={ value: ((uniforms1.audioVolume.value+.001+audioVolume*400.0)%1.0) };
 							uniforms2.audioVolume={ value: ((uniforms2.audioVolume.value+.001+audioVolume*400.0)%1.0) };
 
@@ -261,6 +238,12 @@ void main()	{
 							//console.log(audioVolume);
 							globalController.DMX_Scene=(globalController.DMX_Scene+.3)%maxNumDMXScenes;
 						}else{
+							if((shaderSpeedFactor-.1)>0){
+								shaderSpeedFactor=shaderSpeedFactor-.1;
+							}else{
+								shaderSpeedFactor=0;
+							}
+							console.log(shaderSpeedFactor);
 							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+globalController.DMX_Pattern_Rate)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
 						}
 					} ,100);
@@ -332,6 +315,37 @@ void main()	{
 				// setTimeout(function(){document.getElementById('maskCanvas').style.transform="scale(-1,1)"; changeMask(3); },4000);
 			}
 			
+			function watchForMask7ImageUpdates(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/imageMaskNeedsUpdate.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					if(xmlhttp.response.indexOf("true")!=-1){
+						if(globalController.MaskA==7){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg' ) };
+						}
+						if(globalController.MaskB==7){
+							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg' ) };
+						}
+						mask7UpdateNumber=mask7UpdateNumber+1;
+						resetImageMaskNeedsUpdate();
+					}
+					setTimeout(function(){
+						watchForMask7ImageUpdates();
+					},10000);
+				}
+			}
+
+			function resetImageMaskNeedsUpdate(){
+				var requestBody="false";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=globalPresets/imageMaskNeedsUpdate.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Reset imageMaskNeedsUpdate")
+				}
+			}
+
 			function drawMaskHandles(){
 
 				for(x=0;x<numMaskHandles;x++){
@@ -1287,8 +1301,8 @@ void main()	{
 			}
 			
 			function render() {
-				uniforms1[ "time" ].value += .01 * 5;
-				uniforms2[ "time" ].value += .01 * 5;
+				uniforms1[ "time" ].value += .05 + shaderSpeedFactor*(.1-globalController.VolumeThreshold)*shaderSpeedFactorScale;
+				uniforms2[ "time" ].value += .05 + shaderSpeedFactor*(.1-globalController.VolumeThreshold)*shaderSpeedFactorScale;
 				uniforms1[ "brightness" ].value=globalController.BrightnessA;
 				uniforms2[ "brightness" ].value=globalController.BrightnessB;
 				for(var x=0;x<displayObjects.length;x++){
