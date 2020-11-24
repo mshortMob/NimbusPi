@@ -6,7 +6,6 @@ uniform float brightness;
 uniform float mousex;
 uniform float mousey;
 
-uniform float audioVolume;
 varying vec2 vUv;
 uniform sampler2D maskTexture;
 
@@ -15,7 +14,7 @@ void main()
 {
     vec2 u = .75-1.5*vUv;
     vec3 p, d = normalize(vec3(u, dot(u, u) - .25));
-    //float volThresCrossed=smoothstep(audioVolume, .5, .55 );
+    //float volThresCrossed=smoothstep(0., .5, .55 );
     d.xy *= R(0.0); d.yz *= R(time*0.3*sin(0.0) );
     float t = 0.;
     for (int i = 10; i > 0; --i)
@@ -27,7 +26,7 @@ void main()
     p=p*thresh;
     float totalBri=p.r+p.g+p.b;
     p=vec3(totalBri,totalBri,totalBri);
-    //p=vec3(sin(audioVolume),sin(audioVolume),sin(audioVolume));
+    //p=vec3(sin(0.),sin(0.),sin(0.));
     vec3 mask = texture2D( maskTexture, vUv ).rgb;
     p.r=p.r*(u.x+sin(time/.85));
     p.g=p.g*u.y;
