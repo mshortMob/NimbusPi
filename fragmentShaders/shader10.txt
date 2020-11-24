@@ -1,7 +1,7 @@
 precision mediump float;
 precision mediump int;
 
-uniform float time;
+uniform float audioTime;
 uniform float brightness;
 uniform float mousex;
 uniform float mousey;
@@ -38,16 +38,16 @@ float voronoi(vec2 p)
 vec3 getShader1(){
     vec2 uv = 1.25-2.5*vUv;
     float offset = voronoi((1.-uv)*4.);
-    float t = 1.0/abs(((uv.x + sin(uv.y + time/2.)) + offset) * (3.0+35.*mousex));
+    float t = 1.0/abs(((uv.x + sin(uv.y + audioTime/2.)) + offset) * (3.0+35.*mousex));
     float r = voronoi( (1.0-uv) * 1.0 ) * 10.0;
     return vec3(3.0 * uv.y, 2.0, 1.0 * r) * t;
 }
 
 vec3 getShader2(){
 	vec2 position = ( -12.0 - (8.0 * -0.0 * abs(0.))  ) * vUv;
-	float red = abs( sin( position.y/200. + time / .75) );
-	float green = abs( sin( position.y/200. + 3.14/2. + time / 4.75 ) );
-	float blue = abs( sin( position.y/200. + 3.14/5.5 + time / 4.75 ) );
+	float red = abs( sin( position.y/200. + audioTime / .75) );
+	float green = abs( sin( position.y/200. + 3.14/2. + audioTime / 4.75 ) );
+	float blue = abs( sin( position.y/200. + 3.14/5.5 + audioTime / 4.75 ) );
         return vec3(red, green, blue)*mousey;
 }
 
