@@ -190,7 +190,7 @@ void main()	{
 			initGlobalVars();
 
 			function initGlobalVars(){
-				shaderSpeedFactorScale=15;
+				shaderSpeedFactorScale=10;
 				shaderSpeedFactor=0;
 				mask7UpdateNumber=0;
 				haveChangedLocalSettingsInControllerMode=true;
@@ -235,7 +235,9 @@ void main()	{
 							//console.log(audioVolume);
 							globalController.DMX_Scene=(globalController.DMX_Scene+.3)%maxNumDMXScenes;
 						}else{
-							shaderSpeedFactor=0;
+							if(shaderSpeedFactor-.05>=0){
+								shaderSpeedFactor=shaderSpeedFactor-.05;
+							}
 							// console.log(shaderSpeedFactor);
 							ledStripAnimationmMasterIndex=(ledStripAnimationmMasterIndex+globalController.DMX_Pattern_Rate)%(ledStripPatternsArray[parseInt(globalController.DMX_Pattern)-1].length-1);
 						}
