@@ -56,6 +56,8 @@
 		<button id="uploadButton" onclick="upload();" >Upload</button>
 		<img id="previewImage" src="" height="200" alt="Image preview..." style="display:none;">
 		<div id="blankPreview"></div>
+		<canvas id="iconImageCanvas" style="display: none;" width="800" height="600"></canvas>
+		<canvas id="maskImageCanvas" style="display: none;" width="800" height="600"></canvas>
 
 		<script>
 			dataURL="false";
@@ -69,8 +71,11 @@
 				reader.addEventListener("load", function () {
 					// convert image file to base64 string
 					console.log(reader.result);
-					dataURL=reader.result;
 					preview.src = reader.result;
+					updateMaskImageCanvas();
+					dataURL=document.getElementById("maskImageCanvas").toDataURL();
+					updateIconImageCanvas();
+					dataURLIcon=document.getElementById("iconImageCanvas").toDataURL();
 				}, false);
 
 				if (file) {
@@ -96,7 +101,7 @@
 
 			function uploadIcon(){
 				if(dataURL!="false"){
-					var requestBody=dataURL;
+					var requestBody=dataURLIcon;
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/writeBase64.php?fn=controller/maskIcons/mask7.jpg", true);
 					xmlhttp.send(requestBody);
@@ -124,6 +129,28 @@
 				xmlhttp.onload = function(e){
 					console.log("Set imageMaskNeedsUpdate")
 				}
+			}
+		
+			function updateMaskImageCanvas(){
+				var canvas = document.getElementById("maskImageCanvas");
+				var context = canvas.getContext("2d");
+				var video=document.getElementById("previewImage");
+				context.save();
+				context.scale(-1,-1);
+				context.drawImage(video, 0, 0, -800, -600);
+				context.restore();
+				initialMaskCanvasImgData=context.getImageData(0, 0, 800, 600);
+			}
+
+			function updateIconImageCanvas(){
+				var canvas = document.getElementById("iconImageCanvas");
+				var context = canvas.getContext("2d");
+				var video=document.getElementById("previewImage");
+				context.save();
+				context.scale(1,1);
+				context.drawImage(video, 0, 0, 800, 600);
+				context.restore();
+				initialIconCanvasImgData=context.getImageData(0, 0, 800, 600);
 			}
 		</script>
 	</body>
