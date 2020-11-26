@@ -1,7 +1,7 @@
 precision mediump float;
 precision mediump int;
 
-uniform float audioTime;
+uniform float time;
 uniform float brightness;
 uniform float mousex;
 uniform float mousey;
@@ -41,7 +41,7 @@ bool inSize(vec2 coords)
 {
 	vec2 box = coords.xy-mod(coords.xy, size);
 	vec2 center = box+(size/2.0);
-	float size = (triangleWave((audioTime/1.01 * speed)+(randomize(box*98.0)*2.0))/2.0)*(size);
+	float size = (triangleWave((time/1.01 * speed)+(randomize(box*98.0)*2.0))/2.0)*(size);
 	return (abs(coords.x-center.x) < size && abs(coords.y-center.y) < size);
 }
 
@@ -57,7 +57,7 @@ void main( void ) {
 
 	vec2 position = gl_FragCoord.xy/600.;
 	vec3 color = vec3(0.1, 0.1, 0.1);
-	color = hsv2rgb(vec3(audioTime * 0.3 + position.x - position.y,0.5,1.0));
+	color = hsv2rgb(vec3(time * 0.3 + position.x - position.y,0.5,1.0));
         vec3 sm=subMain();
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
         if( mousex < 0.15) if ( mousey < 0.3) gl_FragColor = vec4( color, mask.r*brightness);
