@@ -94,14 +94,14 @@
 		</style>
 	</head>
 	<body>
-		<video id="video" autoplay width="300" height="300" onclick="requestFullScreen();"></video>
+		<video id="video" autoplay width="800" height="600" onclick="requestFullScreen();"></video>
 		<button id="saveButton" onclick="saveCanvasData();" style="display:none">Save Image</button>
 		<button id="pictureButton" onclick="takePicture();">Take Picture</button>
 		<button id="discardButton" onclick="discardButtonClicked();" style="display:none">Discard Image</button>
 		<button id="exitButton" onclick="window.location.href='http://'+location.host+'/controller/index.html'" style="">Exit / Back</button>
 		<canvas id="mainCanvas" style="background-color: white;" onclick="requestFullScreen();"></canvas>
-		<canvas id="iconImageCanvas" style="display: none;"></canvas>
-		<canvas id="maskImageCanvas" style="display: none;"></canvas>
+		<canvas id="iconImageCanvas" style="display: none;" width="800" height="600"></canvas>
+		<canvas id="maskImageCanvas" style="display: none;" width="800" height="600"></canvas>
 		<input id="chromaSlider" type="range" min="-255" max="255" value="0"  onchange="setMainCanvasChroma(event)" onmousemove="setMainCanvasChroma(event)">
 
 		<script>
@@ -137,9 +137,9 @@
 				var context = canvas.getContext('2d');
 				context.beginPath();
 				context.moveTo(50, 30);
-				context.bezierCurveTo(80, 50, 80, 150, 230, 150);
-				context.bezierCurveTo(250, 180, 200, 180, 200, 150);
-				context.bezierCurveTo(100, 150, 200, 120, 200, 50);
+				context.bezierCurveTo(80, 50, 80, 600, 230, 600);
+				context.bezierCurveTo(250, 180, 200, 180, 200, 600);
+				context.bezierCurveTo(100, 600, 200, 120, 200, 50);
 				context.bezierCurveTo(100, 40, 100, 30, 100, 50);
 				context.bezierCurveTo(100, 5, 100, 20, 200, 50);
 				context.bezierCurveTo(200, 5, 120, 20, 170, 80);
@@ -206,7 +206,7 @@
 							getVideo("select",1);
 							document.getElementById("video").style.transform="scale(1,1)";
 						}
-					  },1500);
+					  },6000);
 					  //console.log(cameraIds[selectedCamera])
 					  var videoSource = cameraIds[selectedCamera];
 					  var constraints = {video: {deviceId: videoSource ? {exact: videoSource} : undefined}};
@@ -247,9 +247,9 @@
 				var video=document.getElementById("video");
 				context.save();
 				context.scale(-1,1);
-				context.drawImage(video, 0, 0, -300, 150);
+				context.drawImage(video, 0, 0, -800, 600);
 				context.restore();
-				initialMainCanvasImgData=context.getImageData(0, 0, 300, 150);
+				initialMainCanvasImgData=context.getImageData(0, 0, 800, 600);
 				updateMaskImageCanvas();
 				updateIconImageCanvas();
 				setMainCanvasChroma({},true);
@@ -278,9 +278,9 @@
 				var video=document.getElementById("video");
 				context.save();
 				context.scale(-1,-1);
-				context.drawImage(video, 0, 0, -300, -150);
+				context.drawImage(video, 0, 0, -800, -600);
 				context.restore();
-				initialMaskCanvasImgData=context.getImageData(0, 0, 300, 150);
+				initialMaskCanvasImgData=context.getImageData(0, 0, 800, 600);
 			}
 
 			function updateIconImageCanvas(){
@@ -289,9 +289,9 @@
 				var video=document.getElementById("video");
 				context.save();
 				context.scale(1,1);
-				context.drawImage(video, 0, 0, 300, 150);
+				context.drawImage(video, 0, 0, 800, 600);
 				context.restore();
-				initialIconCanvasImgData=context.getImageData(0, 0, 300, 150);
+				initialIconCanvasImgData=context.getImageData(0, 0, 800, 600);
 			}
 		
 			function setMainCanvasChroma(event, wasTriggeredViaTakePicture){
@@ -305,17 +305,17 @@
 
 					var canvas = document.getElementById("mainCanvas");
 					var context = canvas.getContext("2d");
-					var imgData = context.getImageData(0, 0, 300, 150);
+					var imgData = context.getImageData(0, 0, 800, 600);
 					context.putImageData(computeChroma(imgData, initialMainCanvasImgData, thresh), 0, 0);
 
 					var canvas2 = document.getElementById("maskImageCanvas");
 					var context2 = canvas2.getContext("2d");
-					var imgData2 = context2.getImageData(0, 0, 300, 150);
+					var imgData2 = context2.getImageData(0, 0, 800, 600);
 					context2.putImageData(computeChroma(imgData2, initialMaskCanvasImgData, thresh), 0, 0);
 
 					var canvas3 = document.getElementById("iconImageCanvas");
 					var context3 = canvas3.getContext("2d");
-					var imgData3 = context3.getImageData(0, 0, 300, 150);
+					var imgData3 = context3.getImageData(0, 0, 800, 600);
 					context3.putImageData(computeChroma(imgData3, initialIconCanvasImgData, thresh), 0, 0);
 
 				}
