@@ -6,7 +6,7 @@
 				margin:20px;
 				background-color:black;
 			}
-			#saveButton{
+			#discardButton{
 				width:48.25%;
 				height:8%;
 				position: absolute;
@@ -14,7 +14,7 @@
 				left: 50.25%;
 				background-color: grey;
 			}
-			#discardButton{
+			#saveButton{
 				width:48.25%;
 				height:8%;
 				position: absolute;
@@ -97,7 +97,7 @@
 		<video id="video" autoplay width="800" height="600" onclick="requestFullScreen();"></video>
 		<button id="saveButton" onclick="saveCanvasData();" style="display:none">Save Image</button>
 		<button id="pictureButton" onclick="takePicture();">Take Picture</button>
-		<button id="discardButton" onclick="discardButtonClicked();" style="display:none">Discard Image</button>
+		<button id="discardButton" onclick="discardButtonClicked();" style="display:none">Back</button>
 		<button id="exitButton" onclick="window.location.href='http://'+location.host+'/controller/index.html'" style="">Exit / Back</button>
 		<canvas id="mainCanvas" style="background-color: white;" onclick="requestFullScreen();" width="800" height="600"></canvas>
 		<canvas id="iconImageCanvas" style="display: none;" width="800" height="600"></canvas>
