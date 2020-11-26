@@ -1,0 +1,170 @@
+<html>
+	<head>
+		<title>MaskUploader</title>
+		<style>
+			body{
+				margin:20px;
+				background-color:black;
+			}
+			input[type="file"] {
+				display: none;
+			}
+			.custom-file-upload {
+				display: block;
+				padding: 6px 12px;
+				cursor: pointer;
+				position: absolute;
+				width:31%;
+				height:8%;
+				top:4%;
+				left:1.5%;
+				background-color: grey;
+				font-size: 1.66em;
+			}
+			#uploadButton{
+				position: absolute;
+				width:31%;
+				height:10%;
+				top:3.75%;
+				left:35%;
+				background-color: grey;
+				font-size: 1.66em;
+			}
+			#exitButton{
+				position: absolute;
+				width:31.5%;
+				height:10%;
+				top:3.75%;
+				left:67%;
+				background-color: grey;
+				font-size: 1.66em;
+			}
+			#previewImage{
+				position: absolute;
+				width:96.2%;
+				height:77%;
+				top:18%;
+				left:1.5%;
+			}
+			#blankPreview{
+				border:4px solid grey;
+				position: absolute;
+				width:96.2%;
+				height:77%;
+				top:18%;
+				left:1.5%;
+			}
+		</style>
+	</head>
+	<body>
+
+		<label for="file-upload" class="custom-file-upload">
+			<i class="fa fa-cloud-upload"></i> Choose Image
+		</label>
+		<input id="file-upload" type="file" onchange="previewFile()"/>
+		<button id="uploadButton" onclick="upload();" >Upload</button>
+		<img id="previewImage" src="" alt="Image preview..." style="display:none;">
+		<div id="blankPreview"></div>
+		<canvas id="iconImageCanvas" style="display: none;" width="800" height="600"></canvas>
+		<canvas id="maskImageCanvas" style="display: none;" width="800" height="600"></canvas>
+		<button id="exitButton" onclick="window.location.href='http://'+location.host+'/controller/index.html'" style="">Exit / Back</button>
+
+
+		<script>
+			dataURL="false";
+			function previewFile() {
+				document.getElementById("previewImage").style.display="block";
+				document.getElementById("blankPreview").style.display="none";
+				const preview = document.querySelector('img');
+				const file = document.querySelector('input[type=file]').files[0];
+				const reader = new FileReader();
+
+				reader.addEventListener("load", function () {
+					// convert image file to base64 string
+					console.log(reader.result);
+					preview.src = reader.result;
+					updateMaskImageCanvas();
+					dataURL=document.getElementById("maskImageCanvas").toDataURL();
+					updateIconImageCanvas();
+					dataURLIcon=document.getElementById("iconImageCanvas").toDataURL();
+				}, false);
+
+				if (file) {
+					reader.readAsDataURL(file);
+				}
+			}
+		
+			function upload(){
+				if(dataURL!="false"){
+					var requestBody=dataURL;
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("POST", "../php/writeBase64.php?fn=masks/mask7.jpg", true);
+					xmlhttp.send(requestBody);
+					xmlhttp.onload = function(e){
+						console.log(xmlhttp.response.status);
+						uploadIcon();
+						resetImageMaskIconNeedsUpdate();
+						resetImageMaskNeedsUpdate();
+
+					}						
+				}
+			}
+
+			function uploadIcon(){
+				if(dataURL!="false"){
+					var requestBody=dataURLIcon;
+					var xmlhttp=new XMLHttpRequest();
+					xmlhttp.open("POST", "../php/writeBase64.php?fn=controller/maskIcons/mask7.jpg", true);
+					xmlhttp.send(requestBody);
+					xmlhttp.onload = function(e){
+						console.log(xmlhttp.response.status);
+					}						
+				}
+			}
+
+			function resetImageMaskIconNeedsUpdate(){
+				var requestBody="true";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/imageMaskIconNeedsUpdate.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Set imageMaskNeedsUpdate")
+				}
+			}
+
+			function resetImageMaskNeedsUpdate(){
+				var requestBody="true";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/imageMaskNeedsUpdate.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("Set imageMaskNeedsUpdate")
+				}
+			}
+		
+			function updateMaskImageCanvas(){
+				var canvas = document.getElementById("maskImageCanvas");
+				var context = canvas.getContext("2d");
+				var video=document.getElementById("previewImage");
+				context.save();
+				context.scale(-1,-1);
+				context.drawImage(video, 0, 0, -800, -600);
+				context.restore();
+				initialMaskCanvasImgData=context.getImageData(0, 0, 800, 600);
+			}
+
+			function updateIconImageCanvas(){
+				var canvas = document.getElementById("iconImageCanvas");
+				var context = canvas.getContext("2d");
+				var video=document.getElementById("previewImage");
+				context.save();
+				context.scale(1,1);
+				context.drawImage(video, 0, 0, 800, 600);
+				context.restore();
+				initialIconCanvasImgData=context.getImageData(0, 0, 800, 600);
+			}
+		</script>
+	</body>
+</html>
+
+
