@@ -60,9 +60,9 @@ void main( void ) {
 	color = hsv2rgb(vec3(time * 0.3 + position.x - position.y,0.5,1.0));
         vec3 sm=subMain();
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-        if( mousex < 0.15) if ( mousey < 0.3) gl_FragColor = vec4( color, mask.r*brightness);
-        if( mousex < 0.15) if ( mousey >= 0.3) gl_FragColor = vec4( color+sm*mousey*.27, mask.r*brightness);
-	if( mousex >= 0.15) if ( mousey < 0.3) gl_FragColor = vec4( mix(color,color*sm,mousex), mask.r*brightness);
-	if( mousex >= 0.15) if ( mousey >= 0.3) gl_FragColor = vec4( mix(color,color*sm,mousex)+sm*mousey*.27, mask.r*brightness);
+        if( mousex < 0.15) if ( mousey < 0.3) gl_FragColor = vec4( color, ((mask.r+mask.g+mask.b)/3.0)*brightness);
+        if( mousex < 0.15) if ( mousey >= 0.3) gl_FragColor = vec4( color+sm*mousey*.27, ((mask.r+mask.g+mask.b)/3.0)*brightness);
+	if( mousex >= 0.15) if ( mousey < 0.3) gl_FragColor = vec4( mix(color,color*sm,mousex), ((mask.r+mask.g+mask.b)/3.0)*brightness);
+	if( mousex >= 0.15) if ( mousey >= 0.3) gl_FragColor = vec4( mix(color,color*sm,mousex)+sm*mousey*.27, ((mask.r+mask.g+mask.b)/3.0)*brightness);
 }
 

@@ -53,5 +53,5 @@ vec3 getShader1(){
 
 void main()	{
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor=vec4( getShader1()*500., mask.r*brightness);
+	gl_FragColor=vec4( getShader1()*500., ((mask.r+mask.g+mask.b)/3.0)*brightness);
 }

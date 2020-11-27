@@ -33,6 +33,6 @@ void main() {
         vec3 mask = texture2D( maskTexture, vUv ).rgb;
         vec4 temp=vec4(yellow + (yellow - green) * r);
         vec3 out1=vec3(temp.r, temp.b, temp.g*sin(time/2.5));
-	gl_FragColor = vec4(fx2(fx1(out1)), brightness*mask.r);
+	gl_FragColor = vec4(fx2(fx1(out1)), brightness*((mask.r+mask.g+mask.b)/3.0));
 }
 

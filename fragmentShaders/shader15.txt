@@ -56,6 +56,6 @@ void main( void ) {
         vec3 out2=mix(out1, out1*s4/1.1, mousey);
         if (mousey < .3) out2=out1;
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4(out2,mask.r*brightness);
+	gl_FragColor = vec4(out2,((mask.r+mask.g+mask.b)/3.0)*brightness);
 
 }

@@ -26,5 +26,5 @@ void main( void ) {
     }
 
     vec3 mask = texture2D( maskTexture, vUv ).rgb;
-    gl_FragColor = vec4( hueRotate(vec3(destColor * f * 6.)), mask.r*brightness );
+    gl_FragColor = vec4( hueRotate(vec3(destColor * f * 6.)), ((mask.r+mask.g+mask.b)/3.0)*brightness );
 }

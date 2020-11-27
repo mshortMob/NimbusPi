@@ -34,9 +34,9 @@ void main( void ) {
 	c *= max(0.3,p.z*p.z*32.0);
         vec3 mask = texture2D( maskTexture, vUv ).rgb;
 	//(pos.y<=-.0) 
-	//? gl_FragColor = vec4( vec3(abs(s.y*5.0*sin(time/4.1))*0.5,abs(s.y*9.4*sin(time/2.7))*0.5,0.3)+vec3((1.-c)*0.5+sin(time*0.6)*sin(time/3.7),c*0.5+sin(time*0.6)*sin(time/2.7),c*sin(time/4.1)),  mask.r*brightness)
-	//: gl_FragColor = vec4( vec3(abs(s.y*5.0*sin(time/4.1))*0.5,abs(s.y*9.4*sin(time/2.7))*0.5,0.3), mask.r*brightness);	
+	//? gl_FragColor = vec4( vec3(abs(s.y*5.0*sin(time/4.1))*0.5,abs(s.y*9.4*sin(time/2.7))*0.5,0.3)+vec3((1.-c)*0.5+sin(time*0.6)*sin(time/3.7),c*0.5+sin(time*0.6)*sin(time/2.7),c*sin(time/4.1)),  ((mask.r+mask.g+mask.b)/3.0)*brightness)
+	//: gl_FragColor = vec4( vec3(abs(s.y*5.0*sin(time/4.1))*0.5,abs(s.y*9.4*sin(time/2.7))*0.5,0.3), ((mask.r+mask.g+mask.b)/3.0)*brightness);	
 	
-        gl_FragColor = vec4( fx2(fx1(vec3(vec3(abs(s.y*5.0*sin(time/2.1))*0.5,abs(s.y*9.4*sin(time/1.7))*0.5,0.3)+vec3((1.-c)*0.5+sin(time*1.6)*sin(time/1.5),c*0.5+sin(time*1.8)*sin(time/2.7),c*sin(time/1.66)) ))),  mask.r*brightness);
+        gl_FragColor = vec4( fx2(fx1(vec3(vec3(abs(s.y*5.0*sin(time/2.1))*0.5,abs(s.y*9.4*sin(time/1.7))*0.5,0.3)+vec3((1.-c)*0.5+sin(time*1.6)*sin(time/1.5),c*0.5+sin(time*1.8)*sin(time/2.7),c*sin(time/1.66)) ))),  ((mask.r+mask.g+mask.b)/3.0)*brightness);
 
 }

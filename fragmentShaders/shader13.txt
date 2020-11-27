@@ -60,6 +60,6 @@ void main( void ) {
        vec3 temp2=smoothstep( temp1, vec3(.0,.0,.0), vec3(.4-.3*mousey) );
        vec3 out1=temp1+vec3(temp2.r, temp2.b, temp2.g);
        vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor = vec4( out1*4.5, mask.r*brightness );
+	gl_FragColor = vec4( out1*4.5, ((mask.r+mask.g+mask.b)/3.0)*brightness );
 
 }

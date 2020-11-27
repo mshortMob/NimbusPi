@@ -47,6 +47,6 @@ void main() {
         vec3 s1=s1();
         vec3 s2=s2();
         vec3 out1=mix(s1,s1*s2*.75,mousey);
-	gl_FragColor = vec4(fx1(out1), brightness*mask.r);
+	gl_FragColor = vec4(fx1(out1), brightness*((mask.r+mask.g+mask.b)/3.0));
 }
 

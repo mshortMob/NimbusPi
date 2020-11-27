@@ -62,5 +62,5 @@ void main()
 	vec3 col = (s < 0.0) ? max(col0, mix(col0, col1, mode/7.0)) : min(col0, mix(col0, col1, mode/7.0));
 
     vec3 mask = texture2D( maskTexture, vUv ).rgb;
-    gl_FragColor = vec4(fx2(fx1(vec3(col.r, col.r*col.b*3.0, col.g))), mask.r*brightness);
+    gl_FragColor = vec4(fx2(fx1(vec3(col.r, col.r*col.b*3.0, col.g))), ((mask.r+mask.g+mask.b)/3.0)*brightness);
 }

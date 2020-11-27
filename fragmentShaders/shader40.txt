@@ -40,5 +40,5 @@ void main() {
        col.b*=uv.y*abs(sin(time/2.0+4.18));
 
         vec3 mask = texture2D( maskTexture, vUv ).rgb;
-        gl_FragColor = vec4(vec3(col.r,col.g*.5,0.)*4.5, mask.r*brightness);
+        gl_FragColor = vec4(vec3(col.r,col.g*.5,0.)*4.5, ((mask.r+mask.g+mask.b)/3.0)*brightness);
 }

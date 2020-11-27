@@ -32,5 +32,5 @@ void main()
     p.g=p.g*u.y;
     vec3 out1=mix(p*1.5,fract(p)*1.5,mousey);
     out1=mix(out1,vec3(out1.b,out1.r,out1.g),mousex);
-    gl_FragColor = vec4(out1, mask.r*brightness);
+    gl_FragColor = vec4(out1, ((mask.r+mask.g+mask.b)/3.0)*brightness);
 }

@@ -41,5 +41,5 @@ void main()	{
 	}
 	vec3 col=vec3(2.7*sin(p.x*1.+p.y), 0.3*sin(2.0*p.y), 0.3*sin(2.0*p.y));
 	vec3 mask = texture2D( maskTexture, vUv ).rgb;
-	gl_FragColor=vec4(secondShader()*vec3(col.r, col.g, col.r+abs(.9))+hueRotate(vec3(col.r, col.g, col.r+abs(.9))), mask.r*brightness);
+	gl_FragColor=vec4(secondShader()*vec3(col.r, col.g, col.r+abs(.9))+hueRotate(vec3(col.r, col.g, col.r+abs(.9))), ((mask.r+mask.g+mask.b)/3.0)*brightness);
 }
