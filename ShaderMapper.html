@@ -314,10 +314,10 @@ void main()	{
 				xmlhttp.onload = function(e){
 					if(xmlhttp.response.indexOf("true")!=-1){
 						if(globalController.MaskA==7){
-							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg?v='+mask7UpdateNumber ) };
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
 						}
 						if(globalController.MaskB==7){
-							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg?v='+mask7UpdateNumber ) };
+							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
 						}
 						mask7UpdateNumber=mask7UpdateNumber+1;
 						resetImageMaskNeedsUpdate();
