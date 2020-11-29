@@ -984,8 +984,8 @@
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
 					if(xmlhttp.response.indexOf("true")!=-1){
-						document.getElementById("MaskItem7_DeckA").style.backgroundImage='url("maskIcons/mask7.jpg?v='+mask7UpdateNumber+'")';
-						document.getElementById("MaskItem7_DeckB").style.backgroundImage='url("maskIcons/mask7.jpg?v='+mask7UpdateNumber+'")';
+						document.getElementById("MaskItem7_DeckA").style.backgroundImage='url("maskIcons/mask7.jpg?v='+parseInt(new Date().getTime())+'")';
+						document.getElementById("MaskItem7_DeckB").style.backgroundImage='url("maskIcons/mask7.jpg?v='+parseInt(new Date().getTime())+'")';
 						mask7UpdateNumber=mask7UpdateNumber+1;
 						resetImageMaskIconNeedsUpdate();
 						if(globalState.MaskA==7){
