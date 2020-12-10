@@ -985,13 +985,21 @@
 					if(xmlhttp.response.indexOf("true")!=-1){
 						document.getElementById("MaskItem7_DeckA").style.backgroundImage='url("maskIcons/mask7.jpg?v='+parseInt(new Date().getTime())+'")';
 						document.getElementById("MaskItem7_DeckB").style.backgroundImage='url("maskIcons/mask7.jpg?v='+parseInt(new Date().getTime())+'")';
+						document.getElementById("MaskItem6_DeckA").style.backgroundImage='url("maskIcons/mask6.jpg?v='+parseInt(new Date().getTime())+'")';
+						document.getElementById("MaskItem6_DeckB").style.backgroundImage='url("maskIcons/mask6.jpg?v='+parseInt(new Date().getTime())+'")';
 						mask7UpdateNumber=mask7UpdateNumber+1;
 						resetImageMaskIconNeedsUpdate();
 						if(globalState.MaskA==7){
-							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask7.jpg' ) };
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
 						}
 						if(globalState.MaskB==7){
-							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask7.jpg' ) };
+							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
+						}
+						if(globalState.MaskA==6){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
+						}
+						if(globalState.MaskB==6){
+							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
 						}
 					}
 					setTimeout(function(){
