@@ -42,10 +42,10 @@
 				background-color: grey;
 				font-size: 1.66em;
 			}
-			#previewImage{
+			#displayImageCanvas{
 				position: absolute;
 				width:96.2%;
-				height:77%;
+				height:65%;
 				top:18%;
 				left:1.5%;
 			}
@@ -56,6 +56,33 @@
 				height:77%;
 				top:18%;
 				left:1.5%;
+			}
+			#chromaSlider{
+				width:97%;
+				height:9%;
+				top:87%;
+				left:1.25%;
+				position: absolute;
+				border:2.5px solid grey;
+				-webkit-appearance: none;
+				display:none;
+				outline: none;
+				opacity: 1;
+				-webkit-transition: .2s;
+				transition: opacity .2s;
+				margin:0px;
+				padding:0px;
+				background-color: darkgrey;
+			}
+			#chromaSlider::-webkit-slider-thumb{
+				-webkit-appearance: none;
+				appearance: none;
+				width: 40px;
+				height: 100%;
+				background: slategray;
+				cursor: pointer;
+				border-left:1px solid darkslategray;
+				border-right:1px solid darkslategray;
 			}
 		</style>
 	</head>
@@ -70,7 +97,9 @@
 		<div id="blankPreview"></div>
 		<canvas id="iconImageCanvas" style="display: none;" width="800" height="600"></canvas>
 		<canvas id="maskImageCanvas" style="display: none;" width="800" height="600"></canvas>
+		<canvas id="displayImageCanvas" style="display: block;" width="800" height="600"></canvas>
 		<button id="exitButton" onclick="window.location.href='http://'+location.host+'/controller/index.html'" style="">Exit / Back</button>
+		<input id="chromaSlider" type="range" min="-255" max="255" value="0"  onchange="updateChroma(this.value)" onmousemove="updateChroma(this.value)">
 
 
 		<script>
@@ -79,7 +108,8 @@
 				document.getElementById("uploadButton").style.display="none";
 				document.getElementById("exitButton").style.width="63%";
 				document.getElementById("exitButton").style.left="35%";
-				document.getElementById("previewImage").style.display="block";
+				//document.getElementById("previewImage").style.display="block";
+				document.getElementById("displayImageCanvas").style.display="block";
 				document.getElementById("blankPreview").style.display="none";
 				const preview = document.querySelector('img');
 				const file = document.querySelector('input[type=file]').files[0];
@@ -95,7 +125,9 @@
 							dataURL=document.getElementById("maskImageCanvas").toDataURL();
 						},300)
 						updateIconImageCanvas();
+						updateDisplayImageCanvas();
 						setTimeout(function(){
+							document.getElementById("chromaSlider").style.display="block";
 							dataURLIcon=document.getElementById("iconImageCanvas").toDataURL();
 							document.getElementById("uploadButton").style.display="block";
 							document.getElementById("exitButton").style.width="31.5%";
@@ -159,6 +191,17 @@
 				}
 			}
 		
+			function updateDisplayImageCanvas(){
+				var canvas = document.getElementById("displayImageCanvas");
+				var context = canvas.getContext("2d");
+				var video=document.getElementById("previewImage");
+				context.save();
+				context.scale(1,1);
+				context.drawImage(video, 0, 0, 800, 600);
+				context.restore();
+				initialDisplayCanvasImgData=context.getImageData(0, 0, 800, 600);				
+			}
+
 			function updateMaskImageCanvas(){
 				var canvas = document.getElementById("maskImageCanvas");
 				var context = canvas.getContext("2d");
@@ -179,6 +222,51 @@
 				context.drawImage(video, 0, 0, 800, 600);
 				context.restore();
 				initialIconCanvasImgData=context.getImageData(0, 0, 800, 600);
+			}
+		
+			function updateChroma(thresh){
+				var canvas = document.getElementById("displayImageCanvas");
+				var context = canvas.getContext("2d");
+				var video=document.getElementById("previewImage");
+				context.save();
+				context.scale(1,1);
+				context.drawImage(video, 0, 0, 800, 600);
+				context.restore();
+				imgData = context.getImageData(0, 0, 800, 600);
+				context.putImageData(computeChroma(imgData, imgData, thresh), 0, 0);
+			}
+			
+			function computeChroma(imgData, initialData, thresh){
+				if(thresh>=0){
+					for(var x=0; x<imgData.data.length; x=x+4){
+						if( ((initialData.data[x]+initialData.data[x+1]+initialData.data[x+2])/3) < thresh){
+							imgData.data[x]=0;
+							imgData.data[x+1]=0;
+							imgData.data[x+2]=0;
+							imgData.data[x+3]=255;
+						}else{
+							imgData.data[x]=initialData.data[x];
+							imgData.data[x+1]=initialData.data[x+1];
+							imgData.data[x+2]=initialData.data[x+2];
+							imgData.data[x+3]=initialData.data[x+3];
+						}
+					}
+				}else{
+					for(var x=0; x<imgData.data.length; x=x+4){
+						if( ((initialData.data[x]+initialData.data[x+1]+initialData.data[x+2])/3) > (255-Math.abs(thresh)) ){
+							imgData.data[x]=0;
+							imgData.data[x+1]=0;
+							imgData.data[x+2]=0;
+							imgData.data[x+3]=255;
+						}else{
+							imgData.data[x]=initialData.data[x];
+							imgData.data[x+1]=initialData.data[x+1];
+							imgData.data[x+2]=initialData.data[x+2];
+							imgData.data[x+3]=initialData.data[x+3];
+						}
+					}
+				}
+				return imgData;
 			}
 		</script>
 	</body>
