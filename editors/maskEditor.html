@@ -92,7 +92,8 @@
 			<i class="fa fa-cloud-upload"></i> Choose Image
 		</label>
 		<input id="file-upload" type="file" onchange="previewFile()"/>
-		<button id="uploadButton" onclick="upload();" >Upload</button>
+		<button id="uploadButton" onclick="upload(6);" >Upload Mask 6</button>
+		<button id="uploadButton2" onclick="upload(7);" >Upload Mask 7</button>
 		<img id="previewImage" src="" alt="Image preview..." style="display:none;">
 		<div id="blankPreview"></div>
 		<canvas id="iconImageCanvas" style="display: none;" width="800" height="600"></canvas>
@@ -143,16 +144,16 @@
 				},1000);
 			}
 		
-			function upload(){
+			function upload(maskNum){
 				if(dataURL!="false"){
 					dataURL=document.getElementById("maskImageCanvas").toDataURL();
 					var requestBody=dataURL;
 					var xmlhttp=new XMLHttpRequest();
-					xmlhttp.open("POST", "../php/writeBase64.php?fn=masks/mask7.jpg", true);
+					xmlhttp.open("POST", "../php/writeBase64.php?fn=masks/mask"+parseInt(maskNum)+".jpg", true);
 					xmlhttp.send(requestBody);
 					xmlhttp.onload = function(e){
 						console.log(xmlhttp.response.status);
-						uploadIcon();
+						uploadIcon(maskNum);
 						resetImageMaskIconNeedsUpdate();
 						resetImageMaskNeedsUpdate();
 
@@ -160,12 +161,12 @@
 				}
 			}
 
-			function uploadIcon(){
+			function uploadIcon(maskNum){
 				if(dataURL!="false"){
 					dataURLIcon=document.getElementById("iconImageCanvas").toDataURL();
 					var requestBody=dataURLIcon;
 					var xmlhttp=new XMLHttpRequest();
-					xmlhttp.open("POST", "../php/writeBase64.php?fn=controller/maskIcons/mask7.jpg", true);
+					xmlhttp.open("POST", "../php/writeBase64.php?fn=controller/maskIcons/mask"+maskNum+".jpg", true);
 					xmlhttp.send(requestBody);
 					xmlhttp.onload = function(e){
 						console.log(xmlhttp.response.status);
