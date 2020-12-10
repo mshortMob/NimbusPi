@@ -24,10 +24,20 @@
 			#uploadButton{
 				display:none;
 				position: absolute;
-				width:31%;
+				width:14.5%;
 				height:10%;
 				top:3.75%;
 				left:35%;
+				background-color: grey;
+				font-size: 1.66em;
+			}
+			#uploadButton2{
+				display:none;
+				position: absolute;
+				width:14.5%;
+				height:10%;
+				top:3.75%;
+				left:50%;
 				background-color: grey;
 				font-size: 1.66em;
 			}
@@ -131,6 +141,7 @@
 							document.getElementById("chromaSlider").style.display="block";
 							dataURLIcon=document.getElementById("iconImageCanvas").toDataURL();
 							document.getElementById("uploadButton").style.display="block";
+							document.getElementById("uploadButton2").style.display="block";
 							document.getElementById("exitButton").style.width="31.5%";
 							document.getElementById("exitButton").style.left="67%";
 						},300)
