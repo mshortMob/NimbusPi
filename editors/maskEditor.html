@@ -225,15 +225,44 @@
 			}
 		
 			function updateChroma(thresh){
-				var canvas = document.getElementById("displayImageCanvas");
-				var context = canvas.getContext("2d");
-				var video=document.getElementById("previewImage");
-				context.save();
-				context.scale(1,1);
-				context.drawImage(video, 0, 0, 800, 600);
-				context.restore();
-				imgData = context.getImageData(0, 0, 800, 600);
-				context.putImageData(computeChroma(imgData, imgData, thresh), 0, 0);
+
+				updateDisplayCanvas();
+				updateMaskCanvas();
+				updateIconCanvas();
+
+				function updateDisplayCanvas(){
+					var canvas = document.getElementById("displayImageCanvas");
+					var context = canvas.getContext("2d");
+					var video=document.getElementById("previewImage");
+					context.save();
+					context.scale(1,1);
+					context.drawImage(video, 0, 0, 800, 600);
+					context.restore();
+					imgData = context.getImageData(0, 0, 800, 600);
+					context.putImageData(computeChroma(imgData, imgData, thresh), 0, 0);
+				}
+				function updateMaskCanvas(){
+					var canvas = document.getElementById("maskImageCanvas");
+					var context = canvas.getContext("2d");
+					var video=document.getElementById("previewImage");
+					context.save();
+					context.scale(-1,-1);
+					context.drawImage(video, 0, 0, -800, -600);
+					context.restore();
+					imgData = context.getImageData(0, 0, 800, 600);
+					context.putImageData(computeChroma(imgData, imgData, thresh), 0, 0);
+				}
+				function updateIconCanvas(){
+					var canvas = document.getElementById("iconImageCanvas");
+					var context = canvas.getContext("2d");
+					var video=document.getElementById("previewImage");
+					context.save();
+					context.scale(1,1);
+					context.drawImage(video, 0, 0, 800, 600);
+					context.restore();
+					imgData = context.getImageData(0, 0, 800, 600);
+					context.putImageData(computeChroma(imgData, imgData, thresh), 0, 0);
+				}
 			}
 			
 			function computeChroma(imgData, initialData, thresh){
