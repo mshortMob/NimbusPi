@@ -1647,7 +1647,13 @@
 				if(changedMask==1){
 					if(parseInt(globalState.MaskA)!=lastMaskAValue){
 						if(parseInt(globalState.MaskA)<numberOfMasks+1){
-							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskA)+'.jpg' ) };
+							if(globalState.MaskA==7){
+								uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
+							}else if(globalState.MaskA==6){
+								uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
+							}else{
+								uniforms1.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskA)+'.jpg' ) };
+							}
 							lastMaskAValue=parseInt(globalState.MaskA);
 						}else{
 							uniforms1.maskTexture.value=dataTex;
@@ -1658,7 +1664,13 @@
 				if(changedMask==2){
 					if(parseInt(globalState.MaskB)!=lastMaskBValue){
 						if(parseInt(globalState.MaskB)<numberOfMasks+1){
-							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskB)+'.jpg' ) };
+							if(globalState.MaskB==7){
+								uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
+							}else if(globalState.MaskB==6){
+								uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
+							}else{
+								uniforms2.maskTexture={ value: new THREE.TextureLoader().load( '../masks/mask'+parseInt(globalState.MaskB)+'.jpg' ) };
+							}
 							lastMaskBValue=parseInt(globalState.MaskB);
 						}else{
 							uniforms2.maskTexture=dataTex;
@@ -2924,6 +2936,12 @@
 						maskItem.style.opacity="1.0"
 					}
 					maskContainer.appendChild(maskItem);
+				}
+				if(deck=="B"){
+					document.getElementById("MaskItem7_DeckA").style.backgroundImage='url("maskIcons/mask7.jpg?v='+parseInt(new Date().getTime())+'")';
+					document.getElementById("MaskItem7_DeckB").style.backgroundImage='url("maskIcons/mask7.jpg?v='+parseInt(new Date().getTime())+'")';
+					document.getElementById("MaskItem6_DeckA").style.backgroundImage='url("maskIcons/mask6.jpg?v='+parseInt(new Date().getTime())+'")';
+					document.getElementById("MaskItem6_DeckB").style.backgroundImage='url("maskIcons/mask6.jpg?v='+parseInt(new Date().getTime())+'")';
 				}
 			}
 
