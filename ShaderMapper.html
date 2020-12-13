@@ -319,6 +319,12 @@ void main()	{
 						if(globalController.MaskB==7){
 							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
 						}
+						if(globalController.MaskA==6){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
+						}
+						if(globalController.MaskB==6){
+							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
+						}
 						mask7UpdateNumber=mask7UpdateNumber+1;
 						resetImageMaskNeedsUpdate();
 					}
@@ -781,7 +787,13 @@ void main()	{
 				if(changedMask==1){
 					if(parseInt(globalController.MaskA)!=lastMaskAValue){
 						if(parseInt(globalController.MaskA)<numberOfMasks+1){
-							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.MaskA)+'.jpg' ) };
+							if(globalController.MaskA==7){
+								uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
+							}else if(globalController.MaskA==6){
+								uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
+							}else{
+								uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.MaskA)+'.jpg' ) };
+							}
 							lastMaskAValue=parseInt(globalController.MaskA);
 						}else{
 							uniforms1.maskTexture.value=dataTex;
@@ -792,7 +804,13 @@ void main()	{
 				if(changedMask==2){
 					if(parseInt(globalController.MaskB)!=lastMaskBValue){
 						if(parseInt(globalController.MaskB)<numberOfMasks+1){
-							uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.MaskB)+'.jpg' ) };
+							if(globalController.MaskB==7){
+								uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
+							}else if(globalController.MaskB==6){
+								uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
+							}else{
+								uniforms2.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.MaskB)+'.jpg' ) };
+							}
 							lastMaskBValue=parseInt(globalController.MaskB);
 						}else{
 							uniforms2.maskTexture=dataTex;
