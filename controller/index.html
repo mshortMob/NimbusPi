@@ -2103,6 +2103,7 @@
 				document.getElementById("xyHandleElementA").style.top=parseInt(globalState.xyPadYA/1.44*window.innerHeight)+"px";
 				document.getElementById("xyHandleElementB").style.left=parseInt(globalState.xyPadXB/1.24*window.innerWidth)+"px";
 				document.getElementById("xyHandleElementB").style.top=parseInt(globalState.xyPadYB/1.44*window.innerHeight)+"px";
+				updateZSliderUI();
 			}
 			
 			function onDocumentTouchMove(event){
@@ -2877,6 +2878,23 @@
 						}
 						document.getElementById("maskMapModeButton").style.display="none";
 					}
+					updateZSliderUI();
+				}
+			}
+
+			function updateZSliderUI(){
+				document.getElementById("zSlider").style.height=parseInt(document.getElementById("mapping-controls-grid-container").clientHeight-2)+"px"; 
+				if(document.getElementById("zSlider").value == "20"){
+					document.getElementById("zSlider").value=19;
+					document.getElementById("zSlider").value=20;
+					console.log("aa");
+				} else if(document.getElementById("zSlider").value == "-20"){
+					document.getElementById("zSlider").value=-19;
+					document.getElementById("zSlider").value=-20;
+					console.log("bb");
+				}else{
+					document.getElementById("zSlider").value=parseInt(document.getElementById("zSlider").value)+1;
+					document.getElementById("zSlider").value=parseInt(document.getElementById("zSlider").value)-1;
 				}
 			}
 
