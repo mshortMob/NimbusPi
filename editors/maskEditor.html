@@ -24,20 +24,20 @@
 			#uploadButton{
 				display:none;
 				position: absolute;
-				width:15.5%;
+				width:16.25%;
 				height:10%;
 				top:3.75%;
-				left:35%;
+				left:33.5%;
 				background-color: grey;
 				font-size: 1.3em;
 			}
 			#uploadButton2{
 				display:none;
 				position: absolute;
-				width:15.5%;
+				width:16.25%;
 				height:10%;
 				top:3.75%;
-				left:51%;
+				left:50.25%;
 				background-color: grey;
 				font-size: 1.3em;
 			}
@@ -55,8 +55,8 @@
 			#displayImageCanvas{
 				position: absolute;
 				width:96.2%;
-				height:65%;
-				top:18%;
+				height:68.5%;
+				top:15.25%;
 				left:1.5%;
 			}
 			#blankPreview{
@@ -69,8 +69,8 @@
 			}
 			#chromaSlider{
 				width:97%;
-				height:9%;
-				top:87%;
+				height:7%;
+				top:84.5%;
 				left:1.25%;
 				position: absolute;
 				border:2.5px solid grey;
@@ -85,6 +85,33 @@
 				background-color: darkgrey;
 			}
 			#chromaSlider::-webkit-slider-thumb{
+				-webkit-appearance: none;
+				appearance: none;
+				width: 40px;
+				height: 100%;
+				background: slategray;
+				cursor: pointer;
+				border-left:1px solid darkslategray;
+				border-right:1px solid darkslategray;
+			}
+			#levelSlider{
+				width:97%;
+				height:7%;
+				top:92%;
+				left:1.25%;
+				position: absolute;
+				border:2.5px solid grey;
+				-webkit-appearance: none;
+				display:none;
+				outline: none;
+				opacity: 1;
+				-webkit-transition: .2s;
+				transition: opacity .2s;
+				margin:0px;
+				padding:0px;
+				background-color: darkgrey;
+			}
+			#levelSlider::-webkit-slider-thumb{
 				-webkit-appearance: none;
 				appearance: none;
 				width: 40px;
@@ -110,8 +137,8 @@
 		<canvas id="maskImageCanvas" style="display: none;" width="800" height="600"></canvas>
 		<canvas id="displayImageCanvas" style="display: block;" width="800" height="600"></canvas>
 		<button id="exitButton" onclick="window.location.href='http://'+location.host+'/controller/index.html'" style="">Exit / Back</button>
-		<input id="chromaSlider" type="range" min="-255" max="255" value="0"  onchange="updateChroma(this.value)" onmousemove="updateChroma(this.value)">
-
+		<input id="chromaSlider" type="range" min="-255" max="255" value="0"  onchange="updateChroma(document.getElementById('chromaSlider').value,document.getElementById('levelSlider').value)" onmousemove="updateChroma(document.getElementById('chromaSlider').value,document.getElementById('levelSlider').value)">
+		<input id="levelSlider" type="range" min="0" max="2550" value="0"  onchange="updateChroma(document.getElementById('chromaSlider').value,document.getElementById('levelSlider').value)" onmousemove="updateChroma(document.getElementById('chromaSlider').value,document.getElementById('levelSlider').value)">
 
 		<script>
 			dataURL="false";
@@ -139,6 +166,7 @@
 						updateDisplayImageCanvas();
 						setTimeout(function(){
 							document.getElementById("chromaSlider").style.display="block";
+							document.getElementById("levelSlider").style.display="block";
 							dataURLIcon=document.getElementById("iconImageCanvas").toDataURL();
 							document.getElementById("uploadButton").style.display="block";
 							document.getElementById("uploadButton2").style.display="block";
@@ -238,7 +266,7 @@
 				initialIconCanvasImgData=context.getImageData(0, 0, 800, 600);
 			}
 		
-			function updateChroma(thresh){
+			function updateChroma(thresh, thresh2){
 
 				updateDisplayCanvas();
 				updateMaskCanvas();
@@ -253,7 +281,7 @@
 					context.drawImage(video, 0, 0, 800, 600);
 					context.restore();
 					imgData = context.getImageData(0, 0, 800, 600);
-					context.putImageData(computeChroma(imgData, imgData, thresh), 0, 0);
+					context.putImageData(computeChroma(imgData, imgData, thresh, thresh2), 0, 0);
 				}
 				function updateMaskCanvas(){
 					var canvas = document.getElementById("maskImageCanvas");
@@ -264,7 +292,7 @@
 					context.drawImage(video, 0, 0, -800, -600);
 					context.restore();
 					imgData = context.getImageData(0, 0, 800, 600);
-					context.putImageData(computeChroma(imgData, imgData, thresh), 0, 0);
+					context.putImageData(computeChroma(imgData, imgData, thresh, thresh2), 0, 0);
 				}
 				function updateIconCanvas(){
 					var canvas = document.getElementById("iconImageCanvas");
@@ -275,11 +303,11 @@
 					context.drawImage(video, 0, 0, 800, 600);
 					context.restore();
 					imgData = context.getImageData(0, 0, 800, 600);
-					context.putImageData(computeChroma(imgData, imgData, thresh), 0, 0);
+					context.putImageData(computeChroma(imgData, imgData, thresh, thresh2), 0, 0);
 				}
 			}
 			
-			function computeChroma(imgData, initialData, thresh){
+			function computeChroma(imgData, initialData, thresh, thresh2){
 				if(thresh>=0){
 					for(var x=0; x<imgData.data.length; x=x+4){
 						if( ((initialData.data[x]+initialData.data[x+1]+initialData.data[x+2])/3) < thresh){
@@ -288,10 +316,10 @@
 							imgData.data[x+2]=0;
 							imgData.data[x+3]=255;
 						}else{
-							imgData.data[x]=initialData.data[x];
-							imgData.data[x+1]=initialData.data[x+1];
-							imgData.data[x+2]=initialData.data[x+2];
-							imgData.data[x+3]=initialData.data[x+3];
+							imgData.data[x]=initialData.data[x]*(1+(thresh2/255));
+							imgData.data[x+1]=initialData.data[x+1]*(1+(thresh2/255));
+							imgData.data[x+2]=initialData.data[x+2]*(1+(thresh2/255));
+							imgData.data[x+3]=initialData.data[x+3]*(1+(thresh2/255));
 						}
 					}
 				}else{
@@ -302,16 +330,43 @@
 							imgData.data[x+2]=0;
 							imgData.data[x+3]=255;
 						}else{
-							imgData.data[x]=initialData.data[x];
-							imgData.data[x+1]=initialData.data[x+1];
-							imgData.data[x+2]=initialData.data[x+2];
-							imgData.data[x+3]=initialData.data[x+3];
+							imgData.data[x]=initialData.data[x]*(1+(thresh2/255));
+							imgData.data[x+1]=initialData.data[x+1]*(1+(thresh2/255));
+							imgData.data[x+2]=initialData.data[x+2]*(1+(thresh2/255));
+							imgData.data[x+3]=initialData.data[x+3]*(1+(thresh2/255));
 						}
 					}
 				}
 				return imgData;
 			}
-		
+
+			checkDeviceOrientation();
+			function checkDeviceOrientation(){
+				var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+				window.addEventListener("orientationchange", function() {
+					setTimeout(function(){
+						document.getElementById("chromaSlider").value=document.getElementById("chromaSlider").value+1;
+						document.getElementById("levelSlider").value=document.getElementById("levelSlider").value+1;
+						document.getElementById("chromaSlider").value=document.getElementById("chromaSlider").value-1;
+						document.getElementById("levelSlider").value=document.getElementById("levelSlider").value-1;
+					},500);
+					var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+					if (orientation.indexOf("landscape")!=-1) {
+						// document.getElementById("orientation_overlay").style.display="none";
+					}else{
+						// document.getElementById("orientation_overlay").style.display="block";
+					}
+				}, false);
+				window.addEventListener("resize", function() {
+					setTimeout(function(){
+						document.getElementById("chromaSlider").value=document.getElementById("chromaSlider").value+1;
+						document.getElementById("levelSlider").value=document.getElementById("levelSlider").value+1;
+						document.getElementById("chromaSlider").value=document.getElementById("chromaSlider").value-1;
+						document.getElementById("levelSlider").value=document.getElementById("levelSlider").value-1;
+					},500);
+				}, false);
+			}
+			
 		</script>
 	</body>
 </html>
