@@ -76,23 +76,10 @@
 				varying vec2 vUv;
 				uniform sampler2D maskTexture;
 
+
 				void main( void ) {
-
-					vec2 p = 1.0*vUv;
-					
-
-					for(int i=1;i<5;i++)
-					{
-						vec2 newp=p;
-						newp.x+=.1*sin(time);
-						newp.y+=.1*cos(time);
-						p=newp;
-					}
-				
-					vec3 camIn = texture2D( maskTexture, p ).rgb;
-
-					float color = 1.0;
-					gl_FragColor = vec4( camIn, 1.0 );
+					vec3 camIn = texture2D( maskTexture, vUv ).rgb;
+					gl_FragColor = vec4( mix(camIn, vec3(camIn.b, camIn.r, camIn.g), (sin(time)+1.)/2. ), 1.0 );
 				
 				}			
 			</script>
@@ -1054,6 +1041,7 @@
 			}
 			
 			function render() {
+				uniforms1[ "time" ].value += .05;
 				computeTraces()
 				renderer.render( scene, camera );
 			}
