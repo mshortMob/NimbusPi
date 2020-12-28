@@ -77,14 +77,22 @@
 				uniform sampler2D maskTexture;
 
 				void main( void ) {
+
+					vec2 p = 1.0*vUv;
+					
+
+					for(int i=1;i<5;i++)
+					{
+						vec2 newp=p;
+						newp.x+=.1*sin(time);
+						newp.y+=.1*cos(time);
+						p=newp;
+					}
 				
-					vec2 position = -1.0+2.*vUv;
-					position=position*position*vec2(-1.0, 1.0)+ vec2(2.5, 2.5);
-				
-					vec3 camIn = texture2D( maskTexture, vUv ).rgb;
+					vec3 camIn = texture2D( maskTexture, p ).rgb;
 
 					float color = 1.0;
-					gl_FragColor = vec4( camIn*vec3(color,color,0.), 1.0 );
+					gl_FragColor = vec4( camIn, 1.0 );
 				
 				}			
 			</script>
