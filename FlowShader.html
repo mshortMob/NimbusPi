@@ -61,23 +61,23 @@
 				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 			
 			}
-			</script>
-	
-			<script id="fragmentShader1" type="x-shader/x-fragment">
-				precision mediump float;
-				precision mediump int;
-				
-				uniform float time;
-				varying vec2 vUv;
-				uniform sampler2D maskTexture;
+		</script>
+
+		<script id="fragmentShader1" type="x-shader/x-fragment">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform float time;
+			varying vec2 vUv;
+			uniform sampler2D maskTexture;
 
 
-				void main( void ) {
-					vec3 camIn = texture2D( maskTexture, vUv ).rgb;
-					gl_FragColor = vec4( mix(camIn, vec3(camIn.b, camIn.r, camIn.g), (sin(time)+1.)/2. ), 1.0 );
-				
-				}			
-			</script>
+			void main( void ) {
+				vec3 camIn = texture2D( maskTexture, vUv ).rgb;
+				gl_FragColor = vec4( mix(camIn, vec3(camIn.b, camIn.r, camIn.g), (sin(time)+1.)/2. ), 1.0 );
+			
+			}			
+		</script>
 
 		<script>
 			var colorObject = function() {
