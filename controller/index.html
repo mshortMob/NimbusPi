@@ -2484,7 +2484,7 @@
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
 				}else{				
-					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState, "SavedByController": true, "SceneRate": document.getElementById("SceneRate").value/1000 })
+					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState, "SavedByController": true, "SceneRate": document.getElementById("SceneRate").value/1000, "global":{"Mask":fm_globalState.mask} })
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
 				}
@@ -3217,6 +3217,7 @@
 					xmlhttp2.onload = function(e){
 						fm_statesArray=JSON.parse(xmlhttp2.response).storage;
 						fm_globalState=JSON.parse(xmlhttp2.response).storage2;
+						fm_globalState["mask"]=JSON.parse(xmlhttp2.response).global.Mask;
 
 						if(JSON.parse(xmlhttp2.response).SavedByController==false){
 							console.log("Not saved by controller, scaling now");

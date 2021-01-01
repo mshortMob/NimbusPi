@@ -497,7 +497,7 @@
 						}else{
 							statesArray=JSON.parse(xmlhttp.response).storage
 						}
-
+						globalController.Mask=JSON.parse(xmlhttp.response).global.Mask;
 						updateControlsView();
 						syncObjectsToJson(true);
 						for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
