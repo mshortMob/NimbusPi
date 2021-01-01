@@ -33,8 +33,8 @@
 		</style>
 	</head>
 	<body>
-		<video id="video" autoplay width='600' height='300' style="display:none;"></video>
-		<canvas id="canvasp8" autoplay width='600' height='300' style=""></canvas>
+		<video id="video" autoplay width='256' height='256' style="display:none;"></video>
+		<canvas id="canvasp8" autoplay width='256' height='256' style="display:none;"></video>
 		<script src="dependancies/three.js"></script>
 		<script src="dependancies/pixel8.js"></script>
 		<script src='dependancies/dat.gui.min.js'></script>
@@ -42,6 +42,45 @@
 		<script src="dependancies/NURBSSurface.js"></script>
 		<script src="dependancies/NURBSUtils.js"></script>
 		<script src="dependancies/TrackballControls.js"></script>
+
+		<script id="vertexShader" type="x-shader/x-vertex">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform mat4 modelViewMatrix; 
+			uniform mat4 projectionMatrix;
+			
+			attribute vec3 position;
+			attribute vec2 uv;
+			
+			varying vec2 vUv;
+			
+			void main()	{
+				vUv = uv;
+			
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			
+			}
+		</script>
+
+		<script id="fragmentShader1" type="x-shader/x-fragment">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform float time;
+			varying vec2 vUv;
+			uniform sampler2D dataTexture;
+			uniform sampler2D maskTexture;
+
+
+			void main( void ) {
+				vec3 dataIn = texture2D( dataTexture, vUv ).rgb;
+				vec3 mask = texture2D( maskTexture, vUv ).rgb;
+				gl_FragColor = vec4( dataIn*((mask.r+mask.g+mask.b)/3.0), ((mask.r+mask.g+mask.b)/3.0) );
+			
+			}			
+		</script>
+		
 		<script>
 			var colorObject = function() {
 				this.currentColHex="ff00ff";
@@ -174,7 +213,28 @@
 				addControls();	
 				dataTexture = new THREE.DataTexture( materialArray, width, height, THREE.RGBAFormat );
 				dataTexture.needsUpdate = true;
-				material = new THREE.MeshLambertMaterial({map:dataTexture, morphTargets: true, side: THREE.DoubleSide, transparent:true})
+				// material = new THREE.MeshLambertMaterial({map:dataTexture, morphTargets: true, side: THREE.DoubleSide, transparent:true})
+				
+				maskTexture=new THREE.TextureLoader().load( 'masks/mask2.jpg' );
+				maskTexture.needsUpdate = true;
+				uniforms1 = {
+					"time": { value: 1.0 },
+					"resolution": [128,128],
+					"mousex": { value: 0.0 },
+					"mousey": { value: 0.0 },
+					"audioTime": { value: 0.0 },
+					"dataTexture": { value: dataTexture },
+					"maskTexture": { value: maskTexture },
+					"brightness": { value: 1.0 }
+				};
+
+				material = new THREE.RawShaderMaterial( {
+					uniforms: uniforms1,
+					vertexShader: document.getElementById( 'vertexShader' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentShader'+'1' ).textContent
+				});	
+				material.side=THREE.DoubleSide;
+				
 				container=null;
 				camera=null;
 				controls=null;
@@ -232,7 +292,7 @@
 				renderer.setClearColor( 0x000000 , 1);
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.sortObjects = false;
+				renderer.sortObjects = true;
 				container.appendChild( renderer.domElement );
 				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
@@ -635,15 +695,15 @@
 			}
 			
 			function setKalMode(){
-				if( parseInt(painterController.KaleidoScope) != material.map.repeat.x){
-					if(parseInt(painterController.KaleidoScope) != 1){
-						material.map.wrapS = material.map.wrapT = THREE.MirroredRepeatWrapping;
-						material.map.repeat.set( parseInt(painterController.KaleidoScope), parseInt(painterController.KaleidoScope) );
-					}else{
-						material.map.wrapS = material.map.wrapT = THREE.ClampToEdgeWrapping;
-						material.map.repeat.set( 1, 1 );
-					}
-				}
+				// if( parseInt(painterController.KaleidoScope) != material.map.repeat.x){
+				// 	if(parseInt(painterController.KaleidoScope) != 1){
+				// 		material.map.wrapS = material.map.wrapT = THREE.MirroredRepeatWrapping;
+				// 		material.map.repeat.set( parseInt(painterController.KaleidoScope), parseInt(painterController.KaleidoScope) );
+				// 	}else{
+				// 		material.map.wrapS = material.map.wrapT = THREE.ClampToEdgeWrapping;
+				// 		material.map.repeat.set( 1, 1 );
+				// 	}
+				// }
 			}
 			
 			function addPlane(){
@@ -956,7 +1016,7 @@
 							materialArray[x+3]=0;
 						}
 				}
-				dataTexture.needsUpdate = true
+				dataTexture.needsUpdate = true;
 			}
 			
 			function animate() {
