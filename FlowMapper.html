@@ -68,13 +68,15 @@
 			precision mediump int;
 			
 			uniform float time;
+			uniform float kalMode;
 			varying vec2 vUv;
 			uniform sampler2D dataTexture;
 			uniform sampler2D maskTexture;
 
 
 			void main( void ) {
-				vec3 dataIn = texture2D( dataTexture, vUv ).rgb;
+				vec2 p=vUv*kalMode;
+				vec3 dataIn = texture2D( dataTexture, p ).rgb;
 				vec3 mask = texture2D( maskTexture, vUv ).rgb;
 				gl_FragColor = vec4( dataIn*((mask.r+mask.g+mask.b)/3.0), ((mask.r+mask.g+mask.b)/3.0) );
 			
@@ -226,8 +228,11 @@
 					"audioTime": { value: 0.0 },
 					"dataTexture": { value: dataTexture },
 					"maskTexture": { value: maskTexture },
-					"brightness": { value: 1.0 }
+					"brightness": { value: 1.0 },
+					"kalMode": { value: 1.0 }
 				};
+
+				uniforms1[ "dataTexture" ].value.wrapS = uniforms1[ "dataTexture" ].value.wrapT = THREE.MirroredRepeatWrapping;
 
 				material = new THREE.RawShaderMaterial( {
 					uniforms: uniforms1,
@@ -724,6 +729,7 @@
 				// 		material.map.repeat.set( 1, 1 );
 				// 	}
 				// }
+				uniforms1.kalMode.value=painterController.KaleidoScope;
 			}
 			
 			function addPlane(){
