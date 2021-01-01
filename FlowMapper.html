@@ -383,6 +383,11 @@
 				utilsFolder.add(globalController, "selectedCamera", 0, 1, 1 ).onChange(function(){globalController.selectedCamera=parseInt(globalController.selectedCamera);getVideo("select",globalController.selectedCamera);});
 				utilsFolder.add({ 'ShaderMapper':function(){ window.location.replace("http://"+location.hostname+"/ShaderMapper.html"); }},'ShaderMapper');
 				utilsFolder.add({ 'OrbitMapper':function(){ window.location.replace("http://"+location.hostname+"/OrbitMapper.html"); }},'OrbitMapper');
+				miscFolder=gui.addFolder( "Remote Control" )
+				miscFolder.open();
+				miscFolder.add({ 'Slave Mode':function(){  initSlaveMode(); }},'Slave Mode');
+				miscFolder.add({ 'Controller Mode':function(){ initControllerMode();  }},'Controller Mode');
+				miscFolder.add({ 'Standalone':function(){ initStandaloneMode();  }},'Standalone');
 			}
 									
 			function changeMask(){
@@ -429,6 +434,26 @@
 					console.log("starting slaveModeInterval");
 					getControllerData(true);
 					slaveModeInterval=setInterval(function(){getControllerData(false);getCurrentSceneNumber();},  110);
+				}
+			}
+			
+			function initStandaloneMode(){
+				if(slaveModeInterval!=-1){
+					console.log("stopping slaveModeInterval");
+					clearInterval(slaveModeInterval);
+					slaveModeInterval=-1;
+				}
+				if(controllerModeInterval!=-1){
+					console.log("stopping controllerModeInterval");
+					clearInterval(controllerModeInterval);
+					slaveModeInterval=-1;
+				}
+			}
+
+			function initControllerMode(){
+				if(controllerModeInterval==-1){
+					console.log("starting controllerModeInterval");
+					controllerModeInterval=setInterval(function(){saveState();},  400);
 				}
 			}
 			
