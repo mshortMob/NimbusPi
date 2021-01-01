@@ -702,6 +702,12 @@
 				}			
 				keyPressToSlider(event, "p", globalController, "Mask", 1,  gui.__folders.Global, function(){ globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues(); } );
 				keyPressToSlider(event, "P", globalController, "Mask", -1, gui.__folders.Global, function(){globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues(); } );			
+				if(event.key==";"){
+					initStandaloneMode();
+				}
+				if(event.key==":"){
+					initSlaveMode();
+				}
 			}
 			
 			function updateControlsView(){
