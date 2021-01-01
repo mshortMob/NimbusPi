@@ -252,8 +252,8 @@
 				globalFolder.open();
 				globalFolder.add(globalController, "selectedObject", 0, 3, 1 ).onChange(function(){globalController.selectedObject=parseInt(globalController.selectedObject);updateControlsView();syncObjectsToJson();});
 				globalFolder.add(globalController, "Mask", 1, 7, 1 ).onChange(function(){globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues();});
+				globalFolder.add( globalController, "VolumeThreshold", .0001,.5,.0001 ).onChange(function(){updateControlsValues();});	
 				globalFolder.add({ 'ChangeOrbit':function(){ bufferScene.children=[bufferScene.children[0]];initOrbit(); }},'ChangeOrbit');
-				globalFolder.add( globalController, "VolumeThreshold", .0001,.1,.0001 ).onChange(function(){updateControlsValues();});	
 				gui.width=360;
 				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
@@ -291,7 +291,7 @@
 					gui.__folders.ObjectControls.__controllers[i].updateDisplay();
 				}
 				gui.__folders.Global.__controllers[1].updateDisplay();
-				gui.__folders.Global.__controllers[3].updateDisplay();
+				gui.__folders.Global.__controllers[2].updateDisplay();
 			}
 			
 			function updateControlsValues(){  

@@ -185,6 +185,7 @@
 			}	
 			
 			function initGlobalVars(){
+				lastMaskValue="-1";
 				haveChangedLocalSettingsInControllerMode=true;
 				lastObjectVerticeData="";
 				mouseLastMovedTime=new Date().getTime();
@@ -317,6 +318,7 @@
 					 mappingMode:0,
 					 sceneRate:0.0,
 					 Master:false,
+					 Mask:1,
 					 Slave:false,
 					 PresetName:"Preset_1",
 					 selectedCamera:0
@@ -348,6 +350,7 @@
 				globalFolder.open();
 				globalFolder.add(globalController, "selectedObject", 0, 3, 1 ).onChange(function(){globalController.selectedObject=parseInt(globalController.selectedObject);updateControlsView();syncObjectsToJson();});
 				globalFolder.add(globalController, "selectedScene", 0, 3, 1 ).onChange(function(){globalController.selectedScene=parseInt(globalController.selectedScene);updateControlsView();});
+				globalFolder.add(globalController, "Mask", 1, 7, 1 ).onChange(function(){globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues();});
 				globalFolder.add(globalController, "mappingMode", 0, 1, .1 ).onChange(function(){if(statesArray[globalController.selectedObject]["Visible"]==true){displayObjects[globalController.selectedObject].hideChildren();displayObjects[globalController.selectedObject].showChildren();};});
 				globalFolder.add( globalController, "sceneRate", 0, .15, .0001 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
 				gui.width=360;
@@ -377,6 +380,19 @@
 				utilsFolder.add({ 'OrbitMapper':function(){ window.location.replace("http://"+location.hostname+"/OrbitMapper.html"); }},'OrbitMapper');
 			}
 									
+			function changeMask(){
+				if(parseInt(globalController.Mask)!=lastMaskValue){
+						if(globalController.Mask==7){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
+						}else if(globalController.Mask==6){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
+						}else{
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.Mask)+'.jpg' ) };
+						}
+						lastMaskValue=parseInt(globalController.Mask);
+				}
+			}
+			
 			function checkForForceInitControllerMode(){
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("GET", "php/read.php?fn=globalPresets/forceInitControllerMode.txt", true);
@@ -654,6 +670,8 @@
 				if(event.key=='|'){
 					window.location.replace("http://"+location.hostname+"/OrbitMapper.html");
 				}			
+				keyPressToSlider(event, "p", globalController, "Mask", 1,  gui.__folders.Global, function(){ globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues(); } );
+				keyPressToSlider(event, "P", globalController, "Mask", -1, gui.__folders.Global, function(){globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues(); } );			
 			}
 			
 			function updateControlsView(){
@@ -667,6 +685,7 @@
 				  gui.__folders.PainterControls.__controllers[i].updateDisplay();
 				}
 				gui.__folders.Global.__controllers[1].updateDisplay();
+				gui.__folders.Global.__controllers[2].updateDisplay();
 				setPPResolution();
 				setKalMode();
 			}
@@ -690,7 +709,8 @@
 					displayObjects[x].hideChildren();
 				}
 				displayObjects[globalController.selectedObject].showChildren();
-				setKalMode()
+				setKalMode();
+				changeMask();
 				//changeImageBank();
 			}
 			
@@ -1061,7 +1081,7 @@
 			}
 			
 			function saveState(){
-				var requestBody=JSON.stringify({"storage" : statesArray, "storage2": presetsArray, "SavedByController": false})
+				var requestBody=JSON.stringify({"storage" : statesArray, "storage2": presetsArray, "SavedByController": false, "global":{"VolumeThreshold":globalController.VolumeThreshold, "Mask":globalController.Mask} });
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "php/write.php?fn=flowMapperPresets/"+globalController.PresetName+".txt", true);
 				xmlhttp.send(requestBody);
@@ -1075,6 +1095,7 @@
 				xmlhttp.onload = function(e){
 					statesArray=JSON.parse(xmlhttp.response).storage
 					presetsArray=JSON.parse(xmlhttp.response).storage2
+					globalController.Mask=JSON.parse(xmlhttp.response).global.Mask;
 					if(JSON.parse(xmlhttp.response).SavedByController==true){
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
