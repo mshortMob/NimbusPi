@@ -1065,11 +1065,20 @@
 							materialArray[x+2]=clr.requestB()*(1-(mixVal))+data[x+2]*((mixVal));
 							materialArray[x+3]=255;
 						}
-						if(materialArray[x+3] > 0 ){
-							materialArray[x+3]=materialArray[x+3]-(delVal);
+						if(materialArray[x] > 0 ){
+							materialArray[x]=materialArray[x]-(delVal);
+						}else{
+							materialArray[x]=0;
 						}
-						if( materialArray[x+3] < 0 ){
-							materialArray[x+3]=0;
+						if(materialArray[x+1] > 0 ){
+							materialArray[x+1]=materialArray[x+1]-(delVal);
+						}else{
+							materialArray[x+1]=0;
+						}
+						if(materialArray[x+2] > 0 ){
+							materialArray[x+2]=materialArray[x+2]-(delVal);
+						}else{
+							materialArray[x+2]=0;
 						}
 				}
 				dataTexture.needsUpdate = true;
