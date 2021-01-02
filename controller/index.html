@@ -896,6 +896,8 @@
 			<input type="range" min="1" max="4" value="1" class="fm_controls" id="KaleidoScope" onchange="updateFMState();">
 			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Scene Rate:</button>
 			<input type="range" min="0" max="150" value="0" class="fm_controls" id="SceneRate" onchange="updateFMState();">
+			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Mask:</button>
+			<input type="range" min="1" max="7" value="1" class="fm_controls" id="FmMask" onchange="updateFMState();">
 		</div>
 
 		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:42px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
@@ -2817,6 +2819,7 @@
 					getCurrentFMScene();
 					document.getElementById('fm_page').style.display='grid';
 					document.getElementById('fm-scene-grid-container').style.display='grid';
+					updateZSliderUI();
 				}
 				function clearMapping(){
 					document.getElementById('mapping_page').style.display='none';
@@ -2902,6 +2905,32 @@
 					document.getElementById("zSlider").value=parseInt(document.getElementById("zSlider").value)+1;
 					document.getElementById("zSlider").value=parseInt(document.getElementById("zSlider").value)-1;
 				}
+
+				document.getElementById("BrightnessSensitivity").className="fm_controls1";
+				document.getElementById("ColorHop").className="fm_controls1";
+				document.getElementById("ColorMix").className="fm_controls1";
+				document.getElementById("ColorRate").className="fm_controls1";
+				document.getElementById("FadeTime").className="fm_controls1";
+				document.getElementById("KaleidoScope").className="fm_controls1";
+				document.getElementById("VelocitySensitivity").className="fm_controls1";
+				document.getElementById("SceneRate").className="fm_controls1";
+				document.getElementById("FmMask").className="fm_controls1";
+
+				setTimeout(function(){
+					document.getElementById("BrightnessSensitivity").className="fm_controls";
+					document.getElementById("ColorHop").className="fm_controls";
+					document.getElementById("ColorMix").className="fm_controls";
+					document.getElementById("ColorRate").className="fm_controls";
+					document.getElementById("FadeTime").className="fm_controls";
+					document.getElementById("KaleidoScope").className="fm_controls";
+					document.getElementById("VelocitySensitivity").className="fm_controls";
+					document.getElementById("SceneRate").className="fm_controls";
+					document.getElementById("FmMask").className="fm_controls";
+				},5);
+
+
+
+				
 			}
 
 			function setCurrentApp(appInitials){
@@ -3250,6 +3279,7 @@
 						document.getElementById("FadeTime").value=fm_globalState[currentFMScene].FadeTime*1000;
 						document.getElementById("KaleidoScope").value=fm_globalState[currentFMScene].KaleidoScope;
 						document.getElementById("VelocitySensitivity").value=fm_globalState[currentFMScene].VelocitySensitivity*1000;
+						document.getElementById("FmMask").value=parseInt(fm_globalState.mask);
 
 						syncObjectsToJson();
 					}
@@ -3257,6 +3287,7 @@
 			}
 		
 			function updateFMState(){
+
 				fm_globalState[currentFMScene].BrightnessSensitivity=document.getElementById("BrightnessSensitivity").value/1000;
 				fm_globalState[currentFMScene].ColorHop=document.getElementById("ColorHop").value/100;
 				fm_globalState[currentFMScene].ColorMix=document.getElementById("ColorMix").value/1000;
@@ -3264,6 +3295,7 @@
 				fm_globalState[currentFMScene].FadeTime=document.getElementById("FadeTime").value/1000;
 				fm_globalState[currentFMScene].KaleidoScope=document.getElementById("KaleidoScope").value;
 				fm_globalState[currentFMScene].VelocitySensitivity=document.getElementById("VelocitySensitivity").value/1000;
+				fm_globalState.mask=parseInt(document.getElementById("FmMask").value);
 			}
 		
 			function rebootPi(){
