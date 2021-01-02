@@ -1123,6 +1123,7 @@
 				forceInitControllerMode();
 				getCurrentFMScene();
 				setTimeout(function(){watchForMask7ImageUpdates();},1000);
+				setTimeout(function(){updateZSliderUI();},2000);
 			}
 			
 			function drawMaskHandles(){
@@ -2789,6 +2790,7 @@
 					document.getElementById('sectionLabelD').style.display='grid';	
 					document.getElementById('presets-grid-container').style.display='grid';		
 					document.getElementById("mapping_mode_right_border").style.display="block";
+					updateZSliderUI();
 				}
 				function clearMenu(){
 					document.getElementById('misc_page').style.display='none';
@@ -2919,7 +2921,19 @@
 						document.getElementById(fmSlidersList[x]).value=parseInt(document.getElementById(fmSlidersList[x]).value)-1;
 					}
 				}
-				
+
+				dmxOverrideSlidersList=["dmxOverrideSlider1","dmxOverrideSlider2","dmxOverrideSlider3","dmxOverrideSlider4"];
+				for(var x=0; x<dmxOverrideSlidersList.length; x++){
+					document.getElementById(dmxOverrideSlidersList[x]).style.margin="0px 0px "+parseInt(-1*parseInt(document.getElementById("dmx-overrides-container").clientHeight/8))+"px 0px";
+					document.getElementById(dmxOverrideSlidersList[x]).style.height=parseInt(document.getElementById("dmx-overrides-container").clientHeight*.23)+"px";
+					if(document.getElementById(dmxOverrideSlidersList[x]).value==document.getElementById(dmxOverrideSlidersList[x]).max){
+						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)-1;
+						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)+1;
+					}else{
+						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)+1;
+						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)-1;
+					}
+				}
 			}
 
 			function setCurrentApp(appInitials){
