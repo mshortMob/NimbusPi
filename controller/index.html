@@ -880,23 +880,23 @@
 		<div class="menu-page" id="misc_page"></div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="fm_page">
-			<button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
+			<button id="BrightnessSensitivity_Label" class="fm_controls_slider_label" >Brightness Sensitivity:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="BrightnessSensitivity" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Motion Sensitivity:</button>
+			<button id="VelocitySensitivity_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Motion Sensitivity:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="VelocitySensitivity" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Fade Time:</button>
+			<button id="FadeTime_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Fade Time:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="FadeTime" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Mix:</button>
+			<button id="ColorMix_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Color Mix:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorMix" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Rate:</button>
+			<button id="ColorRate_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Color Rate:</button>
 			<input type="range" min="0" max="700" value="50" class="fm_controls" id="ColorRate" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Hop:</button>
+			<button id="ColorHop_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Color Hop:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorHop" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Kalidoscope:</button>
+			<button id="KaleidoScope_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Kalidoscope:</button>
 			<input type="range" min="1" max="4" value="1" class="fm_controls" id="KaleidoScope" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Scene Rate:</button>
+			<button id="SceneRate_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Scene Rate:</button>
 			<input type="range" min="0" max="150" value="0" class="fm_controls" id="SceneRate" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Mask:</button>
+			<button id="FmMask_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Mask:</button>
 			<input type="range" min="1" max="7" value="1" class="fm_controls" id="FmMask" onchange="updateFMState();">
 		</div>
 
@@ -2906,30 +2906,19 @@
 					document.getElementById("zSlider").value=parseInt(document.getElementById("zSlider").value)-1;
 				}
 
-				document.getElementById("BrightnessSensitivity").className="fm_controls1";
-				document.getElementById("ColorHop").className="fm_controls1";
-				document.getElementById("ColorMix").className="fm_controls1";
-				document.getElementById("ColorRate").className="fm_controls1";
-				document.getElementById("FadeTime").className="fm_controls1";
-				document.getElementById("KaleidoScope").className="fm_controls1";
-				document.getElementById("VelocitySensitivity").className="fm_controls1";
-				document.getElementById("SceneRate").className="fm_controls1";
-				document.getElementById("FmMask").className="fm_controls1";
 
-				setTimeout(function(){
-					document.getElementById("BrightnessSensitivity").className="fm_controls";
-					document.getElementById("ColorHop").className="fm_controls";
-					document.getElementById("ColorMix").className="fm_controls";
-					document.getElementById("ColorRate").className="fm_controls";
-					document.getElementById("FadeTime").className="fm_controls";
-					document.getElementById("KaleidoScope").className="fm_controls";
-					document.getElementById("VelocitySensitivity").className="fm_controls";
-					document.getElementById("SceneRate").className="fm_controls";
-					document.getElementById("FmMask").className="fm_controls";
-				},5);
-
-
-
+				fmSlidersList=["BrightnessSensitivity","VelocitySensitivity","FadeTime","ColorMix","ColorRate","ColorHop","KaleidoScope","SceneRate","FmMask"];
+				for(var x=0; x<fmSlidersList.length; x++){
+					document.getElementById(fmSlidersList[x]).style.margin="0px 0px "+parseInt(-1*parseInt(document.getElementById(fmSlidersList[x]+"_Label").clientHeight/2))+"px 0px";
+					document.getElementById(fmSlidersList[x]).style.height=parseInt(document.getElementById(fmSlidersList[x]+"_Label").clientHeight*1.2)+"px";
+					if(document.getElementById(fmSlidersList[x]).value==document.getElementById(fmSlidersList[x]).max){
+						document.getElementById(fmSlidersList[x]).value=parseInt(document.getElementById(fmSlidersList[x]).value)-1;
+						document.getElementById(fmSlidersList[x]).value=parseInt(document.getElementById(fmSlidersList[x]).value)+1;
+					}else{
+						document.getElementById(fmSlidersList[x]).value=parseInt(document.getElementById(fmSlidersList[x]).value)+1;
+						document.getElementById(fmSlidersList[x]).value=parseInt(document.getElementById(fmSlidersList[x]).value)-1;
+					}
+				}
 				
 			}
 
