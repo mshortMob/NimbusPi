@@ -968,7 +968,7 @@
 			
 			void main( void ) {
 				vec3 mask = texture2D( maskTexture, vUv ).rgb;
-				gl_FragColor = vec4( vec3(  0.0, 1.0, 0.0), 1.0 );
+				gl_FragColor = vec4( vec3(  0.0, 1.0, 0.0), (mask.r+mask.g+mask.b)/3. );
 			
 			}	
 		</script>
@@ -1643,6 +1643,11 @@
 				return matList;
 			}
 		
+			function updateFMMask(maskNum){
+				fm_globalState.mask=maskNum;
+				uniforms2.maskTexture.value = new THREE.TextureLoader().load( '../masks/mask'+parseInt(fm_globalState.mask)+'.jpg?v='+parseInt(new Date().getTime()) ) ;
+			}
+
 			function changeMask(changedMask){
 				if(changedMask==1){
 					if(parseInt(globalState.MaskA)!=lastMaskAValue){
@@ -2877,6 +2882,7 @@
 							document.getElementById("selectVertice4").style.display="block";	
 						}
 						document.getElementById("maskMapModeButton").style.display="none";
+						uniforms2.maskTexture.value = new THREE.TextureLoader().load( '../masks/mask'+parseInt(fm_globalState.mask)+'.jpg?v='+parseInt(new Date().getTime()) ) ;
 					}
 					updateZSliderUI();
 				}

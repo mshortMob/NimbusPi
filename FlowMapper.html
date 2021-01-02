@@ -79,7 +79,6 @@
 				vec3 dataIn = texture2D( dataTexture, p ).rgb;
 				vec3 mask = texture2D( maskTexture, vUv ).rgb;
 				gl_FragColor = vec4( dataIn*((mask.r+mask.g+mask.b)/3.0), ((mask.r+mask.g+mask.b)/3.0) );
-			
 			}			
 		</script>
 		
