@@ -826,7 +826,7 @@
 		</div>
 		<div id="dmxPageSelectorContainer">
 			<button class="dmxPageSelectorButtons" id="dmxPageButton1" style="background-color: grey;" onclick="selectDMXPage(this,'presets');" >Presets</button>
-			<button class="dmxPageSelectorButtons" id="dmxPageButton2"  onclick="selectDMXPage(this,'overrides');" >Overrides</button>
+			<button class="dmxPageSelectorButtons" id="dmxPageButton2"  onclick="selectDMXPage(this,'overrides'); updateZSliderUI();" >Overrides</button>
 			<button class="dmxPageSelectorButtons" id="dmxPageButton3"  onclick="selectDMXPage(this,'misc');" >Misc</button>
 		</div>
 		<div class="presets-grid-container" id="presets-grid-container" style="z-index:1;"></div>
@@ -880,22 +880,24 @@
 		<div class="menu-page" id="misc_page"></div>
 		<div class="menu-page" id="mapping_page" style="z-index:-2;"></div>
 		<div class="menu-page" id="fm_page">
-			<button class="fm_controls_slider_label" >Brightness Sensitivity:</button>
+			<button id="BrightnessSensitivity_Label" class="fm_controls_slider_label" >Brightness Sensitivity:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="BrightnessSensitivity" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Motion Sensitivity:</button>
+			<button id="VelocitySensitivity_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Motion Sensitivity:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="VelocitySensitivity" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Fade Time:</button>
+			<button id="FadeTime_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Fade Time:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="FadeTime" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Mix:</button>
+			<button id="ColorMix_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Color Mix:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorMix" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Rate:</button>
+			<button id="ColorRate_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Color Rate:</button>
 			<input type="range" min="0" max="700" value="50" class="fm_controls" id="ColorRate" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Color Hop:</button>
+			<button id="ColorHop_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Color Hop:</button>
 			<input type="range" min="0" max="1000" value="50" class="fm_controls" id="ColorHop" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Kalidoscope:</button>
+			<button id="KaleidoScope_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Kalidoscope:</button>
 			<input type="range" min="1" max="4" value="1" class="fm_controls" id="KaleidoScope" onchange="updateFMState();">
-			<button class="fm_controls_slider_label" style="text-decoration: underline;" >Scene Rate:</button>
+			<button id="SceneRate_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Scene Rate:</button>
 			<input type="range" min="0" max="150" value="0" class="fm_controls" id="SceneRate" onchange="updateFMState();">
+			<button id="FmMask_Label" class="fm_controls_slider_label" style="text-decoration: underline;" >Mask:</button>
+			<input type="range" min="1" max="7" value="1" class="fm_controls" id="FmMask" onchange="updateFMState();">
 		</div>
 
 		<div id="orientation_overlay" onclick="requestFullScreen();" style="background-color:black; height:100%; width:101%; left:0px; top:0px; position:absolute; display:none; z-index:1000000; color:white; font-size:42px; text-align: center; padding-top:15%" >Only Landscape Mode Supported. <div>Please rotate device 90 degrees!</div></div>
@@ -968,7 +970,7 @@
 			
 			void main( void ) {
 				vec3 mask = texture2D( maskTexture, vUv ).rgb;
-				gl_FragColor = vec4( vec3(  0.0, 1.0, 0.0), 1.0 );
+				gl_FragColor = vec4( vec3(  0.0, 1.0, 0.0), (mask.r+mask.g+mask.b)/3. );
 			
 			}	
 		</script>
@@ -1121,6 +1123,7 @@
 				forceInitControllerMode();
 				getCurrentFMScene();
 				setTimeout(function(){watchForMask7ImageUpdates();},1000);
+				setTimeout(function(){updateZSliderUI();},2000);
 			}
 			
 			function drawMaskHandles(){
@@ -1643,6 +1646,11 @@
 				return matList;
 			}
 		
+			function updateFMMask(maskNum){
+				fm_globalState.mask=maskNum;
+				uniforms2.maskTexture.value = new THREE.TextureLoader().load( '../masks/mask'+parseInt(fm_globalState.mask)+'.jpg?v='+parseInt(new Date().getTime()) ) ;
+			}
+
 			function changeMask(changedMask){
 				if(changedMask==1){
 					if(parseInt(globalState.MaskA)!=lastMaskAValue){
@@ -2484,7 +2492,7 @@
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=globalPresets/"+globalController.PresetName+".txt", true);
 				}else{				
-					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState, "SavedByController": true, "SceneRate": document.getElementById("SceneRate").value/1000 })
+					var requestBody=JSON.stringify({"storage" : fm_statesArray, "storage2": fm_globalState, "SavedByController": true, "SceneRate": document.getElementById("SceneRate").value/1000, "global":{"Mask":fm_globalState.mask} })
 					var xmlhttp=new XMLHttpRequest();
 					xmlhttp.open("POST", "../php/write.php?fn=flowMapperPresets/Preset_1.txt", true);
 				}
@@ -2782,6 +2790,7 @@
 					document.getElementById('sectionLabelD').style.display='grid';	
 					document.getElementById('presets-grid-container').style.display='grid';		
 					document.getElementById("mapping_mode_right_border").style.display="block";
+					updateZSliderUI();
 				}
 				function clearMenu(){
 					document.getElementById('misc_page').style.display='none';
@@ -2812,6 +2821,7 @@
 					getCurrentFMScene();
 					document.getElementById('fm_page').style.display='grid';
 					document.getElementById('fm-scene-grid-container').style.display='grid';
+					updateZSliderUI();
 				}
 				function clearMapping(){
 					document.getElementById('mapping_page').style.display='none';
@@ -2877,6 +2887,7 @@
 							document.getElementById("selectVertice4").style.display="block";	
 						}
 						document.getElementById("maskMapModeButton").style.display="none";
+						uniforms2.maskTexture.value = new THREE.TextureLoader().load( '../masks/mask'+parseInt(fm_globalState.mask)+'.jpg?v='+parseInt(new Date().getTime()) ) ;
 					}
 					updateZSliderUI();
 				}
@@ -2895,6 +2906,33 @@
 				}else{
 					document.getElementById("zSlider").value=parseInt(document.getElementById("zSlider").value)+1;
 					document.getElementById("zSlider").value=parseInt(document.getElementById("zSlider").value)-1;
+				}
+
+
+				fmSlidersList=["BrightnessSensitivity","VelocitySensitivity","FadeTime","ColorMix","ColorRate","ColorHop","KaleidoScope","SceneRate","FmMask"];
+				for(var x=0; x<fmSlidersList.length; x++){
+					document.getElementById(fmSlidersList[x]).style.margin="0px 0px "+parseInt(-1*parseInt(document.getElementById(fmSlidersList[x]+"_Label").clientHeight/2))+"px 0px";
+					document.getElementById(fmSlidersList[x]).style.height=parseInt(document.getElementById(fmSlidersList[x]+"_Label").clientHeight*1.2)+"px";
+					if(document.getElementById(fmSlidersList[x]).value==document.getElementById(fmSlidersList[x]).max){
+						document.getElementById(fmSlidersList[x]).value=parseInt(document.getElementById(fmSlidersList[x]).value)-1;
+						document.getElementById(fmSlidersList[x]).value=parseInt(document.getElementById(fmSlidersList[x]).value)+1;
+					}else{
+						document.getElementById(fmSlidersList[x]).value=parseInt(document.getElementById(fmSlidersList[x]).value)+1;
+						document.getElementById(fmSlidersList[x]).value=parseInt(document.getElementById(fmSlidersList[x]).value)-1;
+					}
+				}
+
+				dmxOverrideSlidersList=["dmxOverrideSlider1","dmxOverrideSlider2","dmxOverrideSlider3","dmxOverrideSlider4"];
+				for(var x=0; x<dmxOverrideSlidersList.length; x++){
+					document.getElementById(dmxOverrideSlidersList[x]).style.margin="0px 0px "+parseInt(-1*parseInt(document.getElementById("dmx-overrides-container").clientHeight/8))+"px 0px";
+					document.getElementById(dmxOverrideSlidersList[x]).style.height=parseInt(document.getElementById("dmx-overrides-container").clientHeight*.23)+"px";
+					if(document.getElementById(dmxOverrideSlidersList[x]).value==document.getElementById(dmxOverrideSlidersList[x]).max){
+						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)-1;
+						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)+1;
+					}else{
+						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)+1;
+						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)-1;
+					}
 				}
 			}
 
@@ -3217,6 +3255,7 @@
 					xmlhttp2.onload = function(e){
 						fm_statesArray=JSON.parse(xmlhttp2.response).storage;
 						fm_globalState=JSON.parse(xmlhttp2.response).storage2;
+						fm_globalState["mask"]=JSON.parse(xmlhttp2.response).global.Mask;
 
 						if(JSON.parse(xmlhttp2.response).SavedByController==false){
 							console.log("Not saved by controller, scaling now");
@@ -3243,6 +3282,7 @@
 						document.getElementById("FadeTime").value=fm_globalState[currentFMScene].FadeTime*1000;
 						document.getElementById("KaleidoScope").value=fm_globalState[currentFMScene].KaleidoScope;
 						document.getElementById("VelocitySensitivity").value=fm_globalState[currentFMScene].VelocitySensitivity*1000;
+						document.getElementById("FmMask").value=parseInt(fm_globalState.mask);
 
 						syncObjectsToJson();
 					}
@@ -3250,6 +3290,7 @@
 			}
 		
 			function updateFMState(){
+
 				fm_globalState[currentFMScene].BrightnessSensitivity=document.getElementById("BrightnessSensitivity").value/1000;
 				fm_globalState[currentFMScene].ColorHop=document.getElementById("ColorHop").value/100;
 				fm_globalState[currentFMScene].ColorMix=document.getElementById("ColorMix").value/1000;
@@ -3257,6 +3298,7 @@
 				fm_globalState[currentFMScene].FadeTime=document.getElementById("FadeTime").value/1000;
 				fm_globalState[currentFMScene].KaleidoScope=document.getElementById("KaleidoScope").value;
 				fm_globalState[currentFMScene].VelocitySensitivity=document.getElementById("VelocitySensitivity").value/1000;
+				fm_globalState.mask=parseInt(document.getElementById("FmMask").value);
 			}
 		
 			function rebootPi(){

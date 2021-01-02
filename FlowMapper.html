@@ -33,8 +33,8 @@
 		</style>
 	</head>
 	<body>
-		<video id="video" autoplay width='600' height='300' style="display:none;"></video>
-		<canvas id="canvasp8" autoplay width='600' height='300' style=""></canvas>
+		<video id="video" autoplay width='256' height='256' style="display:none;"></video>
+		<canvas id="canvasp8" autoplay width='256' height='256' style="display:none;"></video>
 		<script src="dependancies/three.js"></script>
 		<script src="dependancies/pixel8.js"></script>
 		<script src='dependancies/dat.gui.min.js'></script>
@@ -42,6 +42,46 @@
 		<script src="dependancies/NURBSSurface.js"></script>
 		<script src="dependancies/NURBSUtils.js"></script>
 		<script src="dependancies/TrackballControls.js"></script>
+
+		<script id="vertexShader" type="x-shader/x-vertex">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform mat4 modelViewMatrix; 
+			uniform mat4 projectionMatrix;
+			
+			attribute vec3 position;
+			attribute vec2 uv;
+			
+			varying vec2 vUv;
+			
+			void main()	{
+				vUv = uv;
+			
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+			
+			}
+		</script>
+
+		<script id="fragmentShader1" type="x-shader/x-fragment">
+			precision mediump float;
+			precision mediump int;
+			
+			uniform float time;
+			uniform float kalMode;
+			varying vec2 vUv;
+			uniform sampler2D dataTexture;
+			uniform sampler2D maskTexture;
+
+
+			void main( void ) {
+				vec2 p=vUv*kalMode;
+				vec3 dataIn = texture2D( dataTexture, p ).rgb;
+				vec3 mask = texture2D( maskTexture, vUv ).rgb;
+				gl_FragColor = vec4( dataIn*((mask.r+mask.g+mask.b)/3.0), ((mask.r+mask.g+mask.b)/3.0) );
+			}			
+		</script>
+		
 		<script>
 			var colorObject = function() {
 				this.currentColHex="ff00ff";
@@ -146,6 +186,7 @@
 			}	
 			
 			function initGlobalVars(){
+				lastMaskValue="-1";
 				haveChangedLocalSettingsInControllerMode=true;
 				lastObjectVerticeData="";
 				mouseLastMovedTime=new Date().getTime();
@@ -174,7 +215,31 @@
 				addControls();	
 				dataTexture = new THREE.DataTexture( materialArray, width, height, THREE.RGBAFormat );
 				dataTexture.needsUpdate = true;
-				material = new THREE.MeshLambertMaterial({map:dataTexture, morphTargets: true, side: THREE.DoubleSide, transparent:true})
+				// material = new THREE.MeshLambertMaterial({map:dataTexture, morphTargets: true, side: THREE.DoubleSide, transparent:true})
+				
+				maskTexture=new THREE.TextureLoader().load( 'masks/mask2.jpg' );
+				maskTexture.needsUpdate = true;
+				uniforms1 = {
+					"time": { value: 1.0 },
+					"resolution": [128,128],
+					"mousex": { value: 0.0 },
+					"mousey": { value: 0.0 },
+					"audioTime": { value: 0.0 },
+					"dataTexture": { value: dataTexture },
+					"maskTexture": { value: maskTexture },
+					"brightness": { value: 1.0 },
+					"kalMode": { value: 1.0 }
+				};
+
+				uniforms1[ "dataTexture" ].value.wrapS = uniforms1[ "dataTexture" ].value.wrapT = THREE.MirroredRepeatWrapping;
+
+				material = new THREE.RawShaderMaterial( {
+					uniforms: uniforms1,
+					vertexShader: document.getElementById( 'vertexShader' ).textContent,
+					fragmentShader: document.getElementById( 'fragmentShader'+'1' ).textContent
+				});	
+				material.side=THREE.DoubleSide;
+				
 				container=null;
 				camera=null;
 				controls=null;
@@ -232,7 +297,7 @@
 				renderer.setClearColor( 0x000000 , 1);
 				renderer.setPixelRatio( window.devicePixelRatio );
 				renderer.setSize( window.innerWidth, window.innerHeight );
-				renderer.sortObjects = false;
+				renderer.sortObjects = true;
 				container.appendChild( renderer.domElement );
 				renderer.domElement.addEventListener( 'mousemove', onDocumentMouseMove, false );
 				renderer.domElement.addEventListener( 'mousedown', onDocumentMouseDown, false );
@@ -257,6 +322,7 @@
 					 mappingMode:0,
 					 sceneRate:0.0,
 					 Master:false,
+					 Mask:1,
 					 Slave:false,
 					 PresetName:"Preset_1",
 					 selectedCamera:0
@@ -288,6 +354,7 @@
 				globalFolder.open();
 				globalFolder.add(globalController, "selectedObject", 0, 3, 1 ).onChange(function(){globalController.selectedObject=parseInt(globalController.selectedObject);updateControlsView();syncObjectsToJson();});
 				globalFolder.add(globalController, "selectedScene", 0, 3, 1 ).onChange(function(){globalController.selectedScene=parseInt(globalController.selectedScene);updateControlsView();});
+				globalFolder.add(globalController, "Mask", 1, 7, 1 ).onChange(function(){globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues();});
 				globalFolder.add(globalController, "mappingMode", 0, 1, .1 ).onChange(function(){if(statesArray[globalController.selectedObject]["Visible"]==true){displayObjects[globalController.selectedObject].hideChildren();displayObjects[globalController.selectedObject].showChildren();};});
 				globalFolder.add( globalController, "sceneRate", 0, .15, .0001 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
 				gui.width=360;
@@ -315,8 +382,26 @@
 				utilsFolder.add(globalController, "selectedCamera", 0, 1, 1 ).onChange(function(){globalController.selectedCamera=parseInt(globalController.selectedCamera);getVideo("select",globalController.selectedCamera);});
 				utilsFolder.add({ 'ShaderMapper':function(){ window.location.replace("http://"+location.hostname+"/ShaderMapper.html"); }},'ShaderMapper');
 				utilsFolder.add({ 'OrbitMapper':function(){ window.location.replace("http://"+location.hostname+"/OrbitMapper.html"); }},'OrbitMapper');
+				miscFolder=gui.addFolder( "Remote Control" )
+				miscFolder.open();
+				miscFolder.add({ 'Slave Mode':function(){  initSlaveMode(); }},'Slave Mode');
+				miscFolder.add({ 'Controller Mode':function(){ initControllerMode();  }},'Controller Mode');
+				miscFolder.add({ 'Standalone':function(){ initStandaloneMode();  }},'Standalone');
 			}
 									
+			function changeMask(){
+				if(parseInt(globalController.Mask)!=lastMaskValue){
+						if(globalController.Mask==7){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask7.jpg?v='+parseInt(new Date().getTime()) ) };
+						}else if(globalController.Mask==6){
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask6.jpg?v='+parseInt(new Date().getTime()) ) };
+						}else{
+							uniforms1.maskTexture={ value: new THREE.TextureLoader().load( 'masks/mask'+parseInt(globalController.Mask)+'.jpg' ) };
+						}
+						lastMaskValue=parseInt(globalController.Mask);
+				}
+			}
+			
 			function checkForForceInitControllerMode(){
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("GET", "php/read.php?fn=globalPresets/forceInitControllerMode.txt", true);
@@ -348,6 +433,26 @@
 					console.log("starting slaveModeInterval");
 					getControllerData(true);
 					slaveModeInterval=setInterval(function(){getControllerData(false);getCurrentSceneNumber();},  110);
+				}
+			}
+			
+			function initStandaloneMode(){
+				if(slaveModeInterval!=-1){
+					console.log("stopping slaveModeInterval");
+					clearInterval(slaveModeInterval);
+					slaveModeInterval=-1;
+				}
+				if(controllerModeInterval!=-1){
+					console.log("stopping controllerModeInterval");
+					clearInterval(controllerModeInterval);
+					slaveModeInterval=-1;
+				}
+			}
+
+			function initControllerMode(){
+				if(controllerModeInterval==-1){
+					console.log("starting controllerModeInterval");
+					controllerModeInterval=setInterval(function(){saveState();},  400);
 				}
 			}
 			
@@ -391,7 +496,7 @@
 						}else{
 							statesArray=JSON.parse(xmlhttp.response).storage
 						}
-
+						globalController.Mask=JSON.parse(xmlhttp.response).global.Mask;
 						updateControlsView();
 						syncObjectsToJson(true);
 						for(var x=0;x<displayObjects[globalController.selectedObject].children.length;x++){ displayObjects[globalController.selectedObject].children[x].visible=false; };
@@ -594,6 +699,14 @@
 				if(event.key=='|'){
 					window.location.replace("http://"+location.hostname+"/OrbitMapper.html");
 				}			
+				keyPressToSlider(event, "p", globalController, "Mask", 1,  gui.__folders.Global, function(){ globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues(); } );
+				keyPressToSlider(event, "P", globalController, "Mask", -1, gui.__folders.Global, function(){globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues(); } );			
+				if(event.key==";"){
+					initStandaloneMode();
+				}
+				if(event.key==":"){
+					initSlaveMode();
+				}
 			}
 			
 			function updateControlsView(){
@@ -607,6 +720,7 @@
 				  gui.__folders.PainterControls.__controllers[i].updateDisplay();
 				}
 				gui.__folders.Global.__controllers[1].updateDisplay();
+				gui.__folders.Global.__controllers[2].updateDisplay();
 				setPPResolution();
 				setKalMode();
 			}
@@ -630,20 +744,22 @@
 					displayObjects[x].hideChildren();
 				}
 				displayObjects[globalController.selectedObject].showChildren();
-				setKalMode()
+				setKalMode();
+				changeMask();
 				//changeImageBank();
 			}
 			
 			function setKalMode(){
-				if( parseInt(painterController.KaleidoScope) != material.map.repeat.x){
-					if(parseInt(painterController.KaleidoScope) != 1){
-						material.map.wrapS = material.map.wrapT = THREE.MirroredRepeatWrapping;
-						material.map.repeat.set( parseInt(painterController.KaleidoScope), parseInt(painterController.KaleidoScope) );
-					}else{
-						material.map.wrapS = material.map.wrapT = THREE.ClampToEdgeWrapping;
-						material.map.repeat.set( 1, 1 );
-					}
-				}
+				// if( parseInt(painterController.KaleidoScope) != material.map.repeat.x){
+				// 	if(parseInt(painterController.KaleidoScope) != 1){
+				// 		material.map.wrapS = material.map.wrapT = THREE.MirroredRepeatWrapping;
+				// 		material.map.repeat.set( parseInt(painterController.KaleidoScope), parseInt(painterController.KaleidoScope) );
+				// 	}else{
+				// 		material.map.wrapS = material.map.wrapT = THREE.ClampToEdgeWrapping;
+				// 		material.map.repeat.set( 1, 1 );
+				// 	}
+				// }
+				uniforms1.kalMode.value=painterController.KaleidoScope;
 			}
 			
 			function addPlane(){
@@ -949,14 +1065,23 @@
 							materialArray[x+2]=clr.requestB()*(1-(mixVal))+data[x+2]*((mixVal));
 							materialArray[x+3]=255;
 						}
-						if(materialArray[x+3] > 0 ){
-							materialArray[x+3]=materialArray[x+3]-(delVal);
+						if(materialArray[x] > 0 ){
+							materialArray[x]=materialArray[x]-(delVal);
+						}else{
+							materialArray[x]=0;
 						}
-						if( materialArray[x+3] < 0 ){
-							materialArray[x+3]=0;
+						if(materialArray[x+1] > 0 ){
+							materialArray[x+1]=materialArray[x+1]-(delVal);
+						}else{
+							materialArray[x+1]=0;
+						}
+						if(materialArray[x+2] > 0 ){
+							materialArray[x+2]=materialArray[x+2]-(delVal);
+						}else{
+							materialArray[x+2]=0;
 						}
 				}
-				dataTexture.needsUpdate = true
+				dataTexture.needsUpdate = true;
 			}
 			
 			function animate() {
@@ -1001,7 +1126,7 @@
 			}
 			
 			function saveState(){
-				var requestBody=JSON.stringify({"storage" : statesArray, "storage2": presetsArray, "SavedByController": false})
+				var requestBody=JSON.stringify({"storage" : statesArray, "storage2": presetsArray, "SavedByController": false, "global":{"VolumeThreshold":globalController.VolumeThreshold, "Mask":globalController.Mask} });
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "php/write.php?fn=flowMapperPresets/"+globalController.PresetName+".txt", true);
 				xmlhttp.send(requestBody);
@@ -1015,6 +1140,7 @@
 				xmlhttp.onload = function(e){
 					statesArray=JSON.parse(xmlhttp.response).storage
 					presetsArray=JSON.parse(xmlhttp.response).storage2
+					globalController.Mask=JSON.parse(xmlhttp.response).global.Mask;
 					if(JSON.parse(xmlhttp.response).SavedByController==true){
 						var temp=JSON.parse(xmlhttp.response).storage;
 						for(var x=0; x<4; x++){
