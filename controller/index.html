@@ -1541,6 +1541,7 @@
 					}else{
 						document.getElementById("orientation_overlay").style.display="block";
 					}
+					updateZSliderUI();
 				}, false);
 				window.addEventListener("resume", function() {
 					var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
@@ -1549,6 +1550,7 @@
 					}else{
 						document.getElementById("orientation_overlay").style.display="block";
 					}
+					updateZSliderUI();
 				}, false);
 			}
 			
@@ -2478,6 +2480,7 @@
 						wscript.SendKeys("{F11}");
 					}
 				}
+				setTimeout(function(){updateZSliderUI();},300);
 			}
 		
 			function saveState(){
@@ -2932,6 +2935,18 @@
 					}else{
 						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)+1;
 						document.getElementById(dmxOverrideSlidersList[x]).value=parseInt(document.getElementById(dmxOverrideSlidersList[x]).value)-1;
+					}
+				}
+			
+				slidersList=["slider1a","slider1b","slider2","slider3","slider4"];
+				for(var x=0; x<slidersList.length; x++){
+					// document.getElementById(slidersList[x]).style.height=parseInt(document.getElementById(slidersList[x]).clientHeight*1.2)+"px";
+					if(document.getElementById(slidersList[x]).value==document.getElementById(fmSlidersList[x]).max){
+						document.getElementById(slidersList[x]).value=parseInt(document.getElementById(slidersList[x]).value)-1;
+						document.getElementById(slidersList[x]).value=parseInt(document.getElementById(slidersList[x]).value)+1;
+					}else{
+						document.getElementById(slidersList[x]).value=parseInt(document.getElementById(slidersList[x]).value)+1;
+						document.getElementById(slidersList[x]).value=parseInt(document.getElementById(slidersList[x]).value)-1;
 					}
 				}
 			}
