@@ -75,7 +75,7 @@ void setup() {
   Serial.println("");
   EEPROM.begin(576);
   leds.begin();
-  dmx.init(numDMXChannels);
+  dmx.init(256);
   delay(1000);
 
 //  EEPROM.put(0,epdata);
@@ -117,8 +117,8 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
   if(universe==filterUniverse){
     Serial.print("Received artnet data for universe:");
     Serial.println(universe);
-    for(int i=0;i<numDMXChannels;i++){
-      dmx.write(i+1+filterChan, data[i]);      // channal 1 on    
+    for(int i=0+filterChan;i<(filterChan+numDMXChannels);i++){
+      dmx.write(i+1, data[i]);      // channal 1 on    
     }
     dmx.update();           // update the DMX bus    
   }
@@ -149,7 +149,8 @@ void loop() {
       leds.setPixelColor(0, 0, 255, 0);
       leds.setBrightness(100);
       leds.show();
-      artnet.read();      
+      artnet.read();
+      dmx.update();     
     }
   }
   getEncoderData();
