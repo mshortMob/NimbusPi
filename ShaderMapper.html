@@ -1802,8 +1802,10 @@ void main()	{
 						}
 						if(x==(listOfGuardedChannels[3]-1)){
 							DMX_BrightnessAdjustedDMXData.push(parseInt(globalController.DMX_Y2));
+						}	
+						if( (x!=(listOfGuardedChannels[0]-1)) && (x!=(listOfGuardedChannels[1]-1)) && (x!=(listOfGuardedChannels[2]-1)) && (x!=(listOfGuardedChannels[3]-1)) ){
+							DMX_BrightnessAdjustedDMXData.push(parseInt(oneValue));
 						}
-						
 					}else{
 						DMX_BrightnessAdjustedDMXData.push(parseInt(parseInt(oneValue)*globalController.DMX_Brightness));
 					}
