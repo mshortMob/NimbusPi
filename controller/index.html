@@ -3109,7 +3109,7 @@
 				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentPreset.txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
-					globalController.PresetName="GlobalPreset"+parseInt(xmlhttp.response);
+					globalController.PresetName="GlobalPreset"+parseInt(xmlhttp.response.split(",")[0]);
 					recallState(false);
 				}
 			}
@@ -3189,12 +3189,42 @@
 		
 			function setCurrentPresetNumber(presetNumber){
 				globalController.PresetName="GlobalPreset"+presetNumber;
-				var requestBody=parseInt(presetNumber);
+				var requestBody=parseInt(presetNumber)+","+"false";
 				var xmlhttp=new XMLHttpRequest();
 				xmlhttp.open("POST", "../php/write.php?fn=globalPresets/currentPreset.txt", true);
 				xmlhttp.send(requestBody);
 				xmlhttp.onload = function(e){
 					console.log("Changed current preset number")
+				}
+			}
+
+			function stopPresetAutoCycler(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					var requestBody=parseInt(xmlhttp.response.split(",")[0])+","+"false";
+					var xmlhttp2=new XMLHttpRequest();
+					xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/currentPreset.txt", true);
+					xmlhttp2.send(requestBody);
+					xmlhttp2.onload = function(e){
+						console.log("stopPresetAutoCycler")
+					}
+				}
+			}
+
+			function startPresetAutoCycler(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					var requestBody=parseInt(xmlhttp.response.split(",")[0])+","+"true";
+					var xmlhttp2=new XMLHttpRequest();
+					xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/currentPreset.txt", true);
+					xmlhttp2.send(requestBody);
+					xmlhttp2.onload = function(e){
+						console.log("startPresetAutoCycler")
+					}
 				}
 			}
 
