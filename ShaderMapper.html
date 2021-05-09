@@ -190,6 +190,7 @@ void main()	{
 			initGlobalVars();
 
 			function initGlobalVars(){
+				presetCyclerLastFireTime=new Date().getTime();
 				shaderSpeedFactorScale=10;
 				shaderSpeedFactor=0;
 				mask7UpdateNumber=0;
@@ -304,7 +305,67 @@ void main()	{
 				highlightSelectedMaskHandle();
 				dataTex = new THREE.DataTexture(new Uint8Array(256 * 256 * 3), 256, 256);
 				setTimeout(function(){watchForMask7ImageUpdates();},1000);
+				stopPresetAutoCycler();
 				// setTimeout(function(){document.getElementById('maskCanvas').style.transform="scale(-1,1)"; changeMask(3); },4000);
+			}
+			
+			function setCurrentPresetNumber(newValue){
+				var requestBody=newValue+","+"true";
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("POST", "php/write.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send(requestBody);
+				xmlhttp.onload = function(e){
+					console.log("setCurrentPresetNumber: "+newValue)
+				}
+			}
+
+			function getCurrentPresetNumber(){
+				presetCyclerTime=60*1000;
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "php/read.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					globalState.PresetName="GlobalPreset"+parseInt(xmlhttp.response.split(",")[0]);
+					globalController.PresetName="GlobalPreset"+parseInt(xmlhttp.response.split(",")[0]);
+					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
+					
+					presetCyclerEnabled=xmlhttp.response.split(",")[1];
+					if(presetCyclerEnabled.indexOf("true")!=-1 && Math.abs(presetCyclerLastFireTime-new Date().getTime())>presetCyclerTime ){
+						presetCyclerLastFireTime=new Date().getTime();
+						setCurrentPresetNumber((parseInt(xmlhttp.response.split(",")[0])%8)+1);
+					}
+
+				}
+			}
+
+			function stopPresetAutoCycler(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					var requestBody=parseInt(xmlhttp.response.split(",")[0])+","+"false";
+					var xmlhttp2=new XMLHttpRequest();
+					xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/currentPreset.txt", true);
+					xmlhttp2.send(requestBody);
+					xmlhttp2.onload = function(e){
+						console.log("stopPresetAutoCycler")
+					}
+				}
+			}
+
+			function startPresetAutoCycler(){
+				var xmlhttp=new XMLHttpRequest();
+				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentPreset.txt", true);
+				xmlhttp.send();
+				xmlhttp.onload = function(e){
+					var requestBody=parseInt(xmlhttp.response.split(",")[0])+","+"true";
+					var xmlhttp2=new XMLHttpRequest();
+					xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/currentPreset.txt", true);
+					xmlhttp2.send(requestBody);
+					xmlhttp2.onload = function(e){
+						console.log("startPresetAutoCycler")
+					}
+				}
 			}
 			
 			function watchForMask7ImageUpdates(){
@@ -668,6 +729,8 @@ void main()	{
 				miscFolder.add({ 'Slave Mode':function(){  initSlaveMode(); }},'Slave Mode');
 				miscFolder.add({ 'Controller Mode':function(){ initControllerMode();  }},'Controller Mode');
 				miscFolder.add({ 'Standalone':function(){ initStandaloneMode();  }},'Standalone');
+				miscFolder.add({ 'Start Auto Cycle Presets':function(){ startPresetAutoCycler();  }},'Start Auto Cycle Presets');
+				miscFolder.add({ 'Stop Auto Cycle Presets':function(){ stopPresetAutoCycler();  }},'Stop Auto Cycle Presets');
 			}
 
 			function initSlaveMode(){
@@ -751,18 +814,7 @@ void main()	{
 					console.log("Wrote 'false' to forceInitControllerMode");
 				}
 			}
-			
-			function getCurrentPresetNumber(){
-				var xmlhttp=new XMLHttpRequest();
-				xmlhttp.open("GET", "php/read.php?fn=globalPresets/currentPreset.txt", true);
-				xmlhttp.send();
-				xmlhttp.onload = function(e){
-					globalState.PresetName="GlobalPreset"+parseInt(xmlhttp.response);
-					globalController.PresetName="GlobalPreset"+parseInt(xmlhttp.response);
-					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
-				}
-			}
-
+	
 			function initControllerMode(){
 				if(controllerModeInterval==-1){
 					console.log("starting controllerModeInterval");
@@ -1743,6 +1795,12 @@ void main()	{
 				}
 				if(event.key=="R"){
 					resetMaskHandles();
+				}
+				if(event.key=="-"){
+					stopPresetAutoCycler();
+				}
+				if(event.key=="+"){
+					startPresetAutoCycler();
 				}
 			}
 
