@@ -126,7 +126,7 @@
 				}
 				.presets-grid-container{
 					display: grid;
-					grid-template-columns: auto auto auto auto auto auto auto auto auto;
+					grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
 					background-color: #777777;
 					width:99.25%;
 					height:9%;
@@ -541,7 +541,7 @@
 				}
 				.presets-grid-container{
 					display: grid;
-					grid-template-columns: auto auto auto auto auto auto auto auto auto;
+					grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
 					background-color: #777777;
 					width:98.75%;
 					height:9%;
@@ -1605,6 +1605,7 @@
 						}
 					}
 				}
+				document.getElementById("autoCyclePresetsButton").style.backgroundColor='black';
 			}
 			
 			function selectVertice(verticeNum, elem){
@@ -2700,21 +2701,6 @@
 				}
 			}
 		
-			function initController(){
-				document.getElementById('VJ_Button').style.backgroundColor='grey';
-				createGrid("A");
-					createGrid("B");
-					createDMXGrid();
-					createPresetsGrid();
-					document.getElementById("slider1a").value=globalState.BrightnessA*1000;
-					document.getElementById("slider1b").value=globalState.BrightnessB*1000;
-					document.getElementById("slider2").value=globalState.DMX_Brightness*1000;
-					document.getElementById("slider3").value=globalState.DMX_Pattern_Rate*1000;
-					document.getElementById("slider4").value=globalState.VolumeThreshold*1000;
-					initControllerDone=true;
-					saveControllerState();
-			}
-
 			function selectPage(buttonElement){
 				if(navigator.userAgent.indexOf("Mac OS X")==-1){
 					requestFullScreen();
@@ -3061,10 +3047,30 @@
 					gridItem.style.color="white";
 					gridItem.style.fontSize=".5em";
 					gridItem.class="grid-item";
-					gridItem.onclick=function(){selectGlobalPreset(this.presetNumber)};
+					gridItem.onclick=function(){
+						selectGlobalPreset(this.presetNumber,false);
+					};
 					gridItem.innerHTML=parseInt(x);
 					presetGridContainer.appendChild(gridItem);
 				}
+				var autoItem=document.createElement('button');
+				autoItem.id="autoCyclePresetsButton"
+				autoItem.style.borderColor="grey";
+				autoItem.style.backgroundColor="black";
+				autoItem.innerHTML="Auto";
+				autoItem.style.color="white";
+				autoItem.style.fontSize=".5em";
+				autoItem.onclick=function(){
+					if(this.style.backgroundColor=="black"){
+						document.getElementById("autoCyclePresetsButton").style.backgroundColor='darkgrey';
+						startPresetAutoCycler();
+					}else if(this.style.backgroundColor=="darkgrey"){
+						document.getElementById("autoCyclePresetsButton").style.backgroundColor='black';
+						stopPresetAutoCycler();
+					}
+				}
+				// autoItem.style.textDecoration="underline";
+				presetGridContainer.appendChild(autoItem);
 			}
 
 			function selectShader(shaderNumber,deck){
@@ -3109,8 +3115,26 @@
 				xmlhttp.open("GET", "../php/read.php?fn=globalPresets/currentPreset.txt", true);
 				xmlhttp.send();
 				xmlhttp.onload = function(e){
+					lastSelectedPreset=globalController.PresetName;
 					globalController.PresetName="GlobalPreset"+parseInt(xmlhttp.response.split(",")[0]);
-					recallState(false);
+					presetCyclerEnabled=xmlhttp.response.split(",")[1];
+					if(initControllerDone==true){
+						if(presetCyclerEnabled.indexOf("true")!=-1){
+							setTimeout(function(){getCurrentPresetName();},2000);
+							document.getElementById("autoCyclePresetsButton").style.backgroundColor='darkgrey';
+						}else{
+							setTimeout(function(){getCurrentPresetName();},15000);
+							document.getElementById("autoCyclePresetsButton").style.backgroundColor='black';
+						}
+						if(lastSelectedPreset!=globalController.PresetName){
+							selectGlobalPreset(parseInt(xmlhttp.response.split(",")[0]),true);
+						}else{
+							recallState(false);
+						}
+					}else{
+						setTimeout(function(){getCurrentPresetName();},2000);
+						recallState(false);
+					}
 				}
 			}
 
@@ -3172,7 +3196,10 @@
 				document.getElementById("dmxOverrideSlider4").value=globalState.DMX_Y2*10;
 			}
 		
-			function selectGlobalPreset(presetNumber){
+			function selectGlobalPreset(presetNumber, isAutoChange){
+				if(isAutoChange==false){
+					document.getElementById("autoCyclePresetsButton").style.backgroundColor='black';
+				}
 				globalController.PresetName="GlobalPreset"+parseInt(presetNumber);
 				isMidPresetChange=true;
 				recallState(false);
@@ -3180,7 +3207,9 @@
 					if(parseInt(presetNumber)==x){
 						document.getElementById("PresetsGridItem"+x).style.backgroundColor="grey"
 						console.log("Setting currentPreset to: "+parseInt(presetNumber));
-						setCurrentPresetNumber(parseInt(presetNumber));
+						if(isAutoChange==false){
+							setCurrentPresetNumber(parseInt(presetNumber));
+						}
 					}else{
 						document.getElementById("PresetsGridItem"+x).style.backgroundColor="black"
 					}
@@ -3223,6 +3252,7 @@
 					xmlhttp2.open("POST", "../php/write.php?fn=globalPresets/currentPreset.txt", true);
 					xmlhttp2.send(requestBody);
 					xmlhttp2.onload = function(e){
+						getCurrentPresetName();
 						console.log("startPresetAutoCycler")
 					}
 				}
