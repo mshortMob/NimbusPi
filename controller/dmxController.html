@@ -8,11 +8,26 @@
             #sliderContainer{
                 border:4px solid darkgrey;
                 width:50%;
+                height:93%;
+                position:absolute;
+                left:1%;
+                top:2%;
+            }
+            #gridContainer {
+                display: grid;
+                position:absolute;
+                width:45%;
+                height:93%;
+                left:52%;
+                top:2%;
+                grid-template-columns: auto auto auto auto;
+                border:4px solid darkgrey;
             }
         </style>
     </head>
     <body>
         <div id="sliderContainer"></div>
+        <div id="gridContainer"> </div>
     </body>
     <script>
 
@@ -23,6 +38,32 @@
                 dataModel.push(0);
             }
             createSliderElements();
+            createGrid();
+        }
+
+        function createGrid(){
+            for(var x=1; x<21; x++){
+                var button=document.createElement('button');
+                button.className="menuButton"
+                button.id="button"+x
+                button.num=x;
+                button.innerHTML=x;
+                button.style.backgroundColor="#222222";
+                button.style.color="#cccccc";
+                document.getElementById("gridContainer").appendChild(button);
+                if(x==1){
+                    button.innerHTML="<";
+                }
+                if(x==2){
+                    button.innerHTML="Read";
+                }
+                if(x==3){
+                    button.innerHTML="Write";
+                }
+                if(x==4){
+                    button.innerHTML=">";
+                }
+            }
         }
 
         function createSliderElements(){
@@ -34,7 +75,7 @@
                 canvas.currentChannel=x-1;
                 canvas.style.backgroundColor="grey";
                 canvas.style.width="11%";
-                canvas.style.height="90%";
+                canvas.style.height="97%";
                 canvas.style.margin=".75%";
                 canvas.isSelected=false;
                 canvas.onmouseup=function(event){
