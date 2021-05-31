@@ -1,0 +1,61 @@
+<html>
+    <head>
+        <style>
+            body {
+                background-color: black;
+                padding: 10px;
+            }
+            #sliderContainer{
+                border:4px solid darkgrey;
+                width:50%;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="sliderContainer"></div>
+    </body>
+    <script>
+
+        init();
+        function init(){
+            createSliderElements();
+        }
+
+        function createSliderElements(){
+            for(var x=1; x<9; x++){
+                var canvas=document.createElement('canvas');
+                canvas.className="slider"
+                canvas.id="slider"+x
+                canvas.style.backgroundColor="grey";
+                canvas.style.width="11%";
+                canvas.style.height="90%";
+                canvas.style.margin=".75%";
+                canvas.isSelected=false;
+                canvas.onmouseup=function(event){
+                    this.isSelected=false;
+                }
+                canvas.onmouseleave=function(event){
+                    this.isSelected=false;
+                }
+                canvas.onmousedown=function(event){
+                    this.isSelected=true;
+                    var ctx = this.getContext("2d");
+                    ctx.clearRect(0, 0, this.width, this.height);
+                    ctx.fillStyle = "#222222";
+                    ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height ); 
+                }
+                canvas.onmousemove=function(event){
+                    if(this.isSelected){
+                        var ctx = this.getContext("2d");
+                        ctx.clearRect(0, 0, this.width, this.height);
+                        ctx.fillStyle = "#222222";
+                        ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height );  
+                    }
+                }
+                document.getElementById("sliderContainer").appendChild(canvas);
+            }
+        }
+
+
+    </script>
+</html>
