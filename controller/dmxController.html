@@ -6,7 +6,7 @@
                 padding: 10px;
             }
             #sliderContainer{
-                border:4px solid darkgrey;
+                border:4px solid #555555;
                 width:50%;
                 height:93%;
                 position:absolute;
@@ -16,12 +16,12 @@
             #gridContainer {
                 display: grid;
                 position:absolute;
-                width:45%;
+                width:46.5%;
                 height:93%;
                 left:52%;
                 top:2%;
                 grid-template-columns: auto auto auto auto;
-                border:4px solid darkgrey;
+                border:4px solid #555555;
             }
         </style>
     </head>
@@ -34,11 +34,36 @@
         init();
         function init(){
             dataModel=[];
-            for(var x=0; x<512; x++){
-                dataModel.push(0);
+            isWriteMode=false;
+            selectedScene=1;
+            loadScene(1,true);
+        }
+        function loadScene(num, isInitialization){
+            var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("GET", "../controller/dmxControllerScenes/scene"+parseInt(num)+".txt?v="+parseInt(new Date().getTime()), true);
+            xmlhttp.send();
+            xmlhttp.onload = function(e){
+                var temp=xmlhttp.response.split(",");
+                for(var x=0; x<512; x++){
+                    dataModel[x]=parseInt(temp[x]);
+                }
+                if(isInitialization==true){
+                    createSliderElements();
+                    createGrid();
+                }else{
+                    for(var x=1; x<9; x++){
+                        document.getElementById("slider"+x).setValue(dataModel[x-1])
+                    }
+                }
             }
-            createSliderElements();
-            createGrid();
+        }
+
+        function saveScene(num){
+            var requestBody=dataModel.toString();
+            var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("POST", "../php/write.php?fn=controller/dmxControllerScenes/scene"+parseInt(num)+".txt", true);
+            xmlhttp.send(requestBody);
+            xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
         }
 
         function createGrid(){
@@ -47,21 +72,52 @@
                 button.className="menuButton"
                 button.id="button"+x
                 button.num=x;
-                button.innerHTML=x;
+                button.innerHTML=parseInt(x-4);
                 button.style.backgroundColor="#222222";
-                button.style.color="#cccccc";
+                button.style.border="1px solid #555555";
+                button.style.color="#aaaaaa";
                 document.getElementById("gridContainer").appendChild(button);
                 if(x==1){
                     button.innerHTML="<";
                 }
                 if(x==2){
-                    button.innerHTML="Read";
+                    button.innerHTML="Misc";
                 }
                 if(x==3){
                     button.innerHTML="Write";
                 }
                 if(x==4){
                     button.innerHTML=">";
+                }
+                if(x==5){
+                    button.style.backgroundColor="#777777";
+                }
+                if(x>=5){
+                    button.onclick=function(){
+                        selectedScene=this.num-4;
+                        loadScene(this.num-4,false);
+                        for(var x=5; x<21; x++){
+                            document.getElementById("button"+x).style.backgroundColor="#222222";
+                        }
+                        this.style.backgroundColor="#777777"
+                    }
+                }else{
+                    button.onmousedown=function(){
+                        this.style.backgroundColor="#777777"
+                        if(this.num==3){
+                            console.log("Saving Scene: "+selectedScene);
+                            saveScene(selectedScene);
+                        }
+                    }
+                    button.onmouseup=function(){
+                        this.style.backgroundColor="#222222"
+                    }
+                }
+                if(x==1 || x==5 || x==9 || x==13 || x==17){
+                    button.style.borderLeft="0px solid black"; 
+                }
+                if(x>16){
+                    button.style.borderBottom="0px solid black"; 
                 }
             }
         }
@@ -108,11 +164,10 @@
                     ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) ); 
                     dataModel[this.currentChannel]=value;
                 }
-                canvas.setValue(0);
+                canvas.setValue(dataModel[x-1]);
                 document.getElementById("sliderContainer").appendChild(canvas);
             }
         }
-
 
     </script>
 </html>
