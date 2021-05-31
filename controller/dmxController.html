@@ -52,6 +52,12 @@
                         ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height );  
                     }
                 }
+                canvas.setValue=function(value){
+                    var ctx = this.getContext("2d");
+                    ctx.clearRect(0, 0, this.width, this.height);
+                    ctx.fillStyle = "#222222";
+                    ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) );  
+                }
                 document.getElementById("sliderContainer").appendChild(canvas);
             }
         }
