@@ -18,6 +18,10 @@
 
         init();
         function init(){
+            dataModel=[];
+            for(var x=0; x<512; x++){
+                dataModel.push(0);
+            }
             createSliderElements();
         }
 
@@ -26,6 +30,8 @@
                 var canvas=document.createElement('canvas');
                 canvas.className="slider"
                 canvas.id="slider"+x
+                canvas.num=x;
+                canvas.currentChannel=x-1;
                 canvas.style.backgroundColor="grey";
                 canvas.style.width="11%";
                 canvas.style.height="90%";
@@ -43,6 +49,7 @@
                     ctx.clearRect(0, 0, this.width, this.height);
                     ctx.fillStyle = "#222222";
                     ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height ); 
+                    dataModel[this.currentChannel]=255-parseInt(event.offsetY/this.offsetHeight*255);
                 }
                 canvas.onmousemove=function(event){
                     if(this.isSelected){
@@ -50,14 +57,17 @@
                         ctx.clearRect(0, 0, this.width, this.height);
                         ctx.fillStyle = "#222222";
                         ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height );  
+                        dataModel[this.currentChannel]=255-parseInt(event.offsetY/this.offsetHeight*255);
                     }
                 }
                 canvas.setValue=function(value){
                     var ctx = this.getContext("2d");
                     ctx.clearRect(0, 0, this.width, this.height);
                     ctx.fillStyle = "#222222";
-                    ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) );  
+                    ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) ); 
+                    dataModel[this.currentChannel]=value;
                 }
+                canvas.setValue(0);
                 document.getElementById("sliderContainer").appendChild(canvas);
             }
         }
