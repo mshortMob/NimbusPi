@@ -16,7 +16,7 @@
             #sliderLabelsContainer{
                 border:4px solid #555555;
                 width:75%;
-                height:93%;
+                height:9%;
                 position:absolute;
                 left:1%;
                 top:2%;
@@ -64,7 +64,8 @@
                     initializeDMX();
                 }else{
                     for(var x=1; x<17; x++){
-                        document.getElementById("slider"+x).setValue(dataModel[x-1])
+                        // document.getElementById("slider"+x).setValue(dataModel[16+(pageNumber-1)+x-1]);
+                        document.getElementById("slider"+x).setValue([x-1]);
                     }
                 }
             }
@@ -219,15 +220,13 @@
                 label.id="sliderLabel"+x;
                 label.style.backgroundColor="#222222";
                 label.style.width="5.25%";
-                label.style.height="7%";
+                label.style.height="70%";
                 label.style.margin=".5%";
-
                 var ctx = label.getContext("2d");
                 ctx.font = "80px Arial";
                 ctx.fillStyle = "white";
                 ctx.textAlign = "center";
                 ctx.fillText(canvas.num, label.width/2, label.height/1.5);
-
                 document.getElementById("sliderLabelsContainer").appendChild(label);
 
             }
