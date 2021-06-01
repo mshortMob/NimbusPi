@@ -64,8 +64,7 @@
                     initializeDMX();
                 }else{
                     for(var x=1; x<17; x++){
-                        // document.getElementById("slider"+x).setValue(dataModel[16+(pageNumber-1)+x-1]);
-                        document.getElementById("slider"+x).setValue([x-1]);
+                        document.getElementById("slider"+x).setValue(dataModel[16*(pageNumber-1)+x-1]);
                     }
                 }
             }
@@ -146,12 +145,14 @@
                 if(pageNumber<=31){
                     pageNumber=pageNumber+1;
                     updateSliderLabels();
+                    updateSliderValues();
                 }
             }
             if(mode=="dec"){
                 if(pageNumber>=2){
                     pageNumber=pageNumber-1;
                     updateSliderLabels();
+                    updateSliderValues();
                 }
             }
             function updateSliderLabels(){
@@ -165,6 +166,11 @@
                         ctx.textAlign = "center";
                         ctx.fillText(16*(pageNumber-1)+canvas.num, label.width/2, label.height/1.5);
                     }
+            }
+            function updateSliderValues(){
+                for(var x=1; x<17; x++){
+                    document.getElementById("slider"+x).setValue(dataModel[16*(pageNumber-1)+x-1]);
+                }
             }
             console.log("Page: "+pageNumber);
         }
@@ -194,7 +200,7 @@
                     ctx.clearRect(0, 0, this.width, this.height);
                     ctx.fillStyle = "#222222";
                     ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height ); 
-                    dataModel[this.currentChannel]=255-parseInt(event.offsetY/this.offsetHeight*255);
+                    dataModel[16*(pageNumber-1)+this.currentChannel]=255-parseInt(event.offsetY/this.offsetHeight*255);
                 }
                 canvas.onmousemove=function(event){
                     if(this.isSelected){
@@ -202,7 +208,7 @@
                         ctx.clearRect(0, 0, this.width, this.height);
                         ctx.fillStyle = "#222222";
                         ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height );  
-                        dataModel[this.currentChannel]=255-parseInt(event.offsetY/this.offsetHeight*255);
+                        dataModel[16*(pageNumber-1)+this.currentChannel]=255-parseInt(event.offsetY/this.offsetHeight*255);
                     }
                 }
                 canvas.setValue=function(value){
@@ -210,9 +216,9 @@
                     ctx.clearRect(0, 0, this.width, this.height);
                     ctx.fillStyle = "#222222";
                     ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) ); 
-                    dataModel[this.currentChannel]=value;
+                    dataModel[16*(pageNumber-1)+this.currentChannel]=value;
                 }
-                canvas.setValue(dataModel[x-1]);
+                canvas.setValue(dataModel[x-1], true);
                 document.getElementById("sliderContainer").appendChild(canvas);
 
                 var label=document.createElement('canvas');
