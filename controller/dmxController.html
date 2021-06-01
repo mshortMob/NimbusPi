@@ -188,7 +188,7 @@
                 canvas.style.height="97%";
                 canvas.style.margin=".5%";
                 canvas.isSelected=false;
-                canvas.updateCanvasValue=function(event){
+                canvas.updateValue=function(event){
                     var ctx = this.getContext("2d");
                     ctx.clearRect(0, 0, this.width, this.height);
                     ctx.fillStyle = "#222222";
@@ -203,12 +203,12 @@
                 }
                 canvas.onmousedown=function(event){
                     this.isSelected=true;
-                    this.updateCanvasValue(event);
+                    this.updateValue(event);
                 }
                 canvas.onmousemove=function(event){
                     if(this.isSelected){
                         var ctx = this.getContext("2d");
-                        this.updateCanvasValue(event);
+                        this.updateValue(event);
                     }
                 }
                 canvas.setValue=function(value){
