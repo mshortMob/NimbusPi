@@ -8,6 +8,14 @@
             #sliderContainer{
                 border:4px solid #555555;
                 width:75%;
+                height:83%;
+                position:absolute;
+                left:1%;
+                top:12%;
+            }
+            #sliderLabelsContainer{
+                border:4px solid #555555;
+                width:75%;
                 height:93%;
                 position:absolute;
                 left:1%;
@@ -27,6 +35,7 @@
     </head>
     <body>
         <div id="sliderContainer"></div>
+        <div id="sliderLabelsContainer"></div>
         <div id="gridContainer"> </div>
     </body>
     <script>
@@ -36,6 +45,7 @@
             dataModel=[];
             isWriteMode=false;
             selectedScene=1;
+            pageNumber=1;
             loadScene(1,true);
         }
         
@@ -110,6 +120,12 @@
                             console.log("Saving Scene: "+selectedScene);
                             saveScene(selectedScene);
                         }
+                        if(this.num==1){
+                            changePage("dec");
+                        }
+                        if(this.num==4){
+                            changePage("inc");
+                        }
                     }
                     button.onmouseup=function(){
                         this.style.backgroundColor="#222222"
@@ -124,8 +140,37 @@
             }
         }
 
+        function changePage(mode){
+            if(mode=="inc"){
+                if(pageNumber<=31){
+                    pageNumber=pageNumber+1;
+                    updateSliderLabels();
+                }
+            }
+            if(mode=="dec"){
+                if(pageNumber>=2){
+                    pageNumber=pageNumber-1;
+                    updateSliderLabels();
+                }
+            }
+            function updateSliderLabels(){
+                for(var x=1; x<17; x++){
+                        var label=document.getElementById("sliderLabel"+x);
+                        var canvas=document.getElementById("slider"+x);
+                        var ctx = label.getContext("2d");
+                        ctx.clearRect(0, 0, label.width, label.height);
+                        ctx.font = "80px Arial";
+                        ctx.fillStyle = "white";
+                        ctx.textAlign = "center";
+                        ctx.fillText(16*(pageNumber-1)+canvas.num, label.width/2, label.height/1.5);
+                    }
+            }
+            console.log("Page: "+pageNumber);
+        }
+        
         function createSliderElements(){
             for(var x=1; x<17; x++){
+
                 var canvas=document.createElement('canvas');
                 canvas.className="slider"
                 canvas.id="slider"+x
@@ -168,6 +213,23 @@
                 }
                 canvas.setValue(dataModel[x-1]);
                 document.getElementById("sliderContainer").appendChild(canvas);
+
+                var label=document.createElement('canvas');
+                label.className="sliderLabel";
+                label.id="sliderLabel"+x;
+                label.style.backgroundColor="#222222";
+                label.style.width="5.25%";
+                label.style.height="7%";
+                label.style.margin=".5%";
+
+                var ctx = label.getContext("2d");
+                ctx.font = "80px Arial";
+                ctx.fillStyle = "white";
+                ctx.textAlign = "center";
+                ctx.fillText(canvas.num, label.width/2, label.height/1.5);
+
+                document.getElementById("sliderLabelsContainer").appendChild(label);
+
             }
         }
 
