@@ -38,6 +38,7 @@
             selectedScene=1;
             loadScene(1,true);
         }
+        
         function loadScene(num, isInitialization){
             var xmlhttp=new XMLHttpRequest();
             xmlhttp.open("GET", "../controller/dmxControllerScenes/scene"+parseInt(num)+".txt?v="+parseInt(new Date().getTime()), true);
@@ -50,6 +51,7 @@
                 if(isInitialization==true){
                     createSliderElements();
                     createGrid();
+                    initializeDMX();
                 }else{
                     for(var x=1; x<9; x++){
                         document.getElementById("slider"+x).setValue(dataModel[x-1])
@@ -167,6 +169,39 @@
                 canvas.setValue(dataModel[x-1]);
                 document.getElementById("sliderContainer").appendChild(canvas);
             }
+        }
+
+        function writeDMX() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST","../proxy/set_dmx", true);
+            xhttp.setRequestHeader("accept", "*/*");
+            xhttp.setRequestHeader("accept-language", "en-US,en;q=0.9,und;q=0.8");
+            xhttp.setRequestHeader("cache-control", "no-cache");
+            xhttp.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+            xhttp.setRequestHeader("pragma", "no-cache" );
+
+            dmxPayloadString="u=1&d="+dataModel.toString();
+            // console.log(dmxPayloadString);
+            xhttp.send(dmxPayloadString);
+
+            xhttp.onload = function() {
+                console.log("Sent DMX: "+this.responseText);
+                setTimeout(function(){writeDMX();},250)
+            };
+        }	
+
+        function initializeDMX(){
+            xhttp = new XMLHttpRequest();
+            xhttp.open("GET","../proxy/reload", true);
+            xhttp.send();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("Initialize DMX: "+this.responseText);
+                    writeDMX();
+                }else{
+                    console.log("DMX Not Available");
+                }
+            };
         }
 
     </script>
