@@ -43,6 +43,7 @@
         init();
         function init(){
             dataModel=[];
+            delayedDataModel=[];
             isWriteMode=false;
             selectedScene=1;
             pageNumber=1;
@@ -57,11 +58,13 @@
                 var temp=xmlhttp.response.split(",");
                 for(var x=0; x<512; x++){
                     dataModel[x]=parseInt(temp[x]);
+                    delayedDataModel[x]=parseInt(temp[x]);
                 }
                 if(isInitialization==true){
                     createSliderElements();
                     createGrid();
                     initializeDMX();
+                    initDelayedDataModelController();
                 }else{
                     for(var x=1; x<17; x++){
                         document.getElementById("slider"+x).setValue(dataModel[16*(pageNumber-1)+x-1]);
@@ -271,5 +274,34 @@
             };
         }
 
+        function initDelayedDataModelController(isFirstCall){
+            var stepSize=255;
+            var stepTime=300;
+            if(isFirstCall==true){
+                setTimeout(function(){initDelayedDataModelController(false)},stepTime);
+            }else{
+                for(var x=0; x<512; x++){
+                    if(dataModel[x]!=delayedDataModel[x]){
+                        if(delayedDataModel[x]>dataModel[x]){
+                            if(delayedDataModel[x]-stepSize<=dataModel[x]){
+                                delayedDataModel[x]=dataModel[x];
+                            }else{
+                                delayedDataModel[x]=delayedDataModel[x]-stepSize;
+                            }
+                        }else{
+                            if(delayedDataModel[x]+stepSize>=dataModel[x]){
+                                delayedDataModel[x]=dataModel[x];
+                            }else{
+                                delayedDataModel[x]=delayedDataModel[x]+stepSize;
+                            }
+                        }
+                    }
+                }
+                // console.log(delayedDataModel);
+                setTimeout(function(){initDelayedDataModelController(false)},stepTime);
+            }
+           
+        }
+    
     </script>
 </html>
