@@ -8,15 +8,15 @@
             #sliderContainer{
                 border:4px solid #555555;
                 width:75%;
-                height:83%;
+                height:70%;
                 position:absolute;
                 left:1%;
-                top:12%;
+                top:25%;
             }
             #sliderLabelsContainer{
                 border:4px solid #555555;
                 width:75%;
-                height:9%;
+                height:20%;
                 position:absolute;
                 left:1%;
                 top:2%;
@@ -66,7 +66,7 @@
                     initializeDMX();
                     // initDelayedDataModelController();
                 }else{
-                    for(var x=1; x<17; x++){
+                    for(var x=1; x<9; x++){
                         document.getElementById("slider"+x).setValue(dataModel[16*(pageNumber-1)+x-1]);
                     }
                 }
@@ -145,7 +145,7 @@
 
         function changePage(mode){
             if(mode=="inc"){
-                if(pageNumber<=31){
+                if(pageNumber<=63){
                     pageNumber=pageNumber+1;
                     updateSliderLabels();
                     updateSliderValues();
@@ -159,7 +159,7 @@
                 }
             }
             function updateSliderLabels(){
-                for(var x=1; x<17; x++){
+                for(var x=1; x<9; x++){
                         var label=document.getElementById("sliderLabel"+x);
                         var canvas=document.getElementById("slider"+x);
                         var ctx = label.getContext("2d");
@@ -167,19 +167,19 @@
                         ctx.font = "80px Arial";
                         ctx.fillStyle = "white";
                         ctx.textAlign = "center";
-                        ctx.fillText(16*(pageNumber-1)+canvas.num, label.width/2, label.height/1.5);
+                        ctx.fillText(8*(pageNumber-1)+canvas.num, label.width/2, label.height/1.5);
                     }
             }
             function updateSliderValues(){
-                for(var x=1; x<17; x++){
-                    document.getElementById("slider"+x).setValue(dataModel[16*(pageNumber-1)+x-1]);
+                for(var x=1; x<9; x++){
+                    document.getElementById("slider"+x).setValue(dataModel[8*(pageNumber-1)+x-1]);
                 }
             }
             console.log("Page: "+pageNumber);
         }
         
         function createSliderElements(){
-            for(var x=1; x<17; x++){
+            for(var x=1; x<9; x++){
 
                 var canvas=document.createElement('canvas');
                 canvas.className="slider"
@@ -187,7 +187,7 @@
                 canvas.num=x;
                 canvas.currentChannel=x-1;
                 canvas.style.backgroundColor="grey";
-                canvas.style.width="5.25%";
+                canvas.style.width="11.5%";
                 canvas.style.height="97%";
                 canvas.style.margin=".5%";
                 canvas.isSelected=false;
@@ -228,8 +228,8 @@
                 label.className="sliderLabel";
                 label.id="sliderLabel"+x;
                 label.style.backgroundColor="#222222";
-                label.style.width="5.25%";
-                label.style.height="70%";
+                label.style.width="11.5%";
+                label.style.height="92%";
                 label.style.margin=".5%";
                 var ctx = label.getContext("2d");
                 ctx.font = "80px Arial";
