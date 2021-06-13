@@ -1,0 +1,258 @@
+<html>
+    <head>
+        <style>
+            body {
+                background-color: black;
+                padding: 10px;
+            }
+            #mainContainer{
+                border:4px solid #555555;
+                width:85%;
+                height:93%;
+                position:absolute;
+                left:1%;
+                top:2%;
+            }
+            #gridContainer {
+                display: grid;
+                position:absolute;
+                width:11.5%;
+                height:93%;
+                left:87%;
+                top:2%;
+                grid-template-columns: auto;
+                border:4px solid #555555;
+            }
+            .viewContainer1{
+                display: grid;
+                grid-template-columns: auto auto auto auto;
+            }
+            .viewContainer2{
+                display: grid;
+                grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+            }
+            .viewContainer3{
+                display: grid;
+                grid-template-columns: auto auto auto auto auto;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="mainContainer"></div>
+        <div id="gridContainer"> </div>
+    </body>
+    <script> 
+
+        init();
+        function init(){
+            laserData={}
+            selectedPreset=1;
+            for(var x=1; x<17; x++){
+                laserData["scene"+x]={"color":1, "gobo":1, "positionX":.5, "positionY":.5, "scaleX":.5, "scaleY":.5, "rotation":.5, "zoom":.5, "animation":0, "dots":0  }
+            }
+            dataModel=[];
+            createGrid();
+            initializeDMX();
+        }  
+
+        function createGrid(){
+            for(var x=1; x<5; x++){
+
+                var button=document.createElement('button');
+                button.className="menuButton"
+                button.id="button"+x
+                button.num=x;
+                button.innerHTML=parseInt(x-4);
+                button.style.backgroundColor="#222222";
+                button.innerHTML=x;
+                if(x==1){
+                    button.style.backgroundColor="#666666"
+                    button.innerHTML="Presets";
+                }
+                if(x==2){
+                    button.innerHTML="Color";
+                }
+                if(x==3){
+                    button.innerHTML="Gobo";
+                }
+                button.style.border="1px solid #555555";
+                button.style.color="#aaaaaa";
+                button.onclick=function(){
+                    for(var x=1; x<5; x++){
+                        document.getElementById('button'+x).style.backgroundColor="#222222";
+                        document.getElementById('viewContainer'+x).style.display="none";
+                    }
+                    this.style.backgroundColor="#666666"
+                    if(this.num!=1 && this.num!=2 && this.num!=3){
+                        document.getElementById('viewContainer'+this.num).style.display="block";
+                    }else{
+                        document.getElementById('viewContainer'+this.num).style.display="grid";
+                    }
+                    if(this.num==2){
+                        for(var x=1; x<11; x++){
+                            // document.getElementById('colorButton'+x).style.backgroundColor="#222222";
+                            document.getElementById('colorButton'+x).style.opacity="1";
+                            document.getElementById('colorButton'+x).style.borderWidth="1px"
+                        }
+                        document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.opacity=".3";
+                        document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
+                    }
+                    if(this.num==3){
+                        for(var x=1; x<11; x++){
+                            document.getElementById('goboButton'+x).style.opacity="1";
+                            document.getElementById('goboButton'+x).style.borderWidth="1px"
+                        }
+                        document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.opacity=".3";
+                        document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.borderWidth="2px"
+                    }
+                }
+                document.getElementById("gridContainer").appendChild(button);
+
+                var viewContainer=document.createElement('div');
+                viewContainer.id="viewContainer"+x;
+                viewContainer.className="viewContainer"
+                viewContainer.style.backgroundColor="#"+x.toString()+x.toString()+x.toString()+x.toString()+x.toString()+x.toString();
+                viewContainer.style.width="100%";
+                viewContainer.style.height="100%";
+                viewContainer.style.position="absolute";
+                viewContainer.style.display="none";
+                if(x==1){
+                    viewContainer.style.display="grid";
+                    viewContainer.className="viewContainer1"
+                    for(var y=1; y<17; y++){
+                        var sceneButton=document.createElement('button');
+                        sceneButton.num=y;
+                        sceneButton.id="sceneButton"+y;
+                        sceneButton.innerHTML=y;
+                        sceneButton.style.backgroundColor="#222222";
+                        sceneButton.style.color="#aaaaaa";
+                        if(y==1){
+                            sceneButton.style.backgroundColor="#666666"
+                        }
+                        sceneButton.onclick=function(){
+                            for(var x=1; x<17; x++){
+                                document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
+                            }
+                            this.style.backgroundColor="#666666"
+                            selectedPreset=this.num;
+                        }
+                        viewContainer.appendChild(sceneButton);
+                    }
+                }
+                if(x==2){
+                    // viewContainer.style.display="grid";
+                    viewContainer.className="viewContainer2"
+                    for(var y=1; y<11; y++){
+                        var colorButton=document.createElement('button');
+                        colorButton.num=y;
+                        colorButton.id="colorButton"+y;
+                        colorButton.style.backgroundColor="#222222";
+                        colorButton.style.backgroundImage="url(./laserControllerData/c"+y+".png)";
+                        colorButton.style.backgroundRepeat="no-repeat";
+                        colorButton.style.backgroundSize="100% 100%"
+                        colorButton.style.color="#aaaaaa";
+                        if(y==1){
+                            colorButton.style.opacity=".3";
+                            colorButton.style.borderWidth="2px"
+                        }
+                        colorButton.onclick=function(){
+                            for(var x=1; x<11; x++){
+                                // document.getElementById('colorButton'+x).style.backgroundColor="#222222";
+                                document.getElementById('colorButton'+x).style.opacity="1";
+                                document.getElementById('colorButton'+x).style.borderWidth="1px"
+                            }
+                            this.style.opacity=".3";
+                            this.style.borderWidth="2px"
+                            laserData["scene"+selectedPreset].color=this.num;
+                        }
+                        viewContainer.appendChild(colorButton);
+                    }
+                }
+                if(x==3){
+                    // viewContainer.style.display="grid";
+                    viewContainer.className="viewContainer3"
+                    for(var y=1; y<21; y++){
+                        var goboButton=document.createElement('button');
+                        goboButton.num=y;
+                        goboButton.id="goboButton"+y;
+                        goboButton.innerHTML=y;
+                        goboButton.style.backgroundColor="#222222";
+                        goboButton.style.backgroundImage="url(./laserControllerData/g"+y+".png)";
+                        goboButton.style.backgroundRepeat="no-repeat";
+                        goboButton.style.backgroundSize="100% 100%"
+                        goboButton.style.color="#aaaaaa";
+                        if(y==1){
+                            goboButton.style.opacity=".3";
+                            goboButton.style.borderWidth="2px"
+                        }
+                        goboButton.onclick=function(){
+                            for(var x=1; x<21; x++){
+                                // document.getElementById('goboButton'+x).style.backgroundColor="#222222";
+                                document.getElementById('goboButton'+x).style.opacity="1";
+                                document.getElementById('goboButton'+x).style.borderWidth="1px"
+                            }
+                            this.style.opacity=".3";
+                            this.style.borderWidth="2px"
+                            laserData["scene"+selectedPreset].gobo=this.num;
+                        }
+                        viewContainer.appendChild(goboButton);
+                    }
+                }
+                document.getElementById("mainContainer").appendChild(viewContainer);
+
+            }
+        }
+ 
+        function getDMXfromLaserData(data){
+            var dmxData=[];
+            var colorMapping=[0,4,8,12,16,20,24,30,34,38];
+            var goboMapping=[0,4,8,12,16,20,24,30,34,38,42,46,50,54,58,62,66,70,74,78];
+            for(var x=1; x<23; x++){
+                if(x==1 || x==12){
+                    dmxData.push(255);
+                }else if( x==2 || x==(2+11) ){
+                    dmxData.push( colorMapping[data.color] );
+                }else if( x==3 || x==(3+11) ){
+                    dmxData.push( goboMapping[data.gobo] );
+                }else{
+                    dmxData.push(0);
+                }
+            }
+            return dmxData.toString();
+        }
+
+        function writeDMX() {
+            var xhttp = new XMLHttpRequest();
+            xhttp.open("POST","../proxy/set_dmx", true);
+            xhttp.setRequestHeader("accept", "*/*");
+            xhttp.setRequestHeader("accept-language", "en-US,en;q=0.9,und;q=0.8");
+            xhttp.setRequestHeader("cache-control", "no-cache");
+            xhttp.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
+            xhttp.setRequestHeader("pragma", "no-cache" );
+
+            dmxPayloadString="u=0&d="+getDMXfromLaserData();
+            // console.log(dmxPayloadString);
+            xhttp.send(dmxPayloadString);
+
+            xhttp.onload = function() {
+                console.log("Sent DMX: "+this.responseText);
+                setTimeout(function(){writeDMX();},250)
+            };
+        }	
+
+        function initializeDMX(){
+            xhttp = new XMLHttpRequest();
+            xhttp.open("GET","../proxy/reload", true);
+            xhttp.send();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("Initialize DMX: "+this.responseText);
+                    writeDMX();
+                }else{
+                    console.log("DMX Not Available");
+                }
+            };
+        }
+
+    </script>
+</html>
