@@ -53,7 +53,7 @@
             laserData={}
             selectedPreset=1;
             for(var x=1; x<17; x++){
-                laserData["scene"+x]={"color":1, "gobo":1, "positionX":.5, "positionY":.5, "scaleX":.5, "scaleY":.5, "rotation":.5, "zoom":.5, "animation":0, "dots":0  }
+                laserData["scene"+x]={"color":1, "gobo":1, "positionX":0, "positionY":0, "scaleX":0, "scaleY":0, "rotation":0, "zoom":0, "animation":0, "dots":0  }
             }
             dataModel=[];
             createGrid();
@@ -376,6 +376,23 @@
                     dmxData.push( colorMapping[data.color-1] );
                 }else if( x==3 || x==(3+12) ){
                     dmxData.push( goboMapping[data.gobo-1] );
+                
+                }else if( x==4 || x==(4+12) ){
+                    dmxData.push( data.positionY );
+                }else if( x==5 || x==(5+12) ){
+                    dmxData.push( data.positionX );
+                }else if( x==6 || x==(6+12) ){
+                    dmxData.push( data.scaleY );
+                }else if( x==7 || x==(7+12) ){
+                    dmxData.push( data.scaleX );
+                }else if( x==8 || x==(8+12) ){
+                    dmxData.push( data.rotation );
+                }else if( x==9 || x==(9+12) ){
+                    dmxData.push( data.zoom );
+                }else if( x==11 || x==(11+12) ){
+                    dmxData.push( data.dots );
+                }else if( x==12 || x==(12+12) ){
+                    dmxData.push( data.animation );
                 }else{
                     dmxData.push(0);
                 }
