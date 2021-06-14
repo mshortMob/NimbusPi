@@ -230,7 +230,7 @@
             xhttp.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
             xhttp.setRequestHeader("pragma", "no-cache" );
 
-            dmxPayloadString="u=0&d="+getDMXfromLaserData();
+            dmxPayloadString="u=0&d="+getDMXfromLaserData(laserData["scene"+selectedPreset]);
             // console.log(dmxPayloadString);
             xhttp.send(dmxPayloadString);
 
