@@ -33,7 +33,7 @@
             }
             .viewContainer3{
                 display: grid;
-                grid-template-columns: auto auto auto auto auto;
+                grid-template-columns: auto auto auto auto;
             }
             .viewContainer4{
                 display: grid;
@@ -189,11 +189,11 @@
                 if(x==3){
                     // viewContainer.style.display="grid";
                     viewContainer.className="viewContainer3"
-                    for(var y=1; y<21; y++){
+                    for(var y=1; y<17; y++){
                         var goboButton=document.createElement('button');
                         goboButton.num=y;
                         goboButton.id="goboButton"+y;
-                        goboButton.innerHTML=y;
+                        // goboButton.innerHTML=y;
                         goboButton.style.backgroundColor="#222222";
                         goboButton.style.backgroundImage="url(./laserControllerData/g"+y+".png)";
                         goboButton.style.backgroundRepeat="no-repeat";
@@ -204,7 +204,7 @@
                             goboButton.style.borderWidth="2px"
                         }
                         goboButton.onclick=function(){
-                            for(var x=1; x<21; x++){
+                            for(var x=1; x<17; x++){
                                 // document.getElementById('goboButton'+x).style.backgroundColor="#222222";
                                 document.getElementById('goboButton'+x).style.opacity="1";
                                 document.getElementById('goboButton'+x).style.borderWidth="1px"
@@ -331,35 +331,35 @@
 
                 if(x==1){
                     canvas.setValue(laserData["scene"+selectedPreset].positionX, true);
-                    drawLabelText("Pos. X");
+                    drawLabelText("X");
                 }
                 if(x==2){
                     canvas.setValue(laserData["scene"+selectedPreset].positionY, true);
-                    drawLabelText("Pos. Y");
+                    drawLabelText("Y");
                 }
                 if(x==3){
                     canvas.setValue(laserData["scene"+selectedPreset].scaleX, true);
-                    drawLabelText("Width");
+                    drawLabelText("W");
                 }
                 if(x==4){
                     canvas.setValue(laserData["scene"+selectedPreset].scaleY, true);
-                    drawLabelText("Height");
+                    drawLabelText("H");
                 }
                 if(x==5){
                     canvas.setValue(laserData["scene"+selectedPreset].rotation, true);
-                    drawLabelText("Rotate");
+                    drawLabelText("R");
                 }
                 if(x==6){
                     canvas.setValue(laserData["scene"+selectedPreset].zoom, true);
-                    drawLabelText("Zoom");
+                    drawLabelText("Z");
                 }
                 if(x==7){
                     canvas.setValue(laserData["scene"+selectedPreset].dots, true);
-                    drawLabelText("Dots");
+                    drawLabelText("D");
                 }
                 if(x==8){
                     canvas.setValue(laserData["scene"+selectedPreset].animation, true);
-                    drawLabelText("Animate");
+                    drawLabelText("A");
                 }
 
             }
@@ -368,7 +368,7 @@
         function getDMXfromLaserData(data){
             var dmxData=[];
             var colorMapping=[0,15,18,22,27,32,37,10,50,255];
-            var goboMapping=[0,4,8,12,16,20,24,30,34,38,42,46,50,54,58,62,66,70,74,78];
+            var goboMapping=[3,5,2,29,32,33,75,69,44,43,62,79,85,0,1,7];
             for(var x=1; x<25; x++){
                 if(x==1 || x==1+12){
                     dmxData.push(255);
