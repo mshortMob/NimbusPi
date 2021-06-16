@@ -39,6 +39,10 @@
                 display: grid;
                 grid-template-rows: 25% 75%;
             }
+            .viewContainer5{
+                display: grid;
+                grid-template-rows: auto auto auto auto;
+            }
         </style>
     </head>
     <body>
@@ -58,10 +62,11 @@
             dataModel=[];
             createGrid();
             initializeDMX();
+            // initAudio();
         }  
 
         function createGrid(){
-            for(var x=1; x<5; x++){
+            for(var x=1; x<6; x++){
 
                 var button=document.createElement('button');
                 button.className="menuButton"
@@ -83,15 +88,18 @@
                 if(x==4){
                     button.innerHTML="Fx";
                 }
+                if(x==5){
+                    button.innerHTML="Misc.";
+                }
                 button.style.border="1px solid #555555";
                 button.style.color="#aaaaaa";
                 button.onclick=function(){
-                    for(var x=1; x<5; x++){
+                    for(var x=1; x<6; x++){
                         document.getElementById('button'+x).style.backgroundColor="#222222";
                         document.getElementById('viewContainer'+x).style.display="none";
                     }
                     this.style.backgroundColor="#666666"
-                    if(this.num!=1 && this.num!=2 && this.num!=3 && this.num!=4){
+                    if(this.num!=1 && this.num!=2 && this.num!=3 && this.num!=4 && this.num!=5){
                         document.getElementById('viewContainer'+this.num).style.display="block";
                     }else{
                         document.getElementById('viewContainer'+this.num).style.display="grid";
@@ -218,7 +226,59 @@
                 }
                 if(x==4){
                     viewContainer.className="viewContainer4";
-
+                }
+                if(x==5){
+                    viewContainer.className="viewContainer5";
+                    for(var y=1; y<5; y++){
+                        var menuButton=document.createElement('button');
+                        menuButton.num=y;
+                        menuButton.id="menuButton"+y;
+                        menuButton.isCruiseMode=false;
+                        menuButton.cruiseSpeed=1;
+                        menuButton.style.backgroundColor="#222222";
+                        if(y==1){
+                            menuButton.innerHTML="Save Presets"
+                        }
+                        if(y==2){
+                            menuButton.innerHTML="Recall Presets"
+                        }
+                        if(y==3){
+                            menuButton.innerHTML="Cruise Mode"
+                        }
+                        if(y==4){
+                            menuButton.innerHTML="Cruise Speed:"+menuButton.cruiseSpeed;
+                        }
+                        // menuButton.style.backgroundImage="url(./laserControllerData/c"+y+".png)";
+                        // menuButton.style.backgroundRepeat="no-repeat";
+                        // menuButton.style.backgroundSize="100% 100%"
+                        menuButton.style.color="#aaaaaa";
+                        menuButton.onmousedown=function(){
+                            if(this.num==3){
+                                if(this.isCruiseMode){
+                                    this.style.opacity="1";
+                                }else{
+                                    this.style.opacity=".3";
+                                }
+                                this.isCruiseMode=!this.isCruiseMode;
+                            }else{
+                                this.style.opacity=".3";
+                            }
+                            if(this.num==4){
+                                if(this.cruiseSpeed<8){
+                                    this.cruiseSpeed=this.cruiseSpeed+1;
+                                }else{
+                                    this.cruiseSpeed=1;
+                                }
+                                this.innerHTML="Cruise Speed:"+this.cruiseSpeed;
+                            }
+                        }
+                        menuButton.onmouseup=function(){
+                            if(this.num!=3){
+                                this.style.opacity="1";
+                            }
+                        }                      
+                        viewContainer.appendChild(menuButton);
+                    }
                 }
                 document.getElementById("mainContainer").appendChild(viewContainer);
             }
@@ -433,5 +493,35 @@
             };
         }
 
+        function initAudio() {
+				if(location.href.indexOf("localhost")!="-1"){
+					console.log("trying audio");
+					navigator.getUserMedia = navigator.getUserMedia
+									|| navigator.webkitGetUserMedia
+									|| navigator.mozGetUserMedia;
+
+					navigator.getUserMedia({ video : false, audio : true }, getAudioData, console.log);
+
+					function getAudioData(stream) {
+						var ctx = new AudioContext();
+						var mic = ctx.createMediaStreamSource(stream);
+						var analyser = ctx.createAnalyser();
+
+						mic.connect(analyser); 
+						audioData = new Uint8Array(analyser.frequencyBinCount);
+						function play() {
+							analyser.getByteFrequencyData(audioData);
+							//console.log(audioData);
+							requestAnimationFrame(play);
+						}
+
+						play();
+					}
+				}else{
+					console.log("audio only supported on localhost (without tls)");
+					audioData = new Uint8Array(8);
+				}
+			}
+    
     </script>
 </html>
