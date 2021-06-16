@@ -53,6 +53,7 @@
 
         init();
         function init(){
+            recallLaserData();
             pageNumber=1;
             laserData={}
             selectedPreset=1;
@@ -271,6 +272,12 @@
                                 }
                                 this.innerHTML="Cruise Speed:"+this.cruiseSpeed;
                             }
+                            if(this.num==1){
+                                saveLaserData();
+                            }
+                            if(this.num==2){
+                                recallLaserData();
+                            }
                         }
                         menuButton.onmouseup=function(){
                             if(this.num!=3){
@@ -283,6 +290,23 @@
                 document.getElementById("mainContainer").appendChild(viewContainer);
             }
             createSliderElements();
+        }
+
+        function saveLaserData(num){
+            var requestBody=JSON.stringify(laserData);
+            var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("POST", "../php/write.php?fn=controller/laserControllerData/laserData.txt", true);
+            xmlhttp.send(requestBody);
+            xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+        }
+
+        function recallLaserData(num, isInitialization){
+            var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("GET", "../controller/laserControllerData/laserData.txt?v="+parseInt(new Date().getTime()), true);
+            xmlhttp.send();
+            xmlhttp.onload = function(e){
+                laserData=JSON.parse(xmlhttp.response)
+            }
         }
  
         function createSliderElements(){
