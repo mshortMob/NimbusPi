@@ -230,7 +230,7 @@
                 }
                 if(x==5){
                     viewContainer.className="viewContainer5";
-                    for(var y=1; y<5; y++){
+                    for(var y=1; y<6; y++){
                         var menuButton=document.createElement('button');
                         menuButton.num=y;
                         menuButton.id="menuButton"+y;
@@ -245,9 +245,13 @@
                         }
                         if(y==3){
                             menuButton.innerHTML="Cruise Mode"
+                            menuButton.cruisePreset=1;
                         }
                         if(y==4){
                             menuButton.innerHTML="Cruise Speed:"+menuButton.cruiseSpeed;
+                        }
+                        if(y==5){
+                            menuButton.innerHTML="Save Current Preset To All";
                         }
                         // menuButton.style.backgroundImage="url(./laserControllerData/c"+y+".png)";
                         // menuButton.style.backgroundRepeat="no-repeat";
@@ -278,6 +282,9 @@
                             if(this.num==2){
                                 recallLaserData();
                             }
+                            if(this.num==5){
+                                saveSelectedPresetToAll();
+                            }
                         }
                         menuButton.onmouseup=function(){
                             if(this.num!=3){
@@ -290,6 +297,13 @@
                 document.getElementById("mainContainer").appendChild(viewContainer);
             }
             createSliderElements();
+            initCruiseMode();
+        }
+
+        function saveSelectedPresetToAll(){
+            for(var x=1; x<17; x++){
+                laserData["scene"+x]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
+            }
         }
 
         function saveLaserData(num){
@@ -546,6 +560,49 @@
 					audioData = new Uint8Array(8);
 				}
 			}
+    
+        function initCruiseMode(){
+            button=document.getElementById("menuButton3");
+            if(button.cruisePreset<16){
+                button.cruisePreset=button.cruisePreset+1;
+            }else{
+                document.getElementById("menuButton3").cruisePreset=1;
+            }
+            if(document.getElementById("menuButton3").isCruiseMode==true){
+                selectedPreset=button.cruisePreset;
+                console.log(selectedPreset);
+
+                for(var x=1; x<11; x++){
+                    // document.getElementById('colorButton'+x).style.backgroundColor="#222222";
+                    document.getElementById('colorButton'+x).style.opacity="1";
+                    document.getElementById('colorButton'+x).style.borderWidth="1px"
+                }
+                document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.opacity=".3";
+                document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
+                for(var x=1; x<11; x++){
+                    document.getElementById('goboButton'+x).style.opacity="1";
+                    document.getElementById('goboButton'+x).style.borderWidth="1px"
+                }
+                for(var x=1; x<17; x++){
+                    document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
+                }
+                document.getElementById('sceneButton'+button.cruisePreset).style.backgroundColor="#666666"
+                document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.opacity=".3";
+                document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.borderWidth="2px"
+                document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
+                document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
+                document.getElementById('slider3').setValue(laserData["scene"+selectedPreset].scaleX);
+                document.getElementById('slider4').setValue(laserData["scene"+selectedPreset].scaleY);
+                document.getElementById('slider5').setValue(laserData["scene"+selectedPreset].rotation);
+                document.getElementById('slider6').setValue(laserData["scene"+selectedPreset].zoom);
+                document.getElementById('slider7').setValue(laserData["scene"+selectedPreset].dots);
+                document.getElementById('slider8').setValue(laserData["scene"+selectedPreset].animation);
+
+            }
+            setTimeout(function(){
+                initCruiseMode();
+            },parseInt(2000/document.getElementById("menuButton4").cruiseSpeed));
+        }
     
     </script>
 </html>
