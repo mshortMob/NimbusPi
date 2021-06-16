@@ -53,7 +53,6 @@
 
         init();
         function init(){
-            recallLaserData();
             pageNumber=1;
             laserData={}
             selectedPreset=1;
@@ -61,9 +60,7 @@
                 laserData["scene"+x]={"color":1, "gobo":1, "positionX":0, "positionY":0, "scaleX":0, "scaleY":0, "rotation":0, "zoom":0, "animation":0, "dots":0  }
             }
             dataModel=[];
-            createGrid();
-            initializeDMX();
-            // initAudio();
+            recallLaserData(true);
         }  
 
         function createGrid(){
@@ -280,7 +277,7 @@
                                 saveLaserData();
                             }
                             if(this.num==2){
-                                recallLaserData();
+                                recallLaserData(false);
                             }
                             if(this.num==5){
                                 saveSelectedPresetToAll();
@@ -314,12 +311,17 @@
             xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
         }
 
-        function recallLaserData(num, isInitialization){
+        function recallLaserData(isInitialization){
             var xmlhttp=new XMLHttpRequest();
             xmlhttp.open("GET", "../controller/laserControllerData/laserData.txt?v="+parseInt(new Date().getTime()), true);
             xmlhttp.send();
             xmlhttp.onload = function(e){
                 laserData=JSON.parse(xmlhttp.response)
+                if(isInitialization==true){
+                    createGrid();
+                    initializeDMX();
+                    // initAudio();
+                }
             }
         }
  
@@ -601,7 +603,7 @@
             }
             setTimeout(function(){
                 initCruiseMode();
-            },parseInt(2000/document.getElementById("menuButton4").cruiseSpeed));
+            },parseInt(16000/document.getElementById("menuButton4").cruiseSpeed));
         }
     
     </script>
