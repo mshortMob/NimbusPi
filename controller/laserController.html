@@ -227,7 +227,7 @@
                 }
                 if(x==5){
                     viewContainer.className="viewContainer5";
-                    for(var y=1; y<6; y++){
+                    for(var y=1; y<7; y++){
                         var menuButton=document.createElement('button');
                         menuButton.num=y;
                         menuButton.id="menuButton"+y;
@@ -249,6 +249,9 @@
                         }
                         if(y==5){
                             menuButton.innerHTML="Save Current Preset To All";
+                        }
+                        if(y==6){
+                            menuButton.innerHTML="Save Current Preset To Block";
                         }
                         // menuButton.style.backgroundImage="url(./laserControllerData/c"+y+".png)";
                         // menuButton.style.backgroundRepeat="no-repeat";
@@ -282,6 +285,9 @@
                             if(this.num==5){
                                 saveSelectedPresetToAll();
                             }
+                            if(this.num==6){
+                                saveSelectedPresetToBlock();
+                            }
                         }
                         menuButton.onmouseup=function(){
                             if(this.num!=3){
@@ -299,6 +305,23 @@
 
         function saveSelectedPresetToAll(){
             for(var x=1; x<17; x++){
+                laserData["scene"+x]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
+            }
+        }
+
+        function saveSelectedPresetToBlock(){
+            var start=1;
+            if(selectedPreset<5){
+                start=1;
+            }else if(selectedPreset>=5 && selectedPreset<9){
+                start=5;
+            }else if(selectedPreset>=9 && selectedPreset<13){
+                start=9;              
+            }else if(selectedPreset>=13){
+                start=13;              
+            }
+            var end=start+4;
+            for(var x=start; x<end; x++){
                 laserData["scene"+x]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
             }
         }
