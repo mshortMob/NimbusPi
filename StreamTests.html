@@ -197,13 +197,6 @@
 					}
 					statesArray.push(objectJSON)
 				}
-				for(var x=0;x<4;x++){
-					var objectJSON ={}
-					for (var key in painterController) {
-						objectJSON[key]=painterController[key]
-					}
-					presetsArray.push(objectJSON)
-				}
 				for(var y=0;y<4;y++){
 					addPlane();
 				}
@@ -261,21 +254,11 @@
 					 Visible:false,
 					 ZValue:0
 				};
-				painterController  = {
-					 KaleidoScope:1,
-					 BrightnessSensitivity:.99,
-					 VelocitySensitivity:0.99,
-					 FadeTime:.6,
-					 ColorMix:.5,
-					 ColorRate:.05,
-					 ColorHop:1,
-					 Resolution:512
-				};
 				var count=0; 
-				for(var y=4; y>=0;y--){
-					for(var x=0; x<5;x++){
-						objectController["VerticeX"+count]=-200+100*x;
-						objectController["VerticeY"+count]=-200+100*y;
+				for(var y=8; y>=0;y--){
+					for(var x=0; x<9;x++){
+						objectController["VerticeX"+count]=-200+400/8*x;
+						objectController["VerticeY"+count]=-200+400/8*y;
 						count=count+1;
 					}
 				}
@@ -283,25 +266,12 @@
 				globalFolder=gui.addFolder( "Global" )
 				globalFolder.open();
 				globalFolder.add(globalController, "selectedObject", 0, 3, 1 ).onChange(function(){globalController.selectedObject=parseInt(globalController.selectedObject);updateControlsView();syncObjectsToJson();});
-				globalFolder.add(globalController, "selectedScene", 0, 3, 1 ).onChange(function(){globalController.selectedScene=parseInt(globalController.selectedScene);updateControlsView();});
 				globalFolder.add(globalController, "Mask", 1, 7, 1 ).onChange(function(){globalController.Mask=parseInt(globalController.Mask); changeMask(); updateControlsValues();});
-				globalFolder.add(globalController, "mappingMode", 0, 1, .1 ).onChange(function(){if(statesArray[globalController.selectedObject]["Visible"]==true){displayObjects[globalController.selectedObject].hideChildren();displayObjects[globalController.selectedObject].showChildren();};});
-				globalFolder.add( globalController, "sceneRate", 0, .15, .0001 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
 				gui.width=360;
 				controlsFolder=gui.addFolder( "ObjectControls" )
 				controlsFolder.open();
 				controlsFolder.add( objectController, "Visible", true ).onChange(function(){updateControlsValues();syncObjectsToJson();});	
 				controlsFolder.add( objectController, "ZValue", -20, 20, 1 ).onChange(function(){updateControlsValues();syncObjectsToJson()});
-				painterFolder=gui.addFolder( "PainterControls" )
-				painterFolder.open();
-				painterFolder.add( painterController, "VelocitySensitivity", 0, 1, .01 ).onChange(function(){painterController.VelocitySensitivity=parseFloat(painterController.VelocitySensitivity);updateControlsValues();});
-				painterFolder.add( painterController, "BrightnessSensitivity", 0, 1, .01 ).onChange(function(){painterController.BrightnessSensitivity=parseFloat(painterController.BrightnessSensitivity);updateControlsValues();});
-				painterFolder.add( painterController, "FadeTime", 0, 1, .01 ).onChange(function(){painterController.FadeTime=parseFloat(painterController.FadeTime);updateControlsValues();});
-				painterFolder.add( painterController, "ColorMix", 0, 1, .01 ).onChange(function(){painterController.ColorMix=parseFloat(painterController.ColorMix);updateControlsValues();});
-				painterFolder.add( painterController, "ColorRate", 0, .7, .001 ).onChange(function(){painterController.ColorRate=parseFloat(painterController.ColorRate);updateControlsValues();});
-				painterFolder.add( painterController, "ColorHop", 0, 10, 1 ).onChange(function(){painterController.ColorHop=parseFloat(painterController.ColorHop);updateControlsValues();});				
-				//painterFolder.add( painterController, "Resolution", 100, 600, 1 ).onChange(function(){painterController.Resolution=parseFloat(painterController.Resolution);updateControlsValues();});				
-				painterFolder.add( painterController, "KaleidoScope", 1, 4, 1 ).onChange(function(){painterController.KaleidoScope=parseInt(painterController.KaleidoScope);updateControlsValues();});
 				utilsFolder=gui.addFolder( "Utils" )
 				utilsFolder.open();
 				utilsFolder.add({ 'Full Screen':function(){ requestFullScreen() }},'Full Screen');
@@ -452,21 +422,7 @@
 				}
 				if(event.key=="." ){
 					selectedVertice=(selectedVertice+1)%4;
-				}
-				keyPressToSlider(event, "b", painterController, "BrightnessSensitivity", .01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "B", painterController, "BrightnessSensitivity", -.01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "m", painterController, "VelocitySensitivity", .01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "M", painterController, "VelocitySensitivity", -.01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "f", painterController, "FadeTime", .01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "F", painterController, "FadeTime", -.01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "n", painterController, "ColorMix", .01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "N", painterController, "ColorMix", -.01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "r", painterController, "ColorRate", .01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "R", painterController, "ColorRate", -.01, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "k", painterController, "KaleidoScope",  1, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "K", painterController, "KaleidoScope",  -.1, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "j", painterController, "ColorHop", .1, gui.__folders.PainterControls, function(){ updateControlsValues(); } );
-				keyPressToSlider(event, "J", painterController, "ColorHop", -.1, gui.__folders.PainterControls, function(){ updateControlsValues(); } );	
+				}	
 				if(event.key=="!"){
 					globalController.PresetName="Preset_1";
 					gui.__folders.Utils.__controllers.filter(obj => { return obj.property == "PresetName"})[0].updateDisplay();
@@ -536,21 +492,14 @@
 				  	objectController[gui.__folders.ObjectControls.__controllers[i].property]=statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property];
 					gui.__folders.ObjectControls.__controllers[i].updateDisplay();
 				}
-				for (var i in gui.__folders.PainterControls.__controllers) {
-				  painterController[gui.__folders.PainterControls.__controllers[i].property]=presetsArray[parseInt(globalController.selectedScene)][gui.__folders.PainterControls.__controllers[i].property];
-				  gui.__folders.PainterControls.__controllers[i].updateDisplay();
-				}
-				gui.__folders.Global.__controllers[1].updateDisplay();
-				gui.__folders.Global.__controllers[2].updateDisplay();
+				// gui.__folders.Global.__controllers[1].updateDisplay();
+				// gui.__folders.Global.__controllers[2].updateDisplay();
 			}
 			
 			function updateControlsValues(){  
-				// for (var i in gui.__folders.ObjectControls.__controllers) {
-				//   statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property]=objectController[gui.__folders.ObjectControls.__controllers[i].property];
-				// }
-				// for (var i in gui.__folders.PainterControls.__controllers) {
-				//   presetsArray[parseInt(globalController.selectedScene)][gui.__folders.PainterControls.__controllers[i].property]=painterController[gui.__folders.PainterControls.__controllers[i].property];
-				// }
+				for (var i in gui.__folders.ObjectControls.__controllers) {
+				  statesArray[parseInt(globalController.selectedObject)][gui.__folders.ObjectControls.__controllers[i].property]=objectController[gui.__folders.ObjectControls.__controllers[i].property];
+				}
 			}
 			
 			function syncObjectsToJson(){
@@ -600,18 +549,12 @@
 			  }
 			  var object = createObject();
 			  object.showChildren=function(){
-			        if (globalController.mappingMode>.5) {
-						for(var x=0; x<object.children.length ;x++){
-								object.children[x].visible=true;							
-						}
-					}else{
-						for(var x=0; x<object.children.length ;x++){
-							if (object.children[x].isCorner==true) {
-								object.children[x].visible=true;
-								object.updatecorners;
-							}
-						}					
+				for(var x=0; x<object.children.length ;x++){
+					if (object.children[x].isCorner==true) {
+						object.children[x].visible=true;
+						object.updatecorners;
 					}
+				}					
 			  }
 			  object.hideChildren=function(){
 				for(var x=object.children.length-1;x>=0 ;x--){
@@ -623,12 +566,19 @@
 					//var  geo = new THREE.BoxGeometry( 35, 35, 0 );
 					//var mat = new THREE.PointsMaterial( { size: 300, vertexColors: THREE.VertexColors , color: 0xffffff } );
 					//var mesh1 = new THREE.Mesh( geo, mat );
-					mesh1 = new THREE.Mesh( new THREE.CircleGeometry(8, 8, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}))
+					var cornerNum=[];
+					cornerNum[0]=0;
+					cornerNum[1]=Math.sqrt(object.geometry.vertices.length)-1
+					cornerNum[2]=object.geometry.vertices.length-1-(Math.sqrt(object.geometry.vertices.length)-1)
+					cornerNum[3]=object.geometry.vertices.length-1
+					mesh1 = new THREE.Mesh( new THREE.CircleGeometry(20, 20, 0, Math.PI * 2 ), new THREE.MeshPhongMaterial({side: THREE.DoubleSide, color:0xffffff}))
 					mesh1.name="vertice"+x;
 					mesh1.isCorner=false;
-					// if (x == 0 || x == 4 || x == 24 || x == 20) {
+					if (x == cornerNum[0] || x == cornerNum[1] || x == cornerNum[2] || x == cornerNum[3]) {
 						mesh1.isCorner=true;
-					// }
+					}else{
+						mesh1.visible=false;
+					}
 					mesh1.vertNum=x;
 					mesh1.position.x=object.geometry.vertices[x].x;
 					mesh1.position.y=object.geometry.vertices[x].y;
