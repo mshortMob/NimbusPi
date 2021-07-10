@@ -34,7 +34,8 @@
 	</head>
 	<body>
 		<video id="video" autoplay width='512' height='512' style="display:none;"></video>
-		<canvas id="canvasp8" autoplay width='512' height='512' style="display:none;"></video>
+		<canvas id="canvasp8" autoplay width='512' height='512' style="display:none;"></canvas>
+		<canvas id="maskCanvas" autoplay width='512' height='512' style="background-color:green; display:block; z-index:100;"></canvas>
 		<script src="dependancies/three.js"></script>
 		<script src="dependancies/pixel8.js"></script>
 		<script src='dependancies/dat.gui.min.js'></script>
@@ -213,9 +214,13 @@
 				camera.position.z = -1000;
 				controls = new THREE.TrackballControls( camera , container);
 				controls.enabled=false;
-				scene = new THREE.Scene();
-				LIGHTING=new THREE.AmbientLight( 0xffffff ) 
-				scene.add( LIGHTING );
+				scene1 = new THREE.Scene();
+				LIGHTING1=new THREE.AmbientLight( 0xffffff ) 
+				scene1.add( LIGHTING1 );
+				LIGHTING2=new THREE.AmbientLight( 0xffffff ) 
+				scene2 = new THREE.Scene();
+				scene2.add( LIGHTING2 );
+				scene=scene1;
 				renderer = new THREE.WebGLRenderer( { antialias: true , alpha:true} );
 				renderer.setClearColor( 0x000000 , 1);
 				renderer.setPixelRatio( window.devicePixelRatio );
@@ -813,6 +818,10 @@
 			function render() {
 				data=pixel8(video,0,0,document.getElementById('video').width,document.getElementById('video').height)
 				texture.needsUpdate=true;
+				for(var x=0;x<displayObjects.length;x++){
+					displayObjects[x].material.transparent=true
+					displayObjects[x].material.needsUpdate=true
+				}
 				renderer.render( scene, camera );
 			}
 			
@@ -848,6 +857,35 @@
 					folder.__controllers.filter(obj => { return obj.property == slider})[0].updateDisplay();
 					callback();
 				}
+			}
+		
+			function drawMaskCanvas(){
+				var maskHandleState=[];
+				// for(var x=1;x<9;x++){
+				// 	maskHandleState.push({"x":x,"y":x});
+				// }
+				maskHandleState.push({"x":0,"y":0});
+				maskHandleState.push({"x":400,"y":0});
+				maskHandleState.push({"x":400,"y":400});
+				maskHandleState.push({"x":0,"y":400});
+				context=document.getElementById('maskCanvas').getContext("2d");
+				context.clearRect(0,0,document.getElementById('maskCanvas').width,document.getElementById('maskCanvas').height);
+				context.fillStyle = '#ffffff';
+				context.beginPath();
+				var scaleFactor=3;
+				var offsetY=130;
+				var offsetX=50;
+				context.moveTo(maskHandleState[0].x/scaleFactor+offsetX, maskHandleState[0].y/scaleFactor+offsetY);
+				for(var x=1;x<maskHandleState.length;x++){
+					context.lineTo(maskHandleState[x].x/scaleFactor+offsetX,maskHandleState[x].y/scaleFactor+offsetY);
+				}
+				context.lineTo(maskHandleState[0].x/scaleFactor+offsetX,maskHandleState[0].y/scaleFactor+offsetY);
+				context.closePath();
+				context.fill();
+
+				// tempData=context.getImageData(0,0,256,256).data;
+				// dataTex = new THREE.DataTexture(tempData, 256, 256);
+				// dataTex.needsUpdate = true;
 			}
 		
 		</script>
