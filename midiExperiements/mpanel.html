@@ -7,7 +7,7 @@
             }
             .grid-container {
                 display: grid;
-                grid-template-columns: auto auto auto auto auto auto;
+                grid-template-columns: auto auto auto auto auto auto auto;
                 background-color: #555555;
                 padding: 10px;
                 height:90%;
@@ -32,17 +32,20 @@
         <button class="grid-item" onclick="hitEndpoint('stop',this)">Stop</button>
         <button class="grid-item" onclick="hitEndpoint('clear',this)">Clear</button>
         <button class="grid-item" onclick="hitEndpoint('length',this)" id="lengthButton">Length 1</button>
+        <button class="grid-item" onclick="hitEndpoint('killAllNotes',this)">Kill Notes</button>
         <button class="grid-item" onclick="saveState()">Save</button>
         <button class="grid-item" onclick="hitEndpoint('pattern/1',this);" id="pattern1" >1</button>
         <button class="grid-item" onclick="hitEndpoint('pattern/2',this);" id="pattern2" >2</button>
         <button class="grid-item" onclick="hitEndpoint('pattern/3',this);" id="pattern3" >3</button>
         <button class="grid-item" onclick="hitEndpoint('pattern/4',this);" id="pattern4" >4</button>
         <button class="grid-item" onclick="hitEndpoint('pattern/5',this);" id="pattern5" >5</button>
+        <button class="grid-item" onclick="hitEndpoint('quantize/',this)" id="quantize">Quantize</button>
         <button class="grid-item" onclick="recallState()">Recall</button>
 
     </div>
     <script>
         selectedLength=0;
+        quantize="false";
         document.getElementById("pattern1").style.backgroundColor='rgba(255, 255, 255, 0.5)';
         function hitEndpoint(endpoint, buttonElem){
 
@@ -53,6 +56,15 @@
                     document.getElementById("pattern"+x).style.backgroundColor='rgba(255, 255, 255, 0.8)';
                 }
                 buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
+            }else if(endpoint=="quantize/"){
+                if(quantize=="true"){
+                    quantize="false";
+                    buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.8)';
+                }else{
+                    quantize="true";
+                    buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
+                }
+                endpoint=endpoint+quantize;
             }else{
                 buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
                 setTimeout(function(){buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.8)';},280);
