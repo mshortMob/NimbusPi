@@ -78,8 +78,9 @@ circuitInput.on('message', (deltaTime, message) => {
 });
 
 function killAllNotes(){
-  for(var x=30; x<=48; x++){
-    rolandOutput.sendMessage([130,parseInt(x, 16),0]);
+  for(var x=0; x<=200; x++){
+    // rolandOutput.sendMessage([130,parseInt(x, 16),0]);
+    rolandOutput.sendMessage([130,x,0]);
   }
 }
 
@@ -136,6 +137,7 @@ app.get('/pattern/:patternNumber', (req, res) => {
   res.send(req.params.patternNumber);
   // console.log(loopData[selectedPattern-1]);
   console.log("change to pattern:"+req.params.patternNumber);
+  killAllNotes();
   selectedPattern=parseInt(req.params.patternNumber);
 })
 
@@ -162,8 +164,6 @@ app.get('/killAllNotes', (req, res) => {
   res.send("killAllNotes");
   console.log("killAllNotes");
 })
-
-killAllNotes
 
 app.get('/test', (req, res) => {
   res.send(JSON.stringify(loopData));
