@@ -78,7 +78,7 @@ circuitInput.on('message', (deltaTime, message) => {
 });
 
 function killAllNotes(){
-  for(var x=0; x<=200; x++){
+  for(var x=48; x<=72; x++){
     // rolandOutput.sendMessage([130,parseInt(x, 16),0]);
     rolandOutput.sendMessage([130,x,0]);
   }
