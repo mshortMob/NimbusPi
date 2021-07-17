@@ -22,6 +22,7 @@ function init(){
   loopLengths=[96*1, 96*2, 96*4];
   selectedLength=0;
   selectedPattern=1;
+  quantizeEnabled=false;
   for(var y=0; y<5; y++){
     var temp=[];
     for(var x=0; x<loopMaxLength; x++){
@@ -84,7 +85,11 @@ function killAllNotes(){
 
 rolandInput.on('message', (deltaTime, message) => {
   if(state=="rec"){
-    loopData[selectedPattern-1][cursor].push(message);
+    if(quantizeEnabled==false){
+      loopData[selectedPattern-1][cursor].push(message);
+    }else{
+      loopData[selectedPattern-1][cursor-(cursor%6)].push(message);      
+    }
   }
 });
 
@@ -145,6 +150,13 @@ app.post('/recallFromDisk', (req, res) => {
   // console.log(req.body);
   loopData=req.body;
 })
+
+app.get('/quantize/:enable', (req, res) => {
+  quantizeEnabled=(req.params.enable === 'true');
+  console.log("set quantanization: "+req.params.enable);
+  res.send("set quantanization: "+req.params.enable);
+})
+
 
 app.get('/test', (req, res) => {
   res.send(JSON.stringify(loopData));
