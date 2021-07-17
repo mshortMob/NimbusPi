@@ -87,9 +87,29 @@ function killAllNotes(){
 rolandInput.on('message', (deltaTime, message) => {
   if(state=="rec"){
     if(quantizeEnabled==false){
-      loopData[selectedPattern-1][cursor].push(message);
+      if(selectedLength==0){
+        loopData[selectedPattern-1][cursor].push(message);
+        loopData[selectedPattern-1][cursor+96*1].push(message);
+        loopData[selectedPattern-1][cursor+96*2].push(message);
+        loopData[selectedPattern-1][cursor+96*3].push(message);
+      }else if(selectedLength==1){
+        loopData[selectedPattern-1][cursor].push(message);
+        loopData[selectedPattern-1][cursor+96*2].push(message);
+      }else{
+        loopData[selectedPattern-1][cursor].push(message);
+      }
     }else{
-      loopData[selectedPattern-1][cursor-(cursor%6)].push(message);      
+      if(selectedLength==0){
+        loopData[selectedPattern-1][cursor-(cursor%6)].push(message);
+        loopData[selectedPattern-1][cursor-(cursor%6)+96*1].push(message);
+        loopData[selectedPattern-1][cursor-(cursor%6)+96*2].push(message);
+        loopData[selectedPattern-1][cursor-(cursor%6)+96*3].push(message);
+      }else if(selectedLength==1){   
+        loopData[selectedPattern-1][cursor-(cursor%6)].push(message);
+        loopData[selectedPattern-1][cursor-(cursor%6)+96*2].push(message);
+      }else{
+        loopData[selectedPattern-1][cursor-(cursor%6)].push(message);
+      }
     }
   }
 });
