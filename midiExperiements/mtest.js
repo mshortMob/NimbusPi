@@ -157,6 +157,13 @@ app.get('/quantize/:enable', (req, res) => {
   res.send("set quantanization: "+req.params.enable);
 })
 
+app.get('/killAllNotes', (req, res) => {
+  killAllNotes();
+  res.send("killAllNotes");
+  console.log("killAllNotes");
+})
+
+killAllNotes
 
 app.get('/test', (req, res) => {
   res.send(JSON.stringify(loopData));
