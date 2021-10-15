@@ -37,6 +37,11 @@
     },
     {
       "type": "file",
+      "source": "files/brcmfmac43455-sdio.bin_2015-03-01_7.45.18.0_ub19.10.1",
+      "destination": "/home/pi/brcmfmac43455-sdio.bin"
+    },
+    {
+      "type": "file",
       "source": "files/dnsmasq.conf",
       "destination": "/home/pi/dnsmasq.conf"
    },
@@ -113,6 +118,9 @@
    {
       "type": "shell",
       "inline": [
+        "sudo mv -f /home/pi/brcmfmac43455-sdio.bin /lib/firmware/brcm/brcmfmac43455-sdio.bin",
+        "sudo chown root:root /lib/firmware/brcm/brcmfmac43455-sdio.bin",
+        "sudo chmod 644 /lib/firmware/brcm/brcmfmac43455-sdio.bin",
         "sudo mv -f /home/pi/dnsmasq.conf /etc/dnsmasq.conf",
         "sudo chown root:root /etc/dnsmasq.conf",
         "sudo chmod 644 /etc/dnsmasq.conf",
