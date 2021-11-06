@@ -21,7 +21,7 @@
                 left:1%;
                 top:2%;
             }
-            #gridContainer {
+            #gridContainer{
                 display: grid;
                 position:absolute;
                 width:21.5%;
@@ -31,18 +31,30 @@
                 grid-template-columns: auto auto auto auto;
                 border:4px solid #555555;
             }
+            #menuContainer {
+                display: grid;
+                position:absolute;
+                width:21.5%;
+                height:93%;
+                left:77%;
+                top:2%;
+                grid-template-columns: auto;
+                border:4px solid #555555;
+            }
         </style>
     </head>
     <body>
         <div id="sliderContainer"></div>
         <div id="sliderLabelsContainer"></div>
         <div id="gridContainer"> </div>
+        <div id="menuContainer" style="display:none"> </div>
     </body>
     <script> 
 
         init();
         function init(){
             dataModel=[];
+            speed=1000;
             delayedDataModel=[];
             isWriteMode=false;
             selectedScene=1;
@@ -73,6 +85,65 @@
             }
         }
 
+        function saveThenLoadScene(current, next){
+            var requestBody=dataModel.toString();
+            var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("POST", "../php/write.php?fn=controller/dmxControllerScenes/scene"+parseInt(current)+".txt", true);
+            xmlhttp.send(requestBody);
+            xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
+
+            var xmlhttp2=new XMLHttpRequest();
+            xmlhttp2.open("GET", "../controller/dmxControllerScenes/scene"+parseInt(next)+".txt?v="+parseInt(new Date().getTime()), true);
+            xmlhttp2.send();
+            xmlhttp2.onload = function(e){
+                var temp=xmlhttp2.response.split(",");
+                for(var x=0; x<512; x++){
+                    dataModel[x]=parseInt(temp[x]);
+                    delayedDataModel[x]=parseInt(temp[x]);
+                }
+                for(var x=1; x<9; x++){
+                    document.getElementById("slider"+x).setValue(dataModel[16*(pageNumber-1)+x-1]);
+                }
+            }
+        }
+
+        function saveSceneToRow(){
+            if(selectedScene==1 || selectedScene==2 || selectedScene==3 || selectedScene==4){
+                var start=1
+            }
+            if(selectedScene==5 || selectedScene==6 || selectedScene==7 || selectedScene==8){
+                var start=5
+            }
+            if(selectedScene==9 || selectedScene==10 || selectedScene==11 || selectedScene==12){
+                var start=9
+            }
+            if(selectedScene==13 || selectedScene==14 || selectedScene==15 || selectedScene==16){
+                var start=13
+            }
+            for(var x=start; x<(start+4); x++){
+                count=0;
+                var requestBody=dataModel.toString();
+                var xmlhttps=[]
+                xmlhttps.push(new XMLHttpRequest());
+                xmlhttps[count].open("POST", "../php/write.php?fn=controller/dmxControllerScenes/scene"+parseInt(x)+".txt", true);
+                xmlhttps[count].send(requestBody);
+                count=count+1;
+            }
+        }
+
+        function saveSceneToAll(){
+            for(var x=1; x<(1+16); x++){
+                count=0;
+                var requestBody=dataModel.toString();
+                var xmlhttps=[]
+                xmlhttps.push(new XMLHttpRequest());
+                xmlhttps[count].open("POST", "../php/write.php?fn=controller/dmxControllerScenes/scene"+parseInt(x)+".txt", true);
+                xmlhttps[count].send(requestBody);
+                count=count+1;
+            }
+        }
+
+
         function saveScene(num){
             var requestBody=dataModel.toString();
             var xmlhttp=new XMLHttpRequest();
@@ -82,6 +153,61 @@
         }
 
         function createGrid(){
+
+            for(var x=1; x<5; x++){
+                var button=document.createElement('button');
+                button.className="menuButton"
+                button.id="menubutton"+x
+                button.num=x;
+                button.innerHTML=parseInt(x-4);
+                button.style.backgroundColor="#222222";
+                button.style.border="1px solid #555555";
+                button.style.color="#aaaaaa";
+                if(x==1){
+                    button.innerHTML="Back";
+                }
+                if(x==2){
+                    button.innerHTML="Save to Row";
+                }
+                if(x==3){
+                    button.innerHTML="Save to All";
+                }
+                if(x==4){
+                    button.innerHTML="Speed: Fast";
+                }
+                button.onmousedown=function(){
+                    this.style.backgroundColor="#777777"
+                    if(this.num==1){
+                        document.getElementById("menuContainer").style.display='none';
+                        document.getElementById("gridContainer").style.display='grid';
+                        this.style.backgroundColor="#222222"
+                    }
+                    if(this.num==2){
+                        saveSceneToRow();
+                    }
+                    if(this.num==3){
+                        saveSceneToAll();
+                    }
+                    if(this.num==4){
+                        if(this.innerHTML=='Speed: Fast'){
+                            this.innerHTML='Speed: Slow'
+                            speed='15000'
+                        }else  if(this.innerHTML=='Speed: Medium'){
+                            this.innerHTML='Speed: Fast'
+                            speed='1000'
+                        }else  if(this.innerHTML=='Speed: Slow'){
+                            this.innerHTML='Speed: Medium'
+                            speed='5000'
+                        }
+                    }
+                }
+                button.onmouseup=function(){
+                    this.style.backgroundColor="#222222"
+                }
+                document.getElementById("menuContainer").appendChild(button);
+            }
+
+
             for(var x=1; x<21; x++){
                 var button=document.createElement('button');
                 button.className="menuButton"
@@ -96,10 +222,14 @@
                     button.innerHTML="<";
                 }
                 if(x==2){
-                    button.innerHTML="Misc";
+                    button.innerHTML="Menu";
+                    button.onclick=function(){
+                        button.parentElement.style.display='none';
+                        document.getElementById("menuContainer").style.display='grid';
+                    }
                 }
                 if(x==3){
-                    button.innerHTML="Write";
+                    button.innerHTML="Play";
                 }
                 if(x==4){
                     button.innerHTML=">";
@@ -109,8 +239,9 @@
                 }
                 if(x>=5){
                     button.onclick=function(){
+                        saveThenLoadScene(selectedScene,this.num-4);
                         selectedScene=this.num-4;
-                        loadScene(this.num-4,false);
+                        // loadScene(this.num-4,false);
                         for(var x=5; x<21; x++){
                             document.getElementById("button"+x).style.backgroundColor="#222222";
                         }
@@ -120,8 +251,11 @@
                     button.onmousedown=function(){
                         this.style.backgroundColor="#777777"
                         if(this.num==3){
-                            console.log("Saving Scene: "+selectedScene);
-                            saveScene(selectedScene);
+                            if(this.innerHTML=="Play"){
+                                this.innerHTML="Stop";
+                            }else{
+                                this.innerHTML="Play";
+                            }
                         }
                         if(this.num==1){
                             changePage("dec");
@@ -141,6 +275,22 @@
                     button.style.borderBottom="0px solid black"; 
                 }
             }
+
+            initSequencer();
+
+        }
+
+        function initSequencer(){
+            setTimeout(function(){
+                if(document.getElementById('button3').innerHTML=='Stop'){
+                    if(selectedScene>=16){
+                        document.getElementById('button'+parseInt(1+4)).click();
+                    }else{
+                        document.getElementById('button'+parseInt(selectedScene+1+4)).click();
+                    }
+                }
+                initSequencer();
+            },speed);
         }
 
         function changePage(mode){
@@ -197,6 +347,7 @@
                     ctx.fillStyle = "#222222";
                     ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height ); 
                     dataModel[16*(pageNumber-1)+this.currentChannel]=255-parseInt(event.offsetY/this.offsetHeight*255);
+                    console.log('update')
                 }
                 canvas.onmouseup=function(event){
                     this.isSelected=false;
@@ -220,6 +371,7 @@
                     ctx.fillStyle = "#222222";
                     ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) ); 
                     dataModel[16*(pageNumber-1)+this.currentChannel]=value;
+                    console.log('set')
                 }
                 canvas.setValue(dataModel[x-1], true);
                 document.getElementById("sliderContainer").appendChild(canvas);
