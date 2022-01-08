@@ -693,8 +693,10 @@
                     for(var x=1; x<17; x++){
                         document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
                     }
-                    document.getElementById('sceneButton'+parseInt(accellData[3]+1)).style.backgroundColor="#666666"
-                    selectedPreset=document.getElementById('sceneButton'+parseInt(accellData[3]+1)).num;
+                    if(parseInt(accellData[3]+1)>=0 && parseInt(accellData[3]+1)<=16 ){
+                        document.getElementById('sceneButton'+parseInt(accellData[3]+1)).style.backgroundColor="#666666"
+                        selectedPreset=document.getElementById('sceneButton'+parseInt(accellData[3]+1)).num;
+                    }
                     lastButtonNum=accellData[3];
                 }
                 console.log(accellData);
