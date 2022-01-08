@@ -558,8 +558,8 @@
             xhttp.setRequestHeader("pragma", "no-cache" );
 
             if(document.getElementById("menuButton8").accellControl==1){
-                laserData["scene"+selectedPreset].positionX=parseInt(2+(accellData[0]/3.1));
-                laserData["scene"+selectedPreset].positionY=parseInt(2+(accellData[1]/3.1));
+                laserData["scene"+selectedPreset].positionX=parseInt(15+(accellData[0]/4));
+                laserData["scene"+selectedPreset].positionY=parseInt(15+(accellData[1]/4));
                 document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
                 document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
             }
@@ -570,7 +570,7 @@
 
             xhttp.onload = function() {
                 console.log("Sent DMX: "+this.responseText);
-                setTimeout(function(){writeDMX();},250)
+                setTimeout(function(){writeDMX();},100)
             };
         }	
 
