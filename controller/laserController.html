@@ -41,7 +41,7 @@
             }
             .viewContainer5{
                 display: grid;
-                grid-template-rows: auto auto auto auto;
+                grid-template-columns: auto auto;
             }
         </style>
     </head>
@@ -227,7 +227,7 @@
                 }
                 if(x==5){
                     viewContainer.className="viewContainer5";
-                    for(var y=1; y<8; y++){
+                    for(var y=1; y<9; y++){
                         var menuButton=document.createElement('button');
                         menuButton.num=y;
                         menuButton.id="menuButton"+y;
@@ -256,6 +256,10 @@
                         if(y==7){
                             menuButton.innerHTML="Audio Cruise:0";
                             menuButton.audioCruise=0;
+                        }
+                        if(y==8){
+                            menuButton.innerHTML="Accell Control:0";
+                            menuButton.accellControl=0;
                         }
                         // menuButton.style.backgroundImage="url(./laserControllerData/c"+y+".png)";
                         // menuButton.style.backgroundRepeat="no-repeat";
@@ -299,6 +303,15 @@
                                     this.audioCruise=0;
                                 }
                                 this.innerHTML="Audio Cruise:"+this.audioCruise;
+                            }
+                            if(this.num==8){
+                                if(this.accellControl==0){
+                                    this.accellControl=1;
+                                    getAccellData();
+                                }else{
+                                    this.accellControl=0;
+                                }
+                                this.innerHTML="Accell Control:"+this.accellControl;
                             }
                         }
                         menuButton.onmouseup=function(){
@@ -544,6 +557,11 @@
             xhttp.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
             xhttp.setRequestHeader("pragma", "no-cache" );
 
+            if(document.getElementById("menuButton8").accellControl==1){
+                laserData["scene"+selectedPreset].positionX=accellData[0];
+                laserData["scene"+selectedPreset].positionY=accellData[1];
+            }
+
             dmxPayloadString="u=0&d="+getDMXfromLaserData(laserData["scene"+selectedPreset]);
             // console.log(dmxPayloadString);
             xhttp.send(dmxPayloadString);
@@ -660,6 +678,21 @@
             document.getElementById('slider6').setValue(laserData["scene"+selectedPreset].zoom);
             document.getElementById('slider7').setValue(laserData["scene"+selectedPreset].dots);
             document.getElementById('slider8').setValue(laserData["scene"+selectedPreset].animation);
+        }
+
+        function getAccellData(){
+            var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("GET", "../controller/laserControllerData/accellData.txt?v="+parseInt(new Date().getTime()), true);
+            xmlhttp.send();
+            xmlhttp.onload = function(e){
+                accellData=xmlhttp.response.replace('\n','').replace('  ',' ').replace('  ',' ').split(" ").map(Number);
+                console.log(accellData);
+                if(document.getElementById("menuButton8").accellControl==1){
+                    setTimeout(function(){
+                        getAccellData();
+                    },200);
+                }
+            }
         }
 
     </script>
