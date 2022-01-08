@@ -53,6 +53,7 @@
 
         init();
         function init(){
+            lastButtonNum=100;
             pageNumber=1;
             laserData={}
             selectedPreset=1;
@@ -558,8 +559,8 @@
             xhttp.setRequestHeader("pragma", "no-cache" );
 
             if(document.getElementById("menuButton8").accellControl==1){
-                laserData["scene"+selectedPreset].positionX=parseInt(20+(accellData[0]/4.4));
-                laserData["scene"+selectedPreset].positionY=parseInt(20+(accellData[1]/4.4));
+                laserData["scene"+selectedPreset].positionX=parseInt(24+(accellData[0]/4.5));
+                laserData["scene"+selectedPreset].positionY=parseInt(24+(accellData[1]/4.5));
                 document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
                 document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
             }
@@ -688,6 +689,14 @@
             xmlhttp.send();
             xmlhttp.onload = function(e){
                 accellData=xmlhttp.response.replace('\n','').replace('  ',' ').replace('  ',' ').split(" ").map(Number);
+                if(lastButtonNum!=accellData[3]){
+                    for(var x=1; x<17; x++){
+                        document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
+                    }
+                    document.getElementById('sceneButton'+parseInt(accellData[3]+1)).style.backgroundColor="#666666"
+                    selectedPreset=document.getElementById('sceneButton'+parseInt(accellData[3]+1)).num;
+                    lastButtonNum=accellData[3];
+                }
                 console.log(accellData);
                 if(document.getElementById("menuButton8").accellControl==1){
                     setTimeout(function(){
