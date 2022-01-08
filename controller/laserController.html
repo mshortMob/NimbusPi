@@ -560,6 +560,8 @@
             if(document.getElementById("menuButton8").accellControl==1){
                 laserData["scene"+selectedPreset].positionX=accellData[0];
                 laserData["scene"+selectedPreset].positionY=accellData[1];
+                document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
+                document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
             }
 
             dmxPayloadString="u=0&d="+getDMXfromLaserData(laserData["scene"+selectedPreset]);
