@@ -558,20 +558,13 @@
             xhttp.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
             xhttp.setRequestHeader("pragma", "no-cache" );
 
-            if(document.getElementById("menuButton8").accellControl==1){
-                laserData["scene"+selectedPreset].positionX=parseInt(24+(accellData[1]/4.5));
-                laserData["scene"+selectedPreset].positionY=parseInt(24+((255-accellData[2])/4.5));
-                document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
-                document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
-            }
-
             dmxPayloadString="u=0&d="+getDMXfromLaserData(laserData["scene"+selectedPreset]);
             // console.log(dmxPayloadString);
             xhttp.send(dmxPayloadString);
 
             xhttp.onload = function() {
-                console.log("Sent DMX: "+this.responseText);
-                setTimeout(function(){writeDMX();},100)
+                // console.log("Sent DMX: "+this.responseText);
+                setTimeout(function(){writeDMX();},1)
             };
         }	
 
@@ -688,26 +681,44 @@
             xmlhttp.open("GET", "../controller/laserControllerData/accellData.txt?v="+parseInt(new Date().getTime()), true);
             xmlhttp.send();
             xmlhttp.onload = function(e){
-                accellData=xmlhttp.response.replace('\n','').replace('  ',' ').replace('  ',' ').split(" ").map(Number);
-                if(lastButtonNum!=accellData[3]){
-                    for(var x=1; x<17; x++){
-                        document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
-                    }
-                    if(parseInt(accellData[3]+1)>=0 && parseInt(accellData[3]+1)<=16 ){
-                        if(selectedPreset<16){
-                            selectedPreset=selectedPreset+1;    
-                        }else{
-                            selectedPreset=1;
+                if(xmlhttp.response.length>5){
+                    accellData=xmlhttp.response.replace('\n','').replace('  ',' ').replace('  ',' ').split(" ").map(Number);
+                    if(lastButtonNum!=accellData[3] && accellData[3]!=NaN){
+                        if(lastButtonNum!=100){
+                            for(var x=1; x<17; x++){
+                                document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
+                            }
+                            if(parseInt(accellData[3]+1)>=0 && parseInt(accellData[3]+1)<=16 ){
+                                if(selectedPreset<16){
+                                    selectedPreset=selectedPreset+1;    
+                                }else{
+                                    selectedPreset=1;
+                                }
+                                document.getElementById('sceneButton'+parseInt(selectedPreset)).style.backgroundColor="#666666"
+                            }
                         }
-                        document.getElementById('sceneButton'+parseInt(selectedPreset)).style.backgroundColor="#666666"
+                        lastButtonNum=accellData[3];
+                        console.log(accellData[3]);
                     }
-                    lastButtonNum=accellData[3];
+                    if(document.getElementById("menuButton8").accellControl==1){
+                        laserData["scene"+selectedPreset].positionX=parseInt(24+(accellData[1]/4.5));
+                        document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
+                        laserData["scene"+selectedPreset].positionY=parseInt(24+((255-accellData[2])/4.5));
+                        document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
+                        // console.log(laserData["scene"+selectedPreset].positionX+" "+laserData["scene"+selectedPreset].positionY);
+                    }
                 }
-                console.log(accellData);
                 if(document.getElementById("menuButton8").accellControl==1){
                     setTimeout(function(){
                         getAccellData();
-                    },100);
+                    },1);
+                }
+            }
+            xmlhttp.onerror = function(e){
+                if(document.getElementById("menuButton8").accellControl==1){
+                    setTimeout(function(){
+                        getAccellData();
+                    },1);
                 }
             }
         }
