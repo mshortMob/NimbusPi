@@ -564,7 +564,7 @@
 
             xhttp.onload = function() {
                 // console.log("Sent DMX: "+this.responseText);
-                setTimeout(function(){writeDMX();},1)
+                setTimeout(function(){writeDMX();},25)
             };
         }	
 
@@ -678,11 +678,12 @@
 
         function getAccellData(){
             var xmlhttp=new XMLHttpRequest();
-            xmlhttp.open("GET", "../controller/laserControllerData/accellData.txt?v="+parseInt(new Date().getTime()), true);
+            xmlhttp.open("GET", "../proxy/get_dmx?u=2")
             xmlhttp.send();
             xmlhttp.onload = function(e){
                 if(xmlhttp.response.length>5){
-                    accellData=xmlhttp.response.replace('\n','').replace('  ',' ').replace('  ',' ').split(" ").map(Number);
+                    var tempJSON=JSON.parse(xmlhttp.response).dmx;
+                    accellData=[tempJSON[0], tempJSON[1], tempJSON[2], tempJSON[3] ];
                     if(lastButtonNum!=accellData[3] && accellData[3]!=NaN){
                         if(lastButtonNum!=100){
                             for(var x=1; x<17; x++){
@@ -711,14 +712,14 @@
                 if(document.getElementById("menuButton8").accellControl==1){
                     setTimeout(function(){
                         getAccellData();
-                    },1);
+                    },25);
                 }
             }
             xmlhttp.onerror = function(e){
                 if(document.getElementById("menuButton8").accellControl==1){
                     setTimeout(function(){
                         getAccellData();
-                    },1);
+                    },25);
                 }
             }
         }
