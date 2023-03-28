@@ -1,0 +1,14 @@
+[Unit]
+Description=leds_and_apc_mini
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /root/led_mandalla_controller.js 
+WorkingDirectory=/root
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
