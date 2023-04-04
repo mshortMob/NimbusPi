@@ -13,14 +13,14 @@ int num_leds=57;
 int num_leds_base=37;
 int fixtureNumber=1;
 bool writeEEPROM=false;
-const char *ssid = "MiniPanelCircleFlower7"; //HotSpot Password, use web UI to setup local wifi
+const char *ssid = "MandalaPanel1"; //HotSpot Password, use web UI to setup local wifi
 const char *password = "NimbusPi123"; // must be different than your local wifi
 
 struct {
   char ssid[256] = "NimbusPi-ApcMini"; // This is what gets stored in EEPROM if you uncomment 
   char password[256] = "NimbusPi123"; //  EEPROM.put and EEPROM.commit in setup
   char universe[16] = "1";
-  char startChan[32] = "17";
+  char startChan[32] = "25";
   char fixtureMode[16] = "2";   //fixtureMode 0= 3chan ; fixtureMode 1= indiviudal addressable
   char oscAddressX[512] = "/accell/x";
   char oscAddressY[512] = "/accell/y";
@@ -105,12 +105,12 @@ void setup() {
   leds.begin();
   leds.clear();
   leds.show();
-//
+
 //  for(int x=0; x<=num_leds; x++){
 //    Serial.println(x);
 //    leds.clear();
 //    leds.setPixelColor(x, 255, 0, 255);
-//    leds.setBrightness(100);
+//    leds.setBrightness(255);
 //    leds.show();
 //    delay(1500);
 //  }
@@ -118,7 +118,7 @@ void setup() {
 //    Serial.println(x);
 //    leds.clear();
 //    leds.setPixelColor(x, 255, 0, 255);
-//    leds.setBrightness(100);
+//    leds.setBrightness(255);
 //    leds.show();
 //    delay(1500);
 //  }
@@ -192,7 +192,7 @@ void loop() {
     }
   }
   if(startupMode){
-    pattern=4;
+    pattern=2;
     drawPOVFrame(); 
     server.handleClient(); 
   }else {
@@ -205,11 +205,16 @@ void loop() {
         artnet.read();
         int fixtureMode=atoi(epdata.fixtureMode);
         if(fixtureMode==2){
-          int colorIndex=floor((fixtureValues.colorIndex/2.0));
+          int colorIndex=floor((fixtureValues.colorIndex/1.3));
+          if(floor(fixtureValues.colorIndex)<200){
+            colorIndex=floor((fixtureValues.colorIndex/1.3));
+          }else{
+            colorIndex=153;
+          }
           int colorSpread=floor((fixtureValues.colorSpread/255.0)*10.0);
           int cycleTime=210+floor((fixtureValues.cycleTime/255.0)*4200.0);
           int trailLength=1+floor((fixtureValues.trailLength/255.0)*(num_leds/.75));
-          int trailSpread=1.0+floor((fixtureValues.trailSpread/255.0)*120.0);
+          int trailSpread=1.0+floor((fixtureValues.trailSpread/255.0)*num_leds*.25);
           int dir=1;
           if(fixtureValues.dir>240){
             dir=9;
@@ -246,27 +251,16 @@ void drawPOVFrame() {
   }else if(pattern==1){
     noisePattern6();
   }else if(pattern==2){
-    int cycleTime=50000;
-    float cycle=millis()%cycleTime;
-    int index=floor((cycle/cycleTime)*5);
-    if(index==0){
-      chasePattern1(110, 30, 2500, 2, 7, -1, 0, 255);
-    }else if(index==1){
-      chasePattern1(125, 10, 2500, 6, 1, 3, 0, 255);
-    }else if(index==2){
-      chasePattern1(25, 30, 2500, 10, 8, 1, 0, 255);
-    }else if(index==3){
-      chasePattern1(125, 10, 2500, 13, 1, -1, 0, 255);
-    }else if(index==4){
-      chasePattern1(75, 12, 2500, 12, 1, 2, 0, 255);
-    }
+    fixtureValues.colorSpread=15;
+    fixtureValues.colorIndex=206;
+    chasePattern1(75, 1, 3000, 20, 1, 4, 0, 255);
   }else if(pattern==3){
     rainbow(5);
   }else if(pattern==4){
     int cycleTime=40000;
     float cycle=millis()%cycleTime;
     int colorIndex=floor((cycle/cycleTime)*150);
-    chasePattern1(colorIndex, 8, 3250, 13, 1, 2, 0, 255);
+    chasePattern1(colorIndex, 8, 3250, 10, 1, 4, 0, 255);
   }
   frame=(frame+1)%16;
 }
@@ -291,14 +285,25 @@ void setAndFilterPixelBuffer(){
     pixelBufferR[i]=r;
     pixelBufferG[i]=g;
     pixelBufferB[i]=b;
+    
     int centerPixelMapFixture1[][15]={{5,6,7,8,9,10,22,24,25,26,28,29,31,36,36},
                               {44,45,46,47,48,49,50,51,52,53,54,55,56,37,38}};
     int centerPixelMapFixture1Length=15;
+    
     int centerPixelMapFixture2[][14]={{4,5,6,7,8,9,10,23,24,25,26,27,28,29},
-                         {37,38,39,40,41,42,43,44,45,46,47,48,49,50}};
+                         {37,38,39,40,41,42,43,44,45,46,47,48,49,50}};                
     int centerPixelMapFixture2Length=14;
-    //4-10 37-43
-    //23-29 44-50
+    
+    int centerPixelMapFixture3[][15]={{5,6,7,8,9,10,11,23,24,25,26,27,28,29,30},
+                         {39,40,41,42,43,44,45,46,47,48,49,50,51,52,53}};
+    int centerPixelMapFixture3Length=15;
+    
+    int centerPixelMapFixture4[][15]={{5,6,7,8,9,10,11,23,24,25,26,27,28,29,30},
+                         {39,40,41,42,43,44,45,46,47,48,49,50,51,52,53}};
+    int centerPixelMapFixture4Length=15;
+    
+    // 4-11, 39-45
+    // 23-31, 46-53
     bool isCenterPixel=false;
     float centerStrobeModifier=1.0;
     if(fixtureValues.strobe >= 254){
@@ -321,7 +326,7 @@ void setAndFilterPixelBuffer(){
               leds.setPixelColor(centerPixelMapFixture1[1][y],leds.Color( floor(gain*r*centerStrobeModifier), floor(gain*g*centerStrobeModifier), floor(gain*b*centerStrobeModifier) ));
             }
           }
-          if(i==centerPixelMapFixture1[1][y]){
+          if(i==centerPixelMapFixture1[1][y] and i!=37 and i!=38){
             isCenterPixel=true;
           }
       }
@@ -336,6 +341,34 @@ void setAndFilterPixelBuffer(){
             }
           }
           if(i==centerPixelMapFixture2[1][y]){
+            isCenterPixel=true;
+          }
+      }
+    }
+    if(fixtureNumber==3){
+      for(int y=0; y<centerPixelMapFixture3Length; y++){
+          if(i==centerPixelMapFixture3[0][y]){
+            if( (true) and (((fixtureValues.colorSpread>12) and (fixtureValues.colorSpread<25)) or ((fixtureValues.colorSpread>75) and (fixtureValues.colorSpread<90)) or ((fixtureValues.colorSpread>130) and (fixtureValues.colorSpread<150))) ){
+              leds.setPixelColor(centerPixelMapFixture3[1][y],leds.Color( floor(gain*b*centerStrobeModifier), floor(gain*r*centerStrobeModifier), floor(gain*g*centerStrobeModifier) ));
+            }else{
+              leds.setPixelColor(centerPixelMapFixture3[1][y],leds.Color( floor(gain*r*centerStrobeModifier), floor(gain*g*centerStrobeModifier), floor(gain*b*centerStrobeModifier) ));
+            }
+          }
+          if(i==centerPixelMapFixture3[1][y]){
+            isCenterPixel=true;
+          }
+      }
+    }
+    if(fixtureNumber==4){
+      for(int y=0; y<centerPixelMapFixture4Length; y++){
+          if(i==centerPixelMapFixture4[0][y]){
+            if( (true) and (((fixtureValues.colorSpread>12) and (fixtureValues.colorSpread<25)) or ((fixtureValues.colorSpread>75) and (fixtureValues.colorSpread<90)) or ((fixtureValues.colorSpread>130) and (fixtureValues.colorSpread<150))) ){
+              leds.setPixelColor(centerPixelMapFixture4[1][y],leds.Color( floor(gain*b*centerStrobeModifier), floor(gain*r*centerStrobeModifier), floor(gain*g*centerStrobeModifier) ));
+            }else{
+              leds.setPixelColor(centerPixelMapFixture4[1][y],leds.Color( floor(gain*r*centerStrobeModifier), floor(gain*g*centerStrobeModifier), floor(gain*b*centerStrobeModifier) ));
+            }
+          }
+          if(i==centerPixelMapFixture4[1][y]){
             isCenterPixel=true;
           }
       }
@@ -374,38 +407,30 @@ void chasePattern1(int colorIndex, int colorSpread, int cycleTime, int trailLeng
     setDesiredlBuffer(i,0,0,0);
   }
   int offsetRotation=17;
-//  if(fixtureValues.dir>175){
-//    offsetRotation=6;
-//  }
-//  if(fixtureValues.dir>200){
-//    offsetRotation=25;
-//  }
-//  if(fixtureValues.dir>225){
-//    offsetRotation=17;
-//  }
-//  if(fixtureValues.dir>245){
-//    offsetRotation=6;
-//  }
-  int cyclePeriodModifier=0;
-//  if(fixtureValues.dir>38){
-//    cyclePeriodModifier=2;
-//  }
-  if(fixtureValues.dir>75){
-    cyclePeriodModifier=1;
+  
+  int colorLFOCycleTimeInt=20000;
+  if(fixtureValues.colorIndex>=200){
+    colorLFOCycleTimeInt=23000-floor(1+fixtureValues.colorIndex-200)*400;
   }
+  float colorLFOCycle=millis()%colorLFOCycleTimeInt;
+  int colorIndexWithLFOModifier=colorIndex;
+  if(fixtureValues.colorIndex>=200){
+    colorIndexWithLFOModifier=colorIndex+floor(colorLFOCycle/colorLFOCycleTimeInt*150.0);
+  }
+    
   float cycle=millis()%cycleTime;
   int index=floor((cycle/cycleTime)*num_leds_base);
   if(dir==1){
     for(int i =0; i<trailLength; i++){
       int tempModulus=floor(num_leds_base/1);
       int ind=(index+i*trailSpread)%tempModulus;
-      setDesiredlBuffer(ind, colorMap[0][(colorIndex+(i*colorSpread))%156], colorMap[1][(colorIndex+(i*colorSpread))%156], colorMap[2][(colorIndex+(i*colorSpread))%156] );
+      setDesiredlBuffer(ind, colorMap[0][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(i*colorSpread))%156] );
     }
   }else if(dir==2){
     for(int i =0; i<trailLength; i++){
       int tempModulus=floor(num_leds_base/1);
       int ind=(index+i*trailSpread)%tempModulus;
-      setDesiredlBuffer(num_leds_base-1-(ind), colorMap[0][(colorIndex+(i*colorSpread))%156], colorMap[1][(colorIndex+(i*colorSpread))%156], colorMap[2][(colorIndex+(i*colorSpread))%156] );
+      setDesiredlBuffer(num_leds_base-1-(ind), colorMap[0][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(i*colorSpread))%156] );
     }  
   }else if(dir==3){
     offsetRotation=17;
@@ -413,8 +438,8 @@ void chasePattern1(int colorIndex, int colorSpread, int cycleTime, int trailLeng
       int tempModulus=floor(num_leds_base/2);
       int ind=(index+i*trailSpread)%tempModulus;
       int temp=i;
-      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
-      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
+      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
+      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
     }
   }else if(dir==4){
     offsetRotation=35;
@@ -422,55 +447,55 @@ void chasePattern1(int colorIndex, int colorSpread, int cycleTime, int trailLeng
       int tempModulus=floor(num_leds_base/2);
       int ind=(index+i*trailSpread)%tempModulus;
       int temp=i;
-      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
-      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
+      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
+      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
     }
   }else if(dir==5){
     offsetRotation=17;
     for(int i =0; i<trailLength; i++){
       int ind=(index+i*trailSpread)%(num_leds_base);
       int temp=i;
-      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
-      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
+      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
+      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
     }
   }else if(dir==6){
     offsetRotation=6;
     for(int i =0; i<trailLength; i++){
       int ind=(index+i*trailSpread)%(num_leds_base/1);
       int temp=i;
-      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
-      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
+      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
+      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
     }
   }else if(dir==7){
     offsetRotation=6;
     for(int i =0; i<trailLength; i++){
       int ind=(index+i*trailSpread)%(num_leds_base/2);
       int temp=i;
-      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
-      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
+      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
+      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
     }
   }else if(dir==8){
     offsetRotation=25;
     for(int i =0; i<trailLength; i++){
       int ind=(index+i*trailSpread)%(num_leds_base/2);
       int temp=i;
-      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
-      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(temp*colorSpread))%156], colorMap[1][(colorIndex+(temp*colorSpread))%156], colorMap[2][(colorIndex+(temp*colorSpread))%156] );
+      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
+      setDesiredlBuffer((num_leds_base-1-ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(temp*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(temp*colorSpread))%156] );
     }
   }else if(dir==9){
     offsetRotation=35;
     for(int i =0; i<trailLength; i++){
       int ind=(index+i*trailSpread)%(num_leds_base);
-      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndex+(i*colorSpread))%156], colorMap[1][(colorIndex+(i*colorSpread))%156], colorMap[2][(colorIndex+(i*colorSpread))%156] );
-      setDesiredlBuffer(num_leds_base-1-ind+offsetRotation, colorMap[0][(colorIndex+(i*colorSpread))%156], colorMap[1][(colorIndex+(i*colorSpread))%156], colorMap[2][(colorIndex+(i*colorSpread))%156] );
-      setDesiredlBuffer( (num_leds_base/4+(ind+offsetRotation))%num_leds_base, colorMap[0][(colorIndex+(i*colorSpread))%156], colorMap[1][(colorIndex+(i*colorSpread))%156], colorMap[2][(colorIndex+(i*colorSpread))%156] );
-      setDesiredlBuffer( (-num_leds_base/4+(num_leds_base-1-(ind)+offsetRotation))%num_leds_base, colorMap[0][(colorIndex+(i*colorSpread))%156], colorMap[1][(colorIndex+(i*colorSpread))%156], colorMap[2][(colorIndex+(i*colorSpread))%156] );
+      setDesiredlBuffer((ind+offsetRotation)%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(i*colorSpread))%156] );
+      setDesiredlBuffer(num_leds_base-1-ind+offsetRotation, colorMap[0][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(i*colorSpread))%156] );
+      setDesiredlBuffer( (num_leds_base/4+(ind+offsetRotation))%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(i*colorSpread))%156] );
+      setDesiredlBuffer( (-num_leds_base/4+(num_leds_base-1-(ind)+offsetRotation))%num_leds_base, colorMap[0][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(i*colorSpread))%156] );
     }   
   }else{
     for(int i =0; i<trailLength; i++){
       int tempModulus=floor(num_leds_base/1);
       int ind=(index+i*trailSpread)%tempModulus;
-      setDesiredlBuffer(ind, colorMap[0][(colorIndex+(i*colorSpread))%156], colorMap[1][(colorIndex+(i*colorSpread))%156], colorMap[2][(colorIndex+(i*colorSpread))%156] );
+      setDesiredlBuffer(ind, colorMap[0][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[1][(colorIndexWithLFOModifier+(i*colorSpread))%156], colorMap[2][(colorIndexWithLFOModifier+(i*colorSpread))%156] );
     }
   }
 
@@ -601,7 +626,7 @@ void noisePattern6(void){
 }
 
 void rainbow(int wait) {
-  leds.setBrightness(20);
+  leds.setBrightness(100);
   rainbowFirstPixelHue=(rainbowFirstPixelHue+256)%(5*65536);
   for(int i=0; i<leds.numPixels(); i++) { // For each pixel in leds...
     int pixelHue = rainbowFirstPixelHue + (i * 65536L / leds.numPixels());
@@ -778,13 +803,15 @@ void onDmxFrame(uint16_t universe, uint16_t length, uint8_t sequence, uint8_t* d
       for(int i=0;i<num_leds;i++){
         leds.setPixelColor(i, data[filterChan+0+(i*3)], data[filterChan+1+(i*3)], data[filterChan+2+(i*3)]);  
       }
+      leds.setBrightness(255); 
+      leds.show(); 
     }else{
       for(int i=0;i<num_leds;i++){
         leds.setPixelColor(i, data[filterChan+0], data[filterChan+1], data[filterChan+2]);  
       }
+      leds.setBrightness(255); 
+      leds.show(); 
     }
-    leds.setBrightness(255); 
-    leds.show(); 
   }
 }
 
