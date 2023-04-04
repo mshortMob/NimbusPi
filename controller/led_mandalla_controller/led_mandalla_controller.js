@@ -164,6 +164,14 @@ apcMiniInput.on('message', (deltaTime, message) => {
     if(message[1]==85 && message[2]==127){
       recall();
     }
+    //rotate fixtures
+    if(message[1]==86 && message[2]==127){
+      rotateFixtures(true);
+    }
+    //rotate fixtures
+    if(message[1]==87 && message[2]==127){
+      rotateFixtures(false);
+    }
   }
   //fixture mute
   if(message[1]>=68 && message[1]<72 && !isShift){      
@@ -356,7 +364,7 @@ function syncLeds(){
         }
       }
     }else{
-      if(!(x>=68 && x<72) && x!=86 && x!=87 && x!=88 ){
+      if(!(x>=68 && x<72) && x!=88 ){
         apcMiniOutput.sendMessage([144,x,5]);  
       }
     }
@@ -471,5 +479,38 @@ function copyScene(sourceScene, targetScene, includedFixtures){
 
 function copyFixture(sourceFixture, targetFixture){
   channels[patternNumber][targetFixture]=JSON.parse(JSON.stringify(channels[patternNumber][sourceFixture])); 
+  syncArtnetToModel();
+}
+
+function rotateFixtures(directionBool){
+  console.log("running rotateFixtures");
+  var temp=null;
+  if(directionBool){
+    for(var x=3; x>=0; x--){
+      if(x==3){
+        temp=JSON.stringify(channels[patternNumber][x]);
+        channels[patternNumber][x]=JSON.parse(JSON.stringify(channels[patternNumber][x-1])); 
+      }
+      if(x==2 || x==1){
+        channels[patternNumber][x]=JSON.parse(JSON.stringify(channels[patternNumber][x-1])); 
+      }
+      if(x==0){
+        channels[patternNumber][x]=JSON.parse(temp); 
+      }
+    }
+  }else{
+    for(var x=0; x<4; x++){
+      if(x==0){
+        temp=JSON.stringify(channels[patternNumber][x]);
+        channels[patternNumber][x]=JSON.parse(JSON.stringify(channels[patternNumber][x+1])); 
+      }
+      if(x==2 || x==1){
+        channels[patternNumber][x]=JSON.parse(JSON.stringify(channels[patternNumber][x+1])); 
+      }
+      if(x==3){
+        channels[patternNumber][x]=JSON.parse(temp); 
+      }
+    }
+  }
   syncArtnetToModel();
 }
