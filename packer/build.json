@@ -14,7 +14,7 @@
       "inline": [
         "touch /boot/ssh",
         "sudo rm /etc/xdg/autostart/piwiz.desktop",
-	"sudo apt-get update --allow-releaseinfo-change",
+	      "sudo apt-get update --allow-releaseinfo-change",
         "#sudo apt upgrade -y",
         "#sudo apt-get install git apache2 php ola chromium-browser hostapd dnsmasq pciutils -y",
         "sudo apt-get install git apache2 php ola hostapd dnsmasq pciutils -y",
@@ -116,6 +116,11 @@
     "destination": "/home/pi/apache-selfsigned.crt"
    },
    {
+    "type": "file",
+    "source": "files/setRes.sh",
+    "destination": "/home/pi/setRes.sh"
+   },
+   {
       "type": "shell",
       "inline": [
         "sudo mv -f /home/pi/brcmfmac43455-sdio.bin /lib/firmware/brcm/brcmfmac43455-sdio.bin",
@@ -169,7 +174,8 @@
         "sudo chmod 644 /etc/default/keyboard",
         "sudo mv -f /home/pi/boot_config.txt /boot/config.txt",
         "sudo chown root:root /boot/config.txt",
-        "sudo chmod 755 /boot/config.txt"
+        "sudo chmod 755 /boot/config.txt",
+        "sudo chmod +x /home/pi/setRes.sh"
      ]
    },
    {
