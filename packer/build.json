@@ -175,7 +175,8 @@
         "sudo mv -f /home/pi/boot_config.txt /boot/config.txt",
         "sudo chown root:root /boot/config.txt",
         "sudo chmod 755 /boot/config.txt",
-        "sudo chmod +x /home/pi/setRes.sh"
+        "sudo chmod +x /home/pi/setRes.sh",
+        "sudo chown pi:pi /home/pi/setRes.sh"
      ]
    },
    {
