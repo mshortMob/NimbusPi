@@ -525,8 +525,12 @@ function patternSynthesizer(colorIndex, colorSpread, cycleTime, trailLength, tra
   ts=new Date().getTime();
   cycle=(ts)%cycleTime;
   index=Math.floor((cycle/cycleTime)*num_pixels);
-  if(Math.floor(ts/(cycleTime/4))!=randomnessCount && randomnessDebounce==false){
-    randomnessCount=Math.floor(ts/(cycleTime/4));
+  var randomSpeed=4;
+  if(dir>100){
+    randomSpeed=16;
+  }
+  if(Math.floor(ts/(cycleTime/randomSpeed))!=randomnessCount && randomnessDebounce==false){
+    randomnessCount=Math.floor(ts/(cycleTime/randomSpeed));
     randomnessDebounce=true;
   }
 
@@ -544,7 +548,7 @@ function patternSynthesizer(colorIndex, colorSpread, cycleTime, trailLength, tra
       synthesizedPattern[num_pixels-1-ind][1]=parseInt(colorMap[1][(colorIndex+i*colorSpread)%156]*brightness/255);
       synthesizedPattern[num_pixels-1-ind][2]=parseInt(colorMap[2][(colorIndex+i*colorSpread)%156]*brightness/255);
     }
-  }else if(dir<96){
+  }else if(dir<115){
     if(randomnessDebounce==true){
       var temp=[];
       for(var i=0; i<trailLength; i++){
