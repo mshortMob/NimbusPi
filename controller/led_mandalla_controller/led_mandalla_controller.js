@@ -13,6 +13,199 @@ const port = 3000;
 
 init();
 function init(){
+
+  colorMap= [[0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0],
+  [255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255] ];
+
+  dmxChainOld=[
+{
+  "name":"multi_beam_1",
+  "num_pixels":2,
+  "pixel_channels":[
+  {
+  "r":"beam_r",
+  "g":"beam_g",
+  "b":"beam_b"
+  },
+  {
+  "r":"wash_r",
+  "g":"wash_g",
+  "b":"wash_b"
+  }
+  ],
+  "channels":{
+    "x_pos":0,
+    "x_fine":0,
+    "y_pos":48,
+    "y_fine":0,
+    "spin":0,
+    "brake":0,
+    "dimmer":5,
+    "strobe":0,
+    "beam_r":0,
+    "beam_g":0,
+    "beam_b":0,
+    "beam_w":0,
+    "wash_r":0,
+    "wash_g":0,
+    "wash_b":0,
+    "wash_w":0,
+    "macro1":0,
+    "macro2":0,
+    "macro3":0,
+    "macro4":0,
+    "reset":0
+  }
+},
+{
+  "name":"multi_beam_1",
+  "num_pixels":2,
+  "pixel_channels":[
+  {
+  "r":"beam_r",
+  "g":"beam_g",
+  "b":"beam_b"
+  },
+  {
+  "r":"wash_r",
+  "g":"wash_g",
+  "b":"wash_b"
+  }
+  ],
+  "channels":{
+    "x_pos":0,
+    "x_fine":0,
+    "y_pos":48,
+    "y_fine":0,
+    "spin":0,
+    "brake":0,
+    "dimmer":5,
+    "strobe":0,
+    "beam_r":0,
+    "beam_g":0,
+    "beam_b":0,
+    "beam_w":0,
+    "wash_r":0,
+    "wash_g":0,
+    "wash_b":0,
+    "wash_w":0,
+    "macro1":0,
+    "macro2":0,
+    "macro3":0,
+    "macro4":0,
+    "reset":0
+  }
+}];
+
+var brake=240;
+dmxChain=[
+  {
+    "name":"wash_1",
+    "num_pixels":1,
+    "pixel_channels":[
+    {
+    "r":"wash_r",
+    "g":"wash_g",
+    "b":"wash_b",
+    "w":"wash_w"
+    }
+    ],
+    "channels":{
+      "x_pos":0,
+      "y_pos":95,
+      "strobe":100,
+      "wash_r":100,
+      "wash_g":0,
+      "wash_b":0,
+      "wash_w":0,
+      "f":brake,
+      "reset":0
+    }
+  },
+  {
+    "name":"wash_2",
+    "num_pixels":1,
+    "pixel_channels":[
+    {
+    "r":"wash_r",
+    "g":"wash_g",
+    "b":"wash_b",
+    "w":"wash_w"
+    }
+    ],
+    "channels":{
+      "x_pos":0,
+      "y_pos":95,
+      "strobe":100,
+      "wash_r":100,
+      "wash_g":0,
+      "wash_b":0,
+      "wash_w":0,
+      "f":brake,
+      "reset":0
+    }
+  },
+  {
+    "name":"wash_3",
+    "num_pixels":1,
+    "pixel_channels":[
+    {
+    "r":"wash_r",
+    "g":"wash_g",
+    "b":"wash_b",
+    "w":"wash_w"
+    }
+    ],
+    "channels":{
+      "x_pos":0,
+      "y_pos":95,
+      "strobe":100,
+      "wash_r":100,
+      "wash_g":0,
+      "wash_b":0,
+      "wash_w":0,
+      "f":brake,
+      "reset":0
+    }
+  },
+  {
+    "name":"wash_4",
+    "num_pixels":1,
+    "pixel_channels":[
+    {
+    "r":"wash_r",
+    "g":"wash_g",
+    "b":"wash_b",
+    "w":"wash_w"
+    }
+    ],
+    "channels":{
+      "x_pos":0,
+      "y_pos":95,
+      "strobe":100,
+      "wash_r":100,
+      "wash_g":0,
+      "wash_b":0,
+      "wash_w":0,
+      "f":brake,
+      "reset":0
+    }
+  }];
+
+
+  num_pixels=0;
+  num_channels=0;
+  for (var x in dmxChain){
+    num_pixels=num_pixels+dmxChain[x].num_pixels;
+    num_channels=num_channels+dmxChain[x].channels.length;
+  }
+
+  filterBuffer=[];
+  for(var x=0;x<num_pixels;x++){
+    filterBuffer.push([0,0,0,0]);
+  }
+
   var artnetOptions = {
     host: '255.255.255.255',
     iface: '192.168.4.1',
@@ -20,7 +213,7 @@ function init(){
   }
   artnet = require('artnet')(artnetOptions);
   patternNumber=56;
-  selectedFixtures=[0,1,2,3];
+  selectedFixtures=[0,1,2,3,4];
   loopTime=1000;
   copySceneSource=null;
   copySceneTarget=null;
@@ -34,9 +227,10 @@ function init(){
   isShift=false;
   channels=[];
   loopCellsState=[];
+  numFixtures=5;
   for(var x=0; x<64; x++){
     var fixtures=[]
-    for(var y=0; y<4; y++){
+    for(var y=0; y<numFixtures; y++){
       fixtures.push({
         "colorIndex":127,
         "colorSpread":127,
@@ -45,7 +239,9 @@ function init(){
         "trailSpread":127,
         "dir":127,
         "strobe":0,
-        "brightness":127
+        "brightness":127,
+        "x":50,
+        "y":50
       });
     }
     channels.push(fixtures);
@@ -56,6 +252,9 @@ function init(){
   }
   initMidiConnections();
   recall();
+  setInterval(function(){
+    syncArtnetToModel();
+  },50);
 }
 
 function initMidiConnections(){
@@ -99,7 +298,7 @@ apcMiniInput.on('message', (deltaTime, message) => {
     if(message[1]==83){
       for(var y=(Math.floor(patternNumber/4)*4); y<(Math.floor(patternNumber/4)*4)+4;y++){
         if(y!=patternNumber){
-          for (var f=0;f<4;f++){
+          for (var f=0;f<numFixtures;f++){
             channels[y][f]=JSON.parse(JSON.stringify(channels[patternNumber][f]));
           }
         }
@@ -117,7 +316,7 @@ apcMiniInput.on('message', (deltaTime, message) => {
           syncLeds();
         }else{
           copySceneTarget=message[1];
-          copyScene(copySceneSource,copySceneTarget,[0,1,2,3]);
+          copyScene(copySceneSource,copySceneTarget,[0,1,2,3,4]);
           copySceneSource=null;
           copySceneTarget=null;
           syncLeds();
@@ -206,9 +405,16 @@ apcMiniInput.on('message', (deltaTime, message) => {
     syncLeds();
     console.log(isShift);
   }
+
+  if(message[1]==88 && message[2]==127 && message[0]==144){
+    fixtureButtonPress(4);
+    syncLeds();
+    console.log(selectedFixtures.toString());
+  }
+
   //apc mini sliders input
   if(message[0]==176){
-    if(message[1]>=48 && message[1]<=56){
+    if(message[1]>=48 && message[1]<=56 && isShift==false){
       if(message[1]==48){
         for (var f in selectedFixtures){
           channels[patternNumber][selectedFixtures[f]].colorIndex=message[2];
@@ -256,15 +462,175 @@ apcMiniInput.on('message', (deltaTime, message) => {
             loopRoWStart(loopTime);
           }
       }
+      syncArtnetToModel();
+    }
+    if(message[1]>=48 && message[1]<=56 && isShift==true){
+      if(message[1]==48){
+        channels[patternNumber][0].x=parseInt(message[2]*2);
+      }
+      if(message[1]==49){
+        channels[patternNumber][0].y=parseInt(message[2]*2);
+      }
+      if(message[1]==50){
+        channels[patternNumber][1].x=parseInt(message[2]*2);
+      }
+      if(message[1]==51){
+        channels[patternNumber][1].y=parseInt(message[2]*2);
+      }
+      if(message[1]==52){
+        channels[patternNumber][2].x=parseInt(message[2]*2);
+      }
+      if(message[1]==53){
+        channels[patternNumber][2].y=parseInt(message[2]*2);
+      }
+      if(message[1]==54){
+        channels[patternNumber][3].x=parseInt(message[2]*2);
+      }
+      if(message[1]==55){
+        channels[patternNumber][3].y=parseInt(message[2]*2);
+      }
       if(message[1]==56 && isShift){
         masterBrightness=message[2]/127;
       }
       syncArtnetToModel();
     }
-    // console.log(message);
   }
   console.log(message);
 });
+
+function lpFilter(desiredValues){
+  for(var x=0;x<num_pixels;x++){
+    for(var y=0;y<4;y++){
+      var delta=desiredValues[x][y]-filterBuffer[x][y];
+      if(Math.abs(Math.floor(delta))<3 || parseInt(channels[patternNumber][4].cycleTime) <= 64 || y==3){
+        filterBuffer[x][y]=desiredValues[x][y];
+      }else{
+        filterBuffer[x][y]=filterBuffer[x][y]+delta/parseInt(1+(channels[patternNumber][4].cycleTime)/127*20);
+      }
+    }
+  }
+  return filterBuffer;
+}
+
+function patternSynthesizer(colorIndex, colorSpread, cycleTime, trailLength, trailSpread, dir, strobe, brightness){
+  var synthesizedPattern=[]
+  for(var x=0;x<num_pixels;x++){
+    synthesizedPattern.push([0,0,0,0]);
+  }
+  
+  cycle=(new Date().getTime())%cycleTime;
+  index=Math.floor((cycle/cycleTime)*num_pixels);
+
+  if(dir<64){
+    for(var i=0; i<trailLength; i++){
+      ind=(index+i*trailSpread)%num_pixels;
+      synthesizedPattern[ind][0]=parseInt(colorMap[0][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[ind][1]=parseInt(colorMap[1][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[ind][2]=parseInt(colorMap[2][(colorIndex+i*colorSpread)%156]*brightness/255);
+    }
+  }else if(dir<127){
+    for(var i=0; i<trailLength; i++){
+      ind=(index+i*trailSpread)%num_pixels;
+      synthesizedPattern[num_pixels-1-ind][0]=parseInt(colorMap[0][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[num_pixels-1-ind][1]=parseInt(colorMap[1][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[num_pixels-1-ind][2]=parseInt(colorMap[2][(colorIndex+i*colorSpread)%156]*brightness/255);
+    }
+  }else{
+    for(var i=0; i<trailLength; i++){
+      ind=(index+i*trailSpread)%num_pixels;
+      synthesizedPattern[ind][0]=parseInt(colorMap[0][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[ind][1]=parseInt(colorMap[1][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[ind][2]=parseInt(colorMap[2][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[num_pixels-1-ind][0]=parseInt(colorMap[0][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[num_pixels-1-ind][1]=parseInt(colorMap[1][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[num_pixels-1-ind][2]=parseInt(colorMap[2][(colorIndex+i*colorSpread)%156]*brightness/255);
+    }
+  }
+
+  if(channels[patternNumber][4].strobe>113){
+    for(var x=0;x<num_pixels;x++){
+      var temp=brightness/255*150*(synthesizedPattern[x][0]/255+synthesizedPattern[x][1]/255+synthesizedPattern[x][2]/255)*3;
+      if(temp>124){
+        temp=124
+      }
+      synthesizedPattern[x][3]=temp;
+      synthesizedPattern[x][0]=0;
+      synthesizedPattern[x][1]=0;
+      synthesizedPattern[x][2]=0;
+    }
+  }else{
+    for(var x=0;x<num_pixels;x++){
+      synthesizedPattern[x][3]=0;
+    }
+  }
+
+  filteredSynthesizedPattern=lpFilter(synthesizedPattern);
+  return parsePatternToDMX(filteredSynthesizedPattern, strobe);
+}
+
+function parsePatternToDMX(synthesizedPattern, strobe){
+  var dmxPatternBuffer=[];
+  var selected_pixel=0;
+  for (var x in dmxChain){
+    for (const [channelName, value] of Object.entries(dmxChain[x].channels)) {
+      var matchFound=false;
+      for(var z in dmxChain[x].pixel_channels) {
+        if(dmxChain[x].pixel_channels[z].r==`${channelName}`){
+          dmxPatternBuffer.push(synthesizedPattern[Math.floor(selected_pixel/4)][0]);
+          selected_pixel=selected_pixel+1;
+          matchFound=true;
+          // console.log(`${channelName}: ${value}`);
+        }else if(dmxChain[x].pixel_channels[z].g==`${channelName}`){
+          dmxPatternBuffer.push(synthesizedPattern[Math.floor(selected_pixel/4)][1]);
+          selected_pixel=selected_pixel+1;
+          matchFound=true;
+        }else if(dmxChain[x].pixel_channels[z].b==`${channelName}`){
+          dmxPatternBuffer.push(synthesizedPattern[Math.floor(selected_pixel/4)][2]);
+          selected_pixel=selected_pixel+1;
+          matchFound=true;
+        }else if(dmxChain[x].pixel_channels[z].w==`${channelName}`){
+          dmxPatternBuffer.push(synthesizedPattern[Math.floor(selected_pixel/4)][3]);
+          selected_pixel=selected_pixel+1;
+          matchFound=true;
+        }else if("x_pos"==`${channelName}`){
+          dmxPatternBuffer.push(channels[patternNumber][Math.floor(selected_pixel/4)].x);
+          matchFound=true;
+        }else if("y_pos"==`${channelName}`){
+          dmxPatternBuffer.push(channels[patternNumber][Math.floor(selected_pixel/4)].y);
+          matchFound=true;
+        }
+      }
+      if(matchFound==false){
+        if(`${channelName}`=="strobe"){
+          dmxPatternBuffer.push(strobe)
+        }else{
+          dmxPatternBuffer.push(dmxChain[x].channels[`${channelName}`]);
+        }
+      }
+    }
+  }
+  return dmxPatternBuffer;
+}
+
+//colorIndex, colorSpread, cycleTime, trailLength, trailSpread, dir, strobe, brightness
+function sendArtnet(values){
+  artnet.set(1,1, values, function (err, res) {
+    // console.log("Sent Artnet:");
+    // console.log(values);
+  });
+  artnet.set(2,1, patternSynthesizer(
+    Math.floor(channels[patternNumber][4].colorIndex*1.25),
+    Math.floor(channels[patternNumber][4].colorSpread/2),
+    Math.floor(600+channels[patternNumber][4].cycleTime*40),
+    Math.floor(1+channels[patternNumber][4].trailLength/127*num_pixels*1),
+    Math.floor(1+channels[patternNumber][4].trailSpread/127*num_pixels*1),
+    Math.floor(channels[patternNumber][4].dir),
+    Math.floor(127+channels[patternNumber][4].strobe*.925),
+    Math.floor(channels[patternNumber][4].brightness*2*masterBrightness)), function (err, res) {
+  // artnet.set(2,1, temp, function (err, res) {
+    // console.log("Sent Artnet:");
+  });
+}
 
 app.get('/test', (req, res) => {
   for(var x=0;x<64;x++){
@@ -316,7 +682,7 @@ function recall(){
       console.error(err);
       return;
     }
-    console.log(data);
+    console.log("loaded presets");
     channels=JSON.parse(data);
     syncArtnetToModel();
   });
@@ -366,6 +732,12 @@ function syncLeds(){
     }else{
       if(!(x>=68 && x<72) && x!=88 ){
         apcMiniOutput.sendMessage([144,x,5]);  
+      }else if(x==88){
+        if(selectedFixtures.indexOf((4))!=-1){
+          apcMiniOutput.sendMessage([144,x,127]); 
+        }else{
+          apcMiniOutput.sendMessage([144,x,0]); 
+        }
       }
     }
     if(x>=64 && x<68){
@@ -396,16 +768,9 @@ function syncLeds(){
   }
 }
 
-function sendArtnet(values){
-  artnet.set(1,1, values, function (err, res) {
-    console.log("Sent Artnet:");
-    // console.log(values);
-  });
-}
-
 function syncArtnetToModel(){
   var temp=[];
-  for (var f=0; f<4; f++){
+  for (var f=0; f<numFixtures; f++){
     temp=temp.concat([channels[patternNumber][f].colorIndex*2, channels[patternNumber][f].colorSpread*2, channels[patternNumber][f].cycleTime*2, channels[patternNumber][f].trailLength*2, channels[patternNumber][f].trailSpread*2, channels[patternNumber][f].dir*2, channels[patternNumber][f].strobe*2, masterBrightness*fixtureBrightness[f]*channels[patternNumber][f].brightness*2]);
   }
   sendArtnet(temp);
@@ -432,7 +797,7 @@ function deselectFixture(val){
       }
   }
   selectedFixtures=temp;
-  console.log(selectedFixtures);
+  // console.log(selectedFixtures);
 }
 
 function loopRoWStart(freq){
@@ -440,7 +805,7 @@ function loopRoWStart(freq){
     for(var x=1; x<64; x++){
       if(loopCellsState[(patternNumber+4+x)%64]==true){
         patternNumber=((patternNumber+4+x)%64)-4;
-        console.log(patternNumber);
+        // console.log(patternNumber);
         break;
       }
     }
@@ -469,7 +834,7 @@ function loopRoWStop(){
 }
 
 function copyScene(sourceScene, targetScene, includedFixtures){
-  for(var x=0; x<4; x++){
+  for(var x=0; x<numFixtures; x++){
     if(includedFixtures.indexOf(x)!=-1){
       channels[targetScene][x]=JSON.parse(JSON.stringify(channels[sourceScene][x])); 
     }
@@ -483,7 +848,7 @@ function copyFixture(sourceFixture, targetFixture){
 }
 
 function rotateFixtures(directionBool){
-  console.log("running rotateFixtures");
+  // console.log("running rotateFixtures");
   var temp=null;
   if(directionBool){
     for(var x=3; x>=0; x--){
