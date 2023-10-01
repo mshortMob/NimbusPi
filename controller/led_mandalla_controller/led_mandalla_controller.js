@@ -224,6 +224,9 @@ dmxChain=[
   fixtureBrightness=[1,1,1,1];
   fixtureMuteMode=0;
   masterBrightness=1;
+  randomnessDebounce=true;
+  randomnessCount=0;
+  randomnessBuffer=[0,0,0,0];
   isShift=false;
   channels=[];
   loopCellsState=[];
@@ -254,7 +257,7 @@ dmxChain=[
   recall();
   setInterval(function(){
     syncArtnetToModel();
-  },50);
+  },25);
 }
 
 function initMidiConnections(){
@@ -505,7 +508,8 @@ function lpFilter(desiredValues){
       if(Math.abs(Math.floor(delta))<3 || parseInt(channels[patternNumber][4].cycleTime) <= 64 || y==3){
         filterBuffer[x][y]=desiredValues[x][y];
       }else{
-        filterBuffer[x][y]=filterBuffer[x][y]+delta/parseInt(1+(channels[patternNumber][4].cycleTime)/127*20);
+        // filterBuffer[x][y]=filterBuffer[x][y]+delta/parseInt(1+(channels[patternNumber][4].cycleTime)/127*20);
+        filterBuffer[x][y]=filterBuffer[x][y]+delta/parseInt(1+(channels[patternNumber][4].cycleTime-64)/64*20);
       }
     }
   }
@@ -518,22 +522,42 @@ function patternSynthesizer(colorIndex, colorSpread, cycleTime, trailLength, tra
     synthesizedPattern.push([0,0,0,0]);
   }
   
-  cycle=(new Date().getTime())%cycleTime;
+  ts=new Date().getTime();
+  cycle=(ts)%cycleTime;
   index=Math.floor((cycle/cycleTime)*num_pixels);
+  if(Math.floor(ts/(cycleTime/4))!=randomnessCount && randomnessDebounce==false){
+    randomnessCount=Math.floor(ts/(cycleTime/4));
+    randomnessDebounce=true;
+  }
 
-  if(dir<64){
+  if(dir<32){
     for(var i=0; i<trailLength; i++){
       ind=(index+i*trailSpread)%num_pixels;
       synthesizedPattern[ind][0]=parseInt(colorMap[0][(colorIndex+i*colorSpread)%156]*brightness/255);
       synthesizedPattern[ind][1]=parseInt(colorMap[1][(colorIndex+i*colorSpread)%156]*brightness/255);
       synthesizedPattern[ind][2]=parseInt(colorMap[2][(colorIndex+i*colorSpread)%156]*brightness/255);
     }
-  }else if(dir<127){
+  }else if(dir<64){
     for(var i=0; i<trailLength; i++){
       ind=(index+i*trailSpread)%num_pixels;
       synthesizedPattern[num_pixels-1-ind][0]=parseInt(colorMap[0][(colorIndex+i*colorSpread)%156]*brightness/255);
       synthesizedPattern[num_pixels-1-ind][1]=parseInt(colorMap[1][(colorIndex+i*colorSpread)%156]*brightness/255);
       synthesizedPattern[num_pixels-1-ind][2]=parseInt(colorMap[2][(colorIndex+i*colorSpread)%156]*brightness/255);
+    }
+  }else if(dir<96){
+    if(randomnessDebounce==true){
+      var temp=[];
+      for(var i=0; i<trailLength; i++){
+        temp.push(Math.floor(Math.random()*num_pixels));
+      }
+      randomnessBuffer=temp;
+      randomnessDebounce=false;
+    }
+    for(var i=0; i<randomnessBuffer.length; i++){
+      ind=randomnessBuffer[i];
+      synthesizedPattern[ind][0]=parseInt(colorMap[0][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[ind][1]=parseInt(colorMap[1][(colorIndex+i*colorSpread)%156]*brightness/255);
+      synthesizedPattern[ind][2]=parseInt(colorMap[2][(colorIndex+i*colorSpread)%156]*brightness/255);
     }
   }else{
     for(var i=0; i<trailLength; i++){
@@ -621,7 +645,7 @@ function sendArtnet(values){
   artnet.set(2,1, patternSynthesizer(
     Math.floor(channels[patternNumber][4].colorIndex*1.25),
     Math.floor(channels[patternNumber][4].colorSpread/2),
-    Math.floor(600+channels[patternNumber][4].cycleTime*40),
+    Math.floor(200+channels[patternNumber][4].cycleTime*20),
     Math.floor(1+channels[patternNumber][4].trailLength/127*num_pixels*1),
     Math.floor(1+channels[patternNumber][4].trailSpread/127*num_pixels*1),
     Math.floor(channels[patternNumber][4].dir),
