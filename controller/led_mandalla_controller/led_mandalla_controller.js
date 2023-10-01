@@ -531,7 +531,7 @@ function patternSynthesizer(colorIndex, colorSpread, cycleTime, trailLength, tra
   }
   if(Math.floor(ts/(cycleTime/randomSpeed))!=randomnessCount && randomnessDebounce==false){
     randomnessCount=Math.floor(ts/(cycleTime/randomSpeed));
-    randomnessDebounce=true;
+    randomnessDebounce=true; 
   }
 
   if(dir<32){
