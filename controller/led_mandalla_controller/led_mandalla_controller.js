@@ -897,7 +897,12 @@ function copyScene(sourceScene, targetScene, includedFixtures){
 }
 
 function copyFixture(sourceFixture, targetFixture){
+  var temp_x=channels[patternNumber][targetFixture].x;
+  var temp_y=channels[patternNumber][targetFixture].y;
   channels[patternNumber][targetFixture]=JSON.parse(JSON.stringify(channels[patternNumber][sourceFixture])); 
+  channels[patternNumber][targetFixture].x=temp_x;
+  channels[patternNumber][targetFixture].y=temp_y;
+
   syncArtnetToModel();
 }
 
@@ -906,6 +911,8 @@ function rotateFixtures(directionBool){
   var temp=null;
   if(directionBool){
     for(var x=3; x>=0; x--){
+      var temp_x=channels[patternNumber][x].x;
+      var temp_y=channels[patternNumber][x].y;
       if(x==3){
         temp=JSON.stringify(channels[patternNumber][x]);
         channels[patternNumber][x]=JSON.parse(JSON.stringify(channels[patternNumber][x-1])); 
@@ -916,9 +923,13 @@ function rotateFixtures(directionBool){
       if(x==0){
         channels[patternNumber][x]=JSON.parse(temp); 
       }
+      channels[patternNumber][x].x=temp_x;
+      channels[patternNumber][x].y=temp_y;
     }
   }else{
     for(var x=0; x<4; x++){
+      var temp_x=channels[patternNumber][x].x;
+      var temp_y=channels[patternNumber][x].y;
       if(x==0){
         temp=JSON.stringify(channels[patternNumber][x]);
         channels[patternNumber][x]=JSON.parse(JSON.stringify(channels[patternNumber][x+1])); 
@@ -929,6 +940,8 @@ function rotateFixtures(directionBool){
       if(x==3){
         channels[patternNumber][x]=JSON.parse(temp); 
       }
+      channels[patternNumber][x].x=temp_x;
+      channels[patternNumber][x].y=temp_y;
     }
   }
   syncArtnetToModel();
