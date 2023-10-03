@@ -286,28 +286,54 @@ function initMidiConnections(){
 apcMiniInput.on('message', (deltaTime, message) => {
   //apc mini grid input
   if(message[0]==144 && message[2]==127){
-    //top right button
-    if(message[1]==82){
-      for(var x=0;x<64;x++){
+    //top right button - set preset to row
+    if(message[1]==82 && !isShift){
+      for(var x=(Math.floor(patternNumber/4)*4); x<(Math.floor(patternNumber/4)*4)+4;x++){
         if(x!=patternNumber){
-          for (var f in selectedFixtures){
+          for (var f=0;f<numFixtures;f++){
             channels[x][selectedFixtures[f]]=JSON.parse(JSON.stringify(channels[patternNumber][selectedFixtures[f]]));
           }
         }
       }
       console.log("Saved Preset To All");
     }
-    // top right down 1
-    if(message[1]==83){
-      for(var y=(Math.floor(patternNumber/4)*4); y<(Math.floor(patternNumber/4)*4)+4;y++){
-        if(y!=patternNumber){
+    //top right button shift - set preset to all
+    if(message[1]==82){
+      for(var x=0;x<64;x++){
+        if(x!=patternNumber){
           for (var f=0;f<numFixtures;f++){
-            channels[y][f]=JSON.parse(JSON.stringify(channels[patternNumber][f]));
+            channels[x][selectedFixtures[f]]=JSON.parse(JSON.stringify(channels[patternNumber][selectedFixtures[f]]));
           }
         }
       }
-      console.log("Saved Preset To Row");
+      console.log("Saved Preset To All");
     }
+
+    // top right down 1 - Set XY To Row
+    if(message[1]==83 && !isShift){
+      for(var y=(Math.floor(patternNumber/4)*4); y<(Math.floor(patternNumber/4)*4)+4;y++){
+        if(y!=patternNumber){
+          for (var f=0;f<numFixtures;f++){
+            channels[y][f].x=channels[patternNumber][f].x;
+            channels[y][f].y=channels[patternNumber][f].y;
+          }
+        }
+      }
+      console.log("Set XY To Row");
+    }
+    // top right down 1 shift - Set XY To All
+    if(message[1]==83 && isShift){
+      for(var y=0;y<64;y++){
+        if(y!=patternNumber){
+          for (var f=0;f<numFixtures;f++){
+            channels[y][f].x=channels[patternNumber][f].x;
+            channels[y][f].y=channels[patternNumber][f].y;
+          }
+        }
+      }
+      console.log("Set XY To All");
+    }
+
     if(message[1]>=0 && message[1]<64 && (message[1]%8)<=3){
       if(!isShift){
         patternNumber=message[1];
@@ -359,7 +385,7 @@ apcMiniInput.on('message', (deltaTime, message) => {
       syncLeds();
     }
     //save
-    if(message[1]==84 && message[2]==127){
+    if(message[1]==84 && message[2]==127 && isShift){
       save();
     }
     //recall
