@@ -539,59 +539,59 @@ oscServer.on('message', function (msg) {
     accellPatternBank=0;
   }
   if(typeof accellBankThreshold == 'undefined'){
-    accellBankThreshold=.2;
+    accellBankThreshold=.33;
   }
   if(typeof accellPatternThreshold == 'undefined'){
-    accellPatternThreshold=.014;
+    accellPatternThreshold=.012;
   }
   if( typeof previousAccellData == 'undefined'){
     previousAccellData=[0.0,0.0,0.0];
     lastAccellTriggerTime=new Date().getTime();
+    lastAccellBankTriggerTime=new Date().getTime();
   }else{
-    if(  Math.abs(lastAccellTriggerTime-new Date().getTime())>50  ){
+    oscChannelName=msg.toString().substring(msg.toString().indexOf(',')-1,msg.toString().indexOf(','));
+    oscChannelValue=parseFloat(msg.toString().substring(msg.toString().indexOf(',')+1,msg.toString().length));
+    var diffMagnitude=[0.0,0.0,0.0];
+    var needsToRunSync=false;
+    if(oscChannelName=="x"){
+      diffMagnitude[0]=Math.abs(previousAccellData[0]-oscChannelValue);
+      previousAccellData[0]=oscChannelValue;
+    }else if(oscChannelName=="y"){
+      diffMagnitude[1]=Math.abs(previousAccellData[1]-oscChannelValue);
+      previousAccellData[1]=oscChannelValue;
+    }else if(oscChannelName=="z"){
+      diffMagnitude[2]=Math.abs(previousAccellData[2]-oscChannelValue);
+      previousAccellData[2]=oscChannelValue;
+    }
+    summedDiffMagnitude=(diffMagnitude[0]+diffMagnitude[1]+diffMagnitude[2]);
+    if(summedDiffMagnitude>=accellBankThreshold && (Math.abs(lastAccellBankTriggerTime-new Date().getTime())>500) ){
+      lastAccellBankTriggerTime=new Date().getTime();
+      accellPatternBank=(accellPatternBank+1)%8;
+      console.log(`Accell Bank Change: ${accellPatternBank}, summedDiffMagnitude: ${summedDiffMagnitude}`);
+      for(var x=0; x<64; x++){
+        loopCellsState[x]=false;
+        if( (x>=(4+accellPatternBank*8)) && (x<(8+accellPatternBank*8)) ){
+          loopCellsState[x]=true;
+          // console.log("loopCellsState of "+x+"is on!");
+        }
+      }
+      needsToRunSync=true;
+    }
+    if(summedDiffMagnitude>=accellPatternThreshold && (Math.abs(lastAccellTriggerTime-new Date().getTime())>100) ){
       lastAccellTriggerTime=new Date().getTime();
-      oscChannelName=msg.toString().substring(msg.toString().indexOf(',')-1,msg.toString().indexOf(','));
-      oscChannelValue=parseFloat(msg.toString().substring(msg.toString().indexOf(',')+1,msg.toString().length));
-      var diffMagnitude=[0.0,0.0,0.0];
-      var needsToRunSync=false;
-      if(oscChannelName=="x"){
-        diffMagnitude[0]=Math.abs(previousAccellData[0]-oscChannelValue);
-        previousAccellData[0]=oscChannelValue;
-      }else if(oscChannelName=="y"){
-        diffMagnitude[1]=Math.abs(previousAccellData[1]-oscChannelValue);
-        previousAccellData[1]=oscChannelValue;
-      }else if(oscChannelName=="z"){
-        diffMagnitude[2]=Math.abs(previousAccellData[2]-oscChannelValue);
-        previousAccellData[2]=oscChannelValue;
-      }
-      summedDiffMagnitude=(diffMagnitude[0]+diffMagnitude[1]+diffMagnitude[2]);
-      if(summedDiffMagnitude>=accellBankThreshold){
-        accellPatternBank=(accellPatternBank+1)%8;
-        console.log(`Accell Bank Change: ${accellPatternBank}, summedDiffMagnitude: ${summedDiffMagnitude}`);
-        for(var x=0; x<64; x++){
-          loopCellsState[x]=false;
-          if( (x>=(4+accellPatternBank*8)) && (x<(8+accellPatternBank*8)) ){
-            loopCellsState[x]=true;
-            // console.log("loopCellsState of "+x+"is on!");
-          }
+      console.log(`Message: ${msg}`);
+      for(var x=1; x<64; x++){
+        if(loopCellsState[(patternNumber+4+x)%64]==true){
+          patternNumber=((patternNumber+4+x)%64)-4;
+          // console.log(patternNumber);
+          break;
         }
-        needsToRunSync=true;
       }
-      if((summedDiffMagnitude)>=accellPatternThreshold){
-        console.log(`Message: ${msg}`);
-        for(var x=1; x<64; x++){
-          if(loopCellsState[(patternNumber+4+x)%64]==true){
-            patternNumber=((patternNumber+4+x)%64)-4;
-            // console.log(patternNumber);
-            break;
-          }
-        }
-        needsToRunSync=true;
-      }
-      if(needsToRunSync){
-        syncArtnetToModel();
-        syncLeds();
-      }
+      needsToRunSync=true;
+    }
+    if(needsToRunSync){
+      syncArtnetToModel();
+      syncLeds();
     }
   }
 });
