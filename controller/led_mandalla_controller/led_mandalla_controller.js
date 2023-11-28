@@ -538,11 +538,17 @@ oscServer.on('message', function (msg) {
   if(typeof accellPatternBank == 'undefined'){
     accellPatternBank=0;
   }
+  if(typeof accellBankThreshold == 'undefined'){
+    accellBankThreshold=.2;
+  }
+  if(typeof accellPatternThreshold == 'undefined'){
+    accellPatternThreshold=.014;
+  }
   if( typeof previousAccellData == 'undefined'){
     previousAccellData=[0.0,0.0,0.0];
     lastAccellTriggerTime=new Date().getTime();
   }else{
-    if(  Math.abs(lastAccellTriggerTime-new Date().getTime())>100  ){
+    if(  Math.abs(lastAccellTriggerTime-new Date().getTime())>50  ){
       lastAccellTriggerTime=new Date().getTime();
       oscChannelName=msg.toString().substring(msg.toString().indexOf(',')-1,msg.toString().indexOf(','));
       oscChannelValue=parseFloat(msg.toString().substring(msg.toString().indexOf(',')+1,msg.toString().length));
@@ -558,9 +564,10 @@ oscServer.on('message', function (msg) {
         diffMagnitude[2]=Math.abs(previousAccellData[2]-oscChannelValue);
         previousAccellData[2]=oscChannelValue;
       }
-      if((diffMagnitude[0]+diffMagnitude[1]+diffMagnitude[2])>=.07){
+      summedDiffMagnitude=(diffMagnitude[0]+diffMagnitude[1]+diffMagnitude[2]);
+      if(summedDiffMagnitude>=accellBankThreshold){
         accellPatternBank=(accellPatternBank+1)%8;
-        console.log(`Accell Bank Change: ${accellPatternBank}`);
+        console.log(`Accell Bank Change: ${accellPatternBank}, summedDiffMagnitude: ${summedDiffMagnitude}`);
         for(var x=0; x<64; x++){
           loopCellsState[x]=false;
           if( (x>=(4+accellPatternBank*8)) && (x<(8+accellPatternBank*8)) ){
@@ -570,7 +577,7 @@ oscServer.on('message', function (msg) {
         }
         needsToRunSync=true;
       }
-      if((diffMagnitude[0]+diffMagnitude[1]+diffMagnitude[2])>=.02){
+      if((summedDiffMagnitude)>=accellPatternThreshold){
         console.log(`Message: ${msg}`);
         for(var x=1; x<64; x++){
           if(loopCellsState[(patternNumber+4+x)%64]==true){
