@@ -1,3 +1,4 @@
+const { Client, Server } = require('node-osc');
 const midi = require('midi');
 const apcMiniInput = new midi.Input();
 const apcMiniOutput = new midi.Output();
@@ -14,9 +15,15 @@ const port = 3000;
 init();
 function init(){
 
-  colorMap= [[0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+oscServer = new Server(10001, '0.0.0.0', () => {
+  console.log('OSC Server is listening');
+});
+  
+colorMap= [
+  [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0],
-  [255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255] ];
+  [255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255]
+];
 
   dmxChainOld=[
 {
@@ -228,6 +235,8 @@ dmxChain=[
   randomnessCount=0;
   randomnessBuffer=[0,0,0,0];
   isShift=false;
+  isSetAccellBankThreshold=false;
+  isSetAccellPatternThreshold=false;
   channels=[];
   loopCellsState=[];
   numFixtures=5;
@@ -393,13 +402,33 @@ apcMiniInput.on('message', (deltaTime, message) => {
       recall();
     }
     //rotate fixtures
-    if(message[1]==86 && message[2]==127){
+    if(message[1]==86 && message[2]==127 && !isShift){
       rotateFixtures(true);
     }
     //rotate fixtures
-    if(message[1]==87 && message[2]==127){
+    if(message[1]==87 && message[2]==127 && !isShift){
       rotateFixtures(false);
     }
+    //set isSetAccellBankThreshold mode on
+    if(message[1]==86 && message[2]==127 && isShift && message[0]==144){
+      isSetAccellBankThreshold=true;
+      console.log("isSetAccellBankThreshold mode on")
+    }
+    //set isSetAccellPatternThreshold mode on
+    if(message[1]==87 && message[2]==127 && isShift && message[0]==144){
+      isSetAccellPatternThreshold=true
+      console.log("isSetAccellPatternThreshold mode on")
+    }
+  }
+  //set isSetAccellBankThreshold mode off
+  if(message[1]==86 && message[2]==127 && isShift && message[0]==128){
+    isSetAccellBankThreshold=false;
+    console.log("isSetAccellBankThreshold mode off")
+  }
+  //set isSetAccellPatternThreshold mode off
+  if(message[1]==87 && message[2]==127 && isShift && message[0]==128){
+    isSetAccellPatternThreshold=false
+    console.log("isSetAccellPatternThreshold mode off")
   }
   //fixture mute
   if(message[1]>=68 && message[1]<72 && !isShift){      
@@ -426,6 +455,10 @@ apcMiniInput.on('message', (deltaTime, message) => {
       isShift=true;
     }else{
       isShift=false;
+      isSetAccellPatternThreshold=false;
+      isSetAccellBankThreshold=false;
+      console.log("isSetAccellBankThreshold mode off")
+      console.log("isSetAccellPatternThreshold mode off")
     }
     copySceneSource=null;
     copySceneTarget=null;
@@ -518,13 +551,83 @@ apcMiniInput.on('message', (deltaTime, message) => {
       if(message[1]==55){
         channels[patternNumber][3].y=parseInt(message[2]*2);
       }
-      if(message[1]==56 && isShift){
+      if(message[1]==56 && isShift && !isSetAccellBankThreshold && !isSetAccellPatternThreshold){
         masterBrightness=message[2]/127;
+      }
+      if(message[1]==56 && isShift && isSetAccellBankThreshold){
+        accellBankThreshold=.33+(.33*4*message[2]/127);
+        console.log("accellBankThreshold: "+accellBankThreshold)
+      }
+      if(message[1]==56 && isShift && isSetAccellPatternThreshold){
+        accellPatternThreshold=.012+(.012*100*message[2]/127);
+        console.log("accellPatternThreshold: "+accellPatternThreshold)
       }
       syncArtnetToModel();
     }
   }
   console.log(message);
+});
+
+oscServer.on('message', function (msg) {
+  if(typeof accellPatternBank == 'undefined'){
+    accellPatternBank=0;
+  }
+  if(typeof accellBankThreshold == 'undefined'){
+    accellBankThreshold=.33;
+  }
+  if(typeof accellPatternThreshold == 'undefined'){
+    accellPatternThreshold=.012;
+  }
+  if( typeof previousAccellData == 'undefined'){
+    previousAccellData=[0.0,0.0,0.0];
+    lastAccellTriggerTime=new Date().getTime();
+    lastAccellBankTriggerTime=new Date().getTime();
+  }else{
+    oscChannelName=msg.toString().substring(msg.toString().indexOf(',')-1,msg.toString().indexOf(','));
+    oscChannelValue=parseFloat(msg.toString().substring(msg.toString().indexOf(',')+1,msg.toString().length));
+    var diffMagnitude=[0.0,0.0,0.0];
+    var needsToRunSync=false;
+    if(oscChannelName=="x"){
+      diffMagnitude[0]=Math.abs(previousAccellData[0]-oscChannelValue);
+      previousAccellData[0]=oscChannelValue;
+    }else if(oscChannelName=="y"){
+      diffMagnitude[1]=Math.abs(previousAccellData[1]-oscChannelValue);
+      previousAccellData[1]=oscChannelValue;
+    }else if(oscChannelName=="z"){
+      diffMagnitude[2]=Math.abs(previousAccellData[2]-oscChannelValue);
+      previousAccellData[2]=oscChannelValue;
+    }
+    summedDiffMagnitude=(diffMagnitude[0]+diffMagnitude[1]+diffMagnitude[2]);
+    if(summedDiffMagnitude>=accellBankThreshold && (Math.abs(lastAccellBankTriggerTime-new Date().getTime())>500) ){
+      lastAccellBankTriggerTime=new Date().getTime();
+      accellPatternBank=(accellPatternBank+1)%8;
+      console.log(`Accell Bank Change: ${accellPatternBank}, summedDiffMagnitude: ${summedDiffMagnitude}`);
+      for(var x=0; x<64; x++){
+        loopCellsState[x]=false;
+        if( (x>=(4+accellPatternBank*8)) && (x<(8+accellPatternBank*8)) ){
+          loopCellsState[x]=true;
+          // console.log("loopCellsState of "+x+"is on!");
+        }
+      }
+      needsToRunSync=true;
+    }
+    if(summedDiffMagnitude>=accellPatternThreshold && (Math.abs(lastAccellTriggerTime-new Date().getTime())>100) ){
+      lastAccellTriggerTime=new Date().getTime();
+      console.log(`Message: ${msg}`);
+      for(var x=1; x<64; x++){
+        if(loopCellsState[(patternNumber+4+x)%64]==true){
+          patternNumber=((patternNumber+4+x)%64)-4;
+          // console.log(patternNumber);
+          break;
+        }
+      }
+      needsToRunSync=true;
+    }
+    if(needsToRunSync){
+      syncArtnetToModel();
+      syncLeds();
+    }
+  }
 });
 
 function lpFilter(desiredValues){
