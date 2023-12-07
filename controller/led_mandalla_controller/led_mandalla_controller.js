@@ -235,6 +235,8 @@ dmxChain=[
   randomnessCount=0;
   randomnessBuffer=[0,0,0,0];
   isShift=false;
+  isSetAccellBankThreshold=false;
+  isSetAccellPatternThreshold=false;
   channels=[];
   loopCellsState=[];
   numFixtures=5;
@@ -400,13 +402,33 @@ apcMiniInput.on('message', (deltaTime, message) => {
       recall();
     }
     //rotate fixtures
-    if(message[1]==86 && message[2]==127){
+    if(message[1]==86 && message[2]==127 && !isShift){
       rotateFixtures(true);
     }
     //rotate fixtures
-    if(message[1]==87 && message[2]==127){
+    if(message[1]==87 && message[2]==127 && !isShift){
       rotateFixtures(false);
     }
+    //set isSetAccellBankThreshold mode on
+    if(message[1]==86 && message[2]==127 && isShift && message[0]==144){
+      isSetAccellBankThreshold=true;
+      console.log("isSetAccellBankThreshold mode on")
+    }
+    //set isSetAccellPatternThreshold mode on
+    if(message[1]==87 && message[2]==127 && isShift && message[0]==144){
+      isSetAccellPatternThreshold=true
+      console.log("isSetAccellPatternThreshold mode on")
+    }
+  }
+  //set isSetAccellBankThreshold mode off
+  if(message[1]==86 && message[2]==127 && isShift && message[0]==128){
+    isSetAccellBankThreshold=false;
+    console.log("isSetAccellBankThreshold mode off")
+  }
+  //set isSetAccellPatternThreshold mode off
+  if(message[1]==87 && message[2]==127 && isShift && message[0]==128){
+    isSetAccellPatternThreshold=false
+    console.log("isSetAccellPatternThreshold mode off")
   }
   //fixture mute
   if(message[1]>=68 && message[1]<72 && !isShift){      
@@ -433,6 +455,10 @@ apcMiniInput.on('message', (deltaTime, message) => {
       isShift=true;
     }else{
       isShift=false;
+      isSetAccellPatternThreshold=false;
+      isSetAccellBankThreshold=false;
+      console.log("isSetAccellBankThreshold mode off")
+      console.log("isSetAccellPatternThreshold mode off")
     }
     copySceneSource=null;
     copySceneTarget=null;
@@ -525,8 +551,16 @@ apcMiniInput.on('message', (deltaTime, message) => {
       if(message[1]==55){
         channels[patternNumber][3].y=parseInt(message[2]*2);
       }
-      if(message[1]==56 && isShift){
+      if(message[1]==56 && isShift && !isSetAccellBankThreshold && !isSetAccellPatternThreshold){
         masterBrightness=message[2]/127;
+      }
+      if(message[1]==56 && isShift && isSetAccellBankThreshold){
+        accellBankThreshold=.33+(.33*4*message[2]/127);
+        console.log("accellBankThreshold: "+accellBankThreshold)
+      }
+      if(message[1]==56 && isShift && isSetAccellPatternThreshold){
+        accellPatternThreshold=.012+(.012*100*message[2]/127);
+        console.log("accellPatternThreshold: "+accellPatternThreshold)
       }
       syncArtnetToModel();
     }
