@@ -27,6 +27,8 @@ console.log(stick);
 
 init();
 var laserData, selectedPreset, lastButtonPressed;
+var isControllerFxMode=false;
+var isShift=false;
 
 var jsPositions = {
   "left-stick":{
@@ -38,6 +40,10 @@ var jsPositions = {
     "yInterval":0
   },
   "pad":{
+    "xInterval":0,
+    "yInterval":0
+  },
+  "pad-shift":{
     "xInterval":0,
     "yInterval":0
   }
@@ -107,12 +113,21 @@ function emitEvent(){
   sendArtnet();
 }
 
-function extractJoystickEvents(inputEvent, label, type, number, value, action){
-  if(inputEvent.type == type && inputEvent.number == number && inputEvent.value > value){
-    console.log(label);
-    lastButtonPressed=label;
-    action();
-    emitEvent();
+function extractJoystickEvents(inputEvent, label, type, number, value, comparator, action){
+  if(comparator==">"){
+    if(inputEvent.type == type && inputEvent.number == number && inputEvent.value > value){
+      console.log(label);
+      lastButtonPressed=label;
+      action();
+      emitEvent();
+    }
+  }else{
+    if(inputEvent.type == type && inputEvent.number == number && inputEvent.value <= value){
+      console.log(label);
+      lastButtonPressed=label;
+      action();
+      emitEvent();
+    }   
   }
 }
 
@@ -120,7 +135,7 @@ stick.on("update", (ev) => {
 
   console.log(ev);
 
-  extractJoystickEvents(ev, 'right-tab-on', 'BUTTON', 5, 0, function(){
+  extractJoystickEvents(ev, 'right-tab-on', 'BUTTON', 5, 0, ">", function(){
     if(selectedPreset<16){
       selectedPreset=selectedPreset+1;    
     }else{
@@ -129,7 +144,7 @@ stick.on("update", (ev) => {
     console.log(selectedPreset);
   });
 
-  extractJoystickEvents(ev, 'left-tab-on', 'BUTTON', 4, 0, function(){
+  extractJoystickEvents(ev, 'left-tab-on', 'BUTTON', 4, 0, ">", function(){
     if(selectedPreset>1){
       selectedPreset=selectedPreset-1;    
     }else{
@@ -138,7 +153,7 @@ stick.on("update", (ev) => {
     console.log(selectedPreset);
   });
 
-  extractJoystickEvents(ev, 'a-button-on', 'BUTTON', 0, 0, function(){
+  extractJoystickEvents(ev, 'a-button-on', 'BUTTON', 0, 0, ">", function(){
     if(laserData["scene"+selectedPreset]["color"]<10){
       laserData["scene"+selectedPreset]["color"]=laserData["scene"+selectedPreset]["color"]+1;    
     }else{
@@ -146,7 +161,7 @@ stick.on("update", (ev) => {
     }
   });
 
-  extractJoystickEvents(ev, 'x-button-on', 'BUTTON', 2, 0, function(){
+  extractJoystickEvents(ev, 'x-button-on', 'BUTTON', 2, 0, ">", function(){
     if(laserData["scene"+selectedPreset]["color"]>1){
       laserData["scene"+selectedPreset]["color"]=laserData["scene"+selectedPreset]["color"]-1;    
     }else{
@@ -154,7 +169,7 @@ stick.on("update", (ev) => {
     }
   });
 
-  extractJoystickEvents(ev, 'b-button-on', 'BUTTON', 1, 0, function(){
+  extractJoystickEvents(ev, 'b-button-on', 'BUTTON', 1, 0, ">", function(){
     if(laserData["scene"+selectedPreset]["gobo"]<16){
       laserData["scene"+selectedPreset]["gobo"]=laserData["scene"+selectedPreset]["gobo"]+1;    
     }else{
@@ -162,7 +177,7 @@ stick.on("update", (ev) => {
     }
   });
 
-  extractJoystickEvents(ev, 'y-button-on', 'BUTTON', 3, 0, function(){
+  extractJoystickEvents(ev, 'y-button-on', 'BUTTON', 3, 0, ">", function(){
     if(laserData["scene"+selectedPreset]["gobo"]>1){
       laserData["scene"+selectedPreset]["gobo"]=laserData["scene"+selectedPreset]["gobo"]-1;    
     }else{
@@ -170,29 +185,47 @@ stick.on("update", (ev) => {
     }
   });
     
-  extractJoystickEvents(ev, 'left-stick-x-axis', 'AXIS', 0, -40000, function(){
+  extractJoystickEvents(ev, 'left-stick-x-axis', 'AXIS', 0, -40000, ">", function(){
     parseJoystickToSlider(ev, 'left-stick', 'xInvterval', 'rotation', 0);
   });
 
-  extractJoystickEvents(ev, 'left-stick-y-axis', 'AXIS', 1, -40000, function(){
+  extractJoystickEvents(ev, 'left-stick-y-axis', 'AXIS', 1, -40000, ">", function(){
     parseJoystickToSlider(ev, 'left-stick', 'yInvterval', 'zoom', 0);
   });
 
-  extractJoystickEvents(ev, 'right-stick-x-axis', 'AXIS', 3, -40000, function(){
+  extractJoystickEvents(ev, 'right-stick-x-axis', 'AXIS', 3, -40000, ">", function(){
     parseJoystickToSlider(ev, 'right-stick', 'xInvterval', 'positionX', 0);
   });
 
-  extractJoystickEvents(ev, 'right-stick-y-axis', 'AXIS', 4, -40000, function(){
+  extractJoystickEvents(ev, 'right-stick-y-axis', 'AXIS', 4, -40000, ">", function(){
     parseJoystickToSlider(ev, 'right-stick', 'yInvterval', 'positionY', 0);
   });
 
-  extractJoystickEvents(ev, 'pad-x-axis', 'AXIS', 6, -40000, function(){
-    parseJoystickToSlider(ev, 'pad', 'xInvterval', 'dots', 0);
+  extractJoystickEvents(ev, 'pad-x-axis', 'AXIS', 6, -40000, ">", function(){
+    if(isShift==false){
+      parseJoystickToSlider(ev, 'pad', 'xInvterval', 'dots', 0);
+    }else if(isShift==true){
+      parseJoystickToSlider(ev, 'pad-shift', 'xInvterval', 'scaleX', 0);
+    }
   });
 
-  extractJoystickEvents(ev, 'pad-y-axis', 'AXIS', 7, -40000, function(){
-    parseJoystickToSlider(ev, 'pad', 'yInvterval', 'animation', 0);
+  extractJoystickEvents(ev, 'pad-y-axis', 'AXIS', 7, -40000, ">", function(){
+    if(isShift==false){
+      parseJoystickToSlider(ev, 'pad', 'yInvterval', 'animation', 0);
+    }else if(isShift==true){
+      parseJoystickToSlider(ev, 'pad-shift', 'yInvterval', 'scaleY', 0);
+    }
   });
+
+  extractJoystickEvents(ev, 'back-button-on', 'BUTTON', 6, 0, ">", function(){
+    console.log("isShift True");
+    isShift=true;
+  });
+
+  extractJoystickEvents(ev, 'back-button-off', 'BUTTON', 6, 0, "<=", function(){
+    console.log("isShift False");
+    isShift=false;
+  }); 
 
 });
 

@@ -3,7 +3,7 @@ Description=xbox_controller_app
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/node /root/js_controller.js 
+ExecStart=/usr/local/bin/node /root/js_controller.js 
 WorkingDirectory=/root
 StandardOutput=inherit
 StandardError=inherit
