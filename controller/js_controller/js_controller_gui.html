@@ -74,20 +74,25 @@
       socket.addEventListener("message", (event) => {
         console.log("Message from server ", event.data);
         if(JSON.parse(event.data).selectedPreset != 'undefined' ){
-            laserData=JSON.parse(event.data).laserData;
-            setSelectedPreset(JSON.parse(event.data).selectedPreset);
-            var lbp=JSON.parse(event.data).lastButtonPressed;
-            if( lbp=="right-tab-on" || lbp=="left-tab-on"){
-                document.getElementById("button1").click()
-            }
-            if( lbp=="a-button-on" || lbp=="x-button-on"){
-                document.getElementById("button2").click()
-            }
-            if( lbp=="b-button-on" || lbp=="y-button-on"){
-                document.getElementById("button3").click()
-            }
-            if( lbp=="left-stick-y-axis" || lbp=="left-stick-x-axis" || lbp=="right-stick-y-axis"  || lbp=="right-stick-x-axis"  || lbp=="pad-y-axis"  || lbp=="pad-x-axis" ){
+            var tempObj=JSON.parse(event.data);
+            laserData=tempObj.laserData;
+            setSelectedPreset(tempObj.selectedPreset);
+            var lbp=tempObj.lastButtonPressed;
+            if(tempObj.isControllerFxMode==false){
+                if( lbp=="right-tab-on" || lbp=="left-tab-on"){
+                    document.getElementById("button1").click()
+                }
+                if( lbp=="a-button-on" || lbp=="x-button-on"){
+                    document.getElementById("button2").click()
+                }
+                if( lbp=="b-button-on" || lbp=="y-button-on"){
+                    document.getElementById("button3").click()
+                }
+                if( lbp=="left-stick-y-axis" || lbp=="left-stick-x-axis" || lbp=="right-stick-y-axis"  || lbp=="right-stick-x-axis"  || lbp=="pad-y-axis"  || lbp=="pad-x-axis" ){
                 document.getElementById("button4").click()
+                }
+            }else{
+                document.getElementById("button5").click()
             }
         }
       });
