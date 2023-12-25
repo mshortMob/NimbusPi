@@ -1,0 +1,14 @@
+[Unit]
+Description=xbox_controller_app
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /root/js_controller.js 
+WorkingDirectory=/root
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
