@@ -223,7 +223,7 @@ stick.on("update", (ev) => {
   });
 
   extractJoystickEvents(ev, 'pad-x-axis', 'AXIS', 6, -40000, ">", function(){
-    if(!isControllerFxMode && !isShift){
+    if(!isControllerFxMode){
       if(isShift==false){
         parseJoystickToSlider(ev, 'pad', 'xInvterval', 'dots', 0);
       }else if(isShift==true){
@@ -233,7 +233,7 @@ stick.on("update", (ev) => {
   });
 
   extractJoystickEvents(ev, 'pad-y-axis', 'AXIS', 7, -40000, ">", function(){
-    if(!isControllerFxMode && !isShift){
+    if(!isControllerFxMode){
       if(isShift==false){
         parseJoystickToSlider(ev, 'pad', 'yInvterval', 'animation', 0);
       }else if(isShift==true){
