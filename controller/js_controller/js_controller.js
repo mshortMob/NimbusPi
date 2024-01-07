@@ -55,12 +55,38 @@ function init(){
   for(var x=1; x<17; x++){
       laserData["scene"+x]={"color":1, "gobo":1, "positionX":0, "positionY":0, "scaleX":0, "scaleY":0, "rotation":0, "zoom":0, "animation":0, "dots":0  }
   }
+  // savePresets();
+  
+}
+
+function recallPresets(){
+  fs.readFile('/root/laserControllerImages/presets1.txt', 'utf8', (err, data) => {
+    if (err) {
+      console.error(err);
+      return;
+    }
+    laserData=JSON.parse(data);
+    console.log('recalled saved presets!');
+    emitEvent();
+  });
+}
+
+function savePresets(){
+  var fileContents=JSON.stringify(laserData);
+  fs.writeFile('/root/laserControllerImages/presets1.txt', fileContents, err => {
+    if (err) {
+      console.error(err);
+    }
+    console.log('saved preset data!');
+  });
 }
 
 function sendArtnet(){
-  artnet.set(1,1, getDMXfromLaserData(laserData["scene"+selectedPreset]), function (err, res) {
-    // console.log("Sent Artnet:");
-    // console.log(values);
+  var dmxValues=getDMXfromLaserData(laserData["scene"+selectedPreset]);
+  // var dmxValues=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
+  artnet.set(0,1, dmxValues, function (err, res) {
+    console.log("Sent Artnet:");
+    console.log(dmxValues);
   });
 }
 
@@ -96,9 +122,8 @@ function getDMXfromLaserData(data){
           dmxData.push(0);
       }
   }
-  return dmxData.toString();
+  return dmxData;
 }
-
 
 function emitEvent(){
   var messagePayload={};
@@ -333,15 +358,26 @@ app.get('/laserControllerData*', function (req, res) {
   });
 });
 
+app.get('/savePresets', function (req, res) {
+  savePresets();
+  res.send("save complete");
+});
+
+app.get('/recallPresets', function (req, res) {
+  recallPresets();
+  res.send("recall complete");
+});
+
 wss.on('connection', function connection(ws) {
+  recallPresets();
   ws.on('message', function message(data) {
     console.log('received: %s', data);
     try{
       selectedPreset=JSON.parse(data).selectedPreset;
       laserData=JSON.parse(data).laserData;
       console.log(selectedPreset);
+      sendArtnet();
     }catch{}
-    sendArtnet();
   });
   // ws.send('something');
 });

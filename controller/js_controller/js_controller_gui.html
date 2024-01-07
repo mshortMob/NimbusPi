@@ -322,10 +322,10 @@
                                 this.innerHTML="Cruise Speed:"+this.cruiseSpeed;
                             }
                             if(this.num==1){
-                                saveLaserData();
+                                savePresets();
                             }
                             if(this.num==2){
-                                recallLaserData(false);
+                                recallPresets();
                             }
                             if(this.num==5){
                                 saveSelectedPresetToAll();
@@ -650,6 +650,19 @@
             }
             return dmxData.toString();
         }
-    
+
+      function savePresets(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/savePresets", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log(savePresets+" "+xmlhttp.response.status)}
+      }
+
+      function recallPresets(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/recallPresets", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log(recallPresets+" "+xmlhttp.response.status)}
+      }
     </script>
 </html>
