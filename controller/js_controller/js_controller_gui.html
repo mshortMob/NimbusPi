@@ -264,7 +264,7 @@
                 }
                 if(x==5){
                     viewContainer.className="viewContainer5";
-                    for(var y=1; y<9; y++){
+                    for(var y=1; y<7; y++){
                         var menuButton=document.createElement('button');
                         menuButton.num=y;
                         menuButton.id="menuButton"+y;
@@ -328,10 +328,10 @@
                                 recallPresets();
                             }
                             if(this.num==5){
-                                saveSelectedPresetToAll();
+                                copyPresetToAll();
                             }
                             if(this.num==6){
-                                saveSelectedPresetToBlock();
+                                copyPresetToRow();
                             }
                             if(this.num==7){
                                 if(this.audioCruise<5){
@@ -664,5 +664,20 @@
         xmlhttp.send();
         xmlhttp.onload = function(e){console.log(recallPresets+" "+xmlhttp.response.status)}
       }
+
+      function copyPresetToRow(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/copyPresetToRow", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log(copyPresetToRow+" "+xmlhttp.response.status)}
+      }
+
+      function copyPresetToAll(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/copyPresetToAll", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log(copyPresetToAll+" "+xmlhttp.response.status)}
+      }
+
     </script>
 </html>

@@ -56,7 +56,7 @@ function init(){
       laserData["scene"+x]={"color":1, "gobo":1, "positionX":0, "positionY":0, "scaleX":0, "scaleY":0, "rotation":0, "zoom":0, "animation":0, "dots":0  }
   }
   // savePresets();
-  
+  recallPresets();
 }
 
 function recallPresets(){
@@ -69,6 +69,7 @@ function recallPresets(){
     console.log('recalled saved presets!');
     emitEvent();
   });
+  sendArtnet();
 }
 
 function savePresets(){
@@ -85,8 +86,8 @@ function sendArtnet(){
   var dmxValues=getDMXfromLaserData(laserData["scene"+selectedPreset]);
   // var dmxValues=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
   artnet.set(0,1, dmxValues, function (err, res) {
-    console.log("Sent Artnet:");
-    console.log(dmxValues);
+    console.log("Sent Artnet");
+    // console.log(dmxValues);
   });
 }
 
@@ -159,7 +160,7 @@ function extractJoystickEvents(inputEvent, label, type, number, value, comparato
 
 stick.on("update", (ev) => {
 
-  console.log(ev);
+  // console.log(ev);
 
   extractJoystickEvents(ev, 'right-tab-on', 'BUTTON', 5, 0, ">", function(){
     if(!isControllerFxMode && !isShift){
@@ -367,6 +368,36 @@ app.get('/recallPresets', function (req, res) {
   recallPresets();
   res.send("recall complete");
 });
+
+app.get('/copyPresetToRow', function (req, res) {
+  copyPresetToRow();
+  res.send("copyPresetToRow complete");
+});
+
+app.get('/copyPresetToAll', function (req, res) {
+  copyPresetToAll();
+  res.send("copyPresetToAll complete");
+});
+
+function copyPresetToRow(){
+  for(var x=(Math.floor(selectedPreset/4)*4+1); x<(Math.floor(selectedPreset/4)*4)+4+1;x++){
+    if(x!=(selectedPreset)){
+      laserData["scene"+x]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
+    }
+  }
+  emitEvent();
+  sendArtnet();
+}
+
+function copyPresetToAll(){
+  for(var x=1; x<17;x++){
+    if(x!=(selectedPreset)){
+      laserData["scene"+x]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
+    }
+  }
+  emitEvent();
+  sendArtnet();
+}
 
 wss.on('connection', function connection(ws) {
   recallPresets();
