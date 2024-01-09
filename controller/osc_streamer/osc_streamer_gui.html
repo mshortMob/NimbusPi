@@ -51,11 +51,12 @@
             xmlhttp.send();
             xmlhttp.onload = function(e){
                 console.log(xmlhttp.response);
-                document.getElementById('port').value=JSON.parse(xmlhttp.response).port;
-                document.getElementById('ipAddress').value=JSON.parse(xmlhttp.response).ipAddress;
-                document.getElementById('oscAddress').value=JSON.parse(xmlhttp.response).oscAddress;
-                document.getElementById('minValue').value=JSON.parse(xmlhttp.response).minValue;
-                document.getElementById('maxValue').value=JSON.parse(xmlhttp.response).maxValue;
+                var temp=JSON.parse(xmlhttp.response);
+                document.getElementById('port').value=temp.port;
+                document.getElementById('ipAddress').value=temp.ipAddress;
+                document.getElementById('oscAddress').value=temp.oscAddress;
+                document.getElementById('minValue').value=temp.minValue;
+                document.getElementById('maxValue').value=temp.maxValue;
             }
         };
     
