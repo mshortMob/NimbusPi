@@ -12,19 +12,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.raw());
 const client = new Client('192.168.0.216', 3333);
-var oscPath="/"
 var currentSettings={};
-console.log(client);
 
 app.listen(port, () => {
     console.log(` listening at http://localhost:${port}`)
 })
 
 app.post('/updateSettings', function (req, res) {
-    console.log(req.body);
     client.host=req.body.ipAddress;
     client.port=req.body.port;
-    oscPath=req.body.oscAddress;
     currentSettings=req.body;
     var fileContents=JSON.stringify(req.body);
     fs.writeFile('/root/osc_streamer_settings.txt', fileContents, err => {
@@ -33,7 +29,6 @@ app.post('/updateSettings', function (req, res) {
       }
       console.log('saved preset data!');
       res.send("Settings Updated");
-      console.log(client);
     });
 });
 
@@ -64,9 +59,14 @@ app.get('/', function (req, res) {
     });
 });
 
-function sendOsc(path,value){
-    client.send(path, value, () => {
-        console.log("sent oscTestAddress on");
-    });
+app.get('/test', function (req, res) {
+    sendOsc(currentSettings.oscAddress, req._parsedUrl.query);
     res.send(true);
+});
+
+function sendOsc(path,value){
+    console.log("preping osc: "+path+": "+value);
+    client.send(path, value, () => {
+        console.log("sent osc: "+path+": "+value);
+    });
 }
