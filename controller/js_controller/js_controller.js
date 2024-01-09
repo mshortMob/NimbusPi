@@ -29,6 +29,8 @@ init();
 var laserData, selectedPreset, lastButtonPressed;
 var isControllerFxMode=false;
 var isShift=false;
+var isCruiseMode=false;
+var cruiseIntervalHandle=0;
 
 var jsPositions = {
   "left-stick":{
@@ -132,6 +134,7 @@ function emitEvent(){
   messagePayload["laserData"]=laserData;
   messagePayload["lastButtonPressed"]=lastButtonPressed;
   messagePayload["isControllerFxMode"]=isControllerFxMode;
+  messagePayload["isCruiseMode"]=isCruiseMode;
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(messagePayload));
@@ -185,7 +188,7 @@ stick.on("update", (ev) => {
   });
 
   extractJoystickEvents(ev, 'a-button-on', 'BUTTON', 0, 0, ">", function(){
-    if(!isControllerFxMode && !isShift){
+    if(!isShift){
       if(laserData["scene"+selectedPreset]["color"]<10){
         laserData["scene"+selectedPreset]["color"]=laserData["scene"+selectedPreset]["color"]+1;    
       }else{
@@ -195,7 +198,7 @@ stick.on("update", (ev) => {
   });
 
   extractJoystickEvents(ev, 'x-button-on', 'BUTTON', 2, 0, ">", function(){
-    if(!isControllerFxMode && !isShift){
+    if(!isShift){
       if(laserData["scene"+selectedPreset]["color"]>1){
         laserData["scene"+selectedPreset]["color"]=laserData["scene"+selectedPreset]["color"]-1;    
       }else{
@@ -205,7 +208,7 @@ stick.on("update", (ev) => {
   });
 
   extractJoystickEvents(ev, 'b-button-on', 'BUTTON', 1, 0, ">", function(){
-    if(!isControllerFxMode && !isShift){
+    if(!isShift){
       if(laserData["scene"+selectedPreset]["gobo"]<16){
         laserData["scene"+selectedPreset]["gobo"]=laserData["scene"+selectedPreset]["gobo"]+1;    
       }else{
@@ -215,7 +218,7 @@ stick.on("update", (ev) => {
   });
 
   extractJoystickEvents(ev, 'y-button-on', 'BUTTON', 3, 0, ">", function(){
-    if(!isControllerFxMode && !isShift){
+    if(!isShift){
       if(laserData["scene"+selectedPreset]["gobo"]>1){
         laserData["scene"+selectedPreset]["gobo"]=laserData["scene"+selectedPreset]["gobo"]-1;    
       }else{
@@ -240,11 +243,17 @@ stick.on("update", (ev) => {
     if(!isControllerFxMode && !isShift){
       parseJoystickToSlider(ev, 'right-stick', 'xInvterval', 'positionX', 0);
     }
+    if(isControllerFxMode && !isShift){
+      parseJoystickToPosition(ev, 'positionX', 'x');
+    }
   });
 
   extractJoystickEvents(ev, 'right-stick-y-axis', 'AXIS', 4, -40000, ">", function(){
     if(!isControllerFxMode && !isShift){
       parseJoystickToSlider(ev, 'right-stick', 'yInvterval', 'positionY', 0);
+    }
+    if(isControllerFxMode && !isShift){
+      parseJoystickToPosition(ev, 'positionY', 'y');
     }
   });
 
@@ -290,6 +299,14 @@ stick.on("update", (ev) => {
   }); 
 
 });
+
+function parseJoystickToPosition(ev, mappedControl, axis){
+  var positionRange={"x":45,"y":45};
+  var positionCenter={"x":51,"y":51};
+  laserData["scene"+selectedPreset][mappedControl]=positionCenter[axis]+positionRange[axis]*(ev.value/32768);
+  console.log(positionCenter[axis]+positionRange[axis]*(ev.value/32768));
+  emitEvent();
+}
 
 function parseJoystickToSlider(ev, stick, axisInterval, mappedControl, incAdjustment){
   const maxSliderInc=25;
@@ -397,6 +414,36 @@ function copyPresetToAll(){
   }
   emitEvent();
   sendArtnet();
+}
+
+function increaseSelectedPreset(){
+  if(selectedPreset<16){
+      selectedPreset=selectedPreset+1;    
+  }else{
+      selectedPreset=1;
+  }
+  emitEvent();
+  sendArtnet();
+}
+
+app.get('/toggleCruiseMode', function (req, res) {
+  initCruiseMode();
+  emitEvent();
+  res.send(isCruiseMode);
+});
+
+
+function initCruiseMode(){
+  if(isCruiseMode){
+    isCruiseMode=false;
+    console.log("clearing interval: "+ cruiseIntervalHandle);
+    clearInterval(cruiseIntervalHandle);
+  }else{
+    isCruiseMode=true;
+    cruiseIntervalHandle=setInterval(function(){
+      increaseSelectedPreset();
+    },2000);
+  }
 }
 
 wss.on('connection', function connection(ws) {
