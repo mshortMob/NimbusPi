@@ -293,8 +293,7 @@
                             menuButton.innerHTML="Save Current Preset To Block";
                         }
                         if(y==7){
-                            menuButton.innerHTML="N/A";
-                            menuButton.audioCruise=0;
+                            menuButton.innerHTML="Reboot";
                         }
                         if(y==8){
                             menuButton.innerHTML="Refresh";
@@ -320,6 +319,7 @@
                                 }else{
                                     this.cruiseSpeed=1;
                                 }
+                                setCruiseSpeed();
                                 this.innerHTML="Cruise Speed:"+this.cruiseSpeed;
                             }
                             if(this.num==1){
@@ -335,12 +335,8 @@
                                 copyPresetToRow();
                             }
                             if(this.num==7){
-                                if(this.audioCruise<5){
-                                    this.audioCruise=this.audioCruise+.5;
-                                }else{
-                                    this.audioCruise=0;
-                                }
-                                this.innerHTML="Audio Cruise:"+this.audioCruise;
+                                this.innerHTML="Rebooting....";
+                                rebootPi();
                             }
                             if(this.num==8){
                                 location.reload();
@@ -675,6 +671,13 @@
         xmlhttp.onload = function(e){console.log("toggleCruiseMode "+xmlhttp.response)}
       }
 
+      function setCruiseSpeed(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/setCruiseSpeed?"+document.getElementById('menuButton4').cruiseSpeed, true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log("toggleCruiseMode "+xmlhttp.response)}
+      }
+
       function copyPresetToAll(){
         var xmlhttp=new XMLHttpRequest();
         xmlhttp.open("GET", location.origin+"/copyPresetToAll", true);
@@ -691,5 +694,11 @@
         }
       }
 
+      function rebootPi(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/rebootPi", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log("rebootPi "+xmlhttp.response)}
+      }
     </script>
 </html>
