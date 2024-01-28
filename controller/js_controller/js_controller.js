@@ -232,7 +232,7 @@ function sendArtnet(){
   var dmxValues=getDMXfromLaserData(laserData["scene"+selectedPreset]);
   // var dmxValues=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
   artnet.set(0,1, dmxValues, function (err, res) {
-    console.log("Sent Artnet");
+    // console.log("Sent Artnet");
     // console.log(dmxValues);
   });
 }
@@ -290,14 +290,14 @@ function emitEvent(){
 function extractJoystickEvents(inputEvent, label, type, number, value, comparator, action){
   if(comparator==">"){
     if(inputEvent.type == type && inputEvent.number == number && inputEvent.value > value){
-      console.log(label);
+      // console.log(label);
       lastButtonPressed=label;
       action();
       emitEvent();
     }
   }else{
     if(inputEvent.type == type && inputEvent.number == number && inputEvent.value <= value){
-      console.log(label);
+      // console.log(label);
       lastButtonPressed=label;
       action();
       emitEvent();
@@ -314,13 +314,17 @@ function parseJoystickToPosition(ev, mappedControl, axis){
 }
 
 function parseJoystickToSlider(ev, stick, axisInterval, mappedControl, incAdjustment){
-  const maxSliderInc=25;
+  var maxSliderInc=3;
+  if(mappedControl=="positionY" || mappedControl=="scaleY"){
+    var maxSliderInc=1;
+  }
   if(ev.value!=0){
     if(jsPositions[stick][axisInterval]!=false){
       clearInterval(jsPositions[stick][axisInterval]);
     }
     jsPositions[stick][axisInterval]=setInterval(function(){
       var sliderInc=Math.abs(Math.floor(ev.value/32767*maxSliderInc));
+      console.log('sliderInc: '+sliderInc);
       if(Math.sign(ev.value)==-1){
         if( laserData["scene"+selectedPreset][mappedControl]<(255-sliderInc) ){
           laserData["scene"+selectedPreset][mappedControl]=laserData["scene"+selectedPreset][mappedControl]+(sliderInc+incAdjustment);    
@@ -335,7 +339,7 @@ function parseJoystickToSlider(ev, stick, axisInterval, mappedControl, incAdjust
         }
       }
       emitEvent();
-    },100);
+    },50);
   }else if(ev.value==0){
     clearInterval(jsPositions[stick][axisInterval]);
     jsPositions[stick][axisInterval]=false;
