@@ -284,7 +284,7 @@ function init(){
 }
 
 function recallPresets(){
-  fs.readFile('/root/laserControllerImages/presets1.txt', 'utf8', (err, data) => {
+  fs.readFile('/root/laserControllerImages/js_controller_presets.txt', 'utf8', (err, data) => {
     if (err) {
       console.error(err);
       return;
@@ -403,8 +403,11 @@ function parseJoystickToSlider(ev, stick, axisInterval, mappedControl, incAdjust
   if(mappedControl=="positionY" || mappedControl=="scaleY"){
     var maxSliderInc=1;
   }
-  if(mappedControl=="animation" || mappedControl=="dots"){
-    var maxSliderInc=10;
+  if(mappedControl=="animation"){
+    var maxSliderInc=4;
+  }
+  if(mappedControl=="dots"){
+    var maxSliderInc=15;
   }
   if(mappedControl=="positionX" ||mappedControl=="rotation" || mappedControl=="dots" || mappedControl=="positionY"){
     ev.value=ev.value*-1;
@@ -428,6 +431,13 @@ function parseJoystickToSlider(ev, stick, axisInterval, mappedControl, incAdjust
           laserData["scene"+selectedPreset][mappedControl]=laserData["scene"+selectedPreset][mappedControl]-(sliderInc+incAdjustment);    
         }else{
           laserData["scene"+selectedPreset][mappedControl]=0;
+        }
+      }
+      if(mappedControl=="scaleY" ||mappedControl=="positionY"){
+        for(var x=1; x<17; x++){
+          if(x!=selectedPreset){
+            laserData["scene"+x][mappedControl]=laserData["scene"+selectedPreset][mappedControl];    
+          }
         }
       }
       emitEvent();
@@ -519,7 +529,7 @@ function copyPresetToAll(){
 
 function copyPresetToNext(){
   var nextPreset=0;
-  if(selectedPreset+1<16){
+  if(selectedPreset<16){
     nextPreset=selectedPreset+1;    
   }else{
     nextPreset=1;
@@ -533,7 +543,7 @@ function copyPresetToNext(){
 
 function copyPresetToPrevious(){
   var nextPreset=0;
-  if(selectedPreset-1>1){
+  if(selectedPreset>1){
     nextPreset=selectedPreset-1;    
   }else{
     nextPreset=16;
