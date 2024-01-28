@@ -262,8 +262,11 @@ stick.on("update", (ev) => {
 
   extractJoystickEvents(ev, 'start-button-on', 'BUTTON', 7, 0, ">", function(){
     if(!isShift){
-      isControllerFxMode=!isControllerFxMode;
-      console.log("isControllerFxMode: "+isControllerFxMode);
+      // isControllerFxMode=!isControllerFxMode;
+      // console.log("isControllerFxMode: "+isControllerFxMode);
+      recallPresets();
+    }else{
+      savePresets();
     }
   }); 
 
