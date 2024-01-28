@@ -298,7 +298,7 @@ function recallPresets(){
 
 function savePresets(){
   var fileContents=JSON.stringify(laserData);
-  fs.writeFile('/root/laserControllerImages/presets1.txt', fileContents, err => {
+  fs.writeFile('/root/laserControllerImages/js_controller_presets.txt', fileContents, err => {
     if (err) {
       console.error(err);
     }
