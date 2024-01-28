@@ -97,19 +97,26 @@ stick.on("update", (ev) => {
     
   extractJoystickEvents(ev, 'left-stick-x-axis', 'AXIS', 0, -40000, ">", function(){
     if(!isControllerFxMode && !isShift){
-      parseJoystickToSlider(ev, 'left-stick', 'xInvterval', 'rotation', 0);
+      parseJoystickToSlider(ev, 'left-stick', 'xInterval', 'rotation', 0);
     }
   });
 
   extractJoystickEvents(ev, 'left-stick-y-axis', 'AXIS', 1, -40000, ">", function(){
     if(!isControllerFxMode && !isShift){
-      parseJoystickToSlider(ev, 'left-stick', 'yInvterval', 'zoom', 0);
+      parseJoystickToSlider(ev, 'left-stick', 'yInterval', 'zoom', 0);
+    }
+  });
+
+  extractJoystickEvents(ev, 'left-stick-button', 'BUTTON', 9, 0, ">", function(){
+    if(!isControllerFxMode && !isShift){
+      laserData["scene"+selectedPreset]["zoom"]=0;
+      laserData["scene"+selectedPreset]["rotation"]=0;
     }
   });
 
   extractJoystickEvents(ev, 'right-stick-x-axis', 'AXIS', 3, -40000, ">", function(){
     if(!isControllerFxMode && !isShift){
-      parseJoystickToSlider(ev, 'right-stick', 'xInvterval', 'positionX', 0);
+      parseJoystickToSlider(ev, 'right-stick', 'xInterval', 'positionX', 0);
     }
     if(isControllerFxMode && !isShift){
       parseJoystickToPosition(ev, 'positionX', 'x');
@@ -118,19 +125,26 @@ stick.on("update", (ev) => {
 
   extractJoystickEvents(ev, 'right-stick-y-axis', 'AXIS', 4, -40000, ">", function(){
     if(!isControllerFxMode && !isShift){
-      parseJoystickToSlider(ev, 'right-stick', 'yInvterval', 'positionY', 0);
+      parseJoystickToSlider(ev, 'right-stick', 'yInterval', 'scaleX', 0);
     }
     if(isControllerFxMode && !isShift){
       parseJoystickToPosition(ev, 'positionY', 'y');
     }
   });
 
+  extractJoystickEvents(ev, 'right-stick-button', 'BUTTON', 10, 0, ">", function(){
+    if(!isControllerFxMode && !isShift){
+      laserData["scene"+selectedPreset]["positionX"]=0;
+      laserData["scene"+selectedPreset]["scaleX"]=0;
+    }
+  });
+
   extractJoystickEvents(ev, 'pad-x-axis', 'AXIS', 6, -40000, ">", function(){
     if(!isControllerFxMode){
       if(isShift==false){
-        parseJoystickToSlider(ev, 'pad', 'xInvterval', 'dots', 0);
+        parseJoystickToSlider(ev, 'pad', 'xInterval', 'dots', 0);
       }else if(isShift==true){
-        parseJoystickToSlider(ev, 'pad-shift', 'xInvterval', 'scaleX', 0);
+        parseJoystickToSlider(ev, 'pad-shift', 'xInterval', 'positionY', 0);
       }
     }
   });
@@ -138,9 +152,9 @@ stick.on("update", (ev) => {
   extractJoystickEvents(ev, 'pad-y-axis', 'AXIS', 7, -40000, ">", function(){
     if(!isControllerFxMode){
       if(isShift==false){
-        parseJoystickToSlider(ev, 'pad', 'yInvterval', 'animation', 0);
+        parseJoystickToSlider(ev, 'pad', 'yInterval', 'animation', 0);
       }else if(isShift==true){
-        parseJoystickToSlider(ev, 'pad-shift', 'yInvterval', 'scaleY', 0);
+        parseJoystickToSlider(ev, 'pad-shift', 'yInterval', 'scaleY', 0);
       }
     }
   });
@@ -149,6 +163,17 @@ stick.on("update", (ev) => {
     if(!isControllerFxMode){
       console.log("isShift True");
       isShift=true;
+
+      var sticks=["left-stick","right-stick","pad","pad-shift"];
+      var intervals=["xInterval","yInterval"];
+      for(var x=0; x<sticks.length; x++){
+          for(var y=0; y<intervals.length; y++){
+              // console.log(sticks[x]+"  "+intervals[y]+"  "+jsPositions[sticks[x]][intervals[y]]);
+              clearInterval(jsPositions[sticks[x]][intervals[y]]);
+              // jsPositions[sticks[x]][intervals[y]]=0;
+          }
+      }
+
     }
   });
 
@@ -156,6 +181,17 @@ stick.on("update", (ev) => {
     if(!isControllerFxMode){
       console.log("isShift False");
       isShift=false;
+
+      var sticks=["left-stick","right-stick","pad","pad-shift"];
+      var intervals=["xInterval","yInterval"];
+      for(var x=0; x<sticks.length; x++){
+          for(var y=0; y<intervals.length; y++){
+              // console.log(sticks[x]+"  "+intervals[y]+"  "+jsPositions[sticks[x]][intervals[y]]);
+              clearInterval(jsPositions[sticks[x]][intervals[y]]);
+              // jsPositions[sticks[x]][intervals[y]]=0;
+          }
+      }
+
     }
   }); 
 
@@ -290,14 +326,14 @@ function emitEvent(){
 function extractJoystickEvents(inputEvent, label, type, number, value, comparator, action){
   if(comparator==">"){
     if(inputEvent.type == type && inputEvent.number == number && inputEvent.value > value){
-      // console.log(label);
+      console.log(label);
       lastButtonPressed=label;
       action();
       emitEvent();
     }
   }else{
     if(inputEvent.type == type && inputEvent.number == number && inputEvent.value <= value){
-      // console.log(label);
+      console.log(label);
       lastButtonPressed=label;
       action();
       emitEvent();
@@ -318,13 +354,20 @@ function parseJoystickToSlider(ev, stick, axisInterval, mappedControl, incAdjust
   if(mappedControl=="positionY" || mappedControl=="scaleY"){
     var maxSliderInc=1;
   }
+  if(mappedControl=="animation" || mappedControl=="dots"){
+    var maxSliderInc=10;
+  }
+  if(mappedControl=="positionX" ||mappedControl=="rotation" || mappedControl=="dots" || mappedControl=="positionY"){
+    ev.value=ev.value*-1;
+  }
   if(ev.value!=0){
-    if(jsPositions[stick][axisInterval]!=false){
+    if(jsPositions[stick][axisInterval]!=0){
+      // console.log(jsPositions[stick][axisInterval]);
       clearInterval(jsPositions[stick][axisInterval]);
     }
     jsPositions[stick][axisInterval]=setInterval(function(){
       var sliderInc=Math.abs(Math.floor(ev.value/32767*maxSliderInc));
-      console.log('sliderInc: '+sliderInc);
+      // console.log('sliderInc: '+sliderInc);
       if(Math.sign(ev.value)==-1){
         if( laserData["scene"+selectedPreset][mappedControl]<(255-sliderInc) ){
           laserData["scene"+selectedPreset][mappedControl]=laserData["scene"+selectedPreset][mappedControl]+(sliderInc+incAdjustment);    
@@ -342,7 +385,7 @@ function parseJoystickToSlider(ev, stick, axisInterval, mappedControl, incAdjust
     },50);
   }else if(ev.value==0){
     clearInterval(jsPositions[stick][axisInterval]);
-    jsPositions[stick][axisInterval]=false;
+    jsPositions[stick][axisInterval]=0;
   }
 }
 
