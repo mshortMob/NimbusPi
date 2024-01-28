@@ -21,6 +21,35 @@ var artnetOptions = {
 
 const artnet = Artnet(artnetOptions);
 
+init();
+var laserData, selectedPreset, lastButtonPressed;
+var isControllerFxMode=false;
+var isShift=false;
+var isCruiseMode=false;
+var cruiseSpeed=2;
+var cruiseIntervalHandle=-1;
+var isGateMode=false;
+var isTriggerOn=false;
+
+var jsPositions = {
+  "left-stick":{
+    "xInterval":0,
+    "yInterval":0
+  },
+  "right-stick":{
+    "xInterval":0,
+    "yInterval":0
+  },
+  "pad":{
+    "xInterval":0,
+    "yInterval":0
+  },
+  "pad-shift":{
+    "xInterval":0,
+    "yInterval":0
+  }
+}
+
 const stick = new Joystick("/dev/input/js0");
 console.log("initializing joystick:");
 console.log(stick);
@@ -33,6 +62,34 @@ stick.on("update", (ev) => {
 
   // console.log(ev);
 
+  extractJoystickEvents(ev, 'left-trigger-on', 'AXIS', 2, 0, ">", function(){
+    if(!isControllerFxMode && !isShift){
+      isGateMode=true;
+      console.log("isGateMode On");
+    }
+  });
+
+  extractJoystickEvents(ev, 'left-trigger-off', 'AXIS', 2, 0, "<=", function(){
+    if(!isControllerFxMode && !isShift){
+      isGateMode=false;
+      console.log("isGateMode Off");
+    }
+  });
+
+  extractJoystickEvents(ev, 'right-trigger-on', 'AXIS', 5, 0, ">", function(){
+    if(!isControllerFxMode && !isShift){
+      isTriggerOn=true;
+      console.log("isTriggerOn true");
+    }
+  });
+
+  extractJoystickEvents(ev, 'right-trigger-off', 'AXIS', 5, 0, "<=", function(){
+    if(!isControllerFxMode && !isShift){
+      isTriggerOn=false;
+      console.log("isTriggerOn false");
+    }
+  });
+
   extractJoystickEvents(ev, 'right-tab-on', 'BUTTON', 5, 0, ">", function(){
     if(!isControllerFxMode && !isShift){
       if(selectedPreset<16){
@@ -41,6 +98,8 @@ stick.on("update", (ev) => {
           selectedPreset=1;
       }
       console.log(selectedPreset);
+    }else if(!isControllerFxMode && isShift){
+      copyPresetToNext();
     }
   });
 
@@ -52,6 +111,8 @@ stick.on("update", (ev) => {
           selectedPreset=16;
       }
       console.log(selectedPreset);
+    }else if(!isControllerFxMode && isShift){
+      copyPresetToPrevious();
     }
   });
 
@@ -160,6 +221,8 @@ stick.on("update", (ev) => {
   });
 
   extractJoystickEvents(ev, 'back-button-on', 'BUTTON', 6, 0, ">", function(){
+    isGateMode=false;
+    isTriggerOn=false;
     if(!isControllerFxMode){
       console.log("isShift True");
       isShift=true;
@@ -178,6 +241,8 @@ stick.on("update", (ev) => {
   });
 
   extractJoystickEvents(ev, 'back-button-off', 'BUTTON', 6, 0, "<=", function(){
+    isGateMode=false;
+    isTriggerOn=false;
     if(!isControllerFxMode){
       console.log("isShift False");
       isShift=false;
@@ -204,32 +269,6 @@ stick.on("update", (ev) => {
 
 });
 
-init();
-var laserData, selectedPreset, lastButtonPressed;
-var isControllerFxMode=false;
-var isShift=false;
-var isCruiseMode=false;
-var cruiseSpeed=2;
-var cruiseIntervalHandle=-1;
-
-var jsPositions = {
-  "left-stick":{
-    "xInterval":0,
-    "yInterval":0
-  },
-  "right-stick":{
-    "xInterval":0,
-    "yInterval":0
-  },
-  "pad":{
-    "xInterval":0,
-    "yInterval":0
-  },
-  "pad-shift":{
-    "xInterval":0,
-    "yInterval":0
-  }
-}
 
 function init(){
   laserData={};
@@ -281,10 +320,17 @@ function getDMXfromLaserData(data){
       if(x==1 || x==1+12){
           dmxData.push(255);
       }else if( x==2 || x==(2+12) ){
+        if(isGateMode==false){
           dmxData.push( colorMapping[data.color-1] );
+        }else{
+          if(isTriggerOn==true){
+            dmxData.push( colorMapping[data.color-1] );
+          }else{
+            dmxData.push( colorMapping[0] );
+          }         
+        }
       }else if( x==3 || x==(3+12) ){
           dmxData.push( goboMapping[data.gobo-1] );
-      
       }else if( x==4 || x==(4+12) ){
           dmxData.push( data.positionY );
       }else if( x==5 || x==(5+12) ){
@@ -464,6 +510,34 @@ function copyPresetToAll(){
       laserData["scene"+x]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
     }
   }
+  emitEvent();
+  sendArtnet();
+}
+
+function copyPresetToNext(){
+  var nextPreset=0;
+  if(selectedPreset+1<16){
+    nextPreset=selectedPreset+1;    
+  }else{
+    nextPreset=1;
+  }
+  laserData["scene"+nextPreset]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
+  selectedPreset=nextPreset;
+  console.log(selectedPreset);
+  emitEvent();
+  sendArtnet();
+}
+
+function copyPresetToPrevious(){
+  var nextPreset=0;
+  if(selectedPreset-1>1){
+    nextPreset=selectedPreset-1;    
+  }else{
+    nextPreset=16;
+  }
+  laserData["scene"+nextPreset]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
+  selectedPreset=nextPreset;
+  console.log(selectedPreset);
   emitEvent();
   sendArtnet();
 }
