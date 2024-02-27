@@ -172,6 +172,8 @@ stick.on("update", (ev) => {
     if(!isControllerFxMode && !isShift){
       laserData["scene"+selectedPreset]["zoom"]=0;
       laserData["scene"+selectedPreset]["rotation"]=0;
+      laserData["scene"+selectedPreset]["dots"]=0;
+      laserData["scene"+selectedPreset]["animation"]=0;
     }
   });
 
