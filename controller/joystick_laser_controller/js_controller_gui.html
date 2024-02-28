@@ -34,7 +34,7 @@
           }
           .viewContainer3{
               display: grid;
-              grid-template-columns: auto auto auto auto;
+              grid-template-columns: auto auto auto auto auto;
           }
           .viewContainer4{
               display: grid;
@@ -149,7 +149,7 @@
                         document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
                     }
                     if(this.num==3){
-                        for(var x=1; x<17; x++){
+                        for(var x=1; x<26; x++){
                             document.getElementById('goboButton'+x).style.opacity="1";
                             document.getElementById('goboButton'+x).style.borderWidth="1px"
                         }
@@ -234,7 +234,7 @@
                 if(x==3){
                     // viewContainer.style.display="grid";
                     viewContainer.className="viewContainer3"
-                    for(var y=1; y<17; y++){
+                    for(var y=1; y<26; y++){
                         var goboButton=document.createElement('button');
                         goboButton.num=y;
                         goboButton.id="goboButton"+y;
@@ -249,7 +249,7 @@
                             goboButton.style.borderWidth="2px"
                         }
                         goboButton.onclick=function(){
-                            for(var x=1; x<17; x++){
+                            for(var x=1; x<26; x++){
                                 // document.getElementById('goboButton'+x).style.backgroundColor="#222222";
                                 document.getElementById('goboButton'+x).style.opacity="1";
                                 document.getElementById('goboButton'+x).style.borderWidth="1px"
@@ -588,7 +588,7 @@
           }
           document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.opacity=".3";
           document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
-          for(var x=1; x<17; x++){
+          for(var x=1; x<26; x++){
               document.getElementById('goboButton'+x).style.opacity="1";
               document.getElementById('goboButton'+x).style.borderWidth="1px"
           }

@@ -138,7 +138,7 @@ stick.on("update", (ev) => {
 
   extractJoystickEvents(ev, 'b-button-on', 'BUTTON', 1, 0, ">", function(){
     if(!isShift){
-      if(laserData["scene"+selectedPreset]["gobo"]<16){
+      if(laserData["scene"+selectedPreset]["gobo"]<25){
         laserData["scene"+selectedPreset]["gobo"]=laserData["scene"+selectedPreset]["gobo"]+1;    
       }else{
         laserData["scene"+selectedPreset]["gobo"]=1;
@@ -151,7 +151,7 @@ stick.on("update", (ev) => {
       if(laserData["scene"+selectedPreset]["gobo"]>1){
         laserData["scene"+selectedPreset]["gobo"]=laserData["scene"+selectedPreset]["gobo"]-1;    
       }else{
-        laserData["scene"+selectedPreset]["gobo"]=16;
+        laserData["scene"+selectedPreset]["gobo"]=25;
       }
     }
   });
@@ -319,8 +319,8 @@ function sendArtnet(){
 
 function getDMXfromLaserData(data){
   var dmxData=[];
-  var colorMapping=[0,15,18,22,27,32,37,10,50,255];
-  var goboMapping=[3,5,2,29,32,33,75,69,44,43,62,79,85,0,1,7];
+  var colorMapping=[0,15,18,22,27,32,37,10,50,255,];
+  var goboMapping=[3,5,2,29,32,33,75,69,44,43,62,79,85,0,1,7,55,56,59,61,81,93,95,99,100];
   for(var x=1; x<25; x++){
       if(x==1 || x==1+12){
           dmxData.push(255);
