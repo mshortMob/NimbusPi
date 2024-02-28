@@ -16,6 +16,7 @@ app.use(bodyParser.raw());
 var artnetOptions = {
   host: '255.255.255.255',
   iface: '192.168.4.1',
+  refresh: 300,
   sendAll: true
 }
 
