@@ -150,8 +150,13 @@
                     }
                     if(this.num==3){
                         for(var x=1; x<26; x++){
-                            document.getElementById('goboButton'+x).style.opacity="1";
-                            document.getElementById('goboButton'+x).style.borderWidth="1px"
+                            if(x<17){
+                                document.getElementById('goboButton'+x).style.opacity="1";
+                                document.getElementById('goboButton'+x).style.borderWidth="1px"
+                            }else{
+                                document.getElementById('goboButton'+x).style.opacity=".95";
+                                document.getElementById('goboButton'+x).style.borderWidth="1px"
+                            }
                         }
                         document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.opacity=".3";
                         document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.borderWidth="2px"
@@ -251,8 +256,13 @@
                         goboButton.onclick=function(){
                             for(var x=1; x<26; x++){
                                 // document.getElementById('goboButton'+x).style.backgroundColor="#222222";
+                                if(x<17){
                                 document.getElementById('goboButton'+x).style.opacity="1";
                                 document.getElementById('goboButton'+x).style.borderWidth="1px"
+                                }else{
+                                    document.getElementById('goboButton'+x).style.opacity=".95";
+                                    document.getElementById('goboButton'+x).style.borderWidth="1px"
+                                }
                             }
                             this.style.opacity=".3";
                             this.style.borderWidth="2px"
@@ -589,8 +599,13 @@
           document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.opacity=".3";
           document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
           for(var x=1; x<26; x++){
-              document.getElementById('goboButton'+x).style.opacity="1";
-              document.getElementById('goboButton'+x).style.borderWidth="1px"
+            if(x<17){
+                document.getElementById('goboButton'+x).style.opacity="1";
+                document.getElementById('goboButton'+x).style.borderWidth="1px"
+            }else{
+                document.getElementById('goboButton'+x).style.opacity=".95";
+                document.getElementById('goboButton'+x).style.borderWidth="1px"
+            }
           }
           for(var x=1; x<17; x++){
               document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
