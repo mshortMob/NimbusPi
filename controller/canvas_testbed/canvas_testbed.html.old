@@ -1,0 +1,76 @@
+<html>
+
+    <head>
+        <style>
+            body {
+                background-color: black;
+                padding: 10px;
+            }
+        </style>
+    </head>
+
+    <body>
+        <canvas id="myCanvas" style="background-color: white;"></canvas>
+    </body>
+
+    <script>
+
+        init();
+        function init(){
+            drawTestPattern();
+        }
+
+        function drawTestPattern(){
+            setInterval(function(){
+            const c = document.getElementById("myCanvas");
+            const ctx = c.getContext("2d");
+
+            r1=Math.floor(((Math.sin((new Date().getTime() % 5000)/5000*2*Math.PI)+1)/2)*255);
+            g1=255;
+            b1=100;
+            r2=100;
+            g2=100;
+            b2=Math.floor(((Math.cos((new Date().getTime() % 5000)/5000*2*Math.PI)+1)/2)*255);
+            r3=190;
+            g3=Math.floor(((Math.cos(((1500+new Date().getTime()) % 5000)/5000*2*Math.PI)+1)/2)*255);
+            b3=40;
+            r4=Math.floor(((Math.sin(((1500+new Date().getTime()) % 5000)/5000*2*Math.PI)+1)/2)*255);;
+            g4=40
+            b4=190;
+
+            // Create gradient
+            // const grd = ctx.createRadialGradient(Math.floor(c.width/2), Math.floor(c.height/2), 5, Math.floor(c.width/2), Math.floor(c.height/2), 100);
+            phaseIndex=(Math.sin((new Date().getTime() % 4000)/4000*2*Math.PI)+1)/2/2;
+            // setInterval(function(){console.log(phaseIndex)}, 100);
+            // const grd = ctx.createLinearGradient(0, 0, Math.floor(c.width), Math.floor(c.height)*0);
+            // // grd.addColorStop((0+phaseIndex)%1, "rgb("+r1+","+g1+","+b1+")" );
+            // // grd.addColorStop((.33+phaseIndex)%1, "rgb("+r2+","+g2+","+b2+")"  );
+            // // grd.addColorStop((.66+phaseIndex)%1, "rgb("+r3+","+g3+","+b3+")"  );
+            // // grd.addColorStop((1+phaseIndex)%1, "rgb("+r4+","+g4+","+b4+")"  );
+            // grd.addColorStop((0+phaseIndex)%1, "rgb("+0+","+0+","+255+")"  );
+            // grd.addColorStop((.5+phaseIndex)%1, "rgb("+255+","+0+","+0+")"  );
+
+            // // Fill with gradient
+            // ctx.fillStyle = grd;
+            // ctx.fillRect(0, 0, c.width, c.height);
+
+            // ctx.beginPath();
+            // ctx.arc(95, 50, 40, 0, 2 * Math.PI);
+            // ctx.stroke();
+
+            document.getElementById("myCanvas").onmousedown=function draw(e) {
+                var rect = c.getBoundingClientRect();
+                var posx = e.clientX - rect.left;
+                var posy = e.clientY - rect.top;
+
+                ctx.fillStyle = "#00FF00";
+                ctx.beginPath();
+                ctx.arc(posx, posy, 20, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+
+        },100);
+        }
+    </script>
+
+</html>
