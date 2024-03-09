@@ -275,7 +275,6 @@ stick.on("update", (ev) => {
 
 });
 
-
 function init(){
   laserData={};
   selectedPreset=1;
@@ -403,8 +402,17 @@ function parseJoystickToPosition(ev, mappedControl, axis){
 
 function parseJoystickToSlider(ev, stick, axisInterval, mappedControl, incAdjustment){
   var maxSliderInc=3;
-  if(mappedControl=="positionY" || mappedControl=="scaleY"){
+  var maxLimit=255;
+  var minLimit=0;
+  if(mappedControl=="positionY"){
     var maxSliderInc=1;
+    var maxLimit=81;
+    var minLimit=19;
+  }
+  if(mappedControl=="scaleY"){
+    var maxSliderInc=1;
+    var maxLimit=64;
+    var minLimit=0;
   }
   if(mappedControl=="animation"){
     var maxSliderInc=4;
@@ -417,26 +425,24 @@ function parseJoystickToSlider(ev, stick, axisInterval, mappedControl, incAdjust
   }
   if(ev.value!=0){
     if(jsPositions[stick][axisInterval]!=0){
-      // console.log(jsPositions[stick][axisInterval]);
       clearInterval(jsPositions[stick][axisInterval]);
     }
     jsPositions[stick][axisInterval]=setInterval(function(){
       var sliderInc=Math.abs(Math.floor(ev.value/32767*maxSliderInc));
-      // console.log('sliderInc: '+sliderInc);
       if(Math.sign(ev.value)==-1){
-        if( laserData["scene"+selectedPreset][mappedControl]<(255-sliderInc) ){
+        if( laserData["scene"+selectedPreset][mappedControl]<(maxLimit-sliderInc) ){
           laserData["scene"+selectedPreset][mappedControl]=laserData["scene"+selectedPreset][mappedControl]+(sliderInc+incAdjustment);    
         }else{
-          laserData["scene"+selectedPreset][mappedControl]=255;
+          laserData["scene"+selectedPreset][mappedControl]=maxLimit;
         }
       }else if(Math.sign(ev.value)==1){
-        if( laserData["scene"+selectedPreset][mappedControl]>(sliderInc) ){
+        if( laserData["scene"+selectedPreset][mappedControl]>(minLimit+sliderInc) ){
           laserData["scene"+selectedPreset][mappedControl]=laserData["scene"+selectedPreset][mappedControl]-(sliderInc+incAdjustment);    
         }else{
-          laserData["scene"+selectedPreset][mappedControl]=0;
+          laserData["scene"+selectedPreset][mappedControl]=minLimit;
         }
       }
-      if(mappedControl=="scaleY" ||mappedControl=="positionY"){
+      if(mappedControl=="scaleY" || mappedControl=="positionY"){
         for(var x=1; x<17; x++){
           if(x!=selectedPreset){
             laserData["scene"+x][mappedControl]=laserData["scene"+selectedPreset][mappedControl];    
