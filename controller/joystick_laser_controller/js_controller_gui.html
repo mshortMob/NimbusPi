@@ -402,7 +402,10 @@
                     ctx.clearRect(0, 0, this.width, this.height);
                     ctx.fillStyle = "#222222";
                     ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height ); 
-                    // dataModel[16*(pageNumber-1)+this.currentChannel]=255-parseInt(event.offsetY/this.offsetHeight*255);
+                    if(this.num!=7 && this.num!=4){
+                        ctx.fillStyle = "#444444";
+                        ctx.fillRect(0, parseInt((this.height/2)-4), this.width, 3 );  
+                    }
                     var value=255-parseInt(event.offsetY/this.offsetHeight*255);
                     if(value<30){
                         value=0;
@@ -456,19 +459,58 @@
                     var ctx = this.getContext("2d");
                     ctx.clearRect(0, 0, this.width, this.height);
                     ctx.fillStyle = "#222222";
-                    ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) ); 
+                    ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) );
+                    if(this.num!=7 && this.num!=4){
+                        ctx.fillStyle = "#444444";
+                        ctx.fillRect(0, parseInt((this.height/2)-4), this.width, 3 );  
+                    }
                     // dataModel[16*(pageNumber-1)+this.currentChannel]=value;
                 }
                 slidersDiv.appendChild(canvas);
 
                 var label=document.createElement('canvas');
                 label.className="sliderLabel";
+                label.num=x;
+                label.relatedSliderCanvas=canvas
                 label.id="sliderLabel"+x;
                 label.style.backgroundColor="#222222";
                 label.style.width="95%";
                 label.style.height="90%";
                 label.style.marginLeft="2.5%";
                 label.style.marginTop="5%";
+                label.onmousedown=function(event){
+                    if(this.num!=7 && this.num!=4){
+                        var value=130;
+                    }else{
+                        var value=0;
+                    }
+                    this.relatedSliderCanvas.setValue(value);
+                    if(this.num==1){
+                        laserData["scene"+selectedPreset].positionX=value;
+                    }
+                    if(this.num==2){
+                        laserData["scene"+selectedPreset].positionY=value;
+                    }
+                    if(this.num==3){
+                        laserData["scene"+selectedPreset].scaleX=value;
+                    }
+                    if(this.num==4){
+                        laserData["scene"+selectedPreset].scaleY=value;
+                    }
+                    if(this.num==5){
+                        laserData["scene"+selectedPreset].rotation=value;
+                    }
+                    if(this.num==6){
+                        laserData["scene"+selectedPreset].zoom=value;
+                    }
+                    if(this.num==7){
+                        laserData["scene"+selectedPreset].dots=value;
+                    }
+                    if(this.num==8){
+                        laserData["scene"+selectedPreset].animation=value;
+                    }
+                    sendAllLaserDataToWebSocket();
+                }
                 drawLabelText(canvas.num);
                 labelsDiv.appendChild(label);
 
