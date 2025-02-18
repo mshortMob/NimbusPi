@@ -1,0 +1,33 @@
+= DMX Library for Arduino with ESP8266 =
+
+The DMX library allows sending data from Serial1 in DMX format.
+
+For more information about this library please visit us at https://github.com/Rickgg/ESP-Dmx
+
+
+= Installation =
+
+To use, download and move the folder to your `Arduino/libraries` location, and restart the Arduino IDE.
+
+= API =
+
+* `init(channels)` Starts the DMX library with Serial1. If no channels are given, defaults to 32.
+* `write(channel, value)` Writes a value to DMX buffer.
+* `update()` Calls for the DMX buffer to be sent. Currently, it has to be called inside the main loop.
+* `end()` Ends ESPDMX controller.
+
+
+== License ==
+
+ Copyright (C) 2015  Rick <ricardogg95@gmail.com> (edited by Marcel Seerig)
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
