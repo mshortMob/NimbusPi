@@ -13,13 +13,13 @@ void setup() {
   setup_eeprom();
   setup_ap(epdata.ssid, epdata.password);
   setup_http_server();
-  // setup_socket_server();
+  setup_socket_server();
   setup_button();
 }
 
 void loop() {
   int currentMode=handle_button();
   handle_leds(currentMode);
-  // handle_socket_server();
+  handle_socket_server();
   handle_http_server();
 }
