@@ -21,5 +21,4 @@ void loop() {
   int currentMode=handle_button();
   handle_leds(currentMode);
   handle_socket_server();
-  handle_http_server();
 }

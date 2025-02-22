@@ -2,7 +2,7 @@
 #define NUM_LEDS 128
 #define LED_PIN 15
 CRGB leds[NUM_LEDS];
-#include "led_synth.h"
+#include <led_synth.h>
 
 
 void setup_leds(void){
