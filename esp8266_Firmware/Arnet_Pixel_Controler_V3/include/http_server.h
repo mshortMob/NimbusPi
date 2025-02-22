@@ -6,12 +6,7 @@
 
 static AsyncWebServer server(80);
 
-void setup_http_server(){
-  SPIFFS.begin();
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->redirect("/index.html");
-  });
-  server.serveStatic("/index.html", SPIFFS, "/index.html");
+void handleGetSettings(){
   server.on("/getSettings", HTTP_GET, [](AsyncWebServerRequest *request) {
     EEPROM.get(0,epdata);
     StaticJsonDocument<640> data;
@@ -29,7 +24,20 @@ void setup_http_server(){
     serializeJson(data, response);
     request->send(200, "application/json", response);
   });
-  AsyncCallbackJsonWebHandler *updateSettingsHandler = new AsyncCallbackJsonWebHandler("/updateSettings", [](AsyncWebServerRequest *request, JsonVariant &json) {
+}
+
+void handleRoot(){
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->redirect("/index.html");
+  });
+}
+
+void handleIndex(){
+  server.serveStatic("/index.html", SPIFFS, "/index.html");
+}
+
+void handleUpdateSettings(){
+  AsyncCallbackJsonWebHandler *updateSettingsProcessor = new AsyncCallbackJsonWebHandler("/updateSettings", [](AsyncWebServerRequest *request, JsonVariant &json) {
     StaticJsonDocument<640> data;
     if (json.is<JsonArray>())
     {
@@ -57,7 +65,15 @@ void setup_http_server(){
     request->send(200, "application/json", response);
     Serial.println(response);
   });
-  server.addHandler(updateSettingsHandler);
+  server.addHandler(updateSettingsProcessor);
+}
+
+void setup_http_server(){
+  SPIFFS.begin();
+  handleRoot();
+  handleIndex();
+  handleGetSettings();
+  handleUpdateSettings();
   server.begin();
 }
 

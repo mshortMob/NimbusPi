@@ -4,7 +4,6 @@
 CRGB leds[NUM_LEDS];
 #include <led_synth.h>
 
-
 void setup_leds(void){
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
 }

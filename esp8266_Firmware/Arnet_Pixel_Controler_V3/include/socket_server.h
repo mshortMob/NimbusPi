@@ -3,7 +3,6 @@
 #include <Hash.h>
 #include <ArduinoJson.h>
 
-
 String old_value, value;
 int lastSocketSendTime=0;
 

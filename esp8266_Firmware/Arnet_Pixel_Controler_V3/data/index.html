@@ -119,21 +119,19 @@
       </style>
     </head>
     <body>
-
         <div class="header">
-      <div class="header-item">NimbusKit</div>
-      <div class="header-item"></div>
-      <div class="header-item"></div>  
-      <div class="header-item"></div>
-      <div class="header-item"></div>
-      <div class="header-item"></div>
-      <div class="header-item"></div>
-      <div class="header-item"></div>
-      <div class="header-item" onclick="goToPage('settings');">Settings</div>
-      <div class="header-item" onclick="goToPage('data');">Data</div>
-      <div class="header-item"></div>
-    </div>
-
+        <div class="header-item">NimbusKit</div>
+        <div class="header-item"></div>
+        <div class="header-item"></div>  
+        <div class="header-item"></div>
+        <div class="header-item"></div>
+        <div class="header-item"></div>
+        <div class="header-item"></div>
+        <div class="header-item"></div>
+        <div class="header-item" onclick="goToPage('settings');">Settings</div>
+        <div class="header-item" onclick="goToPage('data');">Data</div>
+        <div class="header-item"></div>
+        </div>
         <div id="dataPage">
             <div id="dataPageGaugeTable">
                 <div class="dataPageGaugeTable-item"></div>  
@@ -148,7 +146,6 @@
             </div>
             <button id="testButton" onclick="socket.send('Socket_ABC123');">Test</button>
         </div>
-
         <script>
 
             var fields=[
@@ -252,7 +249,7 @@
             function makeUpdateSettingsPostCall(){
                 var payload={};
                 for (var x in fields){
-                  payload[fields[x].name]=document.getElementById(fields[x].name).value;
+                    payload[fields[x].name]=document.getElementById(fields[x].name).value;
                 }
                 var urlString='http://'+location.host + '/updateSettings'
                 var xhttp = new XMLHttpRequest(); 
@@ -325,6 +322,5 @@
             }
 
         </script>
-
     </body>
 </html>
