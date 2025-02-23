@@ -1,6 +1,6 @@
 #include<Wire.h>
 
-const int MPU=0x68; 
+const int MPU=0x68;
 int16_t AcX,AcY,AcZ,Tmp,GyX,GyY,GyZ;
 float valx;
 float valy;
