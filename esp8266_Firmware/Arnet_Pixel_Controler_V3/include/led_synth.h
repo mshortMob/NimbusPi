@@ -15,7 +15,6 @@ float pixelBufferG[120];
 float pixelBufferB[120];
 float filteredBrightness=0.0;
 
-
 struct {
   int colorIndex = 110;
   int colorSpread = 30;
