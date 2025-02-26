@@ -49,7 +49,9 @@ void setup_socket_server(){
 void handle_socket_server(){
   webSocket.loop();
   if( (millis()-lastSocketSendTime) > 500 ){
-    value = (String) analogRead(0);
+    // value = (String) analogRead(0);
+    String payload = (String) valx + "," + valy + "," + valz;
+    value = payload;
     webSocket.broadcastTXT(value); 
     lastSocketSendTime=millis();
   }

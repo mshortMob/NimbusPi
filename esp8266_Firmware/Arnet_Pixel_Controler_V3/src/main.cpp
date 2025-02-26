@@ -2,9 +2,9 @@
 #include <button_funcs.h>
 #include <led_funcs.h>
 #include <eeprom_funcs.h>
+#include <accelerometer_funcs.h>
 #include <socket_server.h>
 #include <http_server.h>
-#include <accelerometer_funcs.h>
 
 void setup() {
   delay(1000);
@@ -22,6 +22,6 @@ void setup() {
 void loop() {
   int currentMode=handle_button();
   handle_leds(currentMode);
-  handle_socket_server();
   handle_accelerometer();
+  handle_socket_server();
 }

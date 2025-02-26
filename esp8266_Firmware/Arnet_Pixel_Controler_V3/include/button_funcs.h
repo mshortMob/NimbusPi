@@ -4,7 +4,8 @@ int previous_mode_button_value=1;
 int selectedMode;
 
 void cycle_mode(void){
-  selectedMode=(selectedMode+1)%4;
+  selectedMode=(selectedMode+1)%8;
+  Serial.println("SelectedMode: "+ (String) selectedMode);
 }
 
 void setup_button(void){
