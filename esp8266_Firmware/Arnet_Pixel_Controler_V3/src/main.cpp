@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include <button_funcs.h>
-#include <led_funcs.h>
 #include <eeprom_funcs.h>
+#include <led_funcs.h>
 #include <accelerometer_funcs.h>
 #include <socket_server.h>
 #include <http_server.h>

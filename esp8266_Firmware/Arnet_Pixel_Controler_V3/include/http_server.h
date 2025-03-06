@@ -26,6 +26,22 @@ void handleGetSettings(){
   });
 }
 
+void handleGetLedPresets(){
+  server.on("/getLedPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
+    // EEPROM.get(0,epdata);
+    StaticJsonDocument<640> data;
+    Serial.println("handleGetLedPresets");
+    for(int x=0;x<4;x++){
+      for(int y=0;y<8;y++){
+        data["ledPresets"][x][y]=epdata.ledPresets[x][y];
+      }
+    }
+    String response;
+    serializeJson(data, response);
+    request->send(200, "application/json", response);
+  });
+}
+
 void handleRoot(){
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->redirect("/index.html");
@@ -49,7 +65,7 @@ void handleUpdateSettings(){
     }
     data["ssid"].as<String>().toCharArray(epdata.ssid,64);
     data["password"].as<String>().toCharArray(epdata.password,64);
-    data["universe"].as<String>().toCharArray(epdata.universe,64);
+    data["universe"].as<String>().toCharArray(epdata.universe,32);
     data["startChan"].as<String>().toCharArray(epdata.startChan,64);
     data["fixtureMode"].as<String>().toCharArray(epdata.fixtureMode,64);
     data["oscAddressX"].as<String>().toCharArray(epdata.oscAddressX,64);
@@ -68,12 +84,42 @@ void handleUpdateSettings(){
   server.addHandler(updateSettingsProcessor);
 }
 
+void handleUpdateLedPresets(){
+  AsyncCallbackJsonWebHandler *updateLedPresetsProcessor = new AsyncCallbackJsonWebHandler("/updateLedPresets", [](AsyncWebServerRequest *request, JsonVariant &json) {
+    StaticJsonDocument<640> data;
+    if (json.is<JsonArray>())
+    {
+      data = json.as<JsonArray>();
+    }
+    else if (json.is<JsonObject>())
+    {
+      data = json.as<JsonObject>();
+    }
+    Serial.println("handleUpdateLedPresets");
+    for(int x=0;x<4;x++){
+      for(int y=0;y<8;y++){
+        epdata.ledPresets[x][y]=data["ledPresets"][x][y];
+      }
+    }
+    // EEPROM.put(0,epdata);
+    // EEPROM.commit();
+    // Serial.println("Updated EEPROM values");
+    String response;
+    serializeJson(data, response);
+    request->send(200, "application/json", response);
+    Serial.println(response);
+  });
+  server.addHandler(updateLedPresetsProcessor);
+}
+
 void setup_http_server(){
   SPIFFS.begin();
   handleRoot();
   handleIndex();
   handleGetSettings();
+  handleGetLedPresets();
   handleUpdateSettings();
+  handleUpdateLedPresets();
   server.begin();
 }
 

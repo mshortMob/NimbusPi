@@ -5,7 +5,7 @@ bool writeEEPROM=false;
 struct {
   char ssid[64] = "NimbusPi-ApcMini"; // This is what gets stored in EEPROM if you uncomment 
   char password[64] = "NimbusPi123"; //  EEPROM.put and EEPROM.commit in setup
-  char universe[64] = "1";
+  char universe[32] = "1";
   char startChan[64] = "25";
   char fixtureMode[64] = "2";   //fixtureMode 0= 3chan ; fixtureMode 1= indiviudal addressable
   char oscAddressX[64] = "/accell/x";
@@ -13,10 +13,17 @@ struct {
   char oscAddressZ[64] = "/accell/z";
   char oscTargetIP[64] = "192.168.4.1";  
   char oscPort[64] = "10001";
+  int ledPresets[4][8] = {
+    {130,50,200,4,4,3,0,100},
+    {50,150,130,16,30,4,0,5},
+    {200,2,220,12,1,5,0,55},
+    {88,88,88,200,50,6,0,55}
+  };
+ 
 }epdata;
 
 void setup_eeprom(){
-  EEPROM.begin(640);
+  EEPROM.begin(1024);
   delay(1000);
   if(writeEEPROM){
     Serial.println("Initializing - i.e. over-writing - EEPROM now");
@@ -47,5 +54,13 @@ void setup_eeprom(){
   Serial.println(epdata.oscTargetIP);
   Serial.print("oscPort: ");
   Serial.println(epdata.oscPort);
+  Serial.println("ledPresets: ");
+  for(int x=0;x<4;x++){
+    for(int y=0;y<8;y++){
+      Serial.print(epdata.ledPresets[x][y]);
+      Serial.print(",");
+    }
+    Serial.println("");
+  }
   Serial.println("");
 }

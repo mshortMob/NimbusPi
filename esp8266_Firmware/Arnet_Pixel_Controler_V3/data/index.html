@@ -116,6 +116,14 @@
             color:white;
             font-size:large;
         }
+        #presetsPage {
+            width:90%;
+            margin-left: 5%;
+            display: none;
+            height: 300px;
+            background-color: black;
+            padding: 5px 5px 1px 5px;
+        }
       </style>
     </head>
     <body>
@@ -127,7 +135,7 @@
         <div class="header-item"></div>
         <div class="header-item"></div>
         <div class="header-item"></div>
-        <div class="header-item"></div>
+        <div class="header-item" onclick="goToPage('presets');">Presets</div>
         <div class="header-item" onclick="goToPage('settings');">Settings</div>
         <div class="header-item" onclick="goToPage('data');">Data</div>
         <div class="header-item"></div>
@@ -145,6 +153,9 @@
                 <div class="dataPageGaugeTable-item"></div>
             </div>
             <button id="testButton" onclick="socket.send('Socket_ABC123');">Test</button>
+        </div>
+        <div id="presetsPage">
+
         </div>
         <script>
 
@@ -201,8 +212,39 @@
                 }
             ]
 
+            var ledPresets=[
+                {
+                    "name":"preset1",
+                    "text":"SSID:",
+                    "initVal":"---"
+                },
+                {
+                    "name":"preset2",
+                    "text":"Password:",
+                    "initVal":"---"
+                },
+                {
+                    "name":"preset3",
+                    "text":"Universe:",
+                    "initVal":"---"
+                },
+                {
+                    "name":"preset4",
+                    "text":"Start Channel:",
+                    "initVal":"---"
+                }
+            ]
+
+            ledPresetsPayload=[
+                [242,50,200,4,4,3,0,100],
+                [50,150,130,16,30,4,0,5],
+                [200,2,220,12,1,5,0,55],
+                [88,88,88,200,50,6,0,55]
+            ];
+
             window.onload = function(){
                 initElements();
+                createSliderElements();
                 initWebSocket();
             }
 
@@ -263,6 +305,20 @@
                 xhttp.send(JSON.stringify(payload));
             }
 
+            function makeUpdateLedPresetsPostCall(){
+                var payload={"ledPresets":ledPresetsPayload};
+                var urlString='http://'+location.host + '/updateLedPresets'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200){
+                    console.log(this.responseText);
+                }
+                };
+                xhttp.open('POST', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send(JSON.stringify(payload));
+            }
+
             function makeGetSettingsCall(){
                 var urlString='http://'+location.host + '/getSettings'
                 var xhttp = new XMLHttpRequest(); 
@@ -272,6 +328,25 @@
                     console.log(JSON.parse(this.response));
                     for (var x in fields){
                         document.getElementById(fields[x].name).value=getResponse[fields[x].name];
+                    }
+                    makeGetLedPresetsCall();
+                }
+                };
+                xhttp.open('GET', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send();
+            }
+
+            function makeGetLedPresetsCall(){
+                var urlString='http://'+location.host + '/getLedPresets'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200){
+                    var getResponse=JSON.parse(this.response);
+                    console.log(JSON.parse(this.response));
+                    for(var x=0; x<8; x++){
+                        ledPresetsPayload[0][x]=getResponse["ledPresets"][0][x];
+                        document.getElementById('slider'+parseInt(x+1)).setValue(ledPresetsPayload[0][x]);
                     }
                 }
                 };
@@ -311,6 +386,7 @@
                     }
                     document.getElementById('saveButton_row').style.display='block';
                     document.getElementById('dataPage').style.display='none';
+                    document.getElementById('presetsPage').style.display='none';
                 }
                 if(pageName=="data"){
                     for (var x in fields){
@@ -318,9 +394,111 @@
                     }
                     document.getElementById('saveButton_row').style.display='none';
                     document.getElementById('dataPage').style.display='block';
+                    document.getElementById('presetsPage').style.display='none';
+                }
+                if(pageName=="presets"){
+                    for (var x in fields){
+                        document.getElementById(fields[x].name+'_row').style.display='none';
+                    }
+                    document.getElementById('saveButton_row').style.display='none';
+                    document.getElementById('dataPage').style.display='none';
+                    document.getElementById('presetsPage').style.display='block';
                 }
             }
 
-        </script>
+            function createSliderElements(){
+                var labelsDiv=document.createElement('div');
+                var slidersDiv=document.createElement('div');
+                labelsDiv.style.backgroundColor="black";
+                slidersDiv.style.backgroundColor="black";
+                labelsDiv.style.display="grid";
+                slidersDiv.style.display="grid";
+                labelsDiv.style.height="20%";
+                slidersDiv.style.height="80%";
+                labelsDiv.style.gridTemplateColumns="auto auto auto auto auto auto auto auto";
+                slidersDiv.style.gridTemplateColumns="auto auto auto auto auto auto auto auto";
+                document.getElementById("presetsPage").appendChild(labelsDiv);
+                document.getElementById("presetsPage").appendChild(slidersDiv);
+                for(var x=1; x<9; x++){
+                    var canvas=document.createElement('canvas');
+                    canvas.className="slider"
+                    canvas.id="slider"+x
+                    canvas.num=x;
+                    canvas.currentChannel=x-1;
+                    canvas.style.backgroundColor="grey";
+                    canvas.style.width="95%";
+                    canvas.style.height="95%";
+                    canvas.style.marginLeft="2.5%";
+                    canvas.style.marginTop="5%";
+                    canvas.isSelected=false;
+                    canvas.updateValue=function(event){
+                        var ctx = this.getContext("2d");
+                        ctx.clearRect(0, 0, this.width, this.height);
+                        ctx.fillStyle = "#222222";
+                        ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height ); 
+                        var value=255-parseInt(event.offsetY/this.offsetHeight*255);
+                        if(value<12){
+                            value=0;
+                        }
+                        for(var y=1;y<9;y++){
+                            if(this.num==y){
+                                ledPresetsPayload[0][y-1]=value;
+                            }
+                        }
+                        makeUpdateLedPresetsPostCall();
+                    }
+                    canvas.onmouseup=function(event){
+                        this.isSelected=false;
+                    }
+                    canvas.onmouseleave=function(event){
+                        this.isSelected=false;
+                    }
+                    canvas.onmousedown=function(event){
+                        this.isSelected=true;
+                        this.updateValue(event);
+                    }
+                    canvas.onmousemove=function(event){
+                        if(this.isSelected){
+                            var ctx = this.getContext("2d");
+                            this.updateValue(event);
+                        }
+                    }
+                    canvas.setValue=function(value){
+                        var ctx = this.getContext("2d");
+                        ctx.clearRect(0, 0, this.width, this.height);
+                        ctx.fillStyle = "#222222";
+                        ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) ); 
+                    }
+                    slidersDiv.appendChild(canvas);
+
+                    var label=document.createElement('canvas');
+                    label.className="sliderLabel";
+                    label.id="sliderLabel"+x;
+                    label.style.backgroundColor="#222222";
+                    label.style.width="95%";
+                    label.style.height="90%";
+                    label.style.marginLeft="2.5%";
+                    label.style.marginTop="5%";
+                    drawLabelText(canvas.num);
+                    labelsDiv.appendChild(label);
+
+                    function drawLabelText(text){
+                        var ctx = label.getContext("2d");
+                        ctx.clearRect(0,0,canvas.width,canvas.height);
+                        ctx.font = "80px Arial";
+                        ctx.fillStyle = "#aaaaaa";
+                        ctx.textAlign = "center";
+                        ctx.fillText(text, label.width/2, label.height/1.5);
+                    }
+
+                    // if(x==1){
+                    //     canvas.setValue(laserData["scene"+selectedPreset].positionX, true);
+                    //     drawLabelText("X");
+                    // }
+
+                }
+            }        
+
+            </script>
     </body>
 </html>
