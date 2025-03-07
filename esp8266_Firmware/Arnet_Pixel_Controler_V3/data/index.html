@@ -122,7 +122,16 @@
             display: none;
             height: 300px;
             background-color: black;
-            padding: 5px 5px 1px 5px;
+            padding: 5px 10px 5px 10px;
+        }
+        #selectedPresetContainer {
+            display:grid;
+            grid-template-columns: auto auto auto auto auto;
+
+        }
+        .selectedPresetContainerButton {
+            background-color: #555555;
+            border: 2px solid black;
         }
       </style>
     </head>
@@ -155,7 +164,14 @@
             <button id="testButton" onclick="socket.send('Socket_ABC123');">Test</button>
         </div>
         <div id="presetsPage">
-
+            <div id="selectedPresetContainer" style="background-color: green; height:26%; margin-top: 1.25%; margin-bottom: 1.25%;">
+                <button class="selectedPresetContainerButton">Selected Preset:</button>
+                <button id="selectedPresetButton1" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">1</button>
+                <button id="selectedPresetButton2" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">2</button>
+                <button id="selectedPresetButton3" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">3</button>
+                <button id="selectedPresetButton4" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">4</button>
+            </div>
+            <div id="slidersContainer" style="background-color: blue; height:65%;"></div>
         </div>
         <script>
 
@@ -242,6 +258,8 @@
                 [88,88,88,200,50,6,0,55]
             ];
 
+            selectedPreset=1;
+
             window.onload = function(){
                 initElements();
                 createSliderElements();
@@ -288,6 +306,21 @@
                 makeGetSettingsCall();
             }
 
+            function handleSelectedPresetButton(presetNum){
+                selectedPreset=presetNum;
+                for(var x=1;x<5;x++){
+                    if(x!=presetNum){
+                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#555555';
+                    }else{
+                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#cccccc';
+                    }
+                }
+                for(var y=0; y<8; y++){
+                    document.getElementById('slider'+parseInt(y+1)).setValue(ledPresetsPayload[selectedPreset-1][y]);
+                }
+                makeUpdateLedPresetsPostCall();
+            }
+
             function makeUpdateSettingsPostCall(){
                 var payload={};
                 for (var x in fields){
@@ -306,7 +339,7 @@
             }
 
             function makeUpdateLedPresetsPostCall(){
-                var payload={"ledPresets":ledPresetsPayload};
+                var payload={"ledPresets":ledPresetsPayload, "selectedPreset":parseInt(selectedPreset-1)};
                 var urlString='http://'+location.host + '/updateLedPresets'
                 var xhttp = new XMLHttpRequest(); 
                 xhttp.onreadystatechange = function() {
@@ -344,10 +377,13 @@
                 if(this.readyState == 4 && this.status == 200){
                     var getResponse=JSON.parse(this.response);
                     console.log(JSON.parse(this.response));
-                    for(var x=0; x<8; x++){
-                        ledPresetsPayload[0][x]=getResponse["ledPresets"][0][x];
-                        document.getElementById('slider'+parseInt(x+1)).setValue(ledPresetsPayload[0][x]);
+                    for(var x=0;x<4;x++){
+                        for(var y=0; y<8; y++){
+                            ledPresetsPayload[x][y]=getResponse["ledPresets"][x][y];
+                            document.getElementById('slider'+parseInt(y+1)).setValue(ledPresetsPayload[x][y]);
+                        }
                     }
+                    handleSelectedPresetButton(parseInt(getResponse["selectedPreset"]+1));
                 }
                 };
                 xhttp.open('GET', urlString, true);
@@ -375,6 +411,11 @@
                 socket.onmessage = function(e) {  
                     console.log('Received data from websocket: '+e.data);
                     document.getElementById('dataPageGauge').innerHTML=e.data;
+                    var incomingData=e.data.split(',');
+                    var incomingPreset=parseInt(incomingData[incomingData.length-1])%4;
+                    if(selectedPreset!=(incomingPreset+1)){
+                        handleSelectedPresetButton(incomingPreset+1);
+                    }
                     return true;
                 };
             }
@@ -413,12 +454,14 @@
                 slidersDiv.style.backgroundColor="black";
                 labelsDiv.style.display="grid";
                 slidersDiv.style.display="grid";
+                // labelsDiv.style.display="none";
+                // slidersDiv.style.display="none";
                 labelsDiv.style.height="20%";
                 slidersDiv.style.height="80%";
-                labelsDiv.style.gridTemplateColumns="auto auto auto auto auto auto auto auto";
+                labelsDiv.style.gridTemplateColumns="12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5%";
                 slidersDiv.style.gridTemplateColumns="auto auto auto auto auto auto auto auto";
-                document.getElementById("presetsPage").appendChild(labelsDiv);
-                document.getElementById("presetsPage").appendChild(slidersDiv);
+                document.getElementById("slidersContainer").appendChild(labelsDiv);
+                document.getElementById("slidersContainer").appendChild(slidersDiv);
                 for(var x=1; x<9; x++){
                     var canvas=document.createElement('canvas');
                     canvas.className="slider"
@@ -430,6 +473,7 @@
                     canvas.style.height="95%";
                     canvas.style.marginLeft="2.5%";
                     canvas.style.marginTop="5%";
+                    // canvas.style.display='none';
                     canvas.isSelected=false;
                     canvas.updateValue=function(event){
                         var ctx = this.getContext("2d");
@@ -442,7 +486,7 @@
                         }
                         for(var y=1;y<9;y++){
                             if(this.num==y){
-                                ledPresetsPayload[0][y-1]=value;
+                                ledPresetsPayload[selectedPreset-1][y-1]=value;
                             }
                         }
                         makeUpdateLedPresetsPostCall();
@@ -471,7 +515,17 @@
                     }
                     slidersDiv.appendChild(canvas);
 
-                    var label=document.createElement('canvas');
+                    var sliderLabelValues=[
+                        'Color',
+                        'ColorSpread',
+                        'CycleTime',
+                        'TrailLength',
+                        'TrailSpread',
+                        'Direction',
+                        'Strobe',
+                        'Brightness'
+                    ]
+                    var label=document.createElement('span');
                     label.className="sliderLabel";
                     label.id="sliderLabel"+x;
                     label.style.backgroundColor="#222222";
@@ -479,24 +533,14 @@
                     label.style.height="90%";
                     label.style.marginLeft="2.5%";
                     label.style.marginTop="5%";
-                    drawLabelText(canvas.num);
+                    label.innerHTML=sliderLabelValues[canvas.num-1];
+                    label.style.lineHeight='30px';
+                    label.style.color='#aaaaaa';
+                    label.style.fontSize='xx-small';
+                    label.style.textAlign='center';
                     labelsDiv.appendChild(label);
-
-                    function drawLabelText(text){
-                        var ctx = label.getContext("2d");
-                        ctx.clearRect(0,0,canvas.width,canvas.height);
-                        ctx.font = "80px Arial";
-                        ctx.fillStyle = "#aaaaaa";
-                        ctx.textAlign = "center";
-                        ctx.fillText(text, label.width/2, label.height/1.5);
-                    }
-
-                    // if(x==1){
-                    //     canvas.setValue(laserData["scene"+selectedPreset].positionX, true);
-                    //     drawLabelText("X");
-                    // }
-
                 }
+                handleSelectedPresetButton(1);
             }        
 
             </script>

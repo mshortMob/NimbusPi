@@ -26,32 +26,6 @@ void handleGetSettings(){
   });
 }
 
-void handleGetLedPresets(){
-  server.on("/getLedPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
-    // EEPROM.get(0,epdata);
-    StaticJsonDocument<640> data;
-    Serial.println("handleGetLedPresets");
-    for(int x=0;x<4;x++){
-      for(int y=0;y<8;y++){
-        data["ledPresets"][x][y]=epdata.ledPresets[x][y];
-      }
-    }
-    String response;
-    serializeJson(data, response);
-    request->send(200, "application/json", response);
-  });
-}
-
-void handleRoot(){
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->redirect("/index.html");
-  });
-}
-
-void handleIndex(){
-  server.serveStatic("/index.html", SPIFFS, "/index.html");
-}
-
 void handleUpdateSettings(){
   AsyncCallbackJsonWebHandler *updateSettingsProcessor = new AsyncCallbackJsonWebHandler("/updateSettings", [](AsyncWebServerRequest *request, JsonVariant &json) {
     StaticJsonDocument<640> data;
@@ -84,6 +58,23 @@ void handleUpdateSettings(){
   server.addHandler(updateSettingsProcessor);
 }
 
+void handleGetLedPresets(){
+  server.on("/getLedPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
+    // EEPROM.get(0,epdata);
+    StaticJsonDocument<640> data;
+    Serial.println("handleGetLedPresets");
+    for(int x=0;x<4;x++){
+      for(int y=0;y<8;y++){
+        data["ledPresets"][x][y]=epdata.ledPresets[x][y];
+      }
+    }
+    data["selectedPreset"]=selectedMode%4;
+    String response;
+    serializeJson(data, response);
+    request->send(200, "application/json", response);
+  });
+}
+
 void handleUpdateLedPresets(){
   AsyncCallbackJsonWebHandler *updateLedPresetsProcessor = new AsyncCallbackJsonWebHandler("/updateLedPresets", [](AsyncWebServerRequest *request, JsonVariant &json) {
     StaticJsonDocument<640> data;
@@ -101,6 +92,7 @@ void handleUpdateLedPresets(){
         epdata.ledPresets[x][y]=data["ledPresets"][x][y];
       }
     }
+    selectedMode=int(data["selectedPreset"])%4;
     // EEPROM.put(0,epdata);
     // EEPROM.commit();
     // Serial.println("Updated EEPROM values");
@@ -110,6 +102,16 @@ void handleUpdateLedPresets(){
     Serial.println(response);
   });
   server.addHandler(updateLedPresetsProcessor);
+}
+
+void handleRoot(){
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
+    request->redirect("/index.html");
+  });
+}
+
+void handleIndex(){
+  server.serveStatic("/index.html", SPIFFS, "/index.html");
 }
 
 void setup_http_server(){
