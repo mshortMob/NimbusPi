@@ -15,11 +15,8 @@ void handleGetSettings(){
     data["universe"]=epdata.universe;
     data["startChan"]=epdata.startChan;
     data["fixtureMode"]=epdata.fixtureMode;
-    data["oscAddressX"]=epdata.oscAddressX;
-    data["oscAddressY"]=epdata.oscAddressY;
-    data["oscAddressZ"]=epdata.oscAddressZ;
-    data["oscTargetIP"]=epdata.oscTargetIP;
-    data["oscPort"]=epdata.oscPort;
+    data["num_base_leds"]=epdata.num_base_leds;
+    data["pixel_start_offset"]=epdata.pixel_start_offset;
     String response;
     serializeJson(data, response);
     request->send(200, "application/json", response);
@@ -42,11 +39,8 @@ void handleUpdateSettings(){
     data["universe"].as<String>().toCharArray(epdata.universe,32);
     data["startChan"].as<String>().toCharArray(epdata.startChan,64);
     data["fixtureMode"].as<String>().toCharArray(epdata.fixtureMode,64);
-    data["oscAddressX"].as<String>().toCharArray(epdata.oscAddressX,64);
-    data["oscAddressY"].as<String>().toCharArray(epdata.oscAddressY,64);
-    data["oscAddressZ"].as<String>().toCharArray(epdata.oscAddressZ,64);
-    data["oscTargetIP"].as<String>().toCharArray(epdata.oscTargetIP,64);
-    data["oscPort"].as<String>().toCharArray(epdata.oscPort,64);
+    epdata.num_base_leds=int(data["num_base_leds"]);
+    epdata.pixel_start_offset=int(data["pixel_start_offset"]);
     EEPROM.put(0,epdata);
     EEPROM.commit();
     Serial.println("Updated EEPROM values");
@@ -54,6 +48,7 @@ void handleUpdateSettings(){
     serializeJson(data, response);
     request->send(200, "application/json", response);
     Serial.println(response);
+    FastLED.clear();
   });
   server.addHandler(updateSettingsProcessor);
 }
@@ -68,7 +63,7 @@ void handleGetLedPresets(){
         data["ledPresets"][x][y]=epdata.ledPresets[x][y];
       }
     }
-    data["selectedPreset"]=selectedMode%4;
+    data["selectedPreset"]=selectedMode%5;
     String response;
     serializeJson(data, response);
     request->send(200, "application/json", response);
@@ -92,7 +87,7 @@ void handleUpdateLedPresets(){
         epdata.ledPresets[x][y]=data["ledPresets"][x][y];
       }
     }
-    selectedMode=int(data["selectedPreset"])%4;
+    selectedMode=int(data["selectedPreset"])%5;
     // EEPROM.put(0,epdata);
     // EEPROM.commit();
     // Serial.println("Updated EEPROM values");
@@ -102,6 +97,46 @@ void handleUpdateLedPresets(){
     Serial.println(response);
   });
   server.addHandler(updateLedPresetsProcessor);
+}
+
+void handleGetPixelMapPresets(){
+  server.on("/getPixelMapPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
+    StaticJsonDocument<1024> data;
+    Serial.println("handleGetPixelMap");
+    for(int x=0;x<8;x++){
+      for(int y=0;y<8;y++){
+        data["pixelMap"][x][y]=epdata.pixelMap[x][y];
+      }
+    }
+    String response;
+    serializeJson(data, response);
+    request->send(200, "application/json", response);
+  });
+}
+
+void handleUpdatePixelMapPresets(){
+  AsyncCallbackJsonWebHandler *updatePixelMapProcessor = new AsyncCallbackJsonWebHandler("/updatePixelMap", [](AsyncWebServerRequest *request, JsonVariant &json) {
+    StaticJsonDocument<1024> data;
+    if (json.is<JsonArray>())
+    {
+      data = json.as<JsonArray>();
+    }
+    else if (json.is<JsonObject>())
+    {
+      data = json.as<JsonObject>();
+    }
+    Serial.println("handleUpdatePixelMap");
+    for(int x=0;x<8;x++){
+      for(int y=0;y<8;y++){
+        epdata.pixelMap[x][y]=data["pixelMap"][x][y];
+      }
+    };
+    String response;
+    serializeJson(data, response);
+    request->send(200, "application/json", response);
+    Serial.println(response);
+  });
+  server.addHandler(updatePixelMapProcessor);
 }
 
 void handleRoot(){
@@ -122,6 +157,8 @@ void setup_http_server(){
   handleGetLedPresets();
   handleUpdateSettings();
   handleUpdateLedPresets();
+  handleGetPixelMapPresets();
+  handleUpdatePixelMapPresets();
   server.begin();
 }
 

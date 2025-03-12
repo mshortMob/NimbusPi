@@ -10,8 +10,8 @@ void setup() {
   delay(1000);
   Serial.begin(115200);
   Serial.println();
-  setup_leds();
   setup_eeprom();
+  setup_leds();
   setup_ap(epdata.ssid, epdata.password);
   setup_http_server();
   setup_socket_server();

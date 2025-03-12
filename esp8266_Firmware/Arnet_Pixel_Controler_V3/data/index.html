@@ -5,17 +5,18 @@
         body{
           margin: 0px;
           background-color: grey;
-          padding-bottom:75px;
+          padding-bottom:73px;
+          padding-top:0px;
         }
         label{
             display:block;
             position: absolute;
             width: 20%;
             padding-left:2%;
-            border: 1px solid black;
+            border: 2px solid black;
             color:black;
             background-color:rgb(100, 100, 100);
-            border-radius: 25px
+            border-radius: 23px
         }
         #saveButton,input{
             display:block;
@@ -24,25 +25,27 @@
             top:0%;
             width:74%;
             left:25%;
-            border: 1px solid black;
+            border: 2px solid black;
             border-radius: 2px
         }
         #saveButton{
             background-color:rgb(60, 60, 60);
             height:175%;
-            color:white;
+            color: black;
             font-size:large;
+            border: 3px solid black;
         }
         input{
             background-color: white;
             padding-left: 10px;
+            border: 2px solid black;
         }
         .row{
             display: block;
             position:relative;
             /* background-color: blue; */
             width: 96%;
-            height: 45px;
+            height: 43px;
             line-height: 40px;
             margin-top:26px;
             left:2%;
@@ -54,11 +57,13 @@
         }
         .header {
             width:100%;
+            top:0px;
             display: grid;
             grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto;
             background-color: black;
             padding: 0px;
-            margin-bottom:35px;
+            margin-bottom:33px;
+            margin-top:0px;
             height:60px;
             z-index:10;
         
@@ -72,7 +77,7 @@
             text-align: center;
             z-index:10;
             border-bottom:2px solid grey;
-            border-top:2px solid grey;
+            /* border-top:2px solid grey; */
          }
          @media only screen and (max-width:1000px){
             label{
@@ -85,93 +90,182 @@
                 color: black;
             }
         }
+        #dataPage {
+            width:90%;
+            margin-left: 5%;
+            background-color: grey;
+            display:grid;
+            grid-template-columns: 20% 80%;
+        }
         #dataPageGaugeTable {
             display: grid;
-            grid-template-rows:16% auto auto;
-            position:relative;
-            background-color:rgb(100, 100, 100);
-            width: 80%;
-            height: 200px;
-            margin-top:26px;
-            left:10%;
-            padding:0px;
-            border: 1px solid black;
-            border-radius:10px;
-            text-align: center;
+            grid-template-rows:25% 25% 25% 25%;
+            width: 100%;
+            height:350px;
         }
         .dataPageGaugeTable-item{
-            /* border: 1px solid black; */
-            font-size: xx-large;
+            border: 3px solid black;
+            display: grid;
+            height:100%;
+            width: 100%;
+            margin-bottom:0px;
+        }
+        #dataPageLabelContainer {
+            display: grid;
+            grid-template-rows:25% 25% 25% 25%;
+            width: 100%;
+            height:350px;
+        }
+        .dataPageGaugeTable-label{
+            border: 3px solid black;
+            border-bottom: 0px solid black;
+            display: grid;
+            height:100%;
+            width: 100%;
+            margin-bottom:0px;
+            text-align: center;
+            font-size: medium;
+        }
+        #dataPageLabel_4{
+            border-bottom: 3px solid black;
         }
         #testButton {
-            display:block;
+            display:none;
             position: relative;
             height:80px;
             top:30px;
-            width:80%;
-            left:10%;
-            border: 1px solid black;
+            width:90%;
+            left:5%;
+            border: 3px solid black;
             border-radius: 2px;
             background-color:rgb(60, 60, 60);
-            color:white;
+            color:black;
             font-size:large;
         }
         #presetsPage {
             width:90%;
             margin-left: 5%;
             display: none;
-            height: 300px;
-            background-color: black;
-            padding: 5px 10px 5px 10px;
+            /* height: 800px; */
+            background-color: grey;
+            padding: 0px 10px 3px 10px;
         }
         #selectedPresetContainer {
             display:grid;
-            grid-template-columns: auto auto auto auto auto;
-
+            grid-template-columns: auto auto auto auto auto auto;
+            height:40px;
+            width:101%;
+            margin-top: 0%;
+            padding:0%;
+            margin-bottom: 3%;
         }
         .selectedPresetContainerButton {
             background-color: #555555;
-            border: 2px solid black;
+            width:100%;
+            border: 3px solid black;
+            border-right:0px;
+           
+        }
+        #selectedPresetButton5 {
+            border-right: 3px solid black;
+        }
+        .pixel {
+            background-color: grey;
+            width: 100%;
+            height: 100%;
+            border: 3px solid black;
+        }
+        #labelsDiv {
+            /* background-color: black; */
+            display: grid;
+            width:100%;
+            height: 20%;
+            grid-template-columns: 12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5%;
+        }
+        #slidersDiv {
+            /* background-color: black; */
+            display: grid;
+            width:100%;
+            height: 80%;
+            grid-template-columns: auto auto auto auto auto auto auto auto;
+        }
+        .sliderLabel {
+            background-color: #222222;
+            width: 100%;
+            border: 3px solid black;
+            border-bottom: 0px;
+            color: #aaaaaa;
+            font-size: xx-small;
+            text-align: center;
+        }
+        .slider {
+            background-color: grey;
+            width: 100%;
+            height: 100%;
+            border: 3px solid black;
+        }
+        #cpCanvas{
+            background-color: black;
+            width: 100%;
+            height: 40px;
+        }
+        #slidersContainer{
+            /* border: 3px solid black; */
+            /* background-color: black; */
+            height:300px;
+            padding:0%;
+            display:grid;
+            grid-template-columns: 100%;
+        }
+        #pixelMapContainer {
+            background-color: black;
+            width:100%;
+            display:grid;
+            grid-template-columns:auto auto auto auto auto auto auto auto;
+            margin-bottom:3.5%;
+
+        }
+        #colorPickerContainer{
+            border: 3px solid black;
+            background-color: black;
+            height:40px;
+            width:100%;
+            display:grid;
+            grid-template-columns:100%;
         }
       </style>
     </head>
     <body>
         <div class="header">
-        <div class="header-item">NimbusKit</div>
-        <div class="header-item"></div>
-        <div class="header-item"></div>  
-        <div class="header-item"></div>
-        <div class="header-item"></div>
-        <div class="header-item"></div>
-        <div class="header-item"></div>
-        <div class="header-item" onclick="goToPage('presets');">Presets</div>
-        <div class="header-item" onclick="goToPage('settings');">Settings</div>
-        <div class="header-item" onclick="goToPage('data');">Data</div>
-        <div class="header-item"></div>
+            <div class="header-item">NimbusKit</div>
+            <div class="header-item"></div>
+            <div class="header-item"></div>  
+            <div class="header-item"></div>
+            <div class="header-item"></div>
+            <div class="header-item"></div>
+            <div class="header-item"></div>
+            <div class="header-item" onclick="goToPage('presets');">Presets</div>
+            <div class="header-item" onclick="goToPage('settings');">Settings</div>
+            <div class="header-item" onclick="goToPage('data');">Data</div>
+            <div class="header-item"></div>
         </div>
         <div id="dataPage">
-            <div id="dataPageGaugeTable">
-                <div class="dataPageGaugeTable-item"></div>  
-                <div class="dataPageGaugeTable-item"></div>
-                <div class="dataPageGaugeTable-item"></div>
-                <div class="dataPageGaugeTable-item"></div>
-                <div class="dataPageGaugeTable-item" id="dataPageGauge">Test</div>
-                <div class="dataPageGaugeTable-item"></div>
-                <div class="dataPageGaugeTable-item"></div>
-                <div class="dataPageGaugeTable-item"></div>
-                <div class="dataPageGaugeTable-item"></div>
-            </div>
+            <div id="dataPageLabelContainer"></div>
+            <div id="dataPageGaugeTable"></div>
             <button id="testButton" onclick="socket.send('Socket_ABC123');">Test</button>
         </div>
         <div id="presetsPage">
-            <div id="selectedPresetContainer" style="background-color: green; height:26%; margin-top: 1.25%; margin-bottom: 1.25%;">
+            <div id="selectedPresetContainer">
                 <button class="selectedPresetContainerButton">Selected Preset:</button>
                 <button id="selectedPresetButton1" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">1</button>
                 <button id="selectedPresetButton2" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">2</button>
                 <button id="selectedPresetButton3" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">3</button>
                 <button id="selectedPresetButton4" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">4</button>
+                <button id="selectedPresetButton5" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">5</button>
             </div>
-            <div id="slidersContainer" style="background-color: blue; height:65%;"></div>
+            <div id="slidersContainer"></div>
+            <div id="pixelMapContainer" oncontextmenu="return false;"></div>
+            <div id="colorPickerContainer"></div>
         </div>
         <script>
 
@@ -202,32 +296,16 @@
                     "initVal":"---"
                 },
                 {
-                    "name":"oscAddressX",
-                    "text":"OSC Address X:",
+                    "name":"num_base_leds",
+                    "text":"Number of Pixels:",
                     "initVal":"---"
                 },
                 {
-                    "name":"oscAddressY",
-                    "text":"OSC Address Y:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"oscAddressZ",
-                    "text":"OSC Address Z:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"oscTargetIP",
-                    "text":"OSC Target IP:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"oscPort",
-                    "text":"OSC Port:",
+                    "name":"pixel_start_offset",
+                    "text":"Pixel Offset:",
                     "initVal":"---"
                 }
             ]
-
             var ledPresets=[
                 {
                     "name":"preset1",
@@ -250,20 +328,67 @@
                     "initVal":"---"
                 }
             ]
-
             ledPresetsPayload=[
                 [242,50,200,4,4,3,0,100],
                 [50,150,130,16,30,4,0,5],
                 [200,2,220,12,1,5,0,55],
                 [88,88,88,200,50,6,0,55]
             ];
-
+            dataHistoryBufferLength=60;
+            dataHistoryBuffer=[]
+            for(var x=0;x<4;x++){
+                var tempList=[]
+                for(var y=0; y<dataHistoryBufferLength;y++){
+                    tempList.push(.5);
+                }
+                dataHistoryBuffer.push(tempList);
+            }
+            numRows=8;
+            numCols=8;
+            pixelMap=[];
+            for(var x=0;x<numRows;x++){
+                var tempList=[]
+                for(var y=0; y<numCols;y++){
+                    tempList.push(0);
+                }
+                pixelMap.push(tempList);
+            }
+            colorMap = [
+                [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0],
+                [255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,0]
+            ];
+            selectedColor=1;
             selectedPreset=1;
+            mouseButtonState=0;
+            needToUpdatePixelMap=false;
+            presetValueDebounceTime=0;
+            socketConnectivityCheck=new Date().getTime();
+            updatePixelMapInterv=setInterval(function(){
+                if(needToUpdatePixelMap){
+                    needToUpdatePixelMap=false;
+                    makeUpdatPixelMapPostCall();
+                }
+            },1000);
 
             window.onload = function(){
+                function logButtons(event){
+                    // console.log(event.buttons);
+                    mouseButtonState=event.buttons;
+                }
+                document.addEventListener("mouseup", logButtons);
+                document.addEventListener("mousedown", logButtons);
                 initElements();
                 createSliderElements();
+                createPixelMapUI();
                 initWebSocket();
+                setInterval(function(){
+                var now=new Date().getTime();
+                    if( (now-socketConnectivityCheck) > 5000){
+                        initWebSocket();
+                        socketConnectivityCheck=now;
+                    }
+                },5000);
             }
 
             function initElements(){
@@ -285,6 +410,7 @@
                 }
 
                 createSettingsButton();
+                createDataPageGauges();
                 function createSettingsButton(){
                     var row = document.createElement('div');
                     row.id='saveButton_row'
@@ -297,28 +423,70 @@
                     button.onclick=function(){
                         makeUpdateSettingsPostCall();
                         console.log('clicked')
-                        socket.send('clicked')
+                        // socket.send('clicked')
                     }
                     document.body.appendChild(row);
                 }
 
                 goToPage('data');
                 makeGetSettingsCall();
+
             }
 
             function handleSelectedPresetButton(presetNum){
+                console.log('handleSelectedPresetButton');
                 selectedPreset=presetNum;
-                for(var x=1;x<5;x++){
+                for(var x=1;x<6;x++){
                     if(x!=presetNum){
                         document.getElementById("selectedPresetButton"+x).style.backgroundColor='#555555';
                     }else{
-                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#cccccc';
+                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#888888';
                     }
                 }
-                for(var y=0; y<8; y++){
-                    document.getElementById('slider'+parseInt(y+1)).setValue(ledPresetsPayload[selectedPreset-1][y]);
+                if(selectedPreset!=5){
+                    for(var y=0; y<8; y++){
+                        document.getElementById('slider'+parseInt(y+1)).setValue(ledPresetsPayload[selectedPreset-1][y]);
+                    }
+                    makeUpdateLedPresetsPostCall();
+                    document.getElementById("colorPickerContainer").style.display='none';
+                    document.getElementById("pixelMapContainer").style.display='none';
+                    document.getElementById("slidersContainer").style.display='block';
+                    for(var x=1; x<9; x++){
+                        document.getElementById("sliderLabel"+x).style.lineHeight=parseInt(document.getElementById("sliderLabel"+x).offsetHeight*.92)+'px';
+                    }
+                }else if(selectedPreset==5){
+                    makeUpdateLedPresetsPostCall();
+                    document.getElementById("colorPickerContainer").style.display='grid';
+                    document.getElementById("pixelMapContainer").style.display='grid';
+                    document.getElementById("slidersContainer").style.display='none';
                 }
-                makeUpdateLedPresetsPostCall();
+                presetValueDebounceTime=new Date().getTime();
+            }
+
+            function updateSelectedPresetButton(){
+                console.log('updateSelectedPresetButton');
+                for(var x=1;x<6;x++){
+                    if(x!=selectedPreset){
+                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#555555';
+                    }else{
+                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#888888';
+                    }
+                }
+                if(selectedPreset!=5){
+                    for(var y=0; y<8; y++){
+                        document.getElementById('slider'+parseInt(y+1)).setValue(ledPresetsPayload[selectedPreset-1][y]);
+                    }
+                    document.getElementById("colorPickerContainer").style.display='none';
+                    document.getElementById("pixelMapContainer").style.display='none';
+                    document.getElementById("slidersContainer").style.display='block';
+                    for(var x=1; x<9; x++){
+                        document.getElementById("sliderLabel"+x).style.lineHeight=parseInt(document.getElementById("sliderLabel"+x).offsetHeight*.92)+'px';
+                    }
+                }else if(selectedPreset==5){
+                    document.getElementById("colorPickerContainer").style.display='grid';
+                    document.getElementById("pixelMapContainer").style.display='grid';
+                    document.getElementById("slidersContainer").style.display='none';
+                }
             }
 
             function makeUpdateSettingsPostCall(){
@@ -326,12 +494,13 @@
                 for (var x in fields){
                     payload[fields[x].name]=document.getElementById(fields[x].name).value;
                 }
+                presetValueDebounceTime=new Date().getTime();
                 var urlString='http://'+location.host + '/updateSettings'
                 var xhttp = new XMLHttpRequest(); 
                 xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    console.log(this.responseText);
-                }
+                    if(this.readyState == 4 && this.status == 200){
+                        console.log(this.responseText);
+                    }
                 };
                 xhttp.open('POST', urlString, true);
                 xhttp.setRequestHeader('Content-Type', 'application/json')
@@ -370,6 +539,40 @@
                 xhttp.send();
             }
 
+            function makeGetPixelMapPresetsCall(){
+                var urlString='http://'+location.host + '/getPixelMapPresets'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200){
+                    var getResponse=JSON.parse(this.response);
+                    console.log(JSON.parse(this.response));
+                    for(var x=0;x<numRows;x++){
+                        for(var y=0; y<numCols;y++){
+                            pixelMap[x][y]=getResponse["pixelMap"][x][y];
+                        }
+                    }
+                    refreshPixelMapUI();
+                }
+                };
+                xhttp.open('GET', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send();
+            }
+
+            function makeUpdatPixelMapPostCall(){
+                var payload={"pixelMap":pixelMap};
+                var urlString='http://'+location.host + '/updatePixelMap'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200){
+                    console.log(this.responseText);
+                }
+                };
+                xhttp.open('POST', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send(JSON.stringify(payload));
+            }
+            
             function makeGetLedPresetsCall(){
                 var urlString='http://'+location.host + '/getLedPresets'
                 var xhttp = new XMLHttpRequest(); 
@@ -384,6 +587,7 @@
                         }
                     }
                     handleSelectedPresetButton(parseInt(getResponse["selectedPreset"]+1));
+                    makeGetPixelMapPresetsCall();
                 }
                 };
                 xhttp.open('GET', urlString, true);
@@ -407,14 +611,34 @@
             function initWebSocket(){
                 socket = new WebSocket("ws:/" + "/" + location.host + ":81");
                 socket.onopen = function(e) {  console.log("[socket] socket.onopen "); };
-                socket.onerror = function(e) {  console.log("[socket] socket.onerror ");console.log(e); };
+                socket.onerror = function(e) {
+                    console.log("[socket] socket.onerror ");
+                    console.log(e);
+                    setTimeout(function(){
+                        console.log("retrying websocket connection initialization")
+                        initWebSocket();
+                    },1000);
+                };
+                socket.onclose = function(e) {
+                    console.log("[socket] socket.onerror ");
+                    console.log(e);
+                    setTimeout(function(){
+                        console.log("retrying websocket connection initialization")
+                        initWebSocket();
+                    },1000);
+                };
                 socket.onmessage = function(e) {  
                     console.log('Received data from websocket: '+e.data);
-                    document.getElementById('dataPageGauge').innerHTML=e.data;
+                    socketConnectivityCheck=new Date().getTime();
                     var incomingData=e.data.split(',');
-                    var incomingPreset=parseInt(incomingData[incomingData.length-1])%4;
-                    if(selectedPreset!=(incomingPreset+1)){
-                        handleSelectedPresetButton(incomingPreset+1);
+                    var incomingPreset=parseInt(incomingData[incomingData.length-1])%5;
+                    rotateDataHistoryBuffer([parseFloat(incomingData[0]),parseFloat(incomingData[1]),parseFloat(incomingData[2]),parseFloat(parseInt(incomingData[3])/5)+.05 ]);
+                    if( (new Date().getTime()-presetValueDebounceTime) > 1000){
+                        if(selectedPreset!=(incomingPreset+1)){
+                            selectedPreset=(incomingPreset+1);
+                            updateSelectedPresetButton();
+                            console.log('socket change');
+                        }
                     }
                     return true;
                 };
@@ -434,8 +658,11 @@
                         document.getElementById(fields[x].name+'_row').style.display='none';
                     }
                     document.getElementById('saveButton_row').style.display='none';
-                    document.getElementById('dataPage').style.display='block';
+                    document.getElementById('dataPage').style.display='grid';
                     document.getElementById('presetsPage').style.display='none';
+                    for(var x=1; x<5; x++){
+                        document.getElementById("dataPageLabel_"+x).style.lineHeight=parseInt(document.getElementById("dataPageLabel_"+x).offsetHeight*.92)+'px';
+                    }
                 }
                 if(pageName=="presets"){
                     for (var x in fields){
@@ -444,22 +671,165 @@
                     document.getElementById('saveButton_row').style.display='none';
                     document.getElementById('dataPage').style.display='none';
                     document.getElementById('presetsPage').style.display='block';
+                    try{
+                        if(document.getElementById("slidersContainer").style.display!='none'){
+                            for(var x=1; x<9; x++){
+                                document.getElementById("sliderLabel"+x).style.lineHeight=parseInt(document.getElementById("sliderLabel"+x).offsetHeight*.92)+'px';
+                            }
+                        }
+                    }
+                    catch(err){}
                 }
+            }
+
+            function createColorPicker(){ 
+                var cpCanvas=document.createElement('canvas');
+                cpCanvas.className="cpCanvas"
+                cpCanvas.id="cpCanvas"
+                cpCanvas.isSelected=false;
+                cpCanvas.initValue=function(){
+                    var ctx = this.getContext("2d");
+                    ctx.clearRect(0, 0, this.width, this.height);
+                    // ctx.fillStyle = 'rgba(50,50,50,.75)';
+                    var gradient = ctx.createLinearGradient(0,0,this.width,0);
+                    gradient.addColorStop(0, "black");
+                    gradient.addColorStop(.1, "blue");
+                    gradient.addColorStop(0.33, "green");
+                    gradient.addColorStop(.66, "red");
+                    gradient.addColorStop(1, "blue");
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, this.width, this.height );
+                }
+                cpCanvas.updateValue=function(event){
+                    var ctx = this.getContext("2d");
+                    ctx.clearRect(0, 0, this.width, this.height);
+                    // ctx.fillStyle = 'rgba(50,50,50,.75)';
+                    var gradient = ctx.createLinearGradient(0,0,this.width,0);
+                    gradient.addColorStop(0, "black");
+                    gradient.addColorStop(.1, "blue");
+                    gradient.addColorStop(0.33, "green");
+                    gradient.addColorStop(.66, "red");
+                    gradient.addColorStop(1, "blue");
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, this.width, this.height );
+                    //
+                    ctx.fillStyle = "rgba(5,5,5,.8)";
+                    var tabWidth=8;
+                    var tabCenter=(event.offsetX/this.offsetWidth*this.width);
+                    ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );  
+                    selectedColor=colorMap[0].length-1-parseInt(event.offsetX/this.offsetWidth*colorMap[0].length);
+                    console.log(selectedColor)
+                }
+                cpCanvas.onmouseup=function(event){
+                    this.isSelected=false;
+                }
+                cpCanvas.onmouseleave=function(event){
+                    this.isSelected=false;
+                }
+                cpCanvas.onmousedown=function(event){
+                    this.isSelected=true;
+                    this.updateValue(event);
+                }
+                cpCanvas.onmousemove=function(event){
+                    if(this.isSelected){
+                        var ctx = this.getContext("2d");
+                        this.updateValue(event);
+                    }
+                }
+                cpCanvas.setValue=function(value){
+                    var ctx = this.getContext("2d");
+                    ctx.clearRect(0, 0, this.width, this.height);
+                    var gradient = ctx.createLinearGradient(0,0,this.width,0);
+                    gradient.addColorStop(0, "blue");
+                    gradient.addColorStop(0.33, "green");
+                    gradient.addColorStop(.66, "red");
+                    gradient.addColorStop(1, "blue");
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, this.width, this.height );
+                    //
+                    ctx.fillStyle = "rgba(5,5,5,.8)";
+                    var tabWidth=8;
+                    var tabCenter=(value/(colorMap[0].length-1)*this.width);
+                    ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );  
+                }
+                cpCanvas.initValue();
+                cpCanvas.setValue(selectedColor);
+                document.getElementById("colorPickerContainer").appendChild(cpCanvas);
+            }
+
+            function refreshPixelMapUI(){
+                for(var x=0;x<numRows;x++){
+                    for(var y=0; y<numCols;y++){
+                        document.getElementById("pixel_"+x+"_"+y).setValue(pixelMap[x][y]);
+                    }
+                }
+            }
+            
+            function createPixelMapUI(){
+                for(var x=0;x<(numRows);x++){
+                    for(var y=0;y<(numCols);y++){
+                        var canvas=document.createElement('canvas');
+                        canvas.className="pixel"
+                        canvas.id="pixel_"+x+"_"+y
+                        canvas.x=x;
+                        canvas.y=y;
+                        canvas.value=0;
+                        canvas.num=x;
+                        canvas.currentChannel=x-1;
+                        canvas.updateValue=function(event,action){
+                            needToUpdatePixelMap=true;
+                            var ctx = this.getContext("2d");
+                            ctx.clearRect(0, 0, this.width, this.height);
+                            if(action=="add"){
+                                ctx.fillStyle = "rgb("+colorMap[0][selectedColor]+","+colorMap[1][selectedColor]+","+colorMap[2][selectedColor]+")";
+                                this.value=selectedColor;
+                            }
+                            if(action=="remove"){
+                                ctx.fillStyle = "rgb("+colorMap[0][colorMap[0].length-1]+","+colorMap[1][colorMap[0].length-1]+","+colorMap[2][colorMap[0].length-1]+")";
+                                this.value=colorMap[0].length-1;
+                            }
+                            ctx.fillRect(0, 0, this.width,this.height );
+                            for(var x=0;x<numRows;x++){
+                                for(var y=0; y<numCols;y++){
+                                    pixelMap[x][y]=document.getElementById("pixel_"+x+"_"+y).value;
+                                }
+                            }
+                        }
+                        canvas.onmousedown=function(event){
+                            if(mouseButtonState==1){
+                                this.updateValue(event,"add");
+                            }
+                            if(mouseButtonState==2){
+                                this.updateValue(event,"remove");
+                            }
+                        }
+                        canvas.onmousemove=function(event){
+                            if(mouseButtonState==1){
+                                this.updateValue(event,"add");
+                            }
+                            if(mouseButtonState==2){
+                                this.updateValue(event,"remove");
+                            }
+                        }
+                        canvas.setValue=function(value){
+                            this.value=value;
+                            var ctx = this.getContext("2d");
+                            ctx.clearRect(0, 0, this.width, this.height);
+                            ctx.fillStyle = "rgb("+colorMap[0][this.value]+","+colorMap[1][this.value]+","+colorMap[2][this.value]+")";
+                            ctx.fillRect(0, 0, this.width, this.height ); 
+                        }
+                        document.getElementById("pixelMapContainer").appendChild(canvas);           
+                    }    
+                }
+                createColorPicker();
+                refreshPixelMapUI();
             }
 
             function createSliderElements(){
                 var labelsDiv=document.createElement('div');
                 var slidersDiv=document.createElement('div');
-                labelsDiv.style.backgroundColor="black";
-                slidersDiv.style.backgroundColor="black";
-                labelsDiv.style.display="grid";
-                slidersDiv.style.display="grid";
-                // labelsDiv.style.display="none";
-                // slidersDiv.style.display="none";
-                labelsDiv.style.height="20%";
-                slidersDiv.style.height="80%";
-                labelsDiv.style.gridTemplateColumns="12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5%";
-                slidersDiv.style.gridTemplateColumns="auto auto auto auto auto auto auto auto";
+                labelsDiv.id="labelsDiv";
+                slidersDiv.id="slidersDiv";
                 document.getElementById("slidersContainer").appendChild(labelsDiv);
                 document.getElementById("slidersContainer").appendChild(slidersDiv);
                 for(var x=1; x<9; x++){
@@ -468,12 +838,6 @@
                     canvas.id="slider"+x
                     canvas.num=x;
                     canvas.currentChannel=x-1;
-                    canvas.style.backgroundColor="grey";
-                    canvas.style.width="95%";
-                    canvas.style.height="95%";
-                    canvas.style.marginLeft="2.5%";
-                    canvas.style.marginTop="5%";
-                    // canvas.style.display='none';
                     canvas.isSelected=false;
                     canvas.updateValue=function(event){
                         var ctx = this.getContext("2d");
@@ -489,6 +853,7 @@
                                 ledPresetsPayload[selectedPreset-1][y-1]=value;
                             }
                         }
+                        console.log('slider updateValue');
                         makeUpdateLedPresetsPostCall();
                     }
                     canvas.onmouseup=function(event){
@@ -528,21 +893,96 @@
                     var label=document.createElement('span');
                     label.className="sliderLabel";
                     label.id="sliderLabel"+x;
-                    label.style.backgroundColor="#222222";
-                    label.style.width="95%";
-                    label.style.height="90%";
-                    label.style.marginLeft="2.5%";
-                    label.style.marginTop="5%";
+                    labelsDiv.appendChild(label)
                     label.innerHTML=sliderLabelValues[canvas.num-1];
-                    label.style.lineHeight='30px';
-                    label.style.color='#aaaaaa';
-                    label.style.fontSize='xx-small';
-                    label.style.textAlign='center';
-                    labelsDiv.appendChild(label);
                 }
-                handleSelectedPresetButton(1);
+                handleSelectedPresetButton(5);
             }        
 
-            </script>
+            function rotateDataHistoryBuffer(incomingValue){
+                for(var x=0; x<dataHistoryBufferLength; x++){
+                    if(x<(dataHistoryBufferLength-1)){
+                        dataHistoryBuffer[0][x]=dataHistoryBuffer[0][x+1];
+                        dataHistoryBuffer[1][x]=dataHistoryBuffer[1][x+1];
+                        dataHistoryBuffer[2][x]=dataHistoryBuffer[2][x+1];
+                        dataHistoryBuffer[3][x]=dataHistoryBuffer[3][x+1];
+                    }else{
+                        dataHistoryBuffer[0][x]=incomingValue[0];
+                        dataHistoryBuffer[1][x]=incomingValue[1];
+                        dataHistoryBuffer[2][x]=incomingValue[2];
+                        dataHistoryBuffer[3][x]=incomingValue[3];
+                    }
+                }
+                for(var x=1; x<5; x++){
+                    document.getElementById("dataPageGauge_"+x).updateValue();
+                }
+            }
+
+            function createDataPageGauges(){
+                for(var x=1; x<5; x++){
+                    var label=document.createElement('div');
+                    label.className="dataPageGaugeTable-label"
+                    label.id="dataPageLabel_"+x
+                    label.num=x;
+                    label.innerHTML=label.num;
+                    var sliderLabelValues=[
+                        'X:',
+                        'Y:',
+                        'Z:',
+                        'Button:'
+                    ]
+                    label.innerHTML=sliderLabelValues[label.num-1];
+                    document.getElementById("dataPageLabelContainer").appendChild(label)
+
+                    var canvas=document.createElement('canvas');
+                    canvas.className="dataPageGaugeTable-item"
+                    canvas.id="dataPageGauge_"+x
+                    canvas.num=x;
+                    canvas.width=800;
+                    canvas.height=200;
+                    canvas.updateValue=function(){
+                        var ctx = this.getContext("2d");
+                        ctx.clearRect(0, 0, this.width, this.height);
+                        ctx.fillStyle = "#555555";
+                        ctx.fillRect(0, 0, this.width, this.height );
+
+                        ctx.lineWidth = 2;
+                        ctx.strokeStyle = '#bbbbbb';
+                        ctx.beginPath();
+                        for(var x=0; x<dataHistoryBufferLength; x++){
+                            if(x==0){
+                                ctx.moveTo(x*parseInt(this.width/dataHistoryBufferLength), parseInt(dataHistoryBuffer[this.num-1][x]*this.height));
+                            }else{
+                                ctx.lineTo(x*parseInt(this.width/dataHistoryBufferLength), parseInt(dataHistoryBuffer[this.num-1][x]*this.height));
+                            }
+                        }
+                        ctx.lineTo(this.width, parseInt(dataHistoryBuffer[this.num-1][dataHistoryBufferLength-1]*this.height));
+                        ctx.stroke();
+                    }
+                    canvas.setValue=function(){
+                        var ctx = this.getContext("2d");
+                        ctx.clearRect(0, 0, this.width, this.height);
+                        ctx.fillStyle = "#555555";
+                        ctx.fillRect(0, 0, this.width, this.height );
+
+                        ctx.lineWidth = 2;
+                        ctx.strokeStyle = '#bbbbbb';
+                        ctx.beginPath();
+                        for(var x=0; x<dataHistoryBufferLength; x++){
+                            if(x==0){
+                                ctx.moveTo(x*parseInt(this.width/dataHistoryBufferLength), parseInt(dataHistoryBuffer[this.num-1][x]*this.height));
+                            }else{
+                                ctx.lineTo(x*parseInt(this.width/dataHistoryBufferLength), parseInt(dataHistoryBuffer[this.num-1][x]*this.height));
+                            }
+                        }
+                        ctx.lineTo(this.width, parseInt(dataHistoryBuffer[this.num-1][dataHistoryBufferLength-1]*this.height));
+                        ctx.stroke();
+                    }
+                    canvas.setValue();
+                    document.getElementById("dataPageGaugeTable").appendChild(canvas)
+                }
+            }
+
+        </script>
     </body>
 </html>
