@@ -752,6 +752,42 @@
                     var tabCenter=(value/(colorMap[0].length-1)*this.width);
                     ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );  
                 }
+                cpCanvas.ontouchstart=function(event){
+                    this.isSelected=true;
+                }
+                cpCanvas.ontouchend=function(event){
+                    this.isSelected=false;
+                }
+                cpCanvas.ontouchcancel=function(event){
+                    this.isSelected=false;
+                }
+                cpCanvas.ontouchmove=function(event){
+                    var ctx = this.getContext("2d");
+                    ctx.clearRect(0, 0, this.width, this.height);
+                    // ctx.fillStyle = 'rgba(50,50,50,.75)';
+                    var gradient = ctx.createLinearGradient(0,0,this.width,0);
+                    gradient.addColorStop(0, "black");
+                    gradient.addColorStop(.1, "blue");
+                    gradient.addColorStop(0.33, "green");
+                    gradient.addColorStop(.66, "red");
+                    gradient.addColorStop(1, "blue");
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(0, 0, this.width, this.height );
+                    //
+                    ctx.fillStyle = "rgba(5,5,5,.8)";
+                    eventOffsetX=parseInt(event.touches[0].clientX-cpCanvas.offsetLeft);
+                    if(eventOffsetX<0){
+                        eventOffsetX=0;
+                    }
+                    if(eventOffsetX>=this.offsetWidth){
+                        eventOffsetX=this.offsetWidth;
+                    }                    
+                    var tabWidth=8;
+                    var tabCenter=(eventOffsetX/this.offsetWidth*this.width);
+                    ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );
+                    selectedColor=colorMap[0].length-1-parseInt(eventOffsetX/this.offsetWidth*colorMap[0].length);
+                    console.log(selectedColor)
+                }
                 cpCanvas.initValue();
                 cpCanvas.setValue(selectedColor);
                 document.getElementById("colorPickerContainer").appendChild(cpCanvas);
@@ -818,6 +854,27 @@
                             ctx.fillStyle = "rgb("+colorMap[0][this.value]+","+colorMap[1][this.value]+","+colorMap[2][this.value]+")";
                             ctx.fillRect(0, 0, this.width, this.height ); 
                         }
+                        canvas.ontouchstart=function(event){
+                            needToUpdatePixelMap=true;
+                            var ctx = this.getContext("2d");
+                            ctx.clearRect(0, 0, this.width, this.height);
+                            ctx.fillStyle = "rgb("+colorMap[0][selectedColor]+","+colorMap[1][selectedColor]+","+colorMap[2][selectedColor]+")";
+                            this.value=selectedColor;
+                            ctx.fillRect(0, 0, this.width,this.height );
+                            for(var x=0;x<numRows;x++){
+                                for(var y=0; y<numCols;y++){
+                                    pixelMap[x][y]=document.getElementById("pixel_"+x+"_"+y).value;
+                                }
+                            }
+                        }
+                        canvas.ontouchmove=function(event){
+                            needToUpdatePixelMap=true;
+                            try{
+                                document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY).value=selectedColor;
+                                document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY).updateValue(event,"add");
+                            }
+                            catch{}
+                        }
                         document.getElementById("pixelMapContainer").appendChild(canvas);           
                     }    
                 }
@@ -878,6 +935,30 @@
                         ctx.fillStyle = "#222222";
                         ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) ); 
                     }
+                    canvas.ontouchstart=function(event){
+                        this.isSelected=true;
+                    }
+                    canvas.ontouchend=function(event){
+                        this.isSelected=false;
+                    }
+                    canvas.ontouchcancel=function(event){
+                        this.isSelected=false;
+                    }
+                    canvas.ontouchmove=function(event){
+                        if(this.isSelected){
+                            var ctx = this.getContext("2d");
+                            eventOffsetY=parseInt(event.touches[0].clientY-this.offsetTop);
+                            if(eventOffsetY<0){
+                                eventOffsetY=0;
+                            }
+                            if(eventOffsetY>=this.offsetHeight){
+                                eventOffsetX=this.offsetHeight;
+                            }  
+                            event.offsetY=eventOffsetY;  
+                            this.updateValue(event);
+                        }
+                    }
+                    
                     slidersDiv.appendChild(canvas);
 
                     var sliderLabelValues=[
