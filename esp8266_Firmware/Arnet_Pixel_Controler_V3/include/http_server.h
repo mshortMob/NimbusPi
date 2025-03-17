@@ -56,12 +56,15 @@ void handleUpdateSettings(){
 void handleGetLedPresets(){
   server.on("/getLedPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
     // EEPROM.get(0,epdata);
-    StaticJsonDocument<640> data;
+    StaticJsonDocument<1560> data;
     Serial.println("handleGetLedPresets");
-    for(int x=0;x<4;x++){
+    for(int x=0;x<5;x++){
       for(int y=0;y<8;y++){
-        data["ledPresets"][x][y]=epdata.ledPresets[x][y];
+          data["ledPresets"][x][y]=epdata.ledPresets[x][y];
       }
+    }
+    for(int x=0;x<5;x++){
+      data["presetTypes"][x]=epdata.presetTypes[x];
     }
     data["selectedPreset"]=selectedMode%5;
     String response;
@@ -72,7 +75,7 @@ void handleGetLedPresets(){
 
 void handleUpdateLedPresets(){
   AsyncCallbackJsonWebHandler *updateLedPresetsProcessor = new AsyncCallbackJsonWebHandler("/updateLedPresets", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    StaticJsonDocument<640> data;
+    StaticJsonDocument<1560> data;
     if (json.is<JsonArray>())
     {
       data = json.as<JsonArray>();
@@ -82,10 +85,13 @@ void handleUpdateLedPresets(){
       data = json.as<JsonObject>();
     }
     Serial.println("handleUpdateLedPresets");
-    for(int x=0;x<4;x++){
+    for(int x=0;x<5;x++){
       for(int y=0;y<8;y++){
         epdata.ledPresets[x][y]=data["ledPresets"][x][y];
       }
+    }
+    for(int x=0;x<5;x++){
+      epdata.presetTypes[x]=data["presetTypes"][x];
     }
     selectedMode=int(data["selectedPreset"])%5;
     // EEPROM.put(0,epdata);
@@ -101,11 +107,13 @@ void handleUpdateLedPresets(){
 
 void handleGetPixelMapPresets(){
   server.on("/getPixelMapPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
-    StaticJsonDocument<1024> data;
+    StaticJsonDocument<1560> data;
     Serial.println("handleGetPixelMap");
-    for(int x=0;x<8;x++){
+    for(int x=0;x<5;x++){
       for(int y=0;y<8;y++){
-        data["pixelMap"][x][y]=epdata.pixelMap[x][y];
+        for(int z=0;z<8;z++){
+          data["pixelMap"][x][y][z]=epdata.pixelMap[x][y][z];
+        }
       }
     }
     String response;
@@ -116,7 +124,7 @@ void handleGetPixelMapPresets(){
 
 void handleUpdatePixelMapPresets(){
   AsyncCallbackJsonWebHandler *updatePixelMapProcessor = new AsyncCallbackJsonWebHandler("/updatePixelMap", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    StaticJsonDocument<1024> data;
+    StaticJsonDocument<1560> data;
     if (json.is<JsonArray>())
     {
       data = json.as<JsonArray>();
@@ -126,11 +134,13 @@ void handleUpdatePixelMapPresets(){
       data = json.as<JsonObject>();
     }
     Serial.println("handleUpdatePixelMap");
-    for(int x=0;x<8;x++){
+    for(int x=0;x<5;x++){
       for(int y=0;y<8;y++){
-        epdata.pixelMap[x][y]=data["pixelMap"][x][y];
+        for(int z=0;z<8;z++){
+          epdata.pixelMap[x][y][z]=data["pixelMap"][x][y][z];
+        }
       }
-    };
+    }
     String response;
     serializeJson(data, response);
     request->send(200, "application/json", response);

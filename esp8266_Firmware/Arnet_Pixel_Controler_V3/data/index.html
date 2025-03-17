@@ -2,191 +2,196 @@
     <head>
       <title>FlowMapper</title>
       <style>
+        /* global */
+        #background {
+            position:absolute;
+            display:block;
+            height:100%;
+            width:100%;
+            z-index: -10000;
+            background-color: grey;
+        }
         body{
           margin: 0px;
-          background-color: grey;
-          padding-bottom:73px;
-          padding-top:0px;
+          height:100%;
+          width:100%;
+          /* display:grid; */
         }
-        label{
-            display:block;
-            position: absolute;
-            width: 20%;
-            padding-left:2%;
+        #header {
+            width:100%;
+            height:70px;
+            display: grid;
+            grid-template-columns: 2% auto auto auto auto auto auto auto auto auto auto auto 5%;
+            background-color: black;
+            border-bottom:6px solid darkgrey;
+            /* border-top:1px solid #eeeeee; */
+        }
+        #mainLogo{
+            font-size: medium;
+        }
+        .header-item {
+            color:#eeeeee;
+            background-color: black;
+            font-size: small;
+            font-weight:bold;
+            text-align: center;
+            border: 0px solid black;
+            height:100%;
+        }
+        #topSpacer{
+            width:100%;
+            height:24px;    
+        }
+        #bottomSpacer{
+            height:20px;
+        }
+        .page{
+            width:90%;
+            margin-left:5%;
+            height:30px;
+            display:none;
+        }
+        /* dataPage */
+        #dataPage{
+            grid-template-columns: 20% 80%;
+        }
+        #dataPageLabelsContainer{
+            display:grid;
+            grid-template-rows: 25% 25% 25% 25%;
+            margin-right:3px;
+        }
+        #dataPageGraphsContainer{
+            display:grid;
+            grid-template-rows: 25% 25% 25% 25%;
+        }
+        .dataPageGraphItem{
+            display:grid;
+            height: 80%;
+            width: 100%;
+            border: 3px solid black;
+        }
+        .dataPageGraphCanvas{
+            display:grid;
+            width:100%;
+            margin:0px;
+        }
+        .dataPageLabelItem{
+            display:grid;
+            height: 80%;
+            border: 3px solid black;  
+            grid-template-rows: 38% 29% 33%;    
+            margin-right:-6px;  
+            background-color:rgb(100, 100, 100);
+        }
+        .dataPageLabelSpacer{
+            display:grid;
+            border: 0px solid black;
+            text-align: center;
+            height:100%;
+            font-weight: bold;
+        }
+        /* settingsPage */
+        #settingPage{
+            grid-template-columns: 100%;
+        }
+        .settingsPageRow{
+            display: block;
+            position: relative;
+            height: 43px;
+            margin-bottom:36px;
+        }
+        .settingsPageLabel {
             border: 2px solid black;
             color:black;
             background-color:rgb(100, 100, 100);
-            border-radius: 23px
+            border-radius: 23px;
+            text-align:middle;
+            line-height: 43px;
+            font-size:small;
+            width:30%;
+            display: inline;
+            font-weight:bold;
         }
-        #saveButton,input{
-            display:block;
-            position: absolute;
-            height:100%;
-            top:0%;
-            width:74%;
-            left:25%;
+        .settingsPageInput, #saveButton{
+            background-color: white;
+            padding-left: 2%;
             border: 2px solid black;
-            border-radius: 2px
+            width:68%;
+            margin-left:2%;
+            display: inline;
+            height:43px;
         }
         #saveButton{
             background-color:rgb(60, 60, 60);
-            height:175%;
+            /* height:150%; */
+            margin-left:32%;
             color: black;
             font-size:large;
-            border: 3px solid black;
-        }
-        input{
-            background-color: white;
-            padding-left: 10px;
             border: 2px solid black;
         }
-        .row{
-            display: block;
-            position:relative;
-            /* background-color: blue; */
-            width: 96%;
-            height: 43px;
-            line-height: 40px;
-            margin-top:26px;
-            left:2%;
-            padding:0px;
-            /* border: 1px solid black; */
+        /* presetsPage */
+        #presetsPage{
+            grid-template-rows: 12% 72% 16%;
         }
-        body{ 
-          padding-top: 0px;
-        }
-        .header {
-            width:100%;
-            top:0px;
+        #selectedPresetContainer{
+            margin-bottom:20px;
+            grid-template-columns: 15% 10% 10% 10% 10% 10% 5% 10% 10% 10%;
             display: grid;
-            grid-template-columns: auto auto auto auto auto auto auto auto auto auto auto;
-            background-color: black;
-            padding: 0px;
-            margin-bottom:33px;
-            margin-top:0px;
-            height:60px;
-            z-index:10;
-        
+            margin-top:-6px;
         }
-        .header-item {
-            color:white;
-            background-color: black;
-            padding: 20px;
-            font-size: 19px;
-            font-weight:bold;
-            text-align: center;
-            z-index:10;
-            border-bottom:2px solid grey;
-            /* border-top:2px solid grey; */
-         }
-         @media only screen and (max-width:1000px){
-            label{
-                font-size: x-small;
-            }
-            .mobile{
-                color: white;
-            }
-            .desktop{
-                color: black;
-            }
-        }
-        #dataPage {
-            width:90%;
-            margin-left: 5%;
-            background-color: grey;
-            display:grid;
-            grid-template-columns: 20% 80%;
-        }
-        #dataPageGaugeTable {
-            display: grid;
-            grid-template-rows:25% 25% 25% 25%;
-            width: 100%;
-            height:350px;
-        }
-        .dataPageGaugeTable-item{
-            border: 3px solid black;
-            display: grid;
-            height:100%;
-            width: 100%;
-            margin-bottom:0px;
-        }
-        #dataPageLabelContainer {
-            display: grid;
-            grid-template-rows:25% 25% 25% 25%;
-            width: 100%;
-            height:350px;
-        }
-        .dataPageGaugeTable-label{
-            border: 3px solid black;
-            border-bottom: 0px solid black;
-            display: grid;
-            height:100%;
-            width: 100%;
-            margin-bottom:0px;
-            text-align: center;
-            font-size: medium;
-        }
-        #dataPageLabel_4{
-            border-bottom: 3px solid black;
-        }
-        #testButton {
-            display:none;
-            position: relative;
-            height:80px;
-            top:30px;
-            width:90%;
-            left:5%;
-            border: 3px solid black;
-            border-radius: 2px;
-            background-color:rgb(60, 60, 60);
-            color:black;
-            font-size:large;
-        }
-        #presetsPage {
-            width:90%;
-            margin-left: 5%;
-            display: none;
-            /* height: 800px; */
-            background-color: grey;
-            padding: 0px 10px 3px 10px;
-        }
-        #selectedPresetContainer {
-            display:grid;
-            grid-template-columns: auto auto auto auto auto auto;
-            height:40px;
-            width:101%;
-            margin-top: 0%;
-            padding:0%;
-            margin-bottom: 3%;
-        }
-        .selectedPresetContainerButton {
+        .selectedPresetContainerButton, .selectedPresetContainerLabel {
             background-color: #555555;
-            width:100%;
+            height:100%;
             border: 3px solid black;
-            border-right:0px;
-           
+            margin-left:-3px;
+            font-size: x-small;
         }
-        #selectedPresetButton5 {
-            border-right: 3px solid black;
+        .selectedPresetContainerLabel{
+            font-weight: bold;
+            background-color: #444444;
         }
-        .pixel {
+        #selectedPresetTypeSpacer{
+            border-top:0px;
+            border-bottom: 0px;
             background-color: grey;
-            width: 100%;
-            height: 100%;
-            border: 3px solid black;
+        }
+        #pixelMapContainer{
+            background-color: green;
+            margin-bottom:20px;
+            display:grid;
+            grid-template-columns: auto auto auto auto auto auto auto auto;
+        }
+        .pixel{
+            display:grid;
+            border:3px solid black;
+            background-color: red;
+        }
+        #colorPickerContainer{
+            border:3px solid black;
+            margin:0px;
+            padding:0px;
+            height:100%;
+            grid-template-columns: auto;
+        }
+        #cpCanvas{
+            display:grid;
+            width:100%;
+            height:100%;
+        }
+        #synthSlidersContainer{
+            background-color: blue;
+            height:121%;
+            display:none;
+            grid-template-rows: 20% 80%;
         }
         #labelsDiv {
-            /* background-color: black; */
             display: grid;
             width:100%;
-            height: 20%;
             grid-template-columns: 12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5%;
         }
         #slidersDiv {
-            /* background-color: black; */
             display: grid;
             width:100%;
-            height: 80%;
             grid-template-columns: auto auto auto auto auto auto auto auto;
         }
         .sliderLabel {
@@ -204,72 +209,67 @@
             height: 100%;
             border: 3px solid black;
         }
-        #cpCanvas{
-            background-color: black;
-            width: 100%;
-            height: 40px;
-        }
-        #slidersContainer{
-            /* border: 3px solid black; */
-            /* background-color: black; */
-            height:300px;
-            padding:0%;
-            display:grid;
-            grid-template-columns: 100%;
-        }
-        #pixelMapContainer {
-            background-color: black;
-            width:100%;
-            display:grid;
-            grid-template-columns:auto auto auto auto auto auto auto auto;
-            margin-bottom:3.5%;
-
-        }
-        #colorPickerContainer{
-            border: 3px solid black;
-            background-color: black;
-            height:40px;
-            width:100%;
-            display:grid;
-            grid-template-columns:100%;
-        }
       </style>
     </head>
     <body>
-        <div class="header">
-            <div class="header-item">NimbusKit</div>
-            <div class="header-item"></div>
-            <div class="header-item"></div>  
-            <div class="header-item"></div>
-            <div class="header-item"></div>
-            <div class="header-item"></div>
-            <div class="header-item"></div>
-            <div class="header-item" onclick="goToPage('presets');">Presets</div>
-            <div class="header-item" onclick="goToPage('settings');">Settings</div>
-            <div class="header-item" onclick="goToPage('data');">Data</div>
-            <div class="header-item"></div>
+        <div id="background">
         </div>
-        <div id="dataPage">
-            <div id="dataPageLabelContainer"></div>
-            <div id="dataPageGaugeTable"></div>
-            <button id="testButton" onclick="socket.send('Socket_ABC123');">Test</button>
+        <div id="header">
+            <button class="header-item"></button>
+            <button class="header-item" id="mainLogo"onclick="requestFullScreen();">NimbusKit</button>
+            <button class="header-item"></button>  
+            <button class="header-item"></button>
+            <button class="header-item"></button>
+            <button class="header-item"></button>
+            <button class="header-item"></button>
+            <button class="header-item"></button>
+            <button class="header-item"></button>
+            <button class="header-item" onclick="goToPage('presetsPage');">Presets</button>
+            <button class="header-item" onclick="goToPage('settingsPage');">Settings</button>
+            <button class="header-item" onclick="goToPage('dataPage');">Data</button>
+            <button class="header-item"></button>
         </div>
-        <div id="presetsPage">
+        <div id="topSpacer">
+        </div>
+        <div id="dataPage" class="page">
+            <div id="dataPageLabelsContainer"></div>
+            <div id="dataPageGraphsContainer"></div>
+        </div>
+        <div id="presetsPage" class="page">
             <div id="selectedPresetContainer">
-                <button class="selectedPresetContainerButton">Selected Preset:</button>
-                <button id="selectedPresetButton1" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">1</button>
-                <button id="selectedPresetButton2" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">2</button>
-                <button id="selectedPresetButton3" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">3</button>
-                <button id="selectedPresetButton4" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">4</button>
-                <button id="selectedPresetButton5" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML))">5</button>
+                <button class="selectedPresetContainerLabel">Number:</button>
+                <button id="selectedPresetButton1" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">1</button>
+                <button id="selectedPresetButton2" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">2</button>
+                <button id="selectedPresetButton3" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">3</button>
+                <button id="selectedPresetButton4" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">4</button>
+                <button id="selectedPresetButton5" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">5</button>
+                <button id="selectedPresetTypeSpacer" class="selectedPresetContainerButton"></button>
+                <button class="selectedPresetContainerLabel">Type:</button>      
+                <button id="synthTypeButton" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton('synth','typebutton')">Synth</button>
+                <button id="pixelTypeButton" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton('pixel','typebutton')">Pixel</button>
             </div>
-            <div id="slidersContainer"></div>
-            <div id="pixelMapContainer" oncontextmenu="return false;"></div>
-            <div id="colorPickerContainer"></div>
+            <div id="synthSlidersContainer">
+            </div>
+            <div id="pixelMapContainer" oncontextmenu="return false;">
+            </div>
+            <div id="colorPickerContainer">
+            </div>
+        </div>
+        <div id="settingsPage" class="page">
+        </div>
+        <div id="bottomSpacer">
         </div>
         <script>
-
-            var fields=[
+            
+            globals={
+                currentPage: "presetsPage",
+                dataHistoryBuffer: [
+                    [.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5],
+                    [.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5],
+                    [.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5],
+                    [.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5]
+                ],
+                settingsPageFields:[
                 {
                     "name":"ssid",
                     "text":"SSID:",
@@ -297,7 +297,7 @@
                 },
                 {
                     "name":"num_base_leds",
-                    "text":"Number of Pixels:",
+                    "text":"Num of Pixels:",
                     "initVal":"---"
                 },
                 {
@@ -305,380 +305,420 @@
                     "text":"Pixel Offset:",
                     "initVal":"---"
                 }
-            ]
-            var ledPresets=[
-                {
-                    "name":"preset1",
-                    "text":"SSID:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"preset2",
-                    "text":"Password:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"preset3",
-                    "text":"Universe:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"preset4",
-                    "text":"Start Channel:",
-                    "initVal":"---"
-                }
-            ]
-            ledPresetsPayload=[
-                [242,50,200,4,4,3,0,100],
-                [50,150,130,16,30,4,0,5],
-                [200,2,220,12,1,5,0,55],
-                [88,88,88,200,50,6,0,55]
-            ];
-            dataHistoryBufferLength=60;
-            dataHistoryBuffer=[]
-            for(var x=0;x<4;x++){
-                var tempList=[]
-                for(var y=0; y<dataHistoryBufferLength;y++){
-                    tempList.push(.5);
-                }
-                dataHistoryBuffer.push(tempList);
-            }
-            numRows=8;
-            numCols=8;
-            pixelMap=[];
-            for(var x=0;x<numRows;x++){
-                var tempList=[]
-                for(var y=0; y<numCols;y++){
-                    tempList.push(0);
-                }
-                pixelMap.push(tempList);
-            }
-            colorMap = [
-                [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0],
-                [255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,0]
-            ];
-            selectedColor=1;
-            selectedPreset=1;
-            mouseButtonState=0;
-            needToUpdatePixelMap=false;
-            presetValueDebounceTime=0;
-            socketConnectivityCheck=new Date().getTime();
-            updatePixelMapInterv=setInterval(function(){
-                if(needToUpdatePixelMap){
-                    needToUpdatePixelMap=false;
-                    makeUpdatPixelMapPostCall();
-                }
-            },1000);
+            ],
+                numRows: 8,
+                numCols: 8,
+                pixelMap: [
+                   [[0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0]],
+                    [[0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0]],
+                    [[0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0]],
+                    [[0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0]],
+                    [[0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0]],
+                ],
+                colorMap: [
+                    [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0],
+                    [255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,0]
+                ],
+                presetTypes: ["pixel","pixel","pixel","synth","synth"],
+                synthSliderValues: [
+                    [128, 128, 128, 128, 128, 128, 128, 128],
+                    [128, 128, 128, 128, 128, 128, 128, 128],
+                    [128, 128, 128, 128, 128, 128, 128, 128],
+                    [128, 128, 128, 128, 128, 128, 128, 128],
+                    [128, 128, 128, 128, 128, 128, 128, 128]
+                ],
+                selectedColor:1,
+                selectedPreset: 1,
+                mouseButtonState: 0,
+                needToUpdatePixelMap: false,
+                needToUpdateLedPresets: false,
+                socketConnectivityCheck: new Date().getTime(),
+                presetValueDebounceTime: new Date().getTime()
+            };
 
             window.onload = function(){
                 function logButtons(event){
-                    // console.log(event.buttons);
-                    mouseButtonState=event.buttons;
+                    globals.mouseButtonState=event.buttons;
                 }
                 document.addEventListener("mouseup", logButtons);
                 document.addEventListener("mousedown", logButtons);
-                initElements();
-                createSliderElements();
+                createDataPage();
+                createSettingsPage();
                 createPixelMapUI();
+                createColorPicker();
+                createSynthSliders();
+                goToPage(globals.currentPage);
+                makeGetSettingsCall();
+                updatePixelMapInterv=setInterval(function(){
+                    if(globals.needToUpdatePixelMap){
+                        globals.needToUpdatePixelMap=false;
+                        makeUpdatPixelMapCall();
+                    }
+                },1000);
+                updateLedPresets=setInterval(function(){
+                    if(globals.needToUpdateLedPresets){
+                        globals.needToUpdateLedPresets=false;
+                        makeUpdateLedPresetsCall();
+                    }
+                },1000);
                 initWebSocket();
                 setInterval(function(){
-                var now=new Date().getTime();
-                    if( (now-socketConnectivityCheck) > 5000){
+                    var now=new Date().getTime();
+                    if( (now-globals.socketConnectivityCheck) > 5000){
                         initWebSocket();
-                        socketConnectivityCheck=now;
+                        gobals.socketConnectivityCheck=now;
                     }
                 },5000);
             }
 
-            function initElements(){
+            window.onresize = function() {
+                resizePages();
+            };
 
-                for (var x in fields){
-                    var row = document.createElement('div');
-                    row.id=fields[x].name+'_row';
-                    row.className='row';
-                    var label = document.createElement('label');
-                    row.appendChild(label);
-                    label.for=fields[x].name;
-                    label.innerHTML=fields[x].text;
-                    var input = document.createElement('input');
-                    row.appendChild(input);
-                    input.type='text';
-                    input.id=fields[x].name;
-                    input.value=fields[x].initVal;
-                    document.body.appendChild(row);
-                }
-
-                createSettingsButton();
-                createDataPageGauges();
-                function createSettingsButton(){
-                    var row = document.createElement('div');
-                    row.id='saveButton_row'
-                    row.className='row';
-                    var button = document.createElement('button');
-                    button.innerHTML='Save'
-                    row.appendChild(button);
-                    button.type='text';
-                    button.id='saveButton';
-                    button.onclick=function(){
-                        makeUpdateSettingsPostCall();
-                        console.log('clicked')
-                        // socket.send('clicked')
+            function syncView(){
+                // pixel map grid
+                for(var x=0;x<globals.numRows;x++){
+                    for(var y=0; y<globals.numCols;y++){
+                        document.getElementById("pixel_"+x+"_"+y).setValue(globals.pixelMap[globals.selectedPreset-1][x][y]);
                     }
-                    document.body.appendChild(row);
                 }
-
-                goToPage('data');
-                makeGetSettingsCall();
-
-            }
-
-            function handleSelectedPresetButton(presetNum){
-                console.log('handleSelectedPresetButton');
-                selectedPreset=presetNum;
+                // color picker
+                document.getElementById("cpCanvas").setValue(globals.colorMap[0].length-globals.selectedColor);
+                // selected preset
                 for(var x=1;x<6;x++){
-                    if(x!=presetNum){
+                    if(x!=globals.selectedPreset){
                         document.getElementById("selectedPresetButton"+x).style.backgroundColor='#555555';
                     }else{
                         document.getElementById("selectedPresetButton"+x).style.backgroundColor='#888888';
                     }
                 }
-                if(selectedPreset!=5){
-                    for(var y=0; y<8; y++){
-                        document.getElementById('slider'+parseInt(y+1)).setValue(ledPresetsPayload[selectedPreset-1][y]);
-                    }
-                    makeUpdateLedPresetsPostCall();
-                    document.getElementById("colorPickerContainer").style.display='none';
+                // selected preset type
+                if(globals.presetTypes[globals.selectedPreset-1]=="synth"){
+                    document.getElementById("synthTypeButton").style.backgroundColor='#888888';
+                    document.getElementById("pixelTypeButton").style.backgroundColor='#555555';
+                    document.getElementById("synthSlidersContainer").style.display='grid';
                     document.getElementById("pixelMapContainer").style.display='none';
-                    document.getElementById("slidersContainer").style.display='block';
-                    for(var x=1; x<9; x++){
-                        document.getElementById("sliderLabel"+x).style.lineHeight=parseInt(document.getElementById("sliderLabel"+x).offsetHeight*.92)+'px';
+                    document.getElementById("colorPickerContainer").style.display='none';
+                }else{
+                    if(globals.presetTypes[globals.selectedPreset-1]=="pixel"){
+                        document.getElementById("synthTypeButton").style.backgroundColor='#555555';
+                        document.getElementById("pixelTypeButton").style.backgroundColor='#888888';
+                        document.getElementById("synthSlidersContainer").style.display='none';
+                        document.getElementById("pixelMapContainer").style.display='grid';
+                        document.getElementById("colorPickerContainer").style.display='block';
                     }
-                }else if(selectedPreset==5){
-                    makeUpdateLedPresetsPostCall();
-                    document.getElementById("colorPickerContainer").style.display='grid';
-                    document.getElementById("pixelMapContainer").style.display='grid';
-                    document.getElementById("slidersContainer").style.display='none';
                 }
-                presetValueDebounceTime=new Date().getTime();
+                // synth slider values
+                for(var x=1; x<9; x++){
+                    document.getElementById("slider"+x).setValue(globals.synthSliderValues[globals.selectedPreset-1][x-1]);
+                }
+                // resize all
+                resizePages();
             }
 
-            function updateSelectedPresetButton(){
-                console.log('updateSelectedPresetButton');
-                for(var x=1;x<6;x++){
-                    if(x!=selectedPreset){
-                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#555555';
+            function resizePages(){
+                // Header vs body size
+                const pages = document.getElementsByClassName("page");
+                for (let i = 0; i < pages.length; i++) {
+                    pages.item(i).style.height=parseInt(window.innerHeight-(document.getElementById("header").offsetHeight + document.getElementById("topSpacer").offsetHeight + document.getElementById("bottomSpacer").offsetHeight))+'px';
+                }
+                // Data page graph canvases
+                for(var x=1; x<5; x++){
+                    try{
+                        document.getElementById("dataPageGraphCanvas_"+x).refreshCanvas();
+                    }
+                    catch{}
+                }
+                // Settings page background extend
+                if(globals.currentPage=="settingsPage"){
+                    var fieldStaticHeight=parseInt(79*(globals.settingsPageFields.length+1) + 130);
+                    var pageHeight=window.innerHeight;
+                    if(fieldStaticHeight<pageHeight){
+                        document.getElementById("background").style.height='100%';
                     }else{
-                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#888888';
+                        document.getElementById("background").style.height=fieldStaticHeight+'px';
                     }
+                }else{
+                    document.getElementById("background").style.height='100%';
                 }
-                if(selectedPreset!=5){
-                    for(var y=0; y<8; y++){
-                        document.getElementById('slider'+parseInt(y+1)).setValue(ledPresetsPayload[selectedPreset-1][y]);
-                    }
-                    document.getElementById("colorPickerContainer").style.display='none';
-                    document.getElementById("pixelMapContainer").style.display='none';
-                    document.getElementById("slidersContainer").style.display='block';
-                    for(var x=1; x<9; x++){
-                        document.getElementById("sliderLabel"+x).style.lineHeight=parseInt(document.getElementById("sliderLabel"+x).offsetHeight*.92)+'px';
-                    }
-                }else if(selectedPreset==5){
-                    document.getElementById("colorPickerContainer").style.display='grid';
-                    document.getElementById("pixelMapContainer").style.display='grid';
-                    document.getElementById("slidersContainer").style.display='none';
+                // Color picker canvas
+                document.getElementById("cpCanvas").setValue(globals.colorMap[0].length-globals.selectedColor)
+                // Synth Slider Labels
+                for(var x=1; x<9; x++){
+                    document.getElementById("sliderLabel"+x).refreshLabel();
                 }
-            }
-
-            function makeUpdateSettingsPostCall(){
-                var payload={};
-                for (var x in fields){
-                    payload[fields[x].name]=document.getElementById(fields[x].name).value;
+                // Synth canvases
+                for(var x=1; x<9; x++){
+                    document.getElementById("slider"+x).refresh();
                 }
-                presetValueDebounceTime=new Date().getTime();
-                var urlString='http://'+location.host + '/updateSettings'
-                var xhttp = new XMLHttpRequest(); 
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200){
-                        console.log(this.responseText);
-                    }
-                };
-                xhttp.open('POST', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send(JSON.stringify(payload));
-            }
-
-            function makeUpdateLedPresetsPostCall(){
-                var payload={"ledPresets":ledPresetsPayload, "selectedPreset":parseInt(selectedPreset-1)};
-                var urlString='http://'+location.host + '/updateLedPresets'
-                var xhttp = new XMLHttpRequest(); 
-                xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    console.log(this.responseText);
-                }
-                };
-                xhttp.open('POST', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send(JSON.stringify(payload));
-            }
-
-            function makeGetSettingsCall(){
-                var urlString='http://'+location.host + '/getSettings'
-                var xhttp = new XMLHttpRequest(); 
-                xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    var getResponse=JSON.parse(this.response);
-                    console.log(JSON.parse(this.response));
-                    for (var x in fields){
-                        document.getElementById(fields[x].name).value=getResponse[fields[x].name];
-                    }
-                    makeGetLedPresetsCall();
-                }
-                };
-                xhttp.open('GET', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send();
-            }
-
-            function makeGetPixelMapPresetsCall(){
-                var urlString='http://'+location.host + '/getPixelMapPresets'
-                var xhttp = new XMLHttpRequest(); 
-                xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    var getResponse=JSON.parse(this.response);
-                    console.log(JSON.parse(this.response));
-                    for(var x=0;x<numRows;x++){
-                        for(var y=0; y<numCols;y++){
-                            pixelMap[x][y]=getResponse["pixelMap"][x][y];
-                        }
-                    }
-                    refreshPixelMapUI();
-                }
-                };
-                xhttp.open('GET', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send();
-            }
-
-            function makeUpdatPixelMapPostCall(){
-                var payload={"pixelMap":pixelMap};
-                var urlString='http://'+location.host + '/updatePixelMap'
-                var xhttp = new XMLHttpRequest(); 
-                xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    console.log(this.responseText);
-                }
-                };
-                xhttp.open('POST', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send(JSON.stringify(payload));
-            }
-            
-            function makeGetLedPresetsCall(){
-                var urlString='http://'+location.host + '/getLedPresets'
-                var xhttp = new XMLHttpRequest(); 
-                xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    var getResponse=JSON.parse(this.response);
-                    console.log(JSON.parse(this.response));
-                    for(var x=0;x<4;x++){
-                        for(var y=0; y<8; y++){
-                            ledPresetsPayload[x][y]=getResponse["ledPresets"][x][y];
-                            document.getElementById('slider'+parseInt(y+1)).setValue(ledPresetsPayload[x][y]);
-                        }
-                    }
-                    handleSelectedPresetButton(parseInt(getResponse["selectedPreset"]+1));
-                    makeGetPixelMapPresetsCall();
-                }
-                };
-                xhttp.open('GET', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send();
-            }
-
-            function makeResetCall(){
-                var urlString='http://'+location.host + '/reset'
-                var xhttp = new XMLHttpRequest(); 
-                xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    console.log(this.response);
-                }
-                };
-                xhttp.open('GET', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send();
-            }
-
-            function initWebSocket(){
-                socket = new WebSocket("ws:/" + "/" + location.host + ":81");
-                socket.onopen = function(e) {  console.log("[socket] socket.onopen "); };
-                socket.onerror = function(e) {
-                    console.log("[socket] socket.onerror ");
-                    console.log(e);
-                    setTimeout(function(){
-                        console.log("retrying websocket connection initialization")
-                        initWebSocket();
-                    },1000);
-                };
-                socket.onclose = function(e) {
-                    console.log("[socket] socket.onerror ");
-                    console.log(e);
-                    setTimeout(function(){
-                        console.log("retrying websocket connection initialization")
-                        initWebSocket();
-                    },1000);
-                };
-                socket.onmessage = function(e) {  
-                    console.log('Received data from websocket: '+e.data);
-                    socketConnectivityCheck=new Date().getTime();
-                    var incomingData=e.data.split(',');
-                    var incomingPreset=parseInt(incomingData[incomingData.length-1])%5;
-                    rotateDataHistoryBuffer([parseFloat(incomingData[0]),parseFloat(incomingData[1]),parseFloat(incomingData[2]),parseFloat(parseInt(incomingData[3])/5)+.05 ]);
-                    if( (new Date().getTime()-presetValueDebounceTime) > 1000){
-                        if(selectedPreset!=(incomingPreset+1)){
-                            selectedPreset=(incomingPreset+1);
-                            updateSelectedPresetButton();
-                            console.log('socket change');
-                        }
-                    }
-                    return true;
-                };
             }
 
             function goToPage(pageName){
-                if(pageName=="settings"){
-                    for (var x in fields){
-                        document.getElementById(fields[x].name+'_row').style.display='block';
+                globals.currentPage=pageName;
+                const pages = document.getElementsByClassName("page");
+                for (let i = 0; i < pages.length; i++) {
+                    console.log(pages.item(i).id)
+                    if(pages.item(i).id==pageName){
+                        if(pageName=="settingsPage"){
+                            pages.item(i).style.display='block';
+                        }else{
+                            pages.item(i).style.display='grid';
+                            document.getElementById("background").style.height='100%';
+                        }
+                    }else{
+                        pages.item(i).style.display='none'
                     }
-                    document.getElementById('saveButton_row').style.display='block';
-                    document.getElementById('dataPage').style.display='none';
-                    document.getElementById('presetsPage').style.display='none';
+                }            
+                syncView();
+            }
+
+            function handleSelectedPresetButton(inputValue, buttonType){
+                if(buttonType=="typebutton"){
+                    globals.presetTypes[globals.selectedPreset-1]=inputValue;
+                }else if(buttonType=="numberbutton"){
+                    globals.selectedPreset=inputValue;
                 }
-                if(pageName=="data"){
-                    for (var x in fields){
-                        document.getElementById(fields[x].name+'_row').style.display='none';
+                makeUpdateLedPresetsCall();
+                syncView();                    
+            }
+
+			function requestFullScreen() {
+				// Supports most browsers and their versions.
+				var element = document.body; // Make the body go full screen.
+				var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
+			
+				if (requestMethod) { // Native full screen.
+					requestMethod.call(element);
+				} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
+					var wscript = new ActiveXObject("WScript.Shell");
+					if (wscript !== null) {
+						wscript.SendKeys("{F11}");
+					}
+				}
+			}
+
+            function createDataPage(){
+                for(var x=1; x<5; x++){
+                    // Label
+                    var label=document.createElement('div');
+                    label.className="dataPageLabelItem"
+                    label.id="dataPageLabel_"+x
+                    label.num=x;
+                    var sliderLabelValues=[
+                        'X:',
+                        'Y:',
+                        'Z:',
+                        'Button:'
+                    ]
+                    for(y=1;y<4;y++){
+                        var labelSpacer=document.createElement('div');
+                        labelSpacer.className="dataPageLabelSpacer"
+                        labelSpacer.id="dataPageLabelSpacer_"+x+"_"+y;
+                        if(y==2){
+                            labelSpacer.innerHTML=sliderLabelValues[label.num-1];
+                        }else{
+                            labelSpacer.innerHTML=' ';
+                        }
+                        label.appendChild(labelSpacer);
                     }
-                    document.getElementById('saveButton_row').style.display='none';
-                    document.getElementById('dataPage').style.display='grid';
-                    document.getElementById('presetsPage').style.display='none';
-                    for(var x=1; x<5; x++){
-                        document.getElementById("dataPageLabel_"+x).style.lineHeight=parseInt(document.getElementById("dataPageLabel_"+x).offsetHeight*.92)+'px';
-                    }
-                }
-                if(pageName=="presets"){
-                    for (var x in fields){
-                        document.getElementById(fields[x].name+'_row').style.display='none';
-                    }
-                    document.getElementById('saveButton_row').style.display='none';
-                    document.getElementById('dataPage').style.display='none';
-                    document.getElementById('presetsPage').style.display='block';
-                    try{
-                        if(document.getElementById("slidersContainer").style.display!='none'){
-                            for(var x=1; x<9; x++){
-                                document.getElementById("sliderLabel"+x).style.lineHeight=parseInt(document.getElementById("sliderLabel"+x).offsetHeight*.92)+'px';
+                    document.getElementById("dataPageLabelsContainer").appendChild(label);
+                    // Graph
+                    var canvasContainer=document.createElement('div');
+                    canvasContainer.className="dataPageGraphItem"
+                    canvasContainer.id="dataPageGraphItem_"+x
+                    canvasContainer.num=x;
+                    var canvas=document.createElement('canvas');
+                    canvas.className="dataPageGraphCanvas"
+                    canvas.id="dataPageGraphCanvas_"+x
+                    canvas.num=x;
+                    canvas.width=parseInt(document.getElementById("dataPage").offsetWidth*.8);   
+                    canvas.height=parseInt(document.getElementById("dataPage").offsetHeight/4*.8);             
+                    canvas.refreshCanvas=function(){
+                        this.width=parseInt(document.getElementById("dataPage").offsetWidth*.8);
+                        this.height=parseInt(document.getElementById("dataPage").offsetHeight/4*.8);
+                        var ctx = this.getContext("2d");
+                        ctx.clearRect(0, 0, this.width, this.height);
+                        ctx.fillStyle = "#555555";
+                        ctx.fillRect(0, 0, this.width, this.height );
+
+                        ctx.lineWidth = 2;
+                        ctx.strokeStyle = '#bbbbbb';
+                        ctx.beginPath();
+                        for(var x=0; x<globals.dataHistoryBuffer[0].length; x++){
+                            if(x==0){
+                                ctx.moveTo(x*parseInt(this.width/globals.dataHistoryBuffer[0].length), parseInt(globals.dataHistoryBuffer[this.num-1][x]*this.height));
+                            }else{
+                                ctx.lineTo(x*parseInt(this.width/globals.dataHistoryBuffer[0].length), parseInt(globals.dataHistoryBuffer[this.num-1][x]*this.height));
                             }
                         }
+                        ctx.lineTo(this.width, parseInt(globals.dataHistoryBuffer[this.num-1][globals.dataHistoryBuffer[0].length-1]*this.height));
+                        ctx.stroke();
                     }
-                    catch(err){}
+                    canvas.refreshCanvas();
+                    canvasContainer.appendChild(canvas);
+                    document.getElementById("dataPageGraphsContainer").appendChild(canvasContainer);
+                }
+            }
+
+            function createSettingsPage(){
+                for (var x in globals.settingsPageFields){
+                    var row = document.createElement('div');
+                    row.id="settingsPageRow_"+x;
+                    row.className='settingsPageRow';
+                    var label = document.createElement('button');
+                    label.className="settingsPageLabel";
+                    // label.for=globals.settingsPageFields[x].name;
+                    label.innerHTML=globals.settingsPageFields[x].text;
+                    row.appendChild(label);
+                    var input = document.createElement('input');
+                    input.type='text';
+                    input.className="settingsPageInput";
+                    input.id=globals.settingsPageFields[x].name;
+                    input.value=globals.settingsPageFields[x].initVal;
+                    row.appendChild(input);
+                    document.getElementById("settingsPage").appendChild(row);
+                }
+                var row = document.createElement('div');
+                row.id='saveButton_row'
+                row.className='saveButton';
+                var button = document.createElement('button');
+                button.innerHTML='Save'
+                row.appendChild(button);
+                button.type='text';
+                button.id='saveButton';
+                button.onclick=function(){
+                    makeUpdateSettingsCall();
+                    console.log('clicked')
+                }
+                document.getElementById("settingsPage").appendChild(row);
+            }
+
+            function rotateDataHistoryBuffer(incomingValue){
+                for(var x=0; x<globals.dataHistoryBuffer[0].length; x++){
+                    if(x<(globals.dataHistoryBuffer[0].length-1)){
+                        globals.dataHistoryBuffer[0][x]=globals.dataHistoryBuffer[0][x+1];
+                        globals.dataHistoryBuffer[1][x]=globals.dataHistoryBuffer[1][x+1];
+                        globals.dataHistoryBuffer[2][x]=globals.dataHistoryBuffer[2][x+1];
+                        globals.dataHistoryBuffer[3][x]=globals.dataHistoryBuffer[3][x+1];
+                    }else{
+                        globals.dataHistoryBuffer[0][x]=incomingValue[0];
+                        globals.dataHistoryBuffer[1][x]=incomingValue[1];
+                        globals.dataHistoryBuffer[2][x]=incomingValue[2];
+                        globals.dataHistoryBuffer[3][x]=incomingValue[3];
+                    }
+                }
+                for(var x=1; x<5; x++){
+                    try{
+                        document.getElementById("dataPageGraphCanvas_"+x).refreshCanvas()
+                    }
+                    catch{}
+                }
+            }
+      
+            function createPixelMapUI(){
+                for(var x=0;x<(globals.numRows);x++){
+                    for(var y=0;y<(globals.numCols);y++){
+                        var canvas=document.createElement('div');
+                        canvas.className="pixel"
+                        canvas.id="pixel_"+x+"_"+y
+                        canvas.x=x;
+                        canvas.y=y;
+                        canvas.value=0;
+                        canvas.num=x;
+                        canvas.updateValue=function(event,action){
+                            if(action=="add"){
+                                this.style.backgroundColor = "rgb("+globals.colorMap[0][globals.selectedColor]+","+globals.colorMap[1][globals.selectedColor]+","+globals.colorMap[2][globals.selectedColor]+")";
+                                this.value=globals.selectedColor;
+                            }
+                            if(action=="remove"){
+                                this.style.backgroundColor = "rgb("+globals.colorMap[0][globals.colorMap[0].length-1]+","+globals.colorMap[1][globals.colorMap[0].length-1]+","+globals.colorMap[2][globals.colorMap[0].length-1]+")";
+                                this.value=globals.colorMap[0].length-1;
+                            }
+                            for(var x=0;x<globals.numRows;x++){
+                                for(var y=0; y<globals.numCols;y++){
+                                    globals.pixelMap[globals.selectedPreset-1][x][y]=document.getElementById("pixel_"+x+"_"+y).value;
+                                }
+                            }
+                            globals.needToUpdatePixelMap=true;
+                        }
+                        canvas.onmousedown=function(event){
+                            if(globals.mouseButtonState==1){
+                                this.updateValue(event,"add");
+                            }
+                            if(globals.mouseButtonState==2){
+                                this.updateValue(event,"remove");
+                            }
+                        }
+                        canvas.onmousemove=function(event){
+                            if(globals.mouseButtonState==1){
+                                this.updateValue(event,"add");
+                                console.log("add");
+                            }
+                            if(globals.mouseButtonState==2){
+                                this.updateValue(event,"remove");
+                            }
+                        }
+                        canvas.setValue=function(value){
+                            this.value=value;
+                            this.style.backgroundColor = "rgb("+globals.colorMap[0][this.value]+","+globals.colorMap[1][this.value]+","+globals.colorMap[2][this.value]+")";
+                        }
+                        canvas.ontouchstart=function(event){
+                            console.log(event)
+                            globals.needToUpdatePixelMap=true;
+                            this.style.backgroundColor = "rgb("+globals.colorMap[0][globals.selectedColor]+","+globals.colorMap[1][globals.selectedColor]+","+globals.colorMap[2][globals.selectedColor]+")";
+                            this.value=globals.selectedColor;
+                            for(var x=0;x<globals.numRows;x++){
+                                for(var y=0; y<globals.numCols;y++){
+                                    globals.pixelMap[globals.selectedPreset-1][x][y]=document.getElementById("pixel_"+x+"_"+y).value;
+                                }
+                            }
+                        }
+                        canvas.ontouchmove=function(event){
+                            globals.needToUpdatePixelMap=true;
+                            try{
+                                document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY).value=globals.selectedColor;
+                                document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY).updateValue(event,"add");
+                            }
+                            catch{}
+                        }
+                        document.getElementById("pixelMapContainer").appendChild(canvas);           
+                    }    
                 }
             }
 
@@ -687,10 +727,11 @@
                 cpCanvas.className="cpCanvas"
                 cpCanvas.id="cpCanvas"
                 cpCanvas.isSelected=false;
-                cpCanvas.initValue=function(){
+                cpCanvas.refreshCanvas=function(){
+                    this.width=document.getElementById("colorPickerContainer").offsetWidth;
+                    this.height=document.getElementById("colorPickerContainer").offsetHeight;
                     var ctx = this.getContext("2d");
                     ctx.clearRect(0, 0, this.width, this.height);
-                    // ctx.fillStyle = 'rgba(50,50,50,.75)';
                     var gradient = ctx.createLinearGradient(0,0,this.width,0);
                     gradient.addColorStop(0, "black");
                     gradient.addColorStop(.1, "blue");
@@ -701,24 +742,14 @@
                     ctx.fillRect(0, 0, this.width, this.height );
                 }
                 cpCanvas.updateValue=function(event){
+                    this.refreshCanvas();
                     var ctx = this.getContext("2d");
-                    ctx.clearRect(0, 0, this.width, this.height);
-                    // ctx.fillStyle = 'rgba(50,50,50,.75)';
-                    var gradient = ctx.createLinearGradient(0,0,this.width,0);
-                    gradient.addColorStop(0, "black");
-                    gradient.addColorStop(.1, "blue");
-                    gradient.addColorStop(0.33, "green");
-                    gradient.addColorStop(.66, "red");
-                    gradient.addColorStop(1, "blue");
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0, 0, this.width, this.height );
-                    //
                     ctx.fillStyle = "rgba(5,5,5,.8)";
                     var tabWidth=8;
                     var tabCenter=(event.offsetX/this.offsetWidth*this.width);
                     ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );  
-                    selectedColor=colorMap[0].length-1-parseInt(event.offsetX/this.offsetWidth*colorMap[0].length);
-                    console.log(selectedColor)
+                    globals.selectedColor=globals.colorMap[0].length-1-parseInt(event.offsetX/this.offsetWidth*globals.colorMap[0].length);
+                    console.log(globals.selectedColor)
                 }
                 cpCanvas.onmouseup=function(event){
                     this.isSelected=false;
@@ -737,19 +768,11 @@
                     }
                 }
                 cpCanvas.setValue=function(value){
+                    this.refreshCanvas();
                     var ctx = this.getContext("2d");
-                    ctx.clearRect(0, 0, this.width, this.height);
-                    var gradient = ctx.createLinearGradient(0,0,this.width,0);
-                    gradient.addColorStop(0, "blue");
-                    gradient.addColorStop(0.33, "green");
-                    gradient.addColorStop(.66, "red");
-                    gradient.addColorStop(1, "blue");
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0, 0, this.width, this.height );
-                    //
                     ctx.fillStyle = "rgba(5,5,5,.8)";
                     var tabWidth=8;
-                    var tabCenter=(value/(colorMap[0].length-1)*this.width);
+                    var tabCenter=(value/(globals.colorMap[0].length-1)*this.width);
                     ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );  
                 }
                 cpCanvas.ontouchstart=function(event){
@@ -788,107 +811,18 @@
                     selectedColor=colorMap[0].length-1-parseInt(eventOffsetX/this.offsetWidth*colorMap[0].length);
                     console.log(selectedColor)
                 }
-                cpCanvas.initValue();
-                cpCanvas.setValue(selectedColor);
+                cpCanvas.refreshCanvas();
+                cpCanvas.setValue(globals.selectedColor);
                 document.getElementById("colorPickerContainer").appendChild(cpCanvas);
             }
 
-            function refreshPixelMapUI(){
-                for(var x=0;x<numRows;x++){
-                    for(var y=0; y<numCols;y++){
-                        document.getElementById("pixel_"+x+"_"+y).setValue(pixelMap[x][y]);
-                    }
-                }
-            }
-            
-            function createPixelMapUI(){
-                for(var x=0;x<(numRows);x++){
-                    for(var y=0;y<(numCols);y++){
-                        var canvas=document.createElement('canvas');
-                        canvas.className="pixel"
-                        canvas.id="pixel_"+x+"_"+y
-                        canvas.x=x;
-                        canvas.y=y;
-                        canvas.value=0;
-                        canvas.num=x;
-                        canvas.currentChannel=x-1;
-                        canvas.updateValue=function(event,action){
-                            needToUpdatePixelMap=true;
-                            var ctx = this.getContext("2d");
-                            ctx.clearRect(0, 0, this.width, this.height);
-                            if(action=="add"){
-                                ctx.fillStyle = "rgb("+colorMap[0][selectedColor]+","+colorMap[1][selectedColor]+","+colorMap[2][selectedColor]+")";
-                                this.value=selectedColor;
-                            }
-                            if(action=="remove"){
-                                ctx.fillStyle = "rgb("+colorMap[0][colorMap[0].length-1]+","+colorMap[1][colorMap[0].length-1]+","+colorMap[2][colorMap[0].length-1]+")";
-                                this.value=colorMap[0].length-1;
-                            }
-                            ctx.fillRect(0, 0, this.width,this.height );
-                            for(var x=0;x<numRows;x++){
-                                for(var y=0; y<numCols;y++){
-                                    pixelMap[x][y]=document.getElementById("pixel_"+x+"_"+y).value;
-                                }
-                            }
-                        }
-                        canvas.onmousedown=function(event){
-                            if(mouseButtonState==1){
-                                this.updateValue(event,"add");
-                            }
-                            if(mouseButtonState==2){
-                                this.updateValue(event,"remove");
-                            }
-                        }
-                        canvas.onmousemove=function(event){
-                            if(mouseButtonState==1){
-                                this.updateValue(event,"add");
-                            }
-                            if(mouseButtonState==2){
-                                this.updateValue(event,"remove");
-                            }
-                        }
-                        canvas.setValue=function(value){
-                            this.value=value;
-                            var ctx = this.getContext("2d");
-                            ctx.clearRect(0, 0, this.width, this.height);
-                            ctx.fillStyle = "rgb("+colorMap[0][this.value]+","+colorMap[1][this.value]+","+colorMap[2][this.value]+")";
-                            ctx.fillRect(0, 0, this.width, this.height ); 
-                        }
-                        canvas.ontouchstart=function(event){
-                            needToUpdatePixelMap=true;
-                            var ctx = this.getContext("2d");
-                            ctx.clearRect(0, 0, this.width, this.height);
-                            ctx.fillStyle = "rgb("+colorMap[0][selectedColor]+","+colorMap[1][selectedColor]+","+colorMap[2][selectedColor]+")";
-                            this.value=selectedColor;
-                            ctx.fillRect(0, 0, this.width,this.height );
-                            for(var x=0;x<numRows;x++){
-                                for(var y=0; y<numCols;y++){
-                                    pixelMap[x][y]=document.getElementById("pixel_"+x+"_"+y).value;
-                                }
-                            }
-                        }
-                        canvas.ontouchmove=function(event){
-                            needToUpdatePixelMap=true;
-                            try{
-                                document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY).value=selectedColor;
-                                document.elementFromPoint(event.touches[0].clientX, event.touches[0].clientY).updateValue(event,"add");
-                            }
-                            catch{}
-                        }
-                        document.getElementById("pixelMapContainer").appendChild(canvas);           
-                    }    
-                }
-                createColorPicker();
-                refreshPixelMapUI();
-            }
-
-            function createSliderElements(){
+            function createSynthSliders(){
                 var labelsDiv=document.createElement('div');
                 var slidersDiv=document.createElement('div');
                 labelsDiv.id="labelsDiv";
                 slidersDiv.id="slidersDiv";
-                document.getElementById("slidersContainer").appendChild(labelsDiv);
-                document.getElementById("slidersContainer").appendChild(slidersDiv);
+                document.getElementById("synthSlidersContainer").appendChild(labelsDiv);
+                document.getElementById("synthSlidersContainer").appendChild(slidersDiv);
                 for(var x=1; x<9; x++){
                     var canvas=document.createElement('canvas');
                     canvas.className="slider"
@@ -896,6 +830,11 @@
                     canvas.num=x;
                     canvas.currentChannel=x-1;
                     canvas.isSelected=false;
+                    canvas.refresh=function(){
+                        this.width=parseInt(document.getElementById("slidersDiv").offsetWidth/8);
+                        this.height=parseInt(document.getElementById("slidersDiv").offsetHeight*.8);
+                        this.setValue(globals.synthSliderValues[globals.selectedPreset-1][this.num-1]);
+                    }
                     canvas.updateValue=function(event){
                         var ctx = this.getContext("2d");
                         ctx.clearRect(0, 0, this.width, this.height);
@@ -907,11 +846,11 @@
                         }
                         for(var y=1;y<9;y++){
                             if(this.num==y){
-                                ledPresetsPayload[selectedPreset-1][y-1]=value;
+                                globals.synthSliderValues[globals.selectedPreset-1][y-1]=value;
                             }
                         }
                         console.log('slider updateValue');
-                        makeUpdateLedPresetsPostCall();
+                        globals.needToUpdateLedPresets=true;
                     }
                     canvas.onmouseup=function(event){
                         this.isSelected=false;
@@ -933,7 +872,7 @@
                         var ctx = this.getContext("2d");
                         ctx.clearRect(0, 0, this.width, this.height);
                         ctx.fillStyle = "#222222";
-                        ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) ); 
+                        ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) );
                     }
                     canvas.ontouchstart=function(event){
                         this.isSelected=true;
@@ -957,10 +896,8 @@
                             event.offsetY=eventOffsetY;  
                             this.updateValue(event);
                         }
-                    }
-                    
+                    }                    
                     slidersDiv.appendChild(canvas);
-
                     var sliderLabelValues=[
                         'Color',
                         'ColorSpread',
@@ -976,94 +913,171 @@
                     label.id="sliderLabel"+x;
                     labelsDiv.appendChild(label)
                     label.innerHTML=sliderLabelValues[canvas.num-1];
+                    label.refreshLabel=function(){
+                        this.style.lineHeight=parseInt(this.offsetHeight*.9)+'px';
+                    }
                 }
-                handleSelectedPresetButton(5);
-            }        
+            }
 
-            function rotateDataHistoryBuffer(incomingValue){
-                for(var x=0; x<dataHistoryBufferLength; x++){
-                    if(x<(dataHistoryBufferLength-1)){
-                        dataHistoryBuffer[0][x]=dataHistoryBuffer[0][x+1];
-                        dataHistoryBuffer[1][x]=dataHistoryBuffer[1][x+1];
-                        dataHistoryBuffer[2][x]=dataHistoryBuffer[2][x+1];
-                        dataHistoryBuffer[3][x]=dataHistoryBuffer[3][x+1];
+            function makeGetSettingsCall(){
+                var urlString='http://'+location.host + '/getSettings'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200){
+                    var getResponse=JSON.parse(this.response);
+                    console.log(JSON.parse(this.response));
+                    for (var x in globals.settingsPageFields){
+                        document.getElementById(globals.settingsPageFields[x].name).value=getResponse[globals.settingsPageFields[x].name];
+                    }
+                    makeGetLedPresetsCall();
+                }
+                };
+                xhttp.open('GET', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send();
+            }
+
+            function makeUpdateSettingsCall(){
+                var payload={};
+                for (var x in globals.settingsPageFields){
+                    payload[globals.settingsPageFields[x].name]=document.getElementById(globals.settingsPageFields[x].name).value;
+                }
+                var urlString='http://'+location.host + '/updateSettings'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200){
+                        console.log(this.responseText);
+                    }
+                };
+                xhttp.open('POST', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send(JSON.stringify(payload));
+            }
+
+            function makeGetLedPresetsCall(){
+                var urlString='http://'+location.host + '/getLedPresets'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200){
+                        var getResponse=JSON.parse(this.response);
+                        console.log(JSON.parse(this.response));
+                        for(var x=0;x<5;x++){
+                            for(var y=0; y<8; y++){
+                                globals.synthSliderValues[x][y]=getResponse["ledPresets"][x][y];
+                                document.getElementById('slider'+parseInt(y+1)).setValue(globals.synthSliderValues[x][y]);
+                            }
+                        }
+                        for(var x=0;x<5;x++){
+                            if(getResponse["presetTypes"][x]==1){
+                                globals.presetTypes[x]="pixel";
+                            }else{
+                                globals.presetTypes[x]="synth";
+                            }
+                        }
+                        handleSelectedPresetButton(parseInt(getResponse["selectedPreset"]+1),"numberbutton");
+                        makeGetPixelMapCall();
+                    }
+                };
+                xhttp.open('GET', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send();
+            }
+
+            function makeUpdateLedPresetsCall(){
+                globals.presetValueDebounceTime=new Date().getTime();
+                var tempPresetTypes=[];
+                for(var x=0; x<5;x++){
+                    if(globals.presetTypes[x]=="pixel"){
+                        tempPresetTypes.push(1);
                     }else{
-                        dataHistoryBuffer[0][x]=incomingValue[0];
-                        dataHistoryBuffer[1][x]=incomingValue[1];
-                        dataHistoryBuffer[2][x]=incomingValue[2];
-                        dataHistoryBuffer[3][x]=incomingValue[3];
+                        tempPresetTypes.push(0);
                     }
                 }
-                for(var x=1; x<5; x++){
-                    document.getElementById("dataPageGauge_"+x).updateValue();
+                var payload={"ledPresets":globals.synthSliderValues, "selectedPreset":parseInt(globals.selectedPreset-1), "presetTypes": tempPresetTypes};
+                var urlString='http://'+location.host + '/updateLedPresets'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200){
+                    console.log(this.responseText);
                 }
+                };
+                xhttp.open('POST', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send(JSON.stringify(payload));
             }
 
-            function createDataPageGauges(){
-                for(var x=1; x<5; x++){
-                    var label=document.createElement('div');
-                    label.className="dataPageGaugeTable-label"
-                    label.id="dataPageLabel_"+x
-                    label.num=x;
-                    label.innerHTML=label.num;
-                    var sliderLabelValues=[
-                        'X:',
-                        'Y:',
-                        'Z:',
-                        'Button:'
-                    ]
-                    label.innerHTML=sliderLabelValues[label.num-1];
-                    document.getElementById("dataPageLabelContainer").appendChild(label)
-
-                    var canvas=document.createElement('canvas');
-                    canvas.className="dataPageGaugeTable-item"
-                    canvas.id="dataPageGauge_"+x
-                    canvas.num=x;
-                    canvas.width=800;
-                    canvas.height=200;
-                    canvas.updateValue=function(){
-                        var ctx = this.getContext("2d");
-                        ctx.clearRect(0, 0, this.width, this.height);
-                        ctx.fillStyle = "#555555";
-                        ctx.fillRect(0, 0, this.width, this.height );
-
-                        ctx.lineWidth = 2;
-                        ctx.strokeStyle = '#bbbbbb';
-                        ctx.beginPath();
-                        for(var x=0; x<dataHistoryBufferLength; x++){
-                            if(x==0){
-                                ctx.moveTo(x*parseInt(this.width/dataHistoryBufferLength), parseInt(dataHistoryBuffer[this.num-1][x]*this.height));
-                            }else{
-                                ctx.lineTo(x*parseInt(this.width/dataHistoryBufferLength), parseInt(dataHistoryBuffer[this.num-1][x]*this.height));
+            function makeGetPixelMapCall(){
+                var urlString='http://'+location.host + '/getPixelMapPresets'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200){
+                        var getResponse=JSON.parse(this.response);
+                        console.log(JSON.parse(this.response));
+                        for(var x=0;x<5;x++){
+                            for(var y=0; y<8;y++){
+                                for(var z=0; z<8;z++){
+                                    globals.pixelMap[x][y][z]=getResponse["pixelMap"][x][y][z];
+                                }
                             }
                         }
-                        ctx.lineTo(this.width, parseInt(dataHistoryBuffer[this.num-1][dataHistoryBufferLength-1]*this.height));
-                        ctx.stroke();
+                        syncView();
                     }
-                    canvas.setValue=function(){
-                        var ctx = this.getContext("2d");
-                        ctx.clearRect(0, 0, this.width, this.height);
-                        ctx.fillStyle = "#555555";
-                        ctx.fillRect(0, 0, this.width, this.height );
-
-                        ctx.lineWidth = 2;
-                        ctx.strokeStyle = '#bbbbbb';
-                        ctx.beginPath();
-                        for(var x=0; x<dataHistoryBufferLength; x++){
-                            if(x==0){
-                                ctx.moveTo(x*parseInt(this.width/dataHistoryBufferLength), parseInt(dataHistoryBuffer[this.num-1][x]*this.height));
-                            }else{
-                                ctx.lineTo(x*parseInt(this.width/dataHistoryBufferLength), parseInt(dataHistoryBuffer[this.num-1][x]*this.height));
-                            }
-                        }
-                        ctx.lineTo(this.width, parseInt(dataHistoryBuffer[this.num-1][dataHistoryBufferLength-1]*this.height));
-                        ctx.stroke();
-                    }
-                    canvas.setValue();
-                    document.getElementById("dataPageGaugeTable").appendChild(canvas)
-                }
+                };
+                xhttp.open('GET', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send();
             }
 
+            function makeUpdatPixelMapCall(){
+                var payload={"pixelMap":globals.pixelMap};
+                var urlString='http://'+location.host + '/updatePixelMap'
+                var xhttp = new XMLHttpRequest(); 
+                xhttp.onreadystatechange = function() {
+                if(this.readyState == 4 && this.status == 200){
+                    console.log(this.responseText);
+                }
+                };
+                xhttp.open('POST', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send(JSON.stringify(payload));
+            }
+
+            function initWebSocket(){
+                socket = new WebSocket("ws:/" + "/" + location.host + ":81");
+                socket.onopen = function(e) {  console.log("[socket] socket.onopen "); };
+                socket.onerror = function(e) {
+                    console.log("[socket] socket.onerror ");
+                    console.log(e);
+                    setTimeout(function(){
+                        console.log("retrying websocket connection initialization")
+                        initWebSocket();
+                    },1000);
+                };
+                socket.onclose = function(e) {
+                    console.log("[socket] socket.onerror ");
+                    console.log(e);
+                    setTimeout(function(){
+                        console.log("retrying websocket connection initialization")
+                        initWebSocket();
+                    },1000);
+                };
+                socket.onmessage = function(e) {  
+                    console.log('Received data from websocket: '+e.data);
+                    globals.socketConnectivityCheck=new Date().getTime();
+                    var incomingData=e.data.split(',');
+                    var incomingPreset=parseInt(incomingData[incomingData.length-1])%5;
+                    rotateDataHistoryBuffer([parseFloat(incomingData[0]),parseFloat(incomingData[1]),parseFloat(incomingData[2]),parseFloat(parseInt(incomingData[3])/5)+.05 ]);
+                    if( (new Date().getTime()-globals.presetValueDebounceTime) > 2000){
+                        if(globals.selectedPreset!=(incomingPreset+1)){
+                            globals.selectedPreset=(incomingPreset+1);
+                            syncView();
+                            console.log('socket change');
+                        }
+                    }
+                    return true;
+                };
+            }
+        
         </script>
     </body>
 </html>

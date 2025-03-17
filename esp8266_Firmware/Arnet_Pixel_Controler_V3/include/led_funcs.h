@@ -19,9 +19,9 @@ void setLEDSToASingleColor(int r, int g, int b){
 
 void handle_leds(int currentMode){
   // chasePattern(colorIndex, colorSpread, cycleTime, trailLength, trailSpread, dir, strobe, brightness); // Normalized to 0-255 Range
-  if(currentMode==4){
-    POVPlayer();
+  if(epdata.presetTypes[currentMode]==1){
+    POVPlayer(currentMode);
   }else{
-    chasePattern(epdata.ledPresets[currentMode%4][0],epdata.ledPresets[currentMode%4][1],epdata.ledPresets[currentMode%4][2],epdata.ledPresets[currentMode%4][3],epdata.ledPresets[currentMode%4][4],epdata.ledPresets[currentMode%4][5],epdata.ledPresets[currentMode%4][6],epdata.ledPresets[currentMode%4][7]);
+    chasePattern(epdata.ledPresets[currentMode][0],epdata.ledPresets[currentMode][1],epdata.ledPresets[currentMode][2],epdata.ledPresets[currentMode][3],epdata.ledPresets[currentMode][4],epdata.ledPresets[currentMode][5],epdata.ledPresets[currentMode][6],epdata.ledPresets[currentMode][7]);
   }
 }
