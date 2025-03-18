@@ -8,8 +8,9 @@
             display:block;
             height:100%;
             width:100%;
-            z-index: -10000;
+            z-index: 10000;
             background-color: grey;
+            overflow: auto;
         }
         body{
           margin: 0px;
@@ -22,8 +23,9 @@
             height:70px;
             display: grid;
             grid-template-columns: 2% auto auto auto auto auto auto auto auto auto auto auto 5%;
-            background-color: black;
-            border-bottom:6px solid darkgrey;
+            background-color: #020240;
+            border-bottom:3px solid darkgrey;
+            /* border-top:2px solid darkgrey; */
             /* border-top:1px solid #eeeeee; */
         }
         #mainLogo{
@@ -31,11 +33,12 @@
         }
         .header-item {
             color:#eeeeee;
-            background-color: black;
+            background-color: #020240;
             font-size: small;
             font-weight:bold;
             text-align: center;
-            border: 0px solid black;
+            border: 0px solid #020240;
+            /* border-top:3px solid darkgrey; */
             height:100%;
         }
         #topSpacer{
@@ -125,6 +128,7 @@
             background-color:rgb(60, 60, 60);
             /* height:150%; */
             margin-left:32%;
+            margin-bottom: 36px;
             color: black;
             font-size:large;
             border: 2px solid black;
@@ -156,7 +160,8 @@
             background-color: grey;
         }
         #pixelMapContainer{
-            background-color: green;
+            background-color: grey;
+            z-index: 4000000000;
             margin-bottom:20px;
             display:grid;
             grid-template-columns: auto auto auto auto auto auto auto auto;
@@ -179,7 +184,7 @@
             height:100%;
         }
         #synthSlidersContainer{
-            background-color: blue;
+            background-color: grey;
             height:121%;
             display:none;
             grid-template-rows: 20% 80%;
@@ -213,61 +218,69 @@
     </head>
     <body>
         <div id="background">
-        </div>
-        <div id="header">
-            <button class="header-item"></button>
-            <button class="header-item" id="mainLogo"onclick="requestFullScreen();">NimbusKit</button>
-            <button class="header-item"></button>  
-            <button class="header-item"></button>
-            <button class="header-item"></button>
-            <button class="header-item"></button>
-            <button class="header-item"></button>
-            <button class="header-item"></button>
-            <button class="header-item"></button>
-            <button class="header-item" onclick="goToPage('presetsPage');">Presets</button>
-            <button class="header-item" onclick="goToPage('settingsPage');">Settings</button>
-            <button class="header-item" onclick="goToPage('dataPage');">Data</button>
-            <button class="header-item"></button>
-        </div>
-        <div id="topSpacer">
-        </div>
-        <div id="dataPage" class="page">
-            <div id="dataPageLabelsContainer"></div>
-            <div id="dataPageGraphsContainer"></div>
-        </div>
-        <div id="presetsPage" class="page">
-            <div id="selectedPresetContainer">
-                <button class="selectedPresetContainerLabel">Number:</button>
-                <button id="selectedPresetButton1" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">1</button>
-                <button id="selectedPresetButton2" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">2</button>
-                <button id="selectedPresetButton3" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">3</button>
-                <button id="selectedPresetButton4" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">4</button>
-                <button id="selectedPresetButton5" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">5</button>
-                <button id="selectedPresetTypeSpacer" class="selectedPresetContainerButton"></button>
-                <button class="selectedPresetContainerLabel">Type:</button>      
-                <button id="synthTypeButton" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton('synth','typebutton')">Synth</button>
-                <button id="pixelTypeButton" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton('pixel','typebutton')">Pixel</button>
+            <div id="header">
+                <button class="header-item"></button>
+                <button class="header-item" id="mainLogo"onclick="requestFullScreen();">NimbusKit</button>
+                <button class="header-item"></button>  
+                <button class="header-item"></button>
+                <button class="header-item"></button>
+                <button class="header-item"></button>
+                <button class="header-item"></button>
+                <button class="header-item"></button>
+                <button class="header-item"></button>
+                <button class="header-item" onclick="goToPage('presetsPage');">Presets</button>
+                <button class="header-item" onclick="goToPage('settingsPage');">Settings</button>
+                <button class="header-item" onclick="goToPage('dataPage');">Data</button>
+                <button class="header-item"></button>
             </div>
-            <div id="synthSlidersContainer">
+            <div id="topSpacer">
             </div>
-            <div id="pixelMapContainer" oncontextmenu="return false;">
+            <div id="dataPage" class="page">
+                <div id="dataPageLabelsContainer"></div>
+                <div id="dataPageGraphsContainer"></div>
             </div>
-            <div id="colorPickerContainer">
+            <div id="presetsPage" class="page">
+                <div id="selectedPresetContainer">
+                    <button class="selectedPresetContainerLabel">Number:</button>
+                    <button id="selectedPresetButton1" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">1</button>
+                    <button id="selectedPresetButton2" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">2</button>
+                    <button id="selectedPresetButton3" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">3</button>
+                    <button id="selectedPresetButton4" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">4</button>
+                    <button id="selectedPresetButton5" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">5</button>
+                    <button id="selectedPresetTypeSpacer" class="selectedPresetContainerButton"></button>
+                    <button class="selectedPresetContainerLabel">Type:</button>      
+                    <button id="synthTypeButton" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton('synth','typebutton')">Synth</button>
+                    <button id="pixelTypeButton" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton('pixel','typebutton')">Pixel</button>
+                </div>
+                <div id="synthSlidersContainer">
+                </div>
+                <div id="pixelMapContainer" oncontextmenu="return false;">
+                </div>
+                <div id="colorPickerContainer">
+                </div>
             </div>
-        </div>
-        <div id="settingsPage" class="page">
-        </div>
-        <div id="bottomSpacer">
+            <div id="settingsPage" class="page">
+            </div>
+            <div id="bottomSpacer">
+            </div>
         </div>
         <script>
-            
+
             globals={
                 currentPage: "presetsPage",
                 dataHistoryBuffer: [
-                    [.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5],
-                    [.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5],
-                    [.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5],
-                    [.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5]
+                    [
+                        .5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5
+                    ],
+                    [
+                        .5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5
+                    ],
+                    [
+                        .5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5
+                    ],
+                    [
+                        .5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5
+                    ],
                 ],
                 settingsPageFields:[
                 {
@@ -309,7 +322,7 @@
                 numRows: 8,
                 numCols: 8,
                 pixelMap: [
-                   [[0,0,0,0,0,0,0,0],
+                    [[0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
@@ -369,8 +382,8 @@
                 needToUpdatePixelMap: false,
                 needToUpdateLedPresets: false,
                 socketConnectivityCheck: new Date().getTime(),
-                presetValueDebounceTime: new Date().getTime()
-            };
+                presetValueDebounceTime: new Date().getTime(),
+            }
 
             window.onload = function(){
                 function logButtons(event){
@@ -383,6 +396,7 @@
                 createPixelMapUI();
                 createColorPicker();
                 createSynthSliders();
+                initOrientationListener();
                 goToPage(globals.currentPage);
                 makeGetSettingsCall();
                 updatePixelMapInterv=setInterval(function(){
@@ -487,6 +501,8 @@
                 for(var x=1; x<9; x++){
                     document.getElementById("slider"+x).refresh();
                 }
+                // adjust for screen orientation
+                processOrientation((screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation);
             }
 
             function goToPage(pageName){
@@ -520,7 +536,7 @@
 
 			function requestFullScreen() {
 				// Supports most browsers and their versions.
-				var element = document.body; // Make the body go full screen.
+				var element = document.getElementById("background"); // Make the body go full screen.
 				var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
 			
 				if (requestMethod) { // Native full screen.
@@ -746,9 +762,18 @@
                     var ctx = this.getContext("2d");
                     ctx.fillStyle = "rgba(5,5,5,.8)";
                     var tabWidth=8;
+                    if(event.offsetX<0){
+                        event.offsetX=0;
+                    }
+                    if(event.offsetX>this.offsetWidth){
+                        event.offsetX=this.offsetWidth;
+                    }
                     var tabCenter=(event.offsetX/this.offsetWidth*this.width);
                     ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );  
                     globals.selectedColor=globals.colorMap[0].length-1-parseInt(event.offsetX/this.offsetWidth*globals.colorMap[0].length);
+                    if(globals.selectedColor<0){
+                        globals.selectedColor=0;
+                    }
                     console.log(globals.selectedColor)
                 }
                 cpCanvas.onmouseup=function(event){
@@ -777,6 +802,8 @@
                 }
                 cpCanvas.ontouchstart=function(event){
                     this.isSelected=true;
+                    event.offsetX=parseInt(event.touches[0].clientX-cpCanvas.offsetLeft);
+                    this.updateValue(event);
                 }
                 cpCanvas.ontouchend=function(event){
                     this.isSelected=false;
@@ -785,31 +812,8 @@
                     this.isSelected=false;
                 }
                 cpCanvas.ontouchmove=function(event){
-                    var ctx = this.getContext("2d");
-                    ctx.clearRect(0, 0, this.width, this.height);
-                    // ctx.fillStyle = 'rgba(50,50,50,.75)';
-                    var gradient = ctx.createLinearGradient(0,0,this.width,0);
-                    gradient.addColorStop(0, "black");
-                    gradient.addColorStop(.1, "blue");
-                    gradient.addColorStop(0.33, "green");
-                    gradient.addColorStop(.66, "red");
-                    gradient.addColorStop(1, "blue");
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(0, 0, this.width, this.height );
-                    //
-                    ctx.fillStyle = "rgba(5,5,5,.8)";
-                    eventOffsetX=parseInt(event.touches[0].clientX-cpCanvas.offsetLeft);
-                    if(eventOffsetX<0){
-                        eventOffsetX=0;
-                    }
-                    if(eventOffsetX>=this.offsetWidth){
-                        eventOffsetX=this.offsetWidth;
-                    }                    
-                    var tabWidth=8;
-                    var tabCenter=(eventOffsetX/this.offsetWidth*this.width);
-                    ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );
-                    selectedColor=colorMap[0].length-1-parseInt(eventOffsetX/this.offsetWidth*colorMap[0].length);
-                    console.log(selectedColor)
+                    event.offsetX=parseInt(event.touches[0].clientX-cpCanvas.offsetLeft);
+                    this.updateValue(event);
                 }
                 cpCanvas.refreshCanvas();
                 cpCanvas.setValue(globals.selectedColor);
@@ -1078,6 +1082,69 @@
                 };
             }
         
+            function initOrientationListener(){
+                var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+                processOrientation(orientation);
+				window.addEventListener("orientationchange", function() {
+                    var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+                    processOrientation(orientation);
+				}, false);
+				window.addEventListener("resume", function() {
+                    var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
+                    processOrientation(orientation);
+				}, false);
+			}
+
+            function getPlatformOS() {
+                const userAgent = window.navigator.userAgent;
+                let os = null;
+                const isIOS = (/iPad|iPhone|iPod/.test(userAgent) ||
+                (/Mac|Mac OS|MacIntel/gi.test(userAgent) && (navigator.maxTouchPoints > 1 || "ontouchend" in document))) && !window.MSStream;
+
+                if (isIOS) {
+                    os = 'iOS';
+                } else if (/'Win32|Win64|Windows|Windows NT|WinCE/gi.test(userAgent)) {
+                    os = 'Windows';
+                } else if (/Android/gi.test(userAgent)) {
+                    os = 'Android';
+                } else if (/Linux/gi.test(userAgent)) {
+                    os = 'Linux';
+                }
+
+                return os;
+            }
+
+            function processOrientation(orientation){
+                console.log(orientation+" "+getPlatformOS())
+                if (orientation.indexOf("portrait")!=-1 && (getPlatformOS()=='iOS' || getPlatformOS()=='Android' )) {
+                    if(document.fullscreenElement==null){
+                        document.getElementById("selectedPresetContainer").style.marginTop='50px';
+                        document.getElementById("selectedPresetContainer").style.marginBottom='';
+                        document.getElementById("selectedPresetContainer").style.height='40%';
+                        document.getElementById("pixelMapContainer").style.marginBottom='110px';
+                        document.getElementById("colorPickerContainer").style.height='70%';
+                    }else{
+                        document.getElementById("selectedPresetContainer").style.marginTop='0px';
+                        document.getElementById("selectedPresetContainer").style.marginBottom='';
+                        document.getElementById("selectedPresetContainer").style.height='60%';
+                        document.getElementById("pixelMapContainer").style.marginBottom='50px';
+                        document.getElementById("colorPickerContainer").style.height='70%';
+                    }
+                }else if(orientation.indexOf("landscape")!=-1 && (getPlatformOS()=='iOS' || getPlatformOS()=='Android' )){
+                    document.getElementById("selectedPresetContainer").style.marginTop='-16px';
+                    document.getElementById("selectedPresetContainer").style.marginBottom='10px';
+                    document.getElementById("selectedPresetContainer").style.height='';
+                    document.getElementById("pixelMapContainer").style.marginBottom='10px';
+                    document.getElementById("colorPickerContainer").style.height='100%';
+                }else{
+                    document.getElementById("selectedPresetContainer").style.marginTop='';
+                    document.getElementById("selectedPresetContainer").style.marginBottom='';
+                    document.getElementById("selectedPresetContainer").style.height='';
+                    document.getElementById("pixelMapContainer").style.marginBottom='';
+                    document.getElementById("colorPickerContainer").style.height='';                   
+                }
+            }
+
         </script>
     </body>
 </html>
