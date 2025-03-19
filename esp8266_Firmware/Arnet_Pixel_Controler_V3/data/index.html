@@ -187,7 +187,9 @@
             background-color: grey;
             height:121%;
             display:none;
+            width:100%;
             grid-template-rows: 20% 80%;
+            margin-left:-3px;
         }
         #labelsDiv {
             display: grid;
@@ -209,7 +211,7 @@
             text-align: center;
         }
         .slider {
-            background-color: grey;
+            background-color: rgb(70,70,70);
             width: 100%;
             height: 100%;
             border: 3px solid black;
@@ -880,6 +882,8 @@
                     }
                     canvas.ontouchstart=function(event){
                         this.isSelected=true;
+                        event.offsetY=parseInt(event.touches[0].clientY-this.offsetTop);
+                        this.updateValue(event);
                     }
                     canvas.ontouchend=function(event){
                         this.isSelected=false;
@@ -918,7 +922,7 @@
                     labelsDiv.appendChild(label)
                     label.innerHTML=sliderLabelValues[canvas.num-1];
                     label.refreshLabel=function(){
-                        this.style.lineHeight=parseInt(this.offsetHeight*.9)+'px';
+                        this.style.lineHeight=parseInt(this.parentNode.offsetHeight*.9)+'px';
                     }
                 }
             }
