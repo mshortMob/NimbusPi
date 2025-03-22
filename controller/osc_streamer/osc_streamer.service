@@ -1,0 +1,14 @@
+[Unit]
+Description=stream_control_inputs_over_osc
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/node /root/osc_streamer.js 
+WorkingDirectory=/root
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target

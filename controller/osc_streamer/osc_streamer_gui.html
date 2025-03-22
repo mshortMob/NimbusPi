@@ -1,0 +1,91 @@
+<html>
+    <head>
+      <style>
+          body {
+              background-color: lightgrey;
+              padding: 10px;
+          }
+      </style>
+    </head>
+    <body>
+    </body>
+    <script>
+
+        function updateSettings(){
+            var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("POST", location.origin+"/updateSettings", true);
+            xmlhttp.setRequestHeader("content-type", "application/json");
+            var payload=JSON.stringify({
+                "ipAddress":document.getElementById('ipAddress').value,
+                "port":document.getElementById('port').value,
+                "oscAddress": document.getElementById('oscAddress').value,
+                "minValue":document.getElementById('minValue').value,
+                "maxValue": document.getElementById('maxValue').value
+            });
+            xmlhttp.send(payload);
+            xmlhttp.onload = function(e){
+                console.log("updatedSettings "+xmlhttp.status);
+                if(xmlhttp.status==200 && document.getElementById('saveButton').style.backgroundColor!='green'){
+                    document.getElementById('saveButton').style.backgroundColor='green';
+                    setTimeout(function(){
+                        document.getElementById('saveButton').style.backgroundColor='rgb(239, 239, 239)';
+                    },2000);
+                }
+            }
+        }
+      
+        window.onload = (event) => {
+            createElements();
+            var xmlhttp=new XMLHttpRequest();
+            xmlhttp.open("GET", location.origin+"/recallSettings", true);
+            xmlhttp.send();
+            xmlhttp.onload = function(e){
+                console.log(xmlhttp.response);
+                var temp=JSON.parse(xmlhttp.response);
+                document.getElementById('port').value=temp.port;
+                document.getElementById('ipAddress').value=temp.ipAddress;
+                document.getElementById('oscAddress').value=temp.oscAddress;
+                document.getElementById('minValue').value=temp.minValue;
+                document.getElementById('maxValue').value=temp.maxValue;
+            }
+        };
+
+        function createElements(){
+            textFields=[
+                ['Server Address:','ipAddress'],
+                ['Port:','port'],
+                ['OSC Path:','oscAddress'],
+                ['Minimum Value:','minValue'],
+                ['Maximum Value:','maxValue']
+            ];
+
+            for(var x=0; x<textFields.length; x++){
+                var labelElement = document.createElement('label');
+                labelElement.innerHTML = textFields[x][0];    
+                labelElement.for=textFields[x][1];
+                labelElement.style.width='20%';
+                document.body.appendChild(labelElement);
+
+                var inputElement=document.createElement('input');
+                inputElement.type="text";
+                inputElement.id=textFields[x][1];
+                inputElement.style.marginLeft='5px';
+                inputElement.style.width='60%';
+                inputElement.name=textFields[x][1];
+                document.body.appendChild(inputElement);
+
+                var br = document.createElement("br");
+                document.body.appendChild(br);
+                var br = document.createElement("br");
+                document.body.appendChild(br);
+            }
+
+            var saveButton=document.createElement('BUTTON');
+            saveButton.id='saveButton';
+            saveButton.onclick=function(){updateSettings()};
+            saveButton.innerHTML='Save';
+            document.body.appendChild(saveButton);
+        }
+    
+    </script>
+</html>

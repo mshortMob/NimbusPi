@@ -1,0 +1,16 @@
+{
+    "name": "js_controller",
+    "version": "1.0.0",
+    "author": "Your Name <email@example.com>",
+    "type": "module",
+    "dependencies": {
+      "express": "*",
+      "@hkaspy/joystick-linux": "*",
+      "artnet": "*",
+      "body-parser": "*",
+      "fs": "*",
+      "ws": "*",
+      "path": "*",
+      "node-osc": "*"
+    }
+  }

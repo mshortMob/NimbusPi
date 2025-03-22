@@ -1,0 +1,1 @@
+{"ipAddress":"192.168.0.216","port":"3333","oscAddress":"/test3","minValue":"0.0","maxValue":"1.0"}

@@ -1,70 +1,106 @@
 <html>
+  <body>
     <head>
-        <style>
-            body {
-                background-color: black;
-                padding: 10px;
-            }
-            #mainContainer{
-                border:4px solid #555555;
-                width:85%;
-                height:93%;
-                position:absolute;
-                left:1%;
-                top:2%;
-            }
-            #gridContainer {
-                display: grid;
-                position:absolute;
-                width:11.5%;
-                height:93%;
-                left:87%;
-                top:2%;
-                grid-template-columns: auto;
-                border:4px solid #555555;
-            }
-            .viewContainer1{
-                display: grid;
-                grid-template-columns: auto auto auto auto;
-            }
-            .viewContainer2{
-                display: grid;
-                grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
-            }
-            .viewContainer3{
-                display: grid;
-                grid-template-columns: auto auto auto auto;
-            }
-            .viewContainer4{
-                display: grid;
-                grid-template-rows: 25% 75%;
-            }
-            .viewContainer5{
-                display: grid;
-                grid-template-columns: auto auto;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="mainContainer"></div>
-        <div id="gridContainer"> </div>
-    </body>
-    <script> 
+      <style>
+          body {
+              background-color: black;
+              padding: 10px;
+          }
+          #mainContainer{
+              border:4px solid #555555;
+              width:85%;
+              height:93%;
+              position:absolute;
+              left:1%;
+              top:2%;
+          }
+          #gridContainer {
+              display: grid;
+              position:absolute;
+              width:11.5%;
+              height:93%;
+              left:87%;
+              top:2%;
+              grid-template-columns: auto;
+              border:4px solid #555555;
+          }
+          .viewContainer1{
+              display: grid;
+              grid-template-columns: auto auto auto auto;
+          }
+          .viewContainer2{
+              display: grid;
+              grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+          }
+          .viewContainer3{
+              display: grid;
+              grid-template-columns: auto auto auto auto auto;
+          }
+          .viewContainer4{
+              display: grid;
+              grid-template-rows: 25% 75%;
+          }
+          .viewContainer5{
+              display: grid;
+              grid-template-columns: auto auto;
+          }
+      </style>
+  </head>
+    <div id="mainContainer"></div>
+    <div id="gridContainer"> </div>
+  </body>
+    <script>
+      
+      const socket = new WebSocket("ws://"+location.hostname+":3003");
 
-        init();
-        function init(){
-            lastButtonNum=100;
-            pageNumber=1;
-            laserData={}
-            selectedPreset=1;
-            for(var x=1; x<17; x++){
-                laserData["scene"+x]={"color":1, "gobo":1, "positionX":0, "positionY":0, "scaleX":0, "scaleY":0, "rotation":0, "zoom":0, "animation":0, "dots":0  }
-            }
-            dataModel=[];
-            recallLaserData(true);
-        }  
+      init();
 
-        function createGrid(){
+      function init(){
+        lastButtonNum=100;
+        pageNumber=1;
+        laserData={}
+        selectedPreset=1;
+        for(var x=1; x<17; x++){
+            laserData["scene"+x]={"color":1, "gobo":1, "positionX":0, "positionY":0, "scaleX":0, "scaleY":0, "rotation":0, "zoom":0, "animation":0, "dots":0  }
+        }
+        dataModel=[];
+        createGrid();
+        isCruiseMode=false;
+      }  
+      
+      socket.addEventListener("open", (event) => {
+        // socket.send("Hello Server!");
+      });
+
+      socket.addEventListener("message", (event) => {
+        console.log("Message from server ", event.data);
+        if(JSON.parse(event.data).selectedPreset != 'undefined' ){
+            var tempObj=JSON.parse(event.data);
+            laserData=tempObj.laserData;
+            setSelectedPreset(tempObj.selectedPreset);
+            isCruiseMode=tempObj.isCruiseMode;
+            syncCruiseButton();
+            var lbp=tempObj.lastButtonPressed;
+            if(tempObj.isControllerFxMode==false){
+                if( lbp=="right-tab-on" || lbp=="left-tab-on"){
+                    document.getElementById("button1").click()
+                }
+                if( lbp=="a-button-on" || lbp=="x-button-on"){
+                    document.getElementById("button2").click()
+                }
+                if( lbp=="b-button-on" || lbp=="y-button-on"){
+                    document.getElementById("button3").click()
+                }
+                if( lbp=="left-stick-y-axis" || lbp=="left-stick-x-axis" || lbp=="right-stick-y-axis"  || lbp=="right-stick-x-axis"  || lbp=="pad-y-axis"  || lbp=="pad-x-axis" ){
+                document.getElementById("button4").click()
+                }
+            }else{
+                document.getElementById("button5").click()
+            }
+        }
+      });
+
+      function createGrid(){
             for(var x=1; x<6; x++){
 
                 var button=document.createElement('button');
@@ -113,9 +149,14 @@
                         document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
                     }
                     if(this.num==3){
-                        for(var x=1; x<17; x++){
-                            document.getElementById('goboButton'+x).style.opacity="1";
-                            document.getElementById('goboButton'+x).style.borderWidth="1px"
+                        for(var x=1; x<26; x++){
+                            if(x<17){
+                                document.getElementById('goboButton'+x).style.opacity="1";
+                                document.getElementById('goboButton'+x).style.borderWidth="1px"
+                            }else{
+                                document.getElementById('goboButton'+x).style.opacity=".95";
+                                document.getElementById('goboButton'+x).style.borderWidth="1px"
+                            }
                         }
                         document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.opacity=".3";
                         document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.borderWidth="2px"
@@ -160,6 +201,7 @@
                             }
                             this.style.backgroundColor="#666666"
                             selectedPreset=this.num;
+                            sendAllLaserDataToWebSocket();
                         }
                         viewContainer.appendChild(sceneButton);
                     }
@@ -189,6 +231,7 @@
                             this.style.opacity=".3";
                             this.style.borderWidth="2px"
                             laserData["scene"+selectedPreset].color=this.num;
+                            sendAllLaserDataToWebSocket();
                         }
                         viewContainer.appendChild(colorButton);
                     }
@@ -196,7 +239,7 @@
                 if(x==3){
                     // viewContainer.style.display="grid";
                     viewContainer.className="viewContainer3"
-                    for(var y=1; y<17; y++){
+                    for(var y=1; y<26; y++){
                         var goboButton=document.createElement('button');
                         goboButton.num=y;
                         goboButton.id="goboButton"+y;
@@ -211,14 +254,20 @@
                             goboButton.style.borderWidth="2px"
                         }
                         goboButton.onclick=function(){
-                            for(var x=1; x<17; x++){
+                            for(var x=1; x<26; x++){
                                 // document.getElementById('goboButton'+x).style.backgroundColor="#222222";
+                                if(x<17){
                                 document.getElementById('goboButton'+x).style.opacity="1";
                                 document.getElementById('goboButton'+x).style.borderWidth="1px"
+                                }else{
+                                    document.getElementById('goboButton'+x).style.opacity=".95";
+                                    document.getElementById('goboButton'+x).style.borderWidth="1px"
+                                }
                             }
                             this.style.opacity=".3";
                             this.style.borderWidth="2px"
                             laserData["scene"+selectedPreset].gobo=this.num;
+                            sendAllLaserDataToWebSocket();
                         }
                         viewContainer.appendChild(goboButton);
                     }
@@ -232,7 +281,6 @@
                         var menuButton=document.createElement('button');
                         menuButton.num=y;
                         menuButton.id="menuButton"+y;
-                        menuButton.isCruiseMode=false;
                         menuButton.cruiseSpeed=1;
                         menuButton.style.backgroundColor="#222222";
                         if(y==1){
@@ -255,11 +303,10 @@
                             menuButton.innerHTML="Save Current Preset To Block";
                         }
                         if(y==7){
-                            menuButton.innerHTML="Audio Cruise:0";
-                            menuButton.audioCruise=0;
+                            menuButton.innerHTML="Reboot";
                         }
                         if(y==8){
-                            menuButton.innerHTML="Accell Control:0";
+                            menuButton.innerHTML="Refresh";
                             menuButton.accellControl=0;
                         }
                         // menuButton.style.backgroundImage="url(./laserControllerData/c"+y+".png)";
@@ -267,13 +314,12 @@
                         // menuButton.style.backgroundSize="100% 100%"
                         menuButton.style.color="#aaaaaa";
                         menuButton.onmousedown=function(){
+                            
                             if(this.num==3){
-                                if(this.isCruiseMode){
-                                    this.style.opacity="1";
-                                }else{
-                                    this.style.opacity=".3";
-                                }
-                                this.isCruiseMode=!this.isCruiseMode;
+                                isCruiseMode=!isCruiseMode;
+                                syncCruiseButton();
+                                toggleCruiseMode();
+                                sendAllLaserDataToWebSocket();
                             }else{
                                 this.style.opacity=".3";
                             }
@@ -283,36 +329,27 @@
                                 }else{
                                     this.cruiseSpeed=1;
                                 }
+                                setCruiseSpeed();
                                 this.innerHTML="Cruise Speed:"+this.cruiseSpeed;
                             }
                             if(this.num==1){
-                                saveLaserData();
+                                savePresets();
                             }
                             if(this.num==2){
-                                recallLaserData(false);
+                                recallPresets();
                             }
                             if(this.num==5){
-                                saveSelectedPresetToAll();
+                                copyPresetToAll();
                             }
                             if(this.num==6){
-                                saveSelectedPresetToBlock();
+                                copyPresetToRow();
                             }
                             if(this.num==7){
-                                if(this.audioCruise<5){
-                                    this.audioCruise=this.audioCruise+.5;
-                                }else{
-                                    this.audioCruise=0;
-                                }
-                                this.innerHTML="Audio Cruise:"+this.audioCruise;
+                                this.innerHTML="Rebooting....";
+                                rebootPi();
                             }
                             if(this.num==8){
-                                if(this.accellControl==0){
-                                    this.accellControl=1;
-                                    getAccellData();
-                                }else{
-                                    this.accellControl=0;
-                                }
-                                this.innerHTML="Accell Control:"+this.accellControl;
+                                location.reload();
                             }
                         }
                         menuButton.onmouseup=function(){
@@ -326,55 +363,17 @@
                 document.getElementById("mainContainer").appendChild(viewContainer);
             }
             createSliderElements();
-            initCruiseMode();
         }
 
-        function saveSelectedPresetToAll(){
-            for(var x=1; x<17; x++){
-                laserData["scene"+x]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
-            }
+      function sendAllLaserDataToWebSocket(){
+            var messagePayload={};
+            messagePayload["selectedPreset"]=selectedPreset;
+            messagePayload["laserData"]=laserData;
+            messagePayload["isCruiseMode"]=isCruiseMode;
+            socket.send(JSON.stringify(messagePayload));
         }
 
-        function saveSelectedPresetToBlock(){
-            var start=1;
-            if(selectedPreset<5){
-                start=1;
-            }else if(selectedPreset>=5 && selectedPreset<9){
-                start=5;
-            }else if(selectedPreset>=9 && selectedPreset<13){
-                start=9;              
-            }else if(selectedPreset>=13){
-                start=13;              
-            }
-            var end=start+4;
-            for(var x=start; x<end; x++){
-                laserData["scene"+x]=JSON.parse(JSON.stringify(laserData["scene"+selectedPreset]));
-            }
-        }
-
-        function saveLaserData(num){
-            var requestBody=JSON.stringify(laserData);
-            var xmlhttp=new XMLHttpRequest();
-            xmlhttp.open("POST", "../php/write.php?fn=controller/laserControllerData/laserData.txt", true);
-            xmlhttp.send(requestBody);
-            xmlhttp.onload = function(e){console.log(xmlhttp.response.status)}
-        }
-
-        function recallLaserData(isInitialization){
-            var xmlhttp=new XMLHttpRequest();
-            xmlhttp.open("GET", "../controller/laserControllerData/laserData.txt?v="+parseInt(new Date().getTime()), true);
-            xmlhttp.send();
-            xmlhttp.onload = function(e){
-                laserData=JSON.parse(xmlhttp.response)
-                if(isInitialization==true){
-                    createGrid();
-                    initializeDMX();
-                    initAudio();
-                }
-            }
-        }
- 
-        function createSliderElements(){
+      function createSliderElements(){
             var labelsDiv=document.createElement('div');
             var slidersDiv=document.createElement('div');
             labelsDiv.style.backgroundColor="black";
@@ -403,7 +402,10 @@
                     ctx.clearRect(0, 0, this.width, this.height);
                     ctx.fillStyle = "#222222";
                     ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height ); 
-                    // dataModel[16*(pageNumber-1)+this.currentChannel]=255-parseInt(event.offsetY/this.offsetHeight*255);
+                    if(this.num!=7 && this.num!=4){
+                        ctx.fillStyle = "#444444";
+                        ctx.fillRect(0, parseInt((this.height/2)-4), this.width, 3 );  
+                    }
                     var value=255-parseInt(event.offsetY/this.offsetHeight*255);
                     if(value<30){
                         value=0;
@@ -435,37 +437,80 @@
                 }
                 canvas.onmouseup=function(event){
                     this.isSelected=false;
+                    sendAllLaserDataToWebSocket();
                 }
                 canvas.onmouseleave=function(event){
                     this.isSelected=false;
+                    sendAllLaserDataToWebSocket();
                 }
                 canvas.onmousedown=function(event){
                     this.isSelected=true;
                     this.updateValue(event);
+                    sendAllLaserDataToWebSocket();
                 }
                 canvas.onmousemove=function(event){
                     if(this.isSelected){
                         var ctx = this.getContext("2d");
                         this.updateValue(event);
+                        sendAllLaserDataToWebSocket();
                     }
                 }
                 canvas.setValue=function(value){
                     var ctx = this.getContext("2d");
                     ctx.clearRect(0, 0, this.width, this.height);
                     ctx.fillStyle = "#222222";
-                    ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) ); 
+                    ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) );
+                    if(this.num!=7 && this.num!=4){
+                        ctx.fillStyle = "#444444";
+                        ctx.fillRect(0, parseInt((this.height/2)-4), this.width, 3 );  
+                    }
                     // dataModel[16*(pageNumber-1)+this.currentChannel]=value;
                 }
                 slidersDiv.appendChild(canvas);
 
                 var label=document.createElement('canvas');
                 label.className="sliderLabel";
+                label.num=x;
+                label.relatedSliderCanvas=canvas
                 label.id="sliderLabel"+x;
                 label.style.backgroundColor="#222222";
                 label.style.width="95%";
                 label.style.height="90%";
                 label.style.marginLeft="2.5%";
                 label.style.marginTop="5%";
+                label.onmousedown=function(event){
+                    if(this.num!=7 && this.num!=4){
+                        var value=130;
+                    }else{
+                        var value=0;
+                    }
+                    this.relatedSliderCanvas.setValue(value);
+                    if(this.num==1){
+                        laserData["scene"+selectedPreset].positionX=value;
+                    }
+                    if(this.num==2){
+                        laserData["scene"+selectedPreset].positionY=value;
+                    }
+                    if(this.num==3){
+                        laserData["scene"+selectedPreset].scaleX=value;
+                    }
+                    if(this.num==4){
+                        laserData["scene"+selectedPreset].scaleY=value;
+                    }
+                    if(this.num==5){
+                        laserData["scene"+selectedPreset].rotation=value;
+                    }
+                    if(this.num==6){
+                        laserData["scene"+selectedPreset].zoom=value;
+                    }
+                    if(this.num==7){
+                        laserData["scene"+selectedPreset].dots=value;
+                    }
+                    if(this.num==8){
+                        laserData["scene"+selectedPreset].animation=value;
+                    }
+                    sendAllLaserDataToWebSocket();
+                }
                 drawLabelText(canvas.num);
                 labelsDiv.appendChild(label);
 
@@ -512,9 +557,115 @@
                 }
 
             }
-        }        
-        
-        function getDMXfromLaserData(data){
+        }   
+
+      function increaseSelectedPreset(){
+          if(selectedPreset<16){
+              selectedPreset=selectedPreset+1;    
+          }else{
+              selectedPreset=1;
+          }
+          console.log(selectedPreset);
+
+          for(var x=1; x<11; x++){
+              // document.getElementById('colorButton'+x).style.backgroundColor="#222222";
+              document.getElementById('colorButton'+x).style.opacity="1";
+              document.getElementById('colorButton'+x).style.borderWidth="1px"
+          }
+          document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.opacity=".3";
+          document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
+          for(var x=1; x<11; x++){
+              document.getElementById('goboButton'+x).style.opacity="1";
+              document.getElementById('goboButton'+x).style.borderWidth="1px"
+          }
+          for(var x=1; x<17; x++){
+              document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
+          }
+          document.getElementById('sceneButton'+selectedPreset).style.backgroundColor="#666666"
+          document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.opacity=".3";
+          document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.borderWidth="2px"
+          document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
+          document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
+          document.getElementById('slider3').setValue(laserData["scene"+selectedPreset].scaleX);
+          document.getElementById('slider4').setValue(laserData["scene"+selectedPreset].scaleY);
+          document.getElementById('slider5').setValue(laserData["scene"+selectedPreset].rotation);
+          document.getElementById('slider6').setValue(laserData["scene"+selectedPreset].zoom);
+          document.getElementById('slider7').setValue(laserData["scene"+selectedPreset].dots);
+          document.getElementById('slider8').setValue(laserData["scene"+selectedPreset].animation);
+      }
+
+      function decreaseSelectedPreset(){
+          if(selectedPreset>1){
+              selectedPreset=selectedPreset-1;    
+          }else{
+              selectedPreset=16;
+          }
+          console.log(selectedPreset);
+
+          for(var x=1; x<11; x++){
+              // document.getElementById('colorButton'+x).style.backgroundColor="#222222";
+              document.getElementById('colorButton'+x).style.opacity="1";
+              document.getElementById('colorButton'+x).style.borderWidth="1px"
+          }
+          document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.opacity=".3";
+          document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
+          for(var x=1; x<11; x++){
+              document.getElementById('goboButton'+x).style.opacity="1";
+              document.getElementById('goboButton'+x).style.borderWidth="1px"
+          }
+          for(var x=1; x<17; x++){
+              document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
+          }
+          document.getElementById('sceneButton'+selectedPreset).style.backgroundColor="#666666"
+          document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.opacity=".3";
+          document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.borderWidth="2px"
+          document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
+          document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
+          document.getElementById('slider3').setValue(laserData["scene"+selectedPreset].scaleX);
+          document.getElementById('slider4').setValue(laserData["scene"+selectedPreset].scaleY);
+          document.getElementById('slider5').setValue(laserData["scene"+selectedPreset].rotation);
+          document.getElementById('slider6').setValue(laserData["scene"+selectedPreset].zoom);
+          document.getElementById('slider7').setValue(laserData["scene"+selectedPreset].dots);
+          document.getElementById('slider8').setValue(laserData["scene"+selectedPreset].animation);
+      }
+
+      function setSelectedPreset(val){
+          selectedPreset=val;
+          console.log(selectedPreset);
+
+          for(var x=1; x<11; x++){
+              // document.getElementById('colorButton'+x).style.backgroundColor="#222222";
+              document.getElementById('colorButton'+x).style.opacity="1";
+              document.getElementById('colorButton'+x).style.borderWidth="1px"
+          }
+          document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.opacity=".3";
+          document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
+          for(var x=1; x<26; x++){
+            if(x<17){
+                document.getElementById('goboButton'+x).style.opacity="1";
+                document.getElementById('goboButton'+x).style.borderWidth="1px"
+            }else{
+                document.getElementById('goboButton'+x).style.opacity=".95";
+                document.getElementById('goboButton'+x).style.borderWidth="1px"
+            }
+          }
+          for(var x=1; x<17; x++){
+              document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
+          }
+          document.getElementById('sceneButton'+selectedPreset).style.backgroundColor="#666666"
+          document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.opacity=".3";
+          document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.borderWidth="2px"
+          document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
+          document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
+          document.getElementById('slider3').setValue(laserData["scene"+selectedPreset].scaleX);
+          document.getElementById('slider4').setValue(laserData["scene"+selectedPreset].scaleY);
+          document.getElementById('slider5').setValue(laserData["scene"+selectedPreset].rotation);
+          document.getElementById('slider6').setValue(laserData["scene"+selectedPreset].zoom);
+          document.getElementById('slider7').setValue(laserData["scene"+selectedPreset].dots);
+          document.getElementById('slider8').setValue(laserData["scene"+selectedPreset].animation);
+      }
+
+      function getDMXfromLaserData(data){
             var dmxData=[];
             var colorMapping=[0,15,18,22,27,32,37,10,50,255];
             var goboMapping=[3,5,2,29,32,33,75,69,44,43,62,79,85,0,1,7];
@@ -549,180 +700,62 @@
             return dmxData.toString();
         }
 
-        function writeDMX() {
-            var xhttp = new XMLHttpRequest();
-            xhttp.open("POST","../proxy/set_dmx", true);
-            xhttp.setRequestHeader("accept", "*/*");
-            xhttp.setRequestHeader("accept-language", "en-US,en;q=0.9,und;q=0.8");
-            xhttp.setRequestHeader("cache-control", "no-cache");
-            xhttp.setRequestHeader("content-type", "application/x-www-form-urlencoded;charset=UTF-8");
-            xhttp.setRequestHeader("pragma", "no-cache" );
+      function savePresets(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/savePresets", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log(savePresets+" "+xmlhttp.response.status)}
+      }
 
-            dmxPayloadString="u=0&d="+getDMXfromLaserData(laserData["scene"+selectedPreset]);
-            // console.log(dmxPayloadString);
-            xhttp.send(dmxPayloadString);
+      function recallPresets(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/recallPresets", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log(recallPresets+" "+xmlhttp.response.status)}
+      }
 
-            xhttp.onload = function() {
-                // console.log("Sent DMX: "+this.responseText);
-                setTimeout(function(){writeDMX();},25)
-            };
-        }	
+      function copyPresetToRow(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/copyPresetToRow", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log(copyPresetToRow+" "+xmlhttp.response.status)}
+      }
 
-        function initializeDMX(){
-            xhttp = new XMLHttpRequest();
-            xhttp.open("GET","../proxy/reload", true);
-            xhttp.send();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    console.log("Initialize DMX: "+this.responseText);
-                    writeDMX();
-                }else{
-                    console.log("DMX Not Available");
-                }
-            };
+      function toggleCruiseMode(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/toggleCruiseMode", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log("toggleCruiseMode "+xmlhttp.response)}
+      }
+
+      function setCruiseSpeed(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/setCruiseSpeed?"+document.getElementById('menuButton4').cruiseSpeed, true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log("toggleCruiseMode "+xmlhttp.response)}
+      }
+
+      function copyPresetToAll(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/copyPresetToAll", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log(copyPresetToAll+" "+xmlhttp.response.status)}
+      }
+
+      function syncCruiseButton(){
+        var cruiseButton=document.getElementById("menuButton3");
+        if(isCruiseMode==true){
+            cruiseButton.style.opacity=".3";
+        }else{
+            cruiseButton.style.opacity="1";
         }
+      }
 
-        function initAudio() {
-            if(location.href.indexOf("localhost")!="-1"){
-                console.log("trying audio");
-                navigator.getUserMedia = navigator.getUserMedia
-                                || navigator.webkitGetUserMedia
-                                || navigator.mozGetUserMedia;
-
-                navigator.getUserMedia({ video : false, audio : true }, getAudioData, console.log);
-
-                function getAudioData(stream) {
-                    var ctx = new AudioContext();
-                    var mic = ctx.createMediaStreamSource(stream);
-                    var analyser = ctx.createAnalyser();
-
-                    mic.connect(analyser); 
-                    audioData = new Uint8Array(analyser.frequencyBinCount);
-                    lastAudioVolume=0.0;
-                    lastAudioTriggerTime=new Date().getTime();
-                    function play() {
-                        analyser.getByteFrequencyData(audioData);
-                        //console.log(audioData);
-                        audioVolume = audioData.reduce(function getSum(total, num) {return total + num;}) / (audioData.length*255) ;
-                        audioImpulse=Math.abs(audioVolume-lastAudioVolume)*100;
-                        lastAudioVolume=audioVolume;
-                        if(audioImpulse>=document.getElementById("menuButton7").audioCruise && document.getElementById("menuButton7").audioCruise!=0){
-                            if( Math.abs(lastAudioTriggerTime-new Date().getTime()) > 250 ){
-                                document.getElementById("menuButton7").style.backgroundColor='green';
-                                setTimeout(function(){document.getElementById("menuButton7").style.backgroundColor='#222222';},100)
-                                lastAudioTriggerTime=new Date().getTime();
-                                bumpSelectedPreset();
-                            }
-                        }
-                        // console.log(audioImpulse);
-                        requestAnimationFrame(play);
-                    }
-
-                    play();
-                }
-            }else{
-                console.log("audio only supported on localhost (without tls)");
-                audioData = new Uint8Array(8);
-            }
-        }
-    
-        function initCruiseMode(){
-            button=document.getElementById("menuButton3");
-            if(button.cruisePreset<16){
-                button.cruisePreset=button.cruisePreset+1;
-            }else{
-                document.getElementById("menuButton3").cruisePreset=1;
-            }
-            if(document.getElementById("menuButton3").isCruiseMode==true){
-                bumpSelectedPreset();
-            }
-            setTimeout(function(){
-                initCruiseMode();
-            },parseInt(16000/document.getElementById("menuButton4").cruiseSpeed));
-        }
-
-        function bumpSelectedPreset(){
-            if(selectedPreset<16){
-                selectedPreset=selectedPreset+1;    
-            }else{
-                selectedPreset=1;
-            }
-            console.log(selectedPreset);
-
-            for(var x=1; x<11; x++){
-                // document.getElementById('colorButton'+x).style.backgroundColor="#222222";
-                document.getElementById('colorButton'+x).style.opacity="1";
-                document.getElementById('colorButton'+x).style.borderWidth="1px"
-            }
-            document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.opacity=".3";
-            document.getElementById('colorButton'+laserData["scene"+selectedPreset].color).style.borderWidth="2px"
-            for(var x=1; x<11; x++){
-                document.getElementById('goboButton'+x).style.opacity="1";
-                document.getElementById('goboButton'+x).style.borderWidth="1px"
-            }
-            for(var x=1; x<17; x++){
-                document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
-            }
-            document.getElementById('sceneButton'+selectedPreset).style.backgroundColor="#666666"
-            document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.opacity=".3";
-            document.getElementById('goboButton'+laserData["scene"+selectedPreset].gobo).style.borderWidth="2px"
-            document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
-            document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
-            document.getElementById('slider3').setValue(laserData["scene"+selectedPreset].scaleX);
-            document.getElementById('slider4').setValue(laserData["scene"+selectedPreset].scaleY);
-            document.getElementById('slider5').setValue(laserData["scene"+selectedPreset].rotation);
-            document.getElementById('slider6').setValue(laserData["scene"+selectedPreset].zoom);
-            document.getElementById('slider7').setValue(laserData["scene"+selectedPreset].dots);
-            document.getElementById('slider8').setValue(laserData["scene"+selectedPreset].animation);
-        }
-
-        function getAccellData(){
-            var xmlhttp=new XMLHttpRequest();
-            xmlhttp.open("GET", "../proxy/get_dmx?u=2")
-            xmlhttp.send();
-            xmlhttp.onload = function(e){
-                if(xmlhttp.response.length>5){
-                    var tempJSON=JSON.parse(xmlhttp.response).dmx;
-                    accellData=[tempJSON[0], tempJSON[1], tempJSON[2], tempJSON[3] ];
-                    if(lastButtonNum!=accellData[3] && accellData[3]!=NaN){
-                        if(lastButtonNum!=100){
-                            for(var x=1; x<17; x++){
-                                document.getElementById('sceneButton'+x).style.backgroundColor="#222222";
-                            }
-                            if(parseInt(accellData[3]+1)>=0 && parseInt(accellData[3]+1)<=16 ){
-                                if(selectedPreset<16){
-                                    selectedPreset=selectedPreset+1;    
-                                }else{
-                                    selectedPreset=1;
-                                }
-                                document.getElementById('sceneButton'+parseInt(selectedPreset)).style.backgroundColor="#666666"
-                            }
-                        }
-                        lastButtonNum=accellData[3];
-                        console.log(accellData[3]);
-                    }
-                    if(document.getElementById("menuButton8").accellControl==1){
-                        laserData["scene"+selectedPreset].positionX=parseInt(24+(accellData[1]/4.5));
-                        document.getElementById('slider1').setValue(laserData["scene"+selectedPreset].positionX);
-                        laserData["scene"+selectedPreset].positionY=parseInt(24+((255-accellData[2])/4.5));
-                        document.getElementById('slider2').setValue(laserData["scene"+selectedPreset].positionY);
-                        // console.log(laserData["scene"+selectedPreset].positionX+" "+laserData["scene"+selectedPreset].positionY);
-                    }
-                }
-                if(document.getElementById("menuButton8").accellControl==1){
-                    setTimeout(function(){
-                        getAccellData();
-                    },25);
-                }
-            }
-            xmlhttp.onerror = function(e){
-                if(document.getElementById("menuButton8").accellControl==1){
-                    setTimeout(function(){
-                        getAccellData();
-                    },25);
-                }
-            }
-        }
-
+      function rebootPi(){
+        var xmlhttp=new XMLHttpRequest();
+        xmlhttp.open("GET", location.origin+"/rebootPi", true);
+        xmlhttp.send();
+        xmlhttp.onload = function(e){console.log("rebootPi "+xmlhttp.response)}
+      }
     </script>
 </html>
