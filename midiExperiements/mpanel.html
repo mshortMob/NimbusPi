@@ -4,10 +4,11 @@
         <style>
             body{
                 background-color: black;
+                cursor: none;
             }
             .grid-container {
                 display: grid;
-                grid-template-columns: auto auto auto auto auto auto auto;
+                grid-template-columns: auto auto auto auto auto;
                 background-color: #555555;
                 padding: 10px;
                 height:90%;
@@ -17,113 +18,170 @@
                 top:2.5%;
             }
             .grid-item {
-                background-color: rgba(255, 255, 255, 0.8);
                 border: 1px solid rgba(0, 0, 0, 0.8);
                 padding: 20px;
                 font-size: 24px;
                 text-align: center;
             }
+            button{
+                cursor: none;
+            }
         </style>
     </head>
 <body>
-    <div class="grid-container">
-        <button class="grid-item" onclick="hitEndpoint('rec',this);" id="recButton">Rec</button>
-        <button class="grid-item" onclick="hitEndpoint('play',this);">Play</button>
-        <button class="grid-item" onclick="hitEndpoint('stop',this)">Stop</button>
-        <button class="grid-item" onclick="hitEndpoint('clear',this)">Clear</button>
-        <button class="grid-item" onclick="hitEndpoint('length',this)" id="lengthButton">Length 1</button>
-        <button class="grid-item" onclick="hitEndpoint('killAllNotes',this)">Kill Notes</button>
-        <button class="grid-item" onclick="saveState()">Save</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/1',this);" id="pattern1" >1</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/2',this);" id="pattern2" >2</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/3',this);" id="pattern3" >3</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/4',this);" id="pattern4" >4</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/5',this);" id="pattern5" >5</button>
-        <button class="grid-item" onclick="hitEndpoint('quantize/',this)" id="quantize">Quantize</button>
-        <button class="grid-item" onclick="recallState()">Recall</button>
-
-    </div>
+    <div id="grid-container" class="grid-container">
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="recButton">Rec</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="playButton">Play</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="stopButton">Stop</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="clearButton">Clear</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="lengthButton">Length 1</button>
+        <button class="grid-item" onclick="this.patternNum=1; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern1" >1</button>
+        <button class="grid-item" onclick="this.patternNum=2; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern2" >2</button>
+        <button class="grid-item" onclick="this.patternNum=3; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern3" >3</button>
+        <button class="grid-item" onclick="this.patternNum=4; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern4" >4</button>
+        <button class="grid-item" onclick="this.patternNum=5; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern5" >5</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="killButton">Kill Notes</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="quantizeButton">Quantize</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="saveButton">Save</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="recallButton">Recall</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="reloadButton">Reload</button>
+    </div>    
     <script>
-        selectedLength=0;
-        quantize="false";
-        document.getElementById("pattern1").style.backgroundColor='rgba(255, 255, 255, 0.5)';
-        function hitEndpoint(endpoint, buttonElem){
 
-            if(endpoint=="rec"){
-                buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
-            }else if(endpoint.indexOf("pattern")!=-1){
-                for(var x=1; x<=5; x++){
-                    document.getElementById("pattern"+x).style.backgroundColor='rgba(255, 255, 255, 0.8)';
+        globals={
+            quantize: false,
+            selectedLength: 0,
+            selectedPattern:1,
+            transportState:"play"
+        }
+
+        config={
+            buttonSelectedColor: "rgba(0, 0, 255, 0.3)",
+            buttonBackgroundColor : "rgba(255, 255, 255, 0.4)",
+            debounceThreshold: 300
+        }
+        
+        window.onload = function(){
+            getState();
+        }
+
+        function handleButtonClick(buttonElem){
+            if(buttonElem.id=="recButton"){
+                globals.transportState="rec";
+            }
+            if(buttonElem.id=="playButton"){
+                globals.transportState="play";
+            }
+            if(buttonElem.id=="stopButton"){
+                globals.transportState="stop";
+            }
+            if(buttonElem.id=="lengthButton"){
+                globals.selectedLength=(globals.selectedLength+1)%3;
+            }
+            if(buttonElem.id=="quantizeButton"){
+                globals.quantize=!globals.quantize;
+            }
+            if(buttonElem.id.indexOf("pattern")!=-1){
+                globals.selectedPattern=buttonElem.patternNum;
+            }
+            if(buttonElem.id=="killButton"){
+                sendEvent("killnotes");
+            }
+            if(buttonElem.id=="clearButton"){
+                sendEvent("clear");
+            }
+            if(buttonElem.id=="recallButton"){
+                sendEvent("recall");
+            }
+            if(buttonElem.id=="saveButton"){
+                sendEvent("save");
+            }
+            if(buttonElem.id=="reloadButton"){
+                window.location.href=window.location.href;
+            }
+            syncViewToState();
+            setState();
+        }
+
+        function getState(){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(xhttp.responseText);
+                    globals=JSON.parse(xhttp.response);
+                    syncViewToState();
                 }
-                buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
-            }else if(endpoint=="quantize/"){
-                if(quantize=="true"){
-                    quantize="false";
-                    buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.8)';
-                }else{
-                    quantize="true";
-                    buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
-                }
-                endpoint=endpoint+quantize;
-            }else{
-                buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
-                setTimeout(function(){buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.8)';},280);
-            }
-            if(endpoint=="play"){
-                document.getElementById("recButton").style.backgroundColor='rgba(255, 255, 255, 0.8)';
-            }
+            };
+            xhttp.open("GET", 'http://'+location.host+'/'+'getState', true);
+            xhttp.send();
+        }
 
-            if(endpoint=="length"){
-                loopLengths=[1,2,4];
-                selectedLength=(selectedLength+1)%3;
-                document.getElementById("lengthButton").innerHTML="Length "+loopLengths[selectedLength];
-                endpoint=endpoint+"/"+selectedLength;
-            }
-
+        function setState(){
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     console.log(xhttp.responseText);
                 }
             };
-            xhttp.open("GET", 'http://'+location.host+'/proxy2/'+endpoint, true);
-            xhttp.send();
+            xhttp.open("POST", 'http://'+location.host+'/'+'setState', true);
+            xhttp.setRequestHeader("content-type", "application/json");
+            xhttp.send(JSON.stringify(globals));
         }
 
-        function saveState(){
+        function sendEvent(eventName){
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
-                    console.log("retrieving pattern data from server");
-                    console.log(xhttp.responseText);
-                    var requestBody=xhttp.responseText;
-                    var xmlhttp2=new XMLHttpRequest();
-                    xmlhttp2.open("POST", "php/write.php?fn=midiPatterns1.txt", true);
-                    xmlhttp2.send(requestBody);
-                    xmlhttp2.onload = function(e){
-                        console.log("writing pattern data to file");
-                    }
+                    console.log("processed "+eventName+" event");
                 }
             };
-            xhttp.open("GET", 'http://'+location.host+'/proxy2/saveToDisk', true);
+            xhttp.open("GET", 'http://'+location.host+'/'+'action?value='+eventName, true);
             xhttp.send();
         }
 
-        function recallState(){
-            var xhttp = new XMLHttpRequest();
-            xhttp.onload = function() {
-                console.log("getting pattern data from file");
-                var requestBody=xhttp.responseText;
-                var xmlhttp2=new XMLHttpRequest();
-                xmlhttp2.open("POST", 'http://'+location.host+'/proxy2/recallFromDisk', true);
-                xmlhttp2.setRequestHeader("content-type", "application/json");
-                xmlhttp2.send(requestBody);
-                xmlhttp2.onload = function(e){
-                    console.log("sending pattern data to server");
-                }
-            };
-            xhttp.open("GET", 'php/read.php?fn=midiPatterns1.txt', true);
-            xhttp.send();
+        function syncViewToState(){
+            // init whole grid backgrounds
+            const buttons = document.getElementsByClassName("grid-item");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons.item(i).lastClickedTime=new Date().getTime();
+                buttons.item(i).style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // transport buttons
+            if(globals.transportState=="rec"){
+                document.getElementById("recButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("playButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("stopButton").style.backgroundColor=config.buttonBackgroundColor;
+            }else 
+            if(globals.transportState=="play"){
+                document.getElementById("recButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("playButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("stopButton").style.backgroundColor=config.buttonBackgroundColor;
+            }else
+            if(globals.transportState=="stop"){
+                document.getElementById("recButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("playButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("stopButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            
+            //pattern buttons
+            for(var x=1; x<=5; x++){
+                document.getElementById("pattern"+x).style.backgroundColor=config.buttonBackgroundColor;
+            }
+            document.getElementById("pattern"+globals.selectedPattern).style.backgroundColor=config.buttonSelectedColor;
+            
+            //quantize button
+            if(globals.quantize==true){
+                document.getElementById("quantizeButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("quantizeButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // loop length button
+            var loopLengths=[1,2,4];
+            document.getElementById("lengthButton").innerHTML="Length "+loopLengths[globals.selectedLength];
         }
 
     </script>

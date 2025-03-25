@@ -1,0 +1,40 @@
+root@rpitablet:~/NimbusPi/midiExperiements# cat installHistory.txt 
+    1  exit
+    2  git clone https://github.com/mshortMob/NimbusPi.git
+    3  cd NimbusPi/
+    4  ls 
+    5  cd midiExperiements/
+    6  ls
+    7  cat mtest.js 
+    8  nod3
+    9  node
+   10  curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash - &&sudo apt-get install -y nodejs
+   11  cd ../
+   12  find ./ | grep package.json
+   13  find ./ | grep -i package
+   14  find ./
+   15  s
+   16  ls
+   17  cd midiExperiements/
+   18  nano package.json
+   19  node
+   20  npm install
+   21  nano package.json
+   22  npm install
+   23  npm --version
+   24  $ npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@latest
+   25  npm explore npm/node_modules/@npmcli/run-script -g -- npm_config_global=false npm install node-gyp@latest
+   26  rm -rf node_modules
+   27  rm -rf package-lock.json
+   28  npm cache clean --force
+   29  npm cache verify
+   30  npm i -g node-gyp@latest
+   31  npm install
+   32  sudo apt-get install libasound2-dev
+   33  npm install
+   34  history
+   35  history > ./installHistory.txt
+   96  cp mtest.service /usr/lib/systemd/system/
+   97  journalctl -u mtest | catdate
+   98  systemctl daemon-reload
+systemctl enable mtest
