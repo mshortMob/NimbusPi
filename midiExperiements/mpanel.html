@@ -8,7 +8,7 @@
             }
             .grid-container {
                 display: grid;
-                grid-template-columns: auto auto auto auto auto;
+                grid-template-columns: 20% 20% 20% 20% 20%;
                 background-color: #555555;
                 padding: 10px;
                 height:90%;
@@ -30,21 +30,26 @@
     </head>
 <body>
     <div id="grid-container" class="grid-container">
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="recButton">Rec</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="playButton">Play</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="stopButton">Stop</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="clearButton">Clear</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="lengthButton">Length 1</button>
-        <button class="grid-item" onclick="this.patternNum=1; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern1" >1</button>
-        <button class="grid-item" onclick="this.patternNum=2; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern2" >2</button>
-        <button class="grid-item" onclick="this.patternNum=3; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern3" >3</button>
-        <button class="grid-item" onclick="this.patternNum=4; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern4" >4</button>
-        <button class="grid-item" onclick="this.patternNum=5; handleButtonClick(this);" onmouseover="this.onclick();" id="pattern5" >5</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="killButton">Kill Notes</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="quantizeButton">Quantize</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="saveButton">Save</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="recallButton">Recall</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmouseover="this.onclick();" id="reloadButton">Reload</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recButton">Rec</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="playButton">Play</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="stopButton">Stop</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearButton">Clear</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="lengthButton">Length 1</button>
+        <button class="grid-item" onclick="this.patternNum=1; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern1" >1</button>
+        <button class="grid-item" onclick="this.patternNum=2; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern2" >2</button>
+        <button class="grid-item" onclick="this.patternNum=3; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern3" >3</button>
+        <button class="grid-item" onclick="this.patternNum=4; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern4" >4</button>
+        <button class="grid-item" onclick="this.patternNum=5; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern5" >5</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="killButton">Kill Notes</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="quantizeButton">Quantize</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="saveButton">Save</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recallButton">Recall</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="reloadButton">Reload</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOverrideButton">Program Override</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOnlyButton">Program Only</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="copyButton">Copy Pattern</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="eraseButton">Erase</button>
+        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="presetNameButton">Preset Name: X</button>
     </div>    
     <script>
 
@@ -52,55 +57,100 @@
             quantize: false,
             selectedLength: 0,
             selectedPattern:1,
-            transportState:"play"
+            presetName: 0,
+            transportState:"play",
+            programOverride: false,
+            programOnly: false,
+            eraseEnabled: false
         }
 
         config={
             buttonSelectedColor: "rgba(0, 0, 255, 0.3)",
             buttonBackgroundColor : "rgba(255, 255, 255, 0.4)",
-            debounceThreshold: 300
+            debounceThreshold: 300,
+            copyEnabled: false
         }
         
         window.onload = function(){
+            const buttons = document.getElementsByClassName("grid-item");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons.item(i).lastClickedTime=new Date().getTime();
+            }
             getState();
         }
 
         function handleButtonClick(buttonElem){
-            if(buttonElem.id=="recButton"){
-                globals.transportState="rec";
+            buttonElem.buttonClickBlip=function(){
+                buttonElem.style.backgroundColor=config.buttonSelectedColor;
+                setTimeout(function(){buttonElem.style.backgroundColor=config.buttonBackgroundColor},300);
             }
-            if(buttonElem.id=="playButton"){
-                globals.transportState="play";
+            if( (new Date().getTime() - buttonElem.lastClickedTime) > config.debounceThreshold ){
+                buttonElem.lastClickedTime=new Date().getTime();
+                if(buttonElem.id=="recButton"){
+                    globals.transportState="rec";
+                }
+                if(buttonElem.id=="playButton"){
+                    globals.transportState="play";
+                }
+                if(buttonElem.id=="stopButton"){
+                    globals.transportState="stop";
+                }
+                if(buttonElem.id=="lengthButton"){
+                    globals.selectedLength=(globals.selectedLength+1)%3;
+                }
+                if(buttonElem.id=="quantizeButton"){
+                    globals.quantize=!globals.quantize;
+                }
+                if(buttonElem.id.indexOf("pattern")!=-1){
+                    if(!config.copyEnabled){
+                        globals.selectedPattern=buttonElem.patternNum;
+                    }else{
+                        sendEvent("copy",buttonElem.patternNum);
+                    }
+                }
+                if(buttonElem.id=="killButton"){
+                    sendEvent("killnotes");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="clearButton"){
+                    sendEvent("clear");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="recallButton"){
+                    sendEvent("recall");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="saveButton"){
+                    sendEvent("save");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="reloadButton"){
+                    window.location.href=window.location.href;
+                }
+                if(buttonElem.id=="programOverrideButton"){
+                    globals.programOverride=!globals.programOverride;
+                    if(globals.programOverride){
+                        globals.programOnly=false;
+                    }
+                }
+                if(buttonElem.id=="programOnlyButton"){
+                    globals.programOnly=!globals.programOnly;
+                    if(globals.programOnly){
+                        globals.programOverride=false;
+                    }
+                }
+                if(buttonElem.id=="presetNameButton"){
+                    globals.presetName=(globals.presetName+1)%4
+                }
+                if(buttonElem.id=="copyButton"){
+                    config.copyEnabled=!config.copyEnabled;
+                }
+                if(buttonElem.id=="eraseButton"){
+                    globals.eraseEnabled=!globals.eraseEnabled;
+                }
+                syncViewToState();
+                setState();
             }
-            if(buttonElem.id=="stopButton"){
-                globals.transportState="stop";
-            }
-            if(buttonElem.id=="lengthButton"){
-                globals.selectedLength=(globals.selectedLength+1)%3;
-            }
-            if(buttonElem.id=="quantizeButton"){
-                globals.quantize=!globals.quantize;
-            }
-            if(buttonElem.id.indexOf("pattern")!=-1){
-                globals.selectedPattern=buttonElem.patternNum;
-            }
-            if(buttonElem.id=="killButton"){
-                sendEvent("killnotes");
-            }
-            if(buttonElem.id=="clearButton"){
-                sendEvent("clear");
-            }
-            if(buttonElem.id=="recallButton"){
-                sendEvent("recall");
-            }
-            if(buttonElem.id=="saveButton"){
-                sendEvent("save");
-            }
-            if(buttonElem.id=="reloadButton"){
-                window.location.href=window.location.href;
-            }
-            syncViewToState();
-            setState();
         }
 
         function getState(){
@@ -128,14 +178,18 @@
             xhttp.send(JSON.stringify(globals));
         }
 
-        function sendEvent(eventName){
+        function sendEvent(eventName, copyTarget){
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     console.log("processed "+eventName+" event");
                 }
             };
-            xhttp.open("GET", 'http://'+location.host+'/'+'action?value='+eventName, true);
+            if(eventName=="copy"){
+                xhttp.open("GET", 'http://'+location.host+'/'+'action?value='+eventName+'&copyTarget='+parseInt(copyTarget), true);
+            }else{
+                xhttp.open("GET", 'http://'+location.host+'/'+'action?value='+eventName, true);
+            }
             xhttp.send();
         }
 
@@ -143,7 +197,6 @@
             // init whole grid backgrounds
             const buttons = document.getElementsByClassName("grid-item");
             for (let i = 0; i < buttons.length; i++) {
-                buttons.item(i).lastClickedTime=new Date().getTime();
                 buttons.item(i).style.backgroundColor=config.buttonBackgroundColor;
             }
 
@@ -182,6 +235,45 @@
             // loop length button
             var loopLengths=[1,2,4];
             document.getElementById("lengthButton").innerHTML="Length "+loopLengths[globals.selectedLength];
+
+            // preset name button
+            document.getElementById("presetNameButton").innerHTML='Preset Name: '+parseInt(globals.presetName)
+
+            // program override button
+            if(globals.programOverride==true){
+                document.getElementById("programOverrideButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("programOverrideButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // program only button
+            if(globals.programOnly==true){
+                document.getElementById("programOnlyButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("programOnlyButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // copy button
+            if(config.copyEnabled){
+                document.getElementById("copyButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("copyButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // erase button
+            if(globals.eraseEnabled){
+                document.getElementById("eraseButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("eraseButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
         }
 
     </script>

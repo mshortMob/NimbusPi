@@ -29,8 +29,12 @@ function init(){
   globals={
     selectedLength: 0,
     selectedPattern: 1,
+    presetName: 0,
     quantize: false,
-    transportState: "play"
+    transportState: "play",
+    programOverride: false,
+    programOnly: false,
+    eraseEnabled: false
   }
 
   function initLoopData(){
@@ -102,7 +106,6 @@ lkInput.on('message', (deltaTime, message) => {
 
 circuitInput.on('message', (deltaTime, message) => {
   // console.log(internals.cursor);
-
   if(message[0]==248){
     // console.log(internals.cursor);
     internals.cursor=(internals.cursor+1)%internals.loopLengths[globals.selectedLength];
@@ -118,9 +121,21 @@ circuitInput.on('message', (deltaTime, message) => {
     console.log("circuit stop pressed");
   }
   if(globals.transportState=="play" || globals.transportState=="rec"){
+    if(globals.eraseEnabled){
+      internals.loopData[globals.selectedPattern-1][internals.cursor]=[];
+    }
     for(var x=0; x<internals.loopData[globals.selectedPattern-1][internals.cursor].length; x++){
-      rolandOutput.sendMessage(internals.loopData[globals.selectedPattern-1][internals.cursor][x]);
-      console.log("test");
+      var sendMessage=false;
+      if(globals.programOnly && internals.loopData[globals.selectedPattern-1][internals.cursor][x][0]==194){
+        sendMessage=true;
+      }else if(globals.programOverride && internals.loopData[globals.selectedPattern-1][internals.cursor][x][0]!=194){
+        sendMessage=true;
+      }else if(!globals.programOverride && !globals.programOnly){
+        sendMessage=true;
+      }
+      if(sendMessage){
+        rolandOutput.sendMessage(internals.loopData[globals.selectedPattern-1][internals.cursor][x]);
+      }
     }
   }
 });
@@ -166,7 +181,7 @@ app.get('/action', (req, res) => {
     killAllNotes();
   }
   if(action=="recall"){
-    fs.readFile('/root/NimbusPi/midiExperiements/presets.txt', 'utf8', (err, data) => {
+    fs.readFile('/root/NimbusPi/midiExperiements/presets'+parseInt(globals.presetName)+'.txt', 'utf8', (err, data) => {
       if (err) {
         console.error(err);
         return;
@@ -177,12 +192,15 @@ app.get('/action', (req, res) => {
   }
   if(action=="save"){
     var fileContents=JSON.stringify(internals.loopData);
-    fs.writeFile('/root/NimbusPi/midiExperiements/presets.txt', fileContents, err => {
+    fs.writeFile('/root/NimbusPi/midiExperiements/presets'+parseInt(globals.presetName)+'.txt', fileContents, err => {
       if (err) {
         console.error(err);
       }
       console.log('saved preset data!');
     });
+  }
+  if(action=="copy"){
+    internals.loopData[parseInt(req.query.copyTarget-1)]=JSON.parse(JSON.stringify(internals.loopData[globals.selectedPattern-1]));
   }
   res.send('received '+action+' cmd')
 })
