@@ -83,15 +83,20 @@
         window.onload = function(){
             const buttons = document.getElementsByClassName("grid-item");
             for (let i = 0; i < buttons.length; i++) {
-                buttons.item(i).lastClickedTime=new Date().getTime();
+                buttons.item(i).lastClickedTime=parseInt(new Date().getTime()-10000);
+                if( buttons.item(i).id == "killButton" || buttons.item(i).id == "clearButton" || buttons.item(i).id == "saveButton" || buttons.item(i).id == "recallButton" ){
+                    buttons.item(i).isMomentary=true
+                }else{
+                    buttons.item(i).isMomentary=false;
+                }
             }
             getState();
         }
 
         function handleButtonClick(buttonElem){
             buttonElem.buttonClickBlip=function(){
-                buttonElem.style.backgroundColor=config.buttonSelectedColor;
-                setTimeout(function(){buttonElem.style.backgroundColor=config.buttonBackgroundColor},300);
+                syncViewToState();
+                setTimeout(function(){syncViewToState()},parseInt(config.debounceThreshold + 100));
             }
             if( (new Date().getTime() - buttonElem.lastClickedTime) > config.debounceThreshold ){
                 buttonElem.lastClickedTime=new Date().getTime();
@@ -203,10 +208,14 @@
         }
 
         function syncViewToState(){
-            // init whole grid backgrounds
+            // init whole grid backgrounds + handle momentary button blips
             const buttons = document.getElementsByClassName("grid-item");
             for (let i = 0; i < buttons.length; i++) {
-                buttons.item(i).style.backgroundColor=config.buttonBackgroundColor;
+                if( parseInt(new Date().getTime()-buttons.item(i).lastClickedTime) < config.debounceThreshold && buttons.item(i).isMomentary ){
+                    buttons.item(i).style.backgroundColor=config.buttonSelectedColor;
+                }else{
+                    buttons.item(i).style.backgroundColor=config.buttonBackgroundColor;
+                }
             }
 
             // transport buttons

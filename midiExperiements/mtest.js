@@ -94,6 +94,7 @@ function clearLoop(){
 }
 
 function killAllNotes(){
+  console.log("killing all notes")
   for(var x=48; x<=72; x++){
     // rolandOutput.sendMessage([130,parseInt(x, 16),0]);
     rolandOutput.sendMessage([130,x,0]);
@@ -126,15 +127,18 @@ circuitInput.on('message', (deltaTime, message) => {
     }
     for(var x=0; x<internals.loopData[globals.selectedPattern-1][internals.cursor].length; x++){
       var sendMessage=false;
-      if(globals.programOnly && internals.loopData[globals.selectedPattern-1][internals.cursor][x][0]==194){
+      var playbacMessage=internals.loopData[globals.selectedPattern-1][internals.cursor][x];
+      if( playbacMessage[0]==248 || playbacMessage==250 || playbacMessage==252 ){
+        sendMessage=false;
+      }else if(globals.programOnly && playbacMessage[0]==194){
         sendMessage=true;
-      }else if(globals.programOverride && internals.loopData[globals.selectedPattern-1][internals.cursor][x][0]!=194){
+      }else if(globals.programOverride && playbacMessage[0]!=194){
         sendMessage=true;
       }else if(!globals.programOverride && !globals.programOnly){
         sendMessage=true;
       }
       if(sendMessage){
-        rolandOutput.sendMessage(internals.loopData[globals.selectedPattern-1][internals.cursor][x]);
+        rolandOutput.sendMessage(playbacMessage);
       }
     }
   }
@@ -142,7 +146,7 @@ circuitInput.on('message', (deltaTime, message) => {
 
 rolandInput.on('message', (deltaTime, message) => {
   console.log(message);
-  if(globals.transportState=="rec"){
+  if(globals.transportState=="rec" && message[0]!=248 && message[0]!=250 && message[0]!=252 ){
     if(globals.quantize==false){
       if(globals.selectedLength==0){
         internals.loopData[globals.selectedPattern-1][internals.cursor].push(message);
@@ -212,6 +216,9 @@ app.get('/getState', (req, res) => {
 
 app.post('/setState', (req, res) => {
   console.log('received setState cmd');
+  if(globals.selectedPattern!=parseInt(req.body.selectedPattern)){
+    killAllNotes();
+  }
   globals=req.body;
   res.send(JSON.stringify(req.body));
 })
