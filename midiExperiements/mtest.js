@@ -216,7 +216,7 @@ app.get('/getState', (req, res) => {
 
 app.post('/setState', (req, res) => {
   console.log('received setState cmd');
-  if( globals.selectedPattern!=parseInt(req.body.selectedPattern) || globals.transportState=="stop" ){
+  if( globals.selectedPattern!=parseInt(req.body.selectedPattern) || req.body.transportState=="stop" ){
     killAllNotes();
   }
   globals=req.body;
