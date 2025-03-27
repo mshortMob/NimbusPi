@@ -120,6 +120,7 @@
                         globals.selectedPattern=buttonElem.patternNum;
                     }else{
                         sendEvent("copy",buttonElem.patternNum);
+                        buttonElem.buttonClickBlip();
                     }
                 }
                 if(buttonElem.id=="killButton"){
@@ -211,7 +212,7 @@
             // init whole grid backgrounds + handle momentary button blips
             const buttons = document.getElementsByClassName("grid-item");
             for (let i = 0; i < buttons.length; i++) {
-                if( parseInt(new Date().getTime()-buttons.item(i).lastClickedTime) < config.debounceThreshold && buttons.item(i).isMomentary ){
+                if( (parseInt(new Date().getTime()-buttons.item(i).lastClickedTime) < config.debounceThreshold) && (buttons.item(i).isMomentary || (config.copyEnabled && buttons.item(i).id.indexOf("pattern")!=-1)) ){
                     buttons.item(i).style.backgroundColor=config.buttonSelectedColor;
                 }else{
                     buttons.item(i).style.backgroundColor=config.buttonBackgroundColor;
@@ -235,10 +236,7 @@
                 document.getElementById("stopButton").style.backgroundColor=config.buttonSelectedColor;
             }
             
-            //pattern buttons
-            for(var x=1; x<=5; x++){
-                document.getElementById("pattern"+x).style.backgroundColor=config.buttonBackgroundColor;
-            }
+            // selected pattern button
             document.getElementById("pattern"+globals.selectedPattern).style.backgroundColor=config.buttonSelectedColor;
             
             //quantize button
