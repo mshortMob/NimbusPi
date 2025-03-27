@@ -3,54 +3,63 @@
     <head>
         <style>
             body{
-                background-color: black;
-                cursor: none;
-            }
-            .grid-container {
-                display: grid;
-                grid-template-columns: 20% 20% 20% 20% 20%;
                 background-color: #555555;
-                padding: 10px;
-                height:90%;
-                width: 95%;
+                cursor: none;
+                display: grid;
                 position: absolute;
-                left:2.5%;
-                top:2.5%;
+                width:99%;
+                height:99%; 
+                grid-template-rows: 2.5% 95% 2.5%;
+            }
+            .spacerRow, .spacerCol{
+                display: grid;
+            }
+            #center-row{
+                grid-template-columns: 1.5% 97% 1.5%;
+            }
+            #grid-container {
+                display:grid;
+                grid-template-columns: 20% 20% 20% 20% 20%;
+                border:4px solid black;
             }
             .grid-item {
-                border: 1px solid rgba(0, 0, 0, 0.8);
-                padding: 20px;
+                border: 4px solid rgba(0, 0, 0, 1);
                 font-size: 24px;
                 text-align: center;
-            }
-            button{
-                cursor: none;
+                align-content: center;
+                display: grid;
             }
         </style>
     </head>
 <body>
-    <div id="grid-container" class="grid-container">
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recButton">Rec</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="playButton">Play</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="stopButton">Stop</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearButton">Clear</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="lengthButton">Length 1</button>
-        <button class="grid-item" onclick="this.patternNum=1; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern1" >1</button>
-        <button class="grid-item" onclick="this.patternNum=2; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern2" >2</button>
-        <button class="grid-item" onclick="this.patternNum=3; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern3" >3</button>
-        <button class="grid-item" onclick="this.patternNum=4; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern4" >4</button>
-        <button class="grid-item" onclick="this.patternNum=5; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern5" >5</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="killButton">Kill Notes</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="quantizeButton">Quantize</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="saveButton">Save</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recallButton">Recall</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="reloadButton">Reload</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOverrideButton">Program Override</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOnlyButton">Program Only</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="copyButton">Copy Pattern</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="eraseButton">Erase</button>
-        <button class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="presetNameButton">Preset Name: X</button>
+    <div class="spacerRow"></div>
+    <div class="spacerRow" id="center-row">
+        <div class="spacerCol"></div>
+        <div id="grid-container">
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recButton">Rec</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="playButton">Play</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="stopButton">Stop</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearButton">Clear</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="lengthButton">Length 1</div>
+            <div class="grid-item" onclick="this.patternNum=1; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern1" >1</div>
+            <div class="grid-item" onclick="this.patternNum=2; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern2" >2</div>
+            <div class="grid-item" onclick="this.patternNum=3; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern3" >3</div>
+            <div class="grid-item" onclick="this.patternNum=4; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern4" >4</div>
+            <div class="grid-item" onclick="this.patternNum=5; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern5" >5</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="killButton">Kill Notes</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="quantizeButton">Quantize</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="saveButton">Save</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recallButton">Recall</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="reloadButton">Reload</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOverrideButton">Program Override</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOnlyButton">Program Only</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="copyButton">Copy Pattern</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="eraseButton">Erase</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="presetNameButton">Preset Name: X</div>
+        </div>
+        <div class="spacerCol"></div>
     </div>    
+    <div class="spacerRow"></div>
     <script>
 
         globals={
@@ -66,7 +75,7 @@
 
         config={
             buttonSelectedColor: "rgba(0, 0, 255, 0.3)",
-            buttonBackgroundColor : "rgba(255, 255, 255, 0.4)",
+            buttonBackgroundColor : "rgba(255, 255, 255, 0.25)",
             debounceThreshold: 300,
             copyEnabled: false
         }
