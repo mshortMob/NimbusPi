@@ -106,6 +106,9 @@ lkInput.on('message', (deltaTime, message) => {
 });
 
 circuitInput.on('message', (deltaTime, message) => {
+  if(message[0]!=248){
+    console.log(message);
+  }
   // console.log(internals.cursor);
   if(message[0]==248){
     // console.log(internals.cursor);
