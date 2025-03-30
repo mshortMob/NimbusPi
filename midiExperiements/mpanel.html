@@ -39,20 +39,20 @@
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recButton">Rec</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="playButton">Play</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="stopButton">Stop</div>
-            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearButton">Clear</div>
-            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="lengthButton">Length 1</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearCircuitButton">Clear Circuit</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearRolandButton">Clear Roland</div>
             <div class="grid-item" onclick="this.patternNum=1; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern1" >1</div>
             <div class="grid-item" onclick="this.patternNum=2; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern2" >2</div>
             <div class="grid-item" onclick="this.patternNum=3; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern3" >3</div>
             <div class="grid-item" onclick="this.patternNum=4; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern4" >4</div>
             <div class="grid-item" onclick="this.patternNum=5; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern5" >5</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="lengthButton">Length 1</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="killButton">Kill Notes</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="quantizeButton">Quantize</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="saveButton">Save</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recallButton">Recall</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="reloadButton">Reload</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOverrideButton">Program Override</div>
-            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOnlyButton">Program Only</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="copyButton">Copy Pattern</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="eraseButton">Erase</div>
             <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="presetNameButton">Preset Name: X</div>
@@ -77,14 +77,15 @@
             buttonSelectedColor: "rgba(0, 0, 255, 0.3)",
             buttonBackgroundColor : "rgba(255, 255, 255, 0.25)",
             debounceThreshold: 300,
-            copyEnabled: false
+            copyEnabled: false,
+            socket: new WebSocket("ws://"+location.hostname+":3003")
         }
         
         window.onload = function(){
             const buttons = document.getElementsByClassName("grid-item");
             for (let i = 0; i < buttons.length; i++) {
                 buttons.item(i).lastClickedTime=parseInt(new Date().getTime()-10000);
-                if( buttons.item(i).id == "killButton" || buttons.item(i).id == "clearButton" || buttons.item(i).id == "saveButton" || buttons.item(i).id == "recallButton" ){
+                if( buttons.item(i).id == "killButton" || buttons.item(i).id == "clearCircuitButton" || buttons.item(i).id == "clearRolandButton" || buttons.item(i).id == "saveButton" || buttons.item(i).id == "recallButton" ){
                     buttons.item(i).isMomentary=true
                 }else{
                     buttons.item(i).isMomentary=false;
@@ -127,8 +128,12 @@
                     sendEvent("killnotes");
                     buttonElem.buttonClickBlip();
                 }
-                if(buttonElem.id=="clearButton"){
-                    sendEvent("clear");
+                if(buttonElem.id=="clearCircuitButton"){
+                    sendEvent("clearCircuit");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="clearRolandButton"){
+                    sendEvent("clearRoland");
                     buttonElem.buttonClickBlip();
                 }
                 if(buttonElem.id=="recallButton"){
@@ -143,16 +148,17 @@
                     window.location.href=window.location.href;
                 }
                 if(buttonElem.id=="programOverrideButton"){
-                    globals.programOverride=!globals.programOverride;
-                    if(globals.programOverride){
+                    if(!globals.programOverride && !globals.programOnly){
+                        globals.programOverride=true;
+                    }else if(globals.programOverride){
+                        globals.programOverride=false;
+                        globals.programOnly=true;
+                    }else if(globals.programOnly){
+                        globals.programOverride=false;
                         globals.programOnly=false;
                     }
-                }
-                if(buttonElem.id=="programOnlyButton"){
-                    globals.programOnly=!globals.programOnly;
-                    if(globals.programOnly){
-                        globals.programOverride=false;
-                    }
+                    console.log("Pgm Override: "+globals.programOverride);
+                    console.log("Pgm Only: "+globals.programOnly);
                 }
                 if(buttonElem.id=="presetNameButton"){
                     globals.presetName=(globals.presetName+1)%4
@@ -258,19 +264,17 @@
             // program override button
             if(globals.programOverride==true){
                 document.getElementById("programOverrideButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("programOverrideButton").innerHTML='Program Override';
+            }
+            else 
+            if(globals.programOnly==true){
+                document.getElementById("programOverrideButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("programOverrideButton").innerHTML='Program only';
             }
             else
             {
                 document.getElementById("programOverrideButton").style.backgroundColor=config.buttonBackgroundColor;
-            }
-
-            // program only button
-            if(globals.programOnly==true){
-                document.getElementById("programOnlyButton").style.backgroundColor=config.buttonSelectedColor;
-            }
-            else
-            {
-                document.getElementById("programOnlyButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("programOverrideButton").innerHTML='Program Override';
             }
 
             // copy button
@@ -291,6 +295,18 @@
                 document.getElementById("eraseButton").style.backgroundColor=config.buttonBackgroundColor;
             }
         }
+
+        config.socket.addEventListener("open", (event) => {
+        // socket.send("Hello Server!");
+        });
+
+        config.socket.addEventListener("message", (event) => {
+        console.log("Received Socket Message from server "); // event.data
+        if(JSON.parse(event.data).selectedPattern != 'undefined' ){
+            globals=JSON.parse(event.data);
+            syncViewToState();
+        }
+        });
 
     </script>
 </body>

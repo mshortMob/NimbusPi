@@ -1,6 +1,9 @@
 const fs = require('fs');
 const midi = require('midi');
+const {WebSocketServer} = require('ws');
+const wss = new WebSocketServer({ port: 3003 });
 const circuitInput = new midi.Input();
+const circuitOutput = new midi.Output();
 const rolandInput = new midi.Input();
 const rolandOutput = new midi.Output();
 const lkInput = new midi.Input();
@@ -22,6 +25,7 @@ function init(){
     lkPort: "None",
     cursor: 0,
     loopData: [],
+    circuitProgramLoopData: [],
     loopMaxLength: 96*4,  // in tickts, 6 ticks == 1 quater note == 1 beat
     loopLengths: [96*1, 96*2, 96*4]
   }
@@ -47,7 +51,18 @@ function init(){
     }
   }
 
+  function initCircuitProgramLoopData(){
+    for(var y=0; y<6; y++){
+      var temp=[];
+      for(var x=0; x<internals.loopMaxLength; x++){
+        temp.push([]);
+      }
+      internals.circuitProgramLoopData.push(temp);
+    }
+  }
+
   initLoopData();
+  initCircuitProgramLoopData();
   initMidiConnections();
 
 }
@@ -77,6 +92,7 @@ function initMidiConnections(){
   if(internals.circuitPort!="None"){
     circuitInput.openPort(internals.circuitPort);
     circuitInput.ignoreTypes(true,false,true);
+    circuitOutput.openPort(internals.circuitPort);
   }
   if(internals.rolandPort!="None"){
     rolandInput.openPort(internals.rolandPort);
@@ -86,11 +102,18 @@ function initMidiConnections(){
   // process.exit(1);
 }
 
-function clearLoop(){
-  for(var x=0; x<internals.loopMaxLength; x++){
-    internals.loopData[globals.selectedPattern-1][x]=[];
+function clearLoop(scope){
+  if(scope=="roland" || scope == "all"){
+    for(var x=0; x<internals.loopMaxLength; x++){
+      internals.loopData[globals.selectedPattern-1][x]=[];
+    }
+    killAllNotes();
   }
-  killAllNotes();
+  if(scope=="circuit" || scope == "all"){
+    for(var x=0; x<internals.loopMaxLength; x++){
+      internals.circuitProgramLoopData[globals.selectedPattern-1][x]=[];
+    }
+  }
 }
 
 function killAllNotes(){
@@ -98,6 +121,37 @@ function killAllNotes(){
   for(var x=48; x<=72; x++){
     // rolandOutput.sendMessage([130,parseInt(x, 16),0]);
     rolandOutput.sendMessage([130,x,0]);
+  }
+}
+
+function recordMessage(message, bufferaName){
+  console.log(message);
+  if(globals.transportState=="rec" && message[0]!=248 && message[0]!=250 && message[0]!=252 ){
+    if(globals.quantize==false){
+      if(globals.selectedLength==0){
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor].push(message);
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor+96*1].push(message);
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor+96*2].push(message);
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor+96*3].push(message);
+      }else if(globals.selectedLength==1){
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor].push(message);
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor+96*2].push(message);
+      }else{
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor].push(message);
+      }
+    }else{
+      if(globals.selectedLength==0){
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)].push(message);
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*1].push(message);
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*2].push(message);
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*3].push(message);
+      }else if(globals.selectedLength==1){   
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)].push(message);
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*2].push(message);
+      }else{
+        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)].push(message);
+      }
+    }
   }
 }
 
@@ -109,7 +163,9 @@ circuitInput.on('message', (deltaTime, message) => {
   if(message[0]!=248){
     console.log(message);
   }
-  // console.log(internals.cursor);
+  if(message[0]==199 || message[0]==193){
+    recordMessage(message,"circuitProgramLoopData");
+  }
   if(message[0]==248){
     // console.log(internals.cursor);
     internals.cursor=(internals.cursor+1)%internals.loopLengths[globals.selectedLength];
@@ -118,11 +174,13 @@ circuitInput.on('message', (deltaTime, message) => {
     internals.cursor=0;
     globals.transportState="play";
     console.log("circuit play pressed");
+    emitSocketMessage();
   }
   if(message[0]==252){
     globals.transportState="stop";
     killAllNotes();
     console.log("circuit stop pressed");
+    emitSocketMessage();
   }
   if(globals.transportState=="play" || globals.transportState=="rec"){
     if(globals.eraseEnabled){
@@ -144,45 +202,28 @@ circuitInput.on('message', (deltaTime, message) => {
         rolandOutput.sendMessage(playbacMessage);
       }
     }
+    for(var x=0; x<internals.circuitProgramLoopData[globals.selectedPattern-1][internals.cursor].length; x++){
+      var playbacMessage=internals.circuitProgramLoopData[globals.selectedPattern-1][internals.cursor][x];
+      circuitOutput.sendMessage(playbacMessage);
+    }
   }
 });
 
 rolandInput.on('message', (deltaTime, message) => {
-  console.log(message);
-  if(globals.transportState=="rec" && message[0]!=248 && message[0]!=250 && message[0]!=252 ){
-    if(globals.quantize==false){
-      if(globals.selectedLength==0){
-        internals.loopData[globals.selectedPattern-1][internals.cursor].push(message);
-        internals.loopData[globals.selectedPattern-1][internals.cursor+96*1].push(message);
-        internals.loopData[globals.selectedPattern-1][internals.cursor+96*2].push(message);
-        internals.loopData[globals.selectedPattern-1][internals.cursor+96*3].push(message);
-      }else if(globals.selectedLength==1){
-        internals.loopData[globals.selectedPattern-1][internals.cursor].push(message);
-        internals.loopData[globals.selectedPattern-1][internals.cursor+96*2].push(message);
-      }else{
-        internals.loopData[globals.selectedPattern-1][internals.cursor].push(message);
-      }
-    }else{
-      if(globals.selectedLength==0){
-        internals.loopData[globals.selectedPattern-1][internals.cursor-(internals.cursor%6)].push(message);
-        internals.loopData[globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*1].push(message);
-        internals.loopData[globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*2].push(message);
-        internals.loopData[globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*3].push(message);
-      }else if(globals.selectedLength==1){   
-        internals.loopData[globals.selectedPattern-1][internals.cursor-(internals.cursor%6)].push(message);
-        internals.loopData[globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*2].push(message);
-      }else{
-        internals.loopData[globals.selectedPattern-1][internals.cursor-(internals.cursor%6)].push(message);
-      }
-    }
-  }
+  recordMessage(message, "loopData");
 });
 
 app.get('/action', (req, res) => {
   var action=req.query.value;
   console.log('received '+action+' cmd');
   if(action=="clear"){
-    clearLoop();
+    clearLoop("all");
+  }
+  if(action=="clearRoland"){
+    clearLoop("roland");
+  }
+  if(action=="clearCircuit"){
+    clearLoop("circuit");
   }
   if(action=="killnotes"){
     killAllNotes();
@@ -193,12 +234,14 @@ app.get('/action', (req, res) => {
         console.error(err);
         return;
       }
-      internals.loopData=JSON.parse(data);
+      var tempData=JSON.parse(data);
+      internals.loopData=tempData.roland;
+      internals.circuitProgramLoopData=tempData.circuit;
       console.log('recalled saved presets!');
     });
   }
   if(action=="save"){
-    var fileContents=JSON.stringify(internals.loopData);
+    var fileContents=JSON.stringify({ "roland": internals.loopData, "circuit": internals.circuitProgramLoopData});
     fs.writeFile('/root/NimbusPi/midiExperiements/presets'+parseInt(globals.presetName)+'.txt', fileContents, err => {
       if (err) {
         console.error(err);
@@ -227,7 +270,7 @@ app.post('/setState', (req, res) => {
 })
 
 app.get('/debug', (req, res) => {
-  res.send(JSON.stringify(internals.loopData));
+  res.send(JSON.stringify(internals));
 })
 
 app.listen(port, () => {
@@ -248,3 +291,23 @@ app.get('/gui', function (req, res) {
       }
   });
 });
+
+wss.on('connection', function connection(ws) {
+  ws.on('message', function message(data) {
+    console.log('received: %s', data);
+    try{
+      //JSON.parse(data)
+      console.log('server recieved web socket message');
+    }catch{}
+  });
+  // ws.send('something');
+});
+
+function emitSocketMessage(){
+  var messagePayload={};
+  wss.clients.forEach(function each(client) {
+    if (client.readyState === WebSocket.OPEN) {
+      client.send(JSON.stringify(globals));
+    }
+  });
+}

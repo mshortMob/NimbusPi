@@ -4,6 +4,9 @@
   "dependencies": {
     "express": "latest",
     "midi": "latest",
-    "body-parser": "latest"
+    "body-parser": "latest",
+    "fs": "*",
+    "ws": "*",
+    "path": "*"
   }
 }
