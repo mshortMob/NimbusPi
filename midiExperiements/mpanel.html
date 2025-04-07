@@ -28,6 +28,7 @@
                 text-align: center;
                 align-content: center;
                 display: grid;
+                font-weight: bold;
             }
         </style>
     </head>
@@ -85,7 +86,7 @@
             const buttons = document.getElementsByClassName("grid-item");
             for (let i = 0; i < buttons.length; i++) {
                 buttons.item(i).lastClickedTime=parseInt(new Date().getTime()-10000);
-                if( buttons.item(i).id == "killButton" || buttons.item(i).id == "clearCircuitButton" || buttons.item(i).id == "clearRolandButton" || buttons.item(i).id == "saveButton" || buttons.item(i).id == "recallButton" ){
+                if( buttons.item(i).id == "killButton" || buttons.item(i).id == "clearCircuitButton" || buttons.item(i).id == "clearRolandButton" || buttons.item(i).id == "saveButton" || buttons.item(i).id == "recallButton" || buttons.item(i).id == "reloadButton" ){
                     buttons.item(i).isMomentary=true
                 }else{
                     buttons.item(i).isMomentary=false;
@@ -145,7 +146,11 @@
                     buttonElem.buttonClickBlip();
                 }
                 if(buttonElem.id=="reloadButton"){
-                    window.location.href=window.location.href;
+                    sendEvent("reload");
+                    buttonElem.buttonClickBlip();
+                    setTimeout(function(){
+                        window.location.href=window.location.href;
+                    },1000);
                 }
                 if(buttonElem.id=="programOverrideButton"){
                     if(!globals.programOverride && !globals.programOnly){

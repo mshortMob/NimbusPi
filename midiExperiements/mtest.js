@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { exec } = require('child_process');
 const midi = require('midi');
 const {WebSocketServer} = require('ws');
 const wss = new WebSocketServer({ port: 3003 });
@@ -251,6 +252,14 @@ app.get('/action', (req, res) => {
   }
   if(action=="copy"){
     internals.loopData[parseInt(req.query.copyTarget-1)]=JSON.parse(JSON.stringify(internals.loopData[globals.selectedPattern-1]));
+  }
+  if(action=="reload"){
+    dir = exec("sudo /usr/sbin/service mtest restart", function(err, stdout, stderr) {
+      if (err) {
+        console.log(err);
+      }
+      console.log(stdout);
+    });
   }
   res.send('received '+action+' cmd')
 })
