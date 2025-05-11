@@ -252,6 +252,7 @@ app.get('/action', (req, res) => {
   }
   if(action=="copy"){
     internals.loopData[parseInt(req.query.copyTarget-1)]=JSON.parse(JSON.stringify(internals.loopData[globals.selectedPattern-1]));
+    internals.circuitProgramLoopData[parseInt(req.query.copyTarget-1)]=JSON.parse(JSON.stringify(internals.circuitProgramLoopData[globals.selectedPattern-1]));
   }
   if(action=="reload"){
     dir = exec("sudo /usr/sbin/service mtest restart", function(err, stdout, stderr) {
