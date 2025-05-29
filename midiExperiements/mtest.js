@@ -186,6 +186,7 @@ circuitInput.on('message', (deltaTime, message) => {
   if(globals.transportState=="play" || globals.transportState=="rec"){
     if(globals.eraseEnabled){
       internals.loopData[globals.selectedPattern-1][internals.cursor]=[];
+      internals.circuitProgramLoopData[globals.selectedPattern-1][internals.cursor]=[];
     }
     for(var x=0; x<internals.loopData[globals.selectedPattern-1][internals.cursor].length; x++){
       var sendMessage=false;
