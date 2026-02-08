@@ -7,9 +7,9 @@ struct {
   char password[64] = "NimbusPi123"; //  EEPROM.put and EEPROM.commit in setup
   char universe[32] = "1";
   char startChan[64] = "25";
-  char fixtureMode[64] = "2";   //fixtureMode 0= 3chan ; fixtureMode 1= indiviudal addressable
+  char fixtureMode[64] = "2";   //fixtureMode 0= 3chan ; fixtureMode 1= indiviudal addressable ; fixtureMode 2= chase patterns
   int num_base_leds = 100;
-  int pixel_start_offset = 10;
+  int pixel_start_offset = 0;
   int ledPresets[5][8] = {
     {130,50,200,4,4,3,0,50},
     {50,134,130,16,30,4,0,187},

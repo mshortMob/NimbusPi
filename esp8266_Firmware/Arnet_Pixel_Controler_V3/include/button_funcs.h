@@ -14,6 +14,17 @@ void setup_button(void){
     previous_mode_button_value=digitalRead(mode_button_pin);
 }
 
+bool interupt_startup_routine(){
+  bool shouldBreakLoop=false;
+  if(previous_mode_button_value!=digitalRead(mode_button_pin)){
+    previous_mode_button_value=digitalRead(mode_button_pin);
+    if(digitalRead(mode_button_pin)==0){
+      shouldBreakLoop=true;
+    }
+  }
+  return shouldBreakLoop;
+}
+
 int handle_button(){
   if(previous_mode_button_value!=digitalRead(mode_button_pin)){
     previous_mode_button_value=digitalRead(mode_button_pin);

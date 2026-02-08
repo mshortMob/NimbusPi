@@ -17,6 +17,7 @@ int povPlayerFrame=0;
 int povPlayerDebounceTime=0;
 int povPlayerCycleTime=5;
 int povDirection=-1;
+int artnetChasePatternState[8] = {130,50,200,4,4,3,0,50};
 
 struct {
   int colorIndex = 110;

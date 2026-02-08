@@ -38,7 +38,7 @@ boolean connectToSavedWifi(char* savedWifiName, char* savedWifiPassword){
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-    if (i > 25){
+    if (i > 25 | interupt_startup_routine() ){
       state = false;
       break;
     }
@@ -59,11 +59,15 @@ boolean connectToSavedWifi(char* savedWifiName, char* savedWifiPassword){
   return state;
 }
 
-void setup_ap(char* savedWifiName, char* savedWifiPassword){
+bool setup_ap(char* savedWifiName, char* savedWifiPassword){
   wifiConnected=connectToSavedWifi(savedWifiName, savedWifiPassword);
   if(!wifiConnected){
     startStandaloneHotspot();
+  }else{
+    setup_artnet();
+    clear_leds();
   }
+  return wifiConnected;
 }
 
 void stopStandaloneHotspot(void){
