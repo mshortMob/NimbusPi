@@ -2,6 +2,12 @@
 int mode_button_pin=13;
 int previous_mode_button_value=1;
 int selectedMode;
+bool buttonWasPressed = false;
+
+struct buttonState {
+  int selectedMode=0;
+  bool buttonWasPressed=false;
+};
 
 void cycle_mode(void){
   selectedMode=(selectedMode+1)%5;
@@ -25,12 +31,17 @@ bool interupt_startup_routine(){
   return shouldBreakLoop;
 }
 
-int handle_button(){
+buttonState handle_button(bool wifiConnected){
+  buttonState bs;
+  buttonWasPressed=false;
   if(previous_mode_button_value!=digitalRead(mode_button_pin)){
     previous_mode_button_value=digitalRead(mode_button_pin);
     if(digitalRead(mode_button_pin)==0){
       cycle_mode();
+      buttonWasPressed=true;
     }
   }
-  return selectedMode;
+  bs.buttonWasPressed=buttonWasPressed;
+  bs.selectedMode=selectedMode;
+  return bs;
 }

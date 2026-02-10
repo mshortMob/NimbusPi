@@ -75,3 +75,11 @@ void stopStandaloneHotspot(void){
       WiFi.softAPdisconnect(true);
       setup_ap(epdata.ssid, epdata.password);
 }
+
+bool handle_ap(bool wifiConnected, bool buttonWasPressed ){
+  if(wifiConnected && buttonWasPressed){
+    wifiConnected=false;
+    startStandaloneHotspot();
+  }
+  return wifiConnected;
+}
