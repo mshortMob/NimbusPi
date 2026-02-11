@@ -1,7 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <WiFiClient.h>
 
-const char *ssid = "EspTestBed";
 const char *password = "mshort123";
 
 bool wifiConnected=false;
@@ -11,14 +10,14 @@ void startStandaloneHotspot(){
   setLEDSToASingleColor(0,0,25);
   WiFi.mode(WIFI_AP);
   Serial.print("SSID: ");
-  Serial.println(ssid);
+  Serial.println(epdata.ap_name);
   Serial.print("Password: ");
   Serial.println(password);
-  WiFi.softAP(ssid, password);
+  WiFi.softAP(epdata.ap_name, password);
   IPAddress myIP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
   Serial.println(myIP);
-  Serial.println(WiFi.localIP());  
+  Serial.println(WiFi.localIP());
 }
 
 boolean connectToSavedWifi(char* savedWifiName, char* savedWifiPassword){

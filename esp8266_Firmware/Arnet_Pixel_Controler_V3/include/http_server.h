@@ -17,6 +17,7 @@ void handleGetSettings(){
     data["fixtureMode"]=epdata.fixtureMode;
     data["num_base_leds"]=epdata.num_base_leds;
     data["pixel_start_offset"]=epdata.pixel_start_offset;
+    data["ap_name"]=epdata.ap_name;
     String response;
     serializeJson(data, response);
     request->send(200, "application/json", response);
@@ -41,6 +42,7 @@ void handleUpdateSettings(){
     data["fixtureMode"].as<String>().toCharArray(epdata.fixtureMode,64);
     epdata.num_base_leds=int(data["num_base_leds"]);
     epdata.pixel_start_offset=int(data["pixel_start_offset"]);
+    data["ap_name"].as<String>().toCharArray(epdata.ap_name,64);
     EEPROM.put(0,epdata);
     EEPROM.commit();
     Serial.println("Updated EEPROM values");

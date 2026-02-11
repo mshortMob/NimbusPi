@@ -10,6 +10,7 @@ struct {
   char fixtureMode[64] = "2";   //fixtureMode 0= 3chan ; fixtureMode 1= indiviudal addressable ; fixtureMode 2= chase patterns
   int num_base_leds = 100;
   int pixel_start_offset = 0;
+  char ap_name[64] = "EspTestBed";
   int ledPresets[5][8] = {
     {130,50,200,4,4,3,0,50},
     {50,134,130,16,30,4,0,187},
@@ -88,6 +89,8 @@ void setup_eeprom(){
   Serial.println(epdata.num_base_leds);
   Serial.print("pixel_start_offset: ");
   Serial.println(epdata.pixel_start_offset);
+  Serial.print("ap_name: ");
+  Serial.println(epdata.ap_name);
   Serial.println("ledPresets: ");
   for(int x=0;x<5;x++){
     for(int y=0;y<8;y++){
