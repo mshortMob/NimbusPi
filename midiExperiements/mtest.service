@@ -1,0 +1,15 @@
+[Unit]
+Description=midi_controller_app
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /root/NimbusPi/midiExperiements/mtest.js 
+WorkingDirectory=/root
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=root
+
+[Install]
+WantedBy=multi-user.target
+

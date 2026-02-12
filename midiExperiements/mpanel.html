@@ -3,128 +3,315 @@
     <head>
         <style>
             body{
-                background-color: black;
-            }
-            .grid-container {
-                display: grid;
-                grid-template-columns: auto auto auto auto auto auto auto;
                 background-color: #555555;
-                padding: 10px;
-                height:90%;
-                width: 95%;
+                cursor: none;
+                display: grid;
                 position: absolute;
-                left:2.5%;
-                top:2.5%;
+                width:99%;
+                height:99%; 
+                grid-template-rows: 2.5% 95% 2.5%;
+            }
+            .spacerRow, .spacerCol{
+                display: grid;
+            }
+            #center-row{
+                grid-template-columns: 1.5% 97% 1.5%;
+            }
+            #grid-container {
+                display:grid;
+                grid-template-columns: 20% 20% 20% 20% 20%;
+                border:4px solid black;
             }
             .grid-item {
-                background-color: rgba(255, 255, 255, 0.8);
-                border: 1px solid rgba(0, 0, 0, 0.8);
-                padding: 20px;
+                border: 4px solid rgba(0, 0, 0, 1);
                 font-size: 24px;
                 text-align: center;
+                align-content: center;
+                display: grid;
+                font-weight: bold;
             }
         </style>
     </head>
 <body>
-    <div class="grid-container">
-        <button class="grid-item" onclick="hitEndpoint('rec',this);" id="recButton">Rec</button>
-        <button class="grid-item" onclick="hitEndpoint('play',this);">Play</button>
-        <button class="grid-item" onclick="hitEndpoint('stop',this)">Stop</button>
-        <button class="grid-item" onclick="hitEndpoint('clear',this)">Clear</button>
-        <button class="grid-item" onclick="hitEndpoint('length',this)" id="lengthButton">Length 1</button>
-        <button class="grid-item" onclick="hitEndpoint('killAllNotes',this)">Kill Notes</button>
-        <button class="grid-item" onclick="saveState()">Save</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/1',this);" id="pattern1" >1</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/2',this);" id="pattern2" >2</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/3',this);" id="pattern3" >3</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/4',this);" id="pattern4" >4</button>
-        <button class="grid-item" onclick="hitEndpoint('pattern/5',this);" id="pattern5" >5</button>
-        <button class="grid-item" onclick="hitEndpoint('quantize/',this)" id="quantize">Quantize</button>
-        <button class="grid-item" onclick="recallState()">Recall</button>
-
-    </div>
+    <div class="spacerRow"></div>
+    <div class="spacerRow" id="center-row">
+        <div class="spacerCol"></div>
+        <div id="grid-container">
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recButton">Rec</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="playButton">Play</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="stopButton">Stop</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearCircuitButton">Clear Circuit</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearRolandButton">Clear Roland</div>
+            <div class="grid-item" onclick="this.patternNum=1; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern1" >1</div>
+            <div class="grid-item" onclick="this.patternNum=2; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern2" >2</div>
+            <div class="grid-item" onclick="this.patternNum=3; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern3" >3</div>
+            <div class="grid-item" onclick="this.patternNum=4; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern4" >4</div>
+            <div class="grid-item" onclick="this.patternNum=5; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern5" >5</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="lengthButton">Length 1</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="killButton">Kill Notes</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="quantizeButton">Quantize</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="saveButton">Save</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recallButton">Recall</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="reloadButton">Reload</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOverrideButton">Program Override</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="copyButton">Copy Pattern</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="eraseButton">Erase</div>
+            <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="presetNameButton">Preset Name: X</div>
+        </div>
+        <div class="spacerCol"></div>
+    </div>    
+    <div class="spacerRow"></div>
     <script>
-        selectedLength=0;
-        quantize="false";
-        document.getElementById("pattern1").style.backgroundColor='rgba(255, 255, 255, 0.5)';
-        function hitEndpoint(endpoint, buttonElem){
 
-            if(endpoint=="rec"){
-                buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
-            }else if(endpoint.indexOf("pattern")!=-1){
-                for(var x=1; x<=5; x++){
-                    document.getElementById("pattern"+x).style.backgroundColor='rgba(255, 255, 255, 0.8)';
-                }
-                buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
-            }else if(endpoint=="quantize/"){
-                if(quantize=="true"){
-                    quantize="false";
-                    buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.8)';
-                }else{
-                    quantize="true";
-                    buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
-                }
-                endpoint=endpoint+quantize;
-            }else{
-                buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.5)';
-                setTimeout(function(){buttonElem.style.backgroundColor='rgba(255, 255, 255, 0.8)';},280);
-            }
-            if(endpoint=="play"){
-                document.getElementById("recButton").style.backgroundColor='rgba(255, 255, 255, 0.8)';
-            }
-
-            if(endpoint=="length"){
-                loopLengths=[1,2,4];
-                selectedLength=(selectedLength+1)%3;
-                document.getElementById("lengthButton").innerHTML="Length "+loopLengths[selectedLength];
-                endpoint=endpoint+"/"+selectedLength;
-            }
-
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    console.log(xhttp.responseText);
-                }
-            };
-            xhttp.open("GET", 'http://'+location.host+'/proxy2/'+endpoint, true);
-            xhttp.send();
+        globals={
+            quantize: false,
+            selectedLength: 0,
+            selectedPattern:1,
+            presetName: 0,
+            transportState:"play",
+            programOverride: false,
+            programOnly: false,
+            eraseEnabled: false
         }
 
-        function saveState(){
-            var xhttp = new XMLHttpRequest();
-            xhttp.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    console.log("retrieving pattern data from server");
-                    console.log(xhttp.responseText);
-                    var requestBody=xhttp.responseText;
-                    var xmlhttp2=new XMLHttpRequest();
-                    xmlhttp2.open("POST", "php/write.php?fn=midiPatterns1.txt", true);
-                    xmlhttp2.send(requestBody);
-                    xmlhttp2.onload = function(e){
-                        console.log("writing pattern data to file");
+        config={
+            buttonSelectedColor: "rgba(0, 0, 255, 0.3)",
+            buttonBackgroundColor : "rgba(255, 255, 255, 0.25)",
+            debounceThreshold: 300,
+            copyEnabled: false,
+            socket: new WebSocket("ws://"+location.hostname+":3003")
+        }
+        
+        window.onload = function(){
+            const buttons = document.getElementsByClassName("grid-item");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons.item(i).lastClickedTime=parseInt(new Date().getTime()-10000);
+                if( buttons.item(i).id == "killButton" || buttons.item(i).id == "clearCircuitButton" || buttons.item(i).id == "clearRolandButton" || buttons.item(i).id == "saveButton" || buttons.item(i).id == "recallButton" || buttons.item(i).id == "reloadButton" ){
+                    buttons.item(i).isMomentary=true
+                }else{
+                    buttons.item(i).isMomentary=false;
+                }
+            }
+            getState();
+        }
+
+        function handleButtonClick(buttonElem){
+            buttonElem.buttonClickBlip=function(){
+                syncViewToState();
+                setTimeout(function(){syncViewToState()},parseInt(config.debounceThreshold + 100));
+            }
+            if( (new Date().getTime() - buttonElem.lastClickedTime) > config.debounceThreshold ){
+                buttonElem.lastClickedTime=new Date().getTime();
+                if(buttonElem.id=="recButton"){
+                    globals.transportState="rec";
+                }
+                if(buttonElem.id=="playButton"){
+                    globals.transportState="play";
+                }
+                if(buttonElem.id=="stopButton"){
+                    globals.transportState="stop";
+                }
+                if(buttonElem.id=="lengthButton"){
+                    globals.selectedLength=(globals.selectedLength+1)%3;
+                }
+                if(buttonElem.id=="quantizeButton"){
+                    globals.quantize=!globals.quantize;
+                }
+                if(buttonElem.id.indexOf("pattern")!=-1){
+                    if(!config.copyEnabled){
+                        globals.selectedPattern=buttonElem.patternNum;
+                    }else{
+                        sendEvent("copy",buttonElem.patternNum);
+                        buttonElem.buttonClickBlip();
                     }
                 }
+                if(buttonElem.id=="killButton"){
+                    sendEvent("killnotes");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="clearCircuitButton"){
+                    sendEvent("clearCircuit");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="clearRolandButton"){
+                    sendEvent("clearRoland");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="recallButton"){
+                    sendEvent("recall");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="saveButton"){
+                    sendEvent("save");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="reloadButton"){
+                    sendEvent("reload");
+                    buttonElem.buttonClickBlip();
+                    setTimeout(function(){
+                        window.location.href=window.location.href;
+                    },1000);
+                }
+                if(buttonElem.id=="programOverrideButton"){
+                    if(!globals.programOverride && !globals.programOnly){
+                        globals.programOverride=true;
+                    }else if(globals.programOverride){
+                        globals.programOverride=false;
+                        globals.programOnly=true;
+                    }else if(globals.programOnly){
+                        globals.programOverride=false;
+                        globals.programOnly=false;
+                    }
+                    console.log("Pgm Override: "+globals.programOverride);
+                    console.log("Pgm Only: "+globals.programOnly);
+                }
+                if(buttonElem.id=="presetNameButton"){
+                    globals.presetName=(globals.presetName+1)%4
+                }
+                if(buttonElem.id=="copyButton"){
+                    config.copyEnabled=!config.copyEnabled;
+                }
+                if(buttonElem.id=="eraseButton"){
+                    globals.eraseEnabled=!globals.eraseEnabled;
+                }
+                syncViewToState();
+                setState();
+            }
+        }
+
+        function getState(){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(xhttp.responseText);
+                    globals=JSON.parse(xhttp.response);
+                    syncViewToState();
+                }
             };
-            xhttp.open("GET", 'http://'+location.host+'/proxy2/saveToDisk', true);
+            xhttp.open("GET", 'http://'+location.host+'/'+'getState', true);
             xhttp.send();
         }
 
-        function recallState(){
+        function setState(){
             var xhttp = new XMLHttpRequest();
-            xhttp.onload = function() {
-                console.log("getting pattern data from file");
-                var requestBody=xhttp.responseText;
-                var xmlhttp2=new XMLHttpRequest();
-                xmlhttp2.open("POST", 'http://'+location.host+'/proxy2/recallFromDisk', true);
-                xmlhttp2.setRequestHeader("content-type", "application/json");
-                xmlhttp2.send(requestBody);
-                xmlhttp2.onload = function(e){
-                    console.log("sending pattern data to server");
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(xhttp.responseText);
                 }
             };
-            xhttp.open("GET", 'php/read.php?fn=midiPatterns1.txt', true);
+            xhttp.open("POST", 'http://'+location.host+'/'+'setState', true);
+            xhttp.setRequestHeader("content-type", "application/json");
+            xhttp.send(JSON.stringify(globals));
+        }
+
+        function sendEvent(eventName, copyTarget){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("processed "+eventName+" event");
+                }
+            };
+            if(eventName=="copy"){
+                xhttp.open("GET", 'http://'+location.host+'/'+'action?value='+eventName+'&copyTarget='+parseInt(copyTarget), true);
+            }else{
+                xhttp.open("GET", 'http://'+location.host+'/'+'action?value='+eventName, true);
+            }
             xhttp.send();
         }
+
+        function syncViewToState(){
+            // init whole grid backgrounds + handle momentary button blips
+            const buttons = document.getElementsByClassName("grid-item");
+            for (let i = 0; i < buttons.length; i++) {
+                if( (parseInt(new Date().getTime()-buttons.item(i).lastClickedTime) < config.debounceThreshold) && (buttons.item(i).isMomentary || (config.copyEnabled && buttons.item(i).id.indexOf("pattern")!=-1)) ){
+                    buttons.item(i).style.backgroundColor=config.buttonSelectedColor;
+                }else{
+                    buttons.item(i).style.backgroundColor=config.buttonBackgroundColor;
+                }
+            }
+
+            // transport buttons
+            if(globals.transportState=="rec"){
+                document.getElementById("recButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("playButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("stopButton").style.backgroundColor=config.buttonBackgroundColor;
+            }else 
+            if(globals.transportState=="play"){
+                document.getElementById("recButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("playButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("stopButton").style.backgroundColor=config.buttonBackgroundColor;
+            }else
+            if(globals.transportState=="stop"){
+                document.getElementById("recButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("playButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("stopButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            
+            // selected pattern button
+            document.getElementById("pattern"+globals.selectedPattern).style.backgroundColor=config.buttonSelectedColor;
+            
+            //quantize button
+            if(globals.quantize==true){
+                document.getElementById("quantizeButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("quantizeButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // loop length button
+            var loopLengths=[1,2,4];
+            document.getElementById("lengthButton").innerHTML="Length "+loopLengths[globals.selectedLength];
+
+            // preset name button
+            document.getElementById("presetNameButton").innerHTML='Preset Name: '+parseInt(globals.presetName)
+
+            // program override button
+            if(globals.programOverride==true){
+                document.getElementById("programOverrideButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("programOverrideButton").innerHTML='Program Override';
+            }
+            else 
+            if(globals.programOnly==true){
+                document.getElementById("programOverrideButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("programOverrideButton").innerHTML='Program only';
+            }
+            else
+            {
+                document.getElementById("programOverrideButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("programOverrideButton").innerHTML='Program Override';
+            }
+
+            // copy button
+            if(config.copyEnabled){
+                document.getElementById("copyButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("copyButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // erase button
+            if(globals.eraseEnabled){
+                document.getElementById("eraseButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("eraseButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+        }
+
+        config.socket.addEventListener("open", (event) => {
+        // socket.send("Hello Server!");
+        });
+
+        config.socket.addEventListener("message", (event) => {
+        console.log("Received Socket Message from server "); // event.data
+        if(JSON.parse(event.data).selectedPattern != 'undefined' ){
+            globals=JSON.parse(event.data);
+            syncViewToState();
+        }
+        });
 
     </script>
 </body>
