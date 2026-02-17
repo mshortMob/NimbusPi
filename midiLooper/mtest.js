@@ -9,6 +9,10 @@ const rolandInput = new midi.Input();
 const rolandOutput = new midi.Output();
 const lkInput = new midi.Input();
 const lkOutput = new midi.Output();
+const inControlInput = new midi.Input();
+const inControlOutput = new midi.Output();
+const rtpInput = new midi.Input();
+const rtpOutput = new midi.Output();
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -24,11 +28,15 @@ function init(){
     circuitPort: "None",
     rolandPort: "None",
     lkPort: "None",
+    inControlPort: "None",
+    rtpPort: "None",
     cursor: 0,
     loopData: [],
     circuitProgramLoopData: [],
     loopMaxLength: 96*4,  // in tickts, 6 ticks == 1 quater note == 1 beat
-    loopLengths: [96*1, 96*2, 96*4]
+    loopLengths: [96*1, 96*2, 96*4],
+    noteOnChannelOne: 144,
+    noteOffChannelOne: 128
   }
 
   globals={
@@ -40,6 +48,21 @@ function init(){
     programOverride: false,
     programOnly: false,
     eraseEnabled: false
+  }
+
+  inControlState={
+    padMode: 0,
+    keyMode:0,
+    ledPads: [96,97,98,99,112,113,114,115,116,117,118,119,100,101,102,103],
+    ledPadsDrumMap: [36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51],
+    upCircleButton: [144,104,127],
+    downCircleButton: [144,120,127],
+    upArrowButton: [176,104,127],
+    downArrowButton: [176,105,127],
+    leftArrowButton: [144,106,127],
+    rightArrowButton: [144,107,127],
+    knobs: [ [176,21], [176,22], [176,23], [176,24], [176,25], [176,26], [176,27], [176,28] ],
+    padsOutputChannel: 16
   }
 
   function initLoopData(){
@@ -69,6 +92,14 @@ function init(){
 }
 
 function initMidiConnections(){
+  console.log(" ");
+  console.log("Listing all MIDI Ports:");
+  console.log("--------------------------");
+  for(var x=0; x<circuitInput.getPortCount(); x++){
+    console.log("Port "+x+": "+circuitInput.getPortName(x));
+  }
+  console.log("--------------------------");
+  console.log(" ");
   for(var x=0; x<circuitInput.getPortCount(); x++){
     if(circuitInput.getPortName(x).indexOf("Circuit")!=-1){
       internals.circuitPort=x;
@@ -82,12 +113,24 @@ function initMidiConnections(){
       internals.lkPort=x;
       console.log("Found launcheky on port: "+x);
     }
+    if(circuitInput.getPortName(x).indexOf("InContro")!=-1 && internals.inControlPort=="None"){
+      internals.inControlPort=x;
+      console.log("Found inControl on port: "+x);
+    }
+    if(circuitInput.getPortName(x).indexOf("rtpmidid:mpc-one/MPC-rtpmidi mpc-one Network")!=-1 && internals.rtpPort=="None"){
+      internals.rtpPort=x;
+      console.log("Found rtpMidi on port: "+x);
+    }
   }
   if(internals.lkPort!="None"){
     lkInput.openPort(internals.lkPort);
-    lkOutput.openPort(2);
+    lkOutput.openPort(internals.lkPort);
+  }
+  if(internals.inControlPort!="None"){
+    inControlInput.openPort(internals.inControlPort);
+    inControlOutput.openPort(internals.inControlPort);
     for(var x=0;x<200;x++){
-      lkOutput.sendMessage([144,x,127]);  
+      inControlOutput.sendMessage([144,x,127]);  
     }
   }
   if(internals.circuitPort!="None"){
@@ -99,6 +142,11 @@ function initMidiConnections(){
     rolandInput.openPort(internals.rolandPort);
     rolandOutput.openPort(internals.rolandPort);
   }
+  if(internals.rtpPort!="None"){
+    rtpInput.openPort(internals.rtpPort);
+    rtpOutput.openPort(internals.rtpPort);
+  }
+
   // console.log("A midi device is missing, exiting");
   // process.exit(1);
 }
@@ -156,8 +204,65 @@ function recordMessage(message, bufferaName){
   }
 }
 
+function syncLaunchkeyLEDS(){
+  if(inControlState.padMode==0){ // padMode 0=orange, 1=red, 2=green
+    playCursorOnLEDS(127, 127);
+  }else if(inControlState.padMode==1){
+    playCursorOnLEDS(9, 9);
+  }else{
+    playCursorOnLEDS(100, 100);
+  }
+  
+  function playCursorOnLEDS(ColorOn, ColorOff){
+    let selectedStep=Math.floor(internals.cursor/6);
+    let count=0;
+    for(var x of inControlState.ledPads){
+      if(count==selectedStep && globals.transportState!="stop"){
+        inControlOutput.sendMessage([144,x,ColorOn]);
+      }else{
+        inControlOutput.sendMessage([144,x,ColorOff]);
+      }
+      count++;
+    }
+    inControlOutput.sendMessage([inControlState.upCircleButton[0],inControlState.upCircleButton[1],ColorOff]);
+    inControlOutput.sendMessage([inControlState.downCircleButton[0],inControlState.downCircleButton[1],ColorOff]);
+
+  }
+}
+
 lkInput.on('message', (deltaTime, message) => {
-  console.log(message);
+  rtpOutput.sendMessage(message);
+  console.log("lkInput: "+ message );
+});
+
+inControlInput.on('message', (deltaTime, message) => {
+  console.log("inControlInput: "+ message);
+  let sendToRtp=true;
+  let syncLeds=false;
+  let transformedMessage=message;
+  if(message[0]==inControlState.upArrowButton[0] && message[1]==inControlState.upArrowButton[1] && message[2]==inControlState.upArrowButton[2]){ // up arrow button
+    inControlState.padMode=(inControlState.padMode+1)%3;
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("pad mode: "+inControlState.padMode);
+  }else if(message[0]==inControlState.downArrowButton[0] && message[1]==inControlState.downArrowButton[1] && message[2]==inControlState.downArrowButton[2]){ // down arrow button
+    inControlState.padMode=(inControlState.padMode+2)%3;
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("pad mode: "+inControlState.padMode); 
+  }else if(inControlState.ledPads.includes(message[1])){ // pad buttons
+    sendToRtp=true;
+    transformedMessage=[message[0]+inControlState.padsOutputChannel-1,inControlState.ledPadsDrumMap[inControlState.ledPads.indexOf(message[1])],message[2]];
+    console.log("inControlInput transformedMessage: "+transformedMessage);
+  }else{
+    sendToRtp=true;
+  }
+  if(sendToRtp){
+    rtpOutput.sendMessage(transformedMessage);
+  }
+  if(syncLeds){
+    syncLaunchkeyLEDS();
+  }
 });
 
 circuitInput.on('message', (deltaTime, message) => {
@@ -170,6 +275,9 @@ circuitInput.on('message', (deltaTime, message) => {
   if(message[0]==248){
     // console.log(internals.cursor);
     internals.cursor=(internals.cursor+1)%internals.loopLengths[globals.selectedLength];
+    if( internals.cursor%6 == 0){
+      syncLaunchkeyLEDS();
+    }
   }
   if(message[0]==250){
     internals.cursor=0;
@@ -290,7 +398,7 @@ app.listen(port, () => {
 
 app.get('/gui', function (req, res) {
   const options = {
-      root: "/root/NimbusPi/midiExperiements/"
+      root: "/root/NimbusPi/midiLooper/"
   };
 
   const fileName = 'mpanel.html';
