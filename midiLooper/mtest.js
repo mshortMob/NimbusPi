@@ -15,6 +15,7 @@ const rtpInput = new midi.Input();
 const rtpOutput = new midi.Output();
 const express = require('express');
 const bodyParser = require('body-parser');
+const { channel } = require('diagnostics_channel');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -52,7 +53,8 @@ function init(){
 
   inControlState={
     padMode: 0,
-    keyMode:0,
+    numberOfPadModes: 3,
+    padsOutputChannels: [14,15,16],
     ledPads: [96,97,98,99,112,113,114,115,116,117,118,119,100,101,102,103],
     ledPadsDrumMap: [36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51],
     upCircleButton: [144,104,127],
@@ -62,7 +64,69 @@ function init(){
     leftArrowButton: [144,106,127],
     rightArrowButton: [144,107,127],
     knobs: [ [176,21], [176,22], [176,23], [176,24], [176,25], [176,26], [176,27], [176,28] ],
-    padsOutputChannel: 16
+    knobsOutputMap: [
+      [
+        {
+          control: 21,
+          inputRange: [0,127],
+          outputRange: [0,127]
+        },
+        {
+          control: 29,
+          inputRange: [0,127],
+          outputRange: [0,127]
+        }
+      ],
+      [
+        {
+          control: 22,
+          inputRange: [0,127],
+          outputRange: [0,127]
+        }
+      ],
+      [
+        {
+          control: 23,
+          inputRange: [0,127],
+          outputRange: [0,127]
+        }
+      ],
+      [
+        {
+          control: 24,
+          inputRange: [0,127],
+          outputRange: [0,127]
+        }
+      ],
+      [
+        {
+          control: 25,
+          inputRange: [0,127],
+          outputRange: [0,127]
+        }
+      ],
+      [
+        {
+          control: 26,
+          inputRange: [0,127],
+          outputRange: [0,127]
+        }
+      ],
+      [
+        {
+          control: 27,
+          inputRange: [0,127],
+          outputRange: [0,127]
+        }
+      ],
+      [
+        {
+          control: 28,
+          inputRange: [0,127],
+          outputRange: [0,127]
+        }
+      ]
+    ]
   }
 
   function initLoopData(){
@@ -241,24 +305,27 @@ inControlInput.on('message', (deltaTime, message) => {
   let syncLeds=false;
   let transformedMessage=message;
   if(message[0]==inControlState.upArrowButton[0] && message[1]==inControlState.upArrowButton[1] && message[2]==inControlState.upArrowButton[2]){ // up arrow button
-    inControlState.padMode=(inControlState.padMode+1)%3;
+    inControlState.padMode=(inControlState.padMode+1)%inControlState.numberOfPadModes;
     sendToRtp=false;
     syncLeds=true;
     console.log("pad mode: "+inControlState.padMode);
   }else if(message[0]==inControlState.downArrowButton[0] && message[1]==inControlState.downArrowButton[1] && message[2]==inControlState.downArrowButton[2]){ // down arrow button
-    inControlState.padMode=(inControlState.padMode+2)%3;
+    inControlState.padMode=(inControlState.padMode+2)%inControlState.numberOfPadModes;
     sendToRtp=false;
     syncLeds=true;
     console.log("pad mode: "+inControlState.padMode); 
   }else if(inControlState.ledPads.includes(message[1])){ // pad buttons
     sendToRtp=true;
-    transformedMessage=[message[0]+inControlState.padsOutputChannel-1,inControlState.ledPadsDrumMap[inControlState.ledPads.indexOf(message[1])],message[2]];
-    console.log("inControlInput transformedMessage: "+transformedMessage);
+    transformedMessage=[message[0]+inControlState.padsOutputChannels[inControlState.padMode]-1,inControlState.ledPadsDrumMap[inControlState.ledPads.indexOf(message[1])],message[2]];
+  }else if(inControlState.knobs.includes([message[0],message[1]])){ // knobs (broken)
+    sendToRtp=true;
+    transformedMessage=[message[0], message[1], message[2]];
   }else{
     sendToRtp=true;
   }
   if(sendToRtp){
     rtpOutput.sendMessage(transformedMessage);
+    console.log("inControlInput transformedMessage: "+transformedMessage);
   }
   if(syncLeds){
     syncLaunchkeyLEDS();

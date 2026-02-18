@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<MidiLearnMap_ Manufacturer="User">
+  <pairing>
+    <Target_ Target_control="36"/>
+    <Mapping_ Mapping_type="2" Mapping_channel="1" Mapping_data1="21" Mapping_control="5"
+              Mapping_reverse="0"/>
+  </pairing>
+  <pairing>
+    <Target_ Target_control="32"/>
+    <Mapping_ Mapping_type="2" Mapping_channel="1" Mapping_data1="22" Mapping_control="5"
+              Mapping_reverse="0"/>
+  </pairing>
+  <pairing>
+    <Target_ Target_control="28"/>
+    <Mapping_ Mapping_type="2" Mapping_channel="1" Mapping_data1="23" Mapping_control="5"
+              Mapping_reverse="0"/>
+  </pairing>
+  <pairing>
+    <Target_ Target_control="24"/>
+    <Mapping_ Mapping_type="2" Mapping_channel="1" Mapping_data1="24" Mapping_control="5"
+              Mapping_reverse="0"/>
+  </pairing>
+  <pairing>
+    <Target_ Target_control="37"/>
+    <Mapping_ Mapping_type="2" Mapping_channel="1" Mapping_data1="25" Mapping_control="5"
+              Mapping_reverse="0"/>
+  </pairing>
+  <pairing>
+    <Target_ Target_control="33"/>
+    <Mapping_ Mapping_type="2" Mapping_channel="1" Mapping_data1="26" Mapping_control="5"
+              Mapping_reverse="0"/>
+  </pairing>
+  <pairing>
+    <Target_ Target_control="29"/>
+    <Mapping_ Mapping_type="2" Mapping_channel="1" Mapping_data1="27" Mapping_control="5"
+              Mapping_reverse="0"/>
+  </pairing>
+  <pairing>
+    <Target_ Target_control="25"/>
+    <Mapping_ Mapping_type="2" Mapping_channel="1" Mapping_data1="28" Mapping_control="5"
+              Mapping_reverse="0"/>
+  </pairing>
+</MidiLearnMap_>
