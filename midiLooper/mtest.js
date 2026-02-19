@@ -57,6 +57,9 @@ function init(){
     padsOutputChannels: [14,15,16],
     ledPads: [96,97,98,99,112,113,114,115,116,117,118,119,100,101,102,103],
     ledPadsDrumMap: [36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51],
+    ledPadsFlexbeatMap: [5,6,7,8,1,2,3,4,1,2,3,4,5,6,7,8],
+    selectedFlexbeatA: 1,
+    selectedFlexbeatB: 1,
     upCircleButton: [144,104,127],
     downCircleButton: [144,120,127],
     upArrowButton: [176,104,127],
@@ -64,69 +67,6 @@ function init(){
     leftArrowButton: [144,106,127],
     rightArrowButton: [144,107,127],
     knobs: [ [176,21], [176,22], [176,23], [176,24], [176,25], [176,26], [176,27], [176,28] ],
-    knobsOutputMap: [
-      [
-        {
-          control: 21,
-          inputRange: [0,127],
-          outputRange: [0,127]
-        },
-        {
-          control: 29,
-          inputRange: [0,127],
-          outputRange: [0,127]
-        }
-      ],
-      [
-        {
-          control: 22,
-          inputRange: [0,127],
-          outputRange: [0,127]
-        }
-      ],
-      [
-        {
-          control: 23,
-          inputRange: [0,127],
-          outputRange: [0,127]
-        }
-      ],
-      [
-        {
-          control: 24,
-          inputRange: [0,127],
-          outputRange: [0,127]
-        }
-      ],
-      [
-        {
-          control: 25,
-          inputRange: [0,127],
-          outputRange: [0,127]
-        }
-      ],
-      [
-        {
-          control: 26,
-          inputRange: [0,127],
-          outputRange: [0,127]
-        }
-      ],
-      [
-        {
-          control: 27,
-          inputRange: [0,127],
-          outputRange: [0,127]
-        }
-      ],
-      [
-        {
-          control: 28,
-          inputRange: [0,127],
-          outputRange: [0,127]
-        }
-      ]
-    ]
   }
 
   function initLoopData(){
@@ -272,7 +212,7 @@ function syncLaunchkeyLEDS(){
   if(inControlState.padMode==0){ // padMode 0=orange, 1=red, 2=green
     playCursorOnLEDS(127, 127);
   }else if(inControlState.padMode==1){
-    playCursorOnLEDS(9, 9);
+    syncFlexbeatOnLEDS(127, 9);
   }else{
     playCursorOnLEDS(100, 100);
   }
@@ -291,6 +231,18 @@ function syncLaunchkeyLEDS(){
     inControlOutput.sendMessage([inControlState.upCircleButton[0],inControlState.upCircleButton[1],ColorOff]);
     inControlOutput.sendMessage([inControlState.downCircleButton[0],inControlState.downCircleButton[1],ColorOff]);
 
+  }
+
+  function syncFlexbeatOnLEDS(ColorOn, ColorOff){
+    let count=0;
+    for(var x of inControlState.ledPads){
+      if( inControlState.ledPadsFlexbeatMap[count] == inControlState.selectedFlexbeatA && count<8 || inControlState.ledPadsFlexbeatMap[count] == inControlState.selectedFlexbeatB && count>=8 ){
+        inControlOutput.sendMessage([144,x,ColorOn]);
+      }else{
+        inControlOutput.sendMessage([144,x,ColorOff]);
+      }
+      count++;
+    }
   }
 }
 
@@ -316,6 +268,23 @@ inControlInput.on('message', (deltaTime, message) => {
     console.log("pad mode: "+inControlState.padMode); 
   }else if(inControlState.ledPads.includes(message[1])){ // pad buttons
     sendToRtp=true;
+    if(inControlState.padMode==1 && message[2]!=0){ // flexbeat mode
+      let deck="A";
+      for(var x=0; x<inControlState.ledPads.length; x++){
+        if(x>=8){
+          deck="B";
+        }
+        if(inControlState.ledPads[x]==message[1]){
+          if(deck=="A"){
+            inControlState.selectedFlexbeatA=inControlState.ledPadsFlexbeatMap[x];
+            console.log("selected flexbeat A: "+inControlState.selectedFlexbeatA);
+          }else{
+            inControlState.selectedFlexbeatB=inControlState.ledPadsFlexbeatMap[x];
+            console.log("selected flexbeat B: "+inControlState.selectedFlexbeatB);
+          } 
+        }
+      }
+    }
     transformedMessage=[message[0]+inControlState.padsOutputChannels[inControlState.padMode]-1,inControlState.ledPadsDrumMap[inControlState.ledPads.indexOf(message[1])],message[2]];
   }else if(inControlState.knobs.includes([message[0],message[1]])){ // knobs (broken)
     sendToRtp=true;
