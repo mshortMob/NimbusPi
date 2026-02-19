@@ -266,6 +266,16 @@ inControlInput.on('message', (deltaTime, message) => {
     sendToRtp=false;
     syncLeds=true;
     console.log("pad mode: "+inControlState.padMode); 
+  }else if(message[0]==inControlState.upCircleButton[0] && message[1]==inControlState.upCircleButton[1] && message[2]==inControlState.upCircleButton[2]){ // up circle button
+    inControlState.padMode=(inControlState.padMode+2)%inControlState.numberOfPadModes;
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("pad mode: "+inControlState.padMode); 
+  }else if(message[0]==inControlState.downCircleButton[0] && message[1]==inControlState.downCircleButton[1] && message[2]==inControlState.downCircleButton[2]){ // down circle button
+    inControlState.padMode=(inControlState.padMode+2)%inControlState.numberOfPadModes;
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("pad mode: "+inControlState.padMode); 
   }else if(inControlState.ledPads.includes(message[1])){ // pad buttons
     sendToRtp=true;
     if(inControlState.padMode==1 && message[2]!=0){ // flexbeat mode
