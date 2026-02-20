@@ -24,7 +24,6 @@ const port = 3000;
 
 init();
 function init(){
-
   internals={
     circuitPort: "None",
     rolandPort: "None",
@@ -39,7 +38,6 @@ function init(){
     noteOnChannelOne: 144,
     noteOffChannelOne: 128
   }
-
   globals={
     selectedLength: 0,
     selectedPattern: 1,
@@ -50,25 +48,27 @@ function init(){
     programOnly: false,
     eraseEnabled: false
   }
-
-  inControlState={
+  inctState={
     padMode: 0,
     numberOfPadModes: 3,
     padsOutputChannels: [14,15,16],
     ledPads: [96,97,98,99,112,113,114,115,116,117,118,119,100,101,102,103],
-    ledPadsDrumMap: [36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51],
-    ledPadsFlexbeatMap: [5,6,7,8,1,2,3,4,1,2,3,4,5,6,7,8],
+    ledPadsDrumMap: [40,41,42,43,36,37,38,39,44,45,46,47,48,49,50,51],
+    ledPadFlexbeatMap: [96,97,98,99,112,113,114,115,116,117,118,119,100,101,102,103],
+    ledPadsFlexbeatIndex: [5,6,7,8,1,2,3,4,1,2,3,4,5,6,7,8],
+    drumPadState: [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
     selectedFlexbeatA: 1,
     selectedFlexbeatB: 1,
+    currentDrumBank: 0,
+    numberOfDrumBanks: 4,
     upCircleButton: [144,104,127],
     downCircleButton: [144,120,127],
     upArrowButton: [176,104,127],
     downArrowButton: [176,105,127],
-    leftArrowButton: [144,106,127],
-    rightArrowButton: [144,107,127],
-    knobs: [ [176,21], [176,22], [176,23], [176,24], [176,25], [176,26], [176,27], [176,28] ],
+    leftArrowButton: [176,106,127],
+    rightArrowButton: [176,107,127],
+    knobs: [ 21,22,23,24,25,26,27,28],
   }
-
   function initLoopData(){
     for(var y=0; y<6; y++){
       var temp=[];
@@ -78,7 +78,6 @@ function init(){
       internals.loopData.push(temp);
     }
   }
-
   function initCircuitProgramLoopData(){
     for(var y=0; y<6; y++){
       var temp=[];
@@ -88,11 +87,130 @@ function init(){
       internals.circuitProgramLoopData.push(temp);
     }
   }
-
   initLoopData();
   initCircuitProgramLoopData();
   initMidiConnections();
+}
 
+inControlInput.on('message', (deltaTime, message) => {
+  console.log("inControlInput: "+ message);
+  let sendToRtp=true;
+  let syncLeds=false;
+  let transformedMessage=message;
+  let bankModifier=0;
+  if(message[0]==inctState.upArrowButton[0] && message[1]==inctState.upArrowButton[1] && message[2]==inctState.upArrowButton[2]){ // up arrow button
+    inctState.padMode=(inctState.padMode+1)%inctState.numberOfPadModes;
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("pad mode: "+inctState.padMode);
+  }else if(message[0]==inctState.downArrowButton[0] && message[1]==inctState.downArrowButton[1] && message[2]==inctState.downArrowButton[2]){ // down arrow button
+    inctState.padMode=(inctState.padMode+(inctState.numberOfPadModes-1))%inctState.numberOfPadModes;
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("pad mode: "+inctState.padMode); 
+  }else if(message[0]==inctState.leftArrowButton[0] && message[1]==inctState.leftArrowButton[1] && message[2]==inctState.leftArrowButton[2]){ // left arrow button
+    inctState.currentDrumBank=(inctState.currentDrumBank+1)%inctState.numberOfDrumBanks;
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("current drum bank: "+inctState.currentDrumBank); 
+  }else if(message[0]==inctState.rightArrowButton[0] && message[1]==inctState.rightArrowButton[1] && message[2]==inctState.rightArrowButton[2]){ // right arrow button
+    inctState.currentDrumBank=(inctState.currentDrumBank+(inctState.numberOfDrumBanks-1))%inctState.numberOfDrumBanks;
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("current drum bank: "+inctState.currentDrumBank);
+  }else if(message[0]==inctState.upCircleButton[0] && message[1]==inctState.upCircleButton[1] && message[2]==inctState.upCircleButton[2]){ // up circle button
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("up circle not hooked up"); 
+  }else if(message[0]==inctState.downCircleButton[0] && message[1]==inctState.downCircleButton[1] && message[2]==inctState.downCircleButton[2]){ // down circle button
+    sendToRtp=false;
+    syncLeds=true;
+    console.log("down circle not hooked up"); 
+  }else if(inctState.ledPads.includes(message[1])){ // pad buttons
+    sendToRtp=true;
+    if(inctState.padMode==0){ // drum mode
+      syncLeds=true;
+      inctState.drumPadState[inctState.ledPads.indexOf(message[1])]=(message[2]!=0);
+      bankModifier=inctState.currentDrumBank;
+    }
+    if(inctState.padMode==1 && message[2]!=0){ // flexbeat mode
+      let deck="A";
+      for(var x=0; x<inctState.ledPads.length; x++){
+        if(x>=8){
+          deck="B";
+        }
+        if(inctState.ledPadFlexbeatMap[x]==message[1]){
+          if(deck=="A"){
+            inctState.selectedFlexbeatA=inctState.ledPadsFlexbeatIndex[x];
+            console.log("selected flexbeat A: "+inctState.selectedFlexbeatA);
+          }else{
+            inctState.selectedFlexbeatB=inctState.ledPadsFlexbeatIndex[x];
+            console.log("selected flexbeat B: "+inctState.selectedFlexbeatB);
+          } 
+        }
+      }
+    }
+    transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(bankModifier*16), message[2]];
+  }else if(message[0]==176 && inctState.knobs.includes(message[1])){ // knobs
+    sendToRtp=true;
+    transformedMessage=[message[0], message[1], message[2]];
+  }else{
+    sendToRtp=true;
+  }
+  if(sendToRtp){
+    rtpOutput.sendMessage(transformedMessage);
+    console.log("inControlInput transformedMessage: "+transformedMessage);
+  }
+  if(syncLeds){
+    syncLaunchkeyLEDS();
+  }
+});
+
+function syncLaunchkeyLEDS(){
+  if(inctState.padMode==0){ // padMode 0=orange, 1=red, 2=green
+    syncDrumPadLEDS(100, 39);
+  }else if(inctState.padMode==1){
+    syncFlexbeatOnLEDS(39, 7);
+  }else{
+    playCursorOnLEDS(100, 100);
+  }
+  function playCursorOnLEDS(ColorOn, ColorOff){
+    let selectedStep=Math.floor(internals.cursor/6);
+    let count=0;
+    for(var x of inctState.ledPads){
+      if(count==selectedStep && globals.transportState!="stop"){
+        inControlOutput.sendMessage([144,x,ColorOn]);
+      }else{
+        inControlOutput.sendMessage([144,x,ColorOff]);
+      }
+      count++;
+    }
+    inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],ColorOff]);
+    inControlOutput.sendMessage([inctState.downCircleButton[0],inctState.downCircleButton[1],ColorOff]);
+
+  }
+  function syncFlexbeatOnLEDS(ColorOn, ColorOff){
+    let count=0;
+    for(var x of inctState.ledPadFlexbeatMap){
+      if( inctState.ledPadsFlexbeatIndex[count] == inctState.selectedFlexbeatA && count<8 || inctState.ledPadsFlexbeatIndex[count] == inctState.selectedFlexbeatB && count>=8 ){
+        inControlOutput.sendMessage([144,x,ColorOn]);
+      }else{
+        inControlOutput.sendMessage([144,x,ColorOff]);
+      }
+      count++;
+    }
+  }
+  function syncDrumPadLEDS(ColorOn, ColorOff){
+    let count=0;
+    for(var x of inctState.ledPads){
+      if( inctState.drumPadState[count]){
+        inControlOutput.sendMessage([144,x,ColorOn]);
+      }else{
+        inControlOutput.sendMessage([144,x,ColorOff]);
+      }
+      count++;
+    }
+  }
 }
 
 function initMidiConnections(){
@@ -208,107 +326,9 @@ function recordMessage(message, bufferaName){
   }
 }
 
-function syncLaunchkeyLEDS(){
-  if(inControlState.padMode==0){ // padMode 0=orange, 1=red, 2=green
-    playCursorOnLEDS(127, 127);
-  }else if(inControlState.padMode==1){
-    syncFlexbeatOnLEDS(127, 9);
-  }else{
-    playCursorOnLEDS(100, 100);
-  }
-  
-  function playCursorOnLEDS(ColorOn, ColorOff){
-    let selectedStep=Math.floor(internals.cursor/6);
-    let count=0;
-    for(var x of inControlState.ledPads){
-      if(count==selectedStep && globals.transportState!="stop"){
-        inControlOutput.sendMessage([144,x,ColorOn]);
-      }else{
-        inControlOutput.sendMessage([144,x,ColorOff]);
-      }
-      count++;
-    }
-    inControlOutput.sendMessage([inControlState.upCircleButton[0],inControlState.upCircleButton[1],ColorOff]);
-    inControlOutput.sendMessage([inControlState.downCircleButton[0],inControlState.downCircleButton[1],ColorOff]);
-
-  }
-
-  function syncFlexbeatOnLEDS(ColorOn, ColorOff){
-    let count=0;
-    for(var x of inControlState.ledPads){
-      if( inControlState.ledPadsFlexbeatMap[count] == inControlState.selectedFlexbeatA && count<8 || inControlState.ledPadsFlexbeatMap[count] == inControlState.selectedFlexbeatB && count>=8 ){
-        inControlOutput.sendMessage([144,x,ColorOn]);
-      }else{
-        inControlOutput.sendMessage([144,x,ColorOff]);
-      }
-      count++;
-    }
-  }
-}
-
 lkInput.on('message', (deltaTime, message) => {
   rtpOutput.sendMessage(message);
   console.log("lkInput: "+ message );
-});
-
-inControlInput.on('message', (deltaTime, message) => {
-  console.log("inControlInput: "+ message);
-  let sendToRtp=true;
-  let syncLeds=false;
-  let transformedMessage=message;
-  if(message[0]==inControlState.upArrowButton[0] && message[1]==inControlState.upArrowButton[1] && message[2]==inControlState.upArrowButton[2]){ // up arrow button
-    inControlState.padMode=(inControlState.padMode+1)%inControlState.numberOfPadModes;
-    sendToRtp=false;
-    syncLeds=true;
-    console.log("pad mode: "+inControlState.padMode);
-  }else if(message[0]==inControlState.downArrowButton[0] && message[1]==inControlState.downArrowButton[1] && message[2]==inControlState.downArrowButton[2]){ // down arrow button
-    inControlState.padMode=(inControlState.padMode+2)%inControlState.numberOfPadModes;
-    sendToRtp=false;
-    syncLeds=true;
-    console.log("pad mode: "+inControlState.padMode); 
-  }else if(message[0]==inControlState.upCircleButton[0] && message[1]==inControlState.upCircleButton[1] && message[2]==inControlState.upCircleButton[2]){ // up circle button
-    inControlState.padMode=(inControlState.padMode+2)%inControlState.numberOfPadModes;
-    sendToRtp=false;
-    syncLeds=true;
-    console.log("pad mode: "+inControlState.padMode); 
-  }else if(message[0]==inControlState.downCircleButton[0] && message[1]==inControlState.downCircleButton[1] && message[2]==inControlState.downCircleButton[2]){ // down circle button
-    inControlState.padMode=(inControlState.padMode+2)%inControlState.numberOfPadModes;
-    sendToRtp=false;
-    syncLeds=true;
-    console.log("pad mode: "+inControlState.padMode); 
-  }else if(inControlState.ledPads.includes(message[1])){ // pad buttons
-    sendToRtp=true;
-    if(inControlState.padMode==1 && message[2]!=0){ // flexbeat mode
-      let deck="A";
-      for(var x=0; x<inControlState.ledPads.length; x++){
-        if(x>=8){
-          deck="B";
-        }
-        if(inControlState.ledPads[x]==message[1]){
-          if(deck=="A"){
-            inControlState.selectedFlexbeatA=inControlState.ledPadsFlexbeatMap[x];
-            console.log("selected flexbeat A: "+inControlState.selectedFlexbeatA);
-          }else{
-            inControlState.selectedFlexbeatB=inControlState.ledPadsFlexbeatMap[x];
-            console.log("selected flexbeat B: "+inControlState.selectedFlexbeatB);
-          } 
-        }
-      }
-    }
-    transformedMessage=[message[0]+inControlState.padsOutputChannels[inControlState.padMode]-1,inControlState.ledPadsDrumMap[inControlState.ledPads.indexOf(message[1])],message[2]];
-  }else if(inControlState.knobs.includes([message[0],message[1]])){ // knobs (broken)
-    sendToRtp=true;
-    transformedMessage=[message[0], message[1], message[2]];
-  }else{
-    sendToRtp=true;
-  }
-  if(sendToRtp){
-    rtpOutput.sendMessage(transformedMessage);
-    console.log("inControlInput transformedMessage: "+transformedMessage);
-  }
-  if(syncLeds){
-    syncLaunchkeyLEDS();
-  }
 });
 
 circuitInput.on('message', (deltaTime, message) => {
