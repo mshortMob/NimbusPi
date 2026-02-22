@@ -16,6 +16,7 @@ const rtpOutput = new midi.Output();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { channel } = require('diagnostics_channel');
+const { emit } = require('process');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -33,10 +34,13 @@ function init(){
     cursor: 0,
     loopData: [],
     circuitProgramLoopData: [],
+    lkLoopData: [],
     loopMaxLength: 96*4,  // in tickts, 6 ticks == 1 quater note == 1 beat
     loopLengths: [96*1, 96*2, 96*4],
     noteOnChannelOne: 144,
-    noteOffChannelOne: 128
+    noteOffChannelOne: 128,
+    rootDir: "/root/NimbusPi/midiLooper",
+    presetsPath: "/presets"
   }
   globals={
     selectedLength: 0,
@@ -68,6 +72,7 @@ function init(){
     leftArrowButton: [176,106,127],
     rightArrowButton: [176,107,127],
     knobs: [21,22,23,24,25,26,27,28],
+    loopCopyShiftState: false
   }
   function initLoopData(){
     for(var y=0; y<6; y++){
@@ -87,8 +92,18 @@ function init(){
       internals.circuitProgramLoopData.push(temp);
     }
   }
+  function initLkLoopData(){
+    for(var y=0; y<6; y++){
+      var temp=[];
+      for(var x=0; x<internals.loopMaxLength; x++){
+        temp.push([]);
+      }
+      internals.lkLoopData.push(temp);
+    }
+  }
   initLoopData();
   initCircuitProgramLoopData();
+  initLkLoopData();
   initMidiConnections();
 }
 
@@ -96,42 +111,70 @@ inControlInput.on('message', (deltaTime, message) => {
   console.log("inControlInput: "+ message);
   let sendToRtp=true;
   let syncLeds=false;
+  let syncWebsocket=false;
   let transformedMessage=message;
-  let bankModifier=0;
   if(message[0]==inctState.upArrowButton[0] && message[1]==inctState.upArrowButton[1] && message[2]==inctState.upArrowButton[2]){ // up arrow button
     inctState.padMode=(inctState.padMode+1)%inctState.numberOfPadModes;
     sendToRtp=false;
     syncLeds=true;
+    for(var x=0; x<inctState.drumPadState.length; x++){
+      inctState.drumPadState[x]=false;
+    }
     console.log("pad mode: "+inctState.padMode);
   }else if(message[0]==inctState.downArrowButton[0] && message[1]==inctState.downArrowButton[1] && message[2]==inctState.downArrowButton[2]){ // down arrow button
     inctState.padMode=(inctState.padMode+(inctState.numberOfPadModes-1))%inctState.numberOfPadModes;
     sendToRtp=false;
     syncLeds=true;
+    for(var x=0; x<inctState.drumPadState.length; x++){
+      inctState.drumPadState[x]=false;
+    }
     console.log("pad mode: "+inctState.padMode); 
   }else if(message[0]==inctState.leftArrowButton[0] && message[1]==inctState.leftArrowButton[1] && message[2]==inctState.leftArrowButton[2]){ // left arrow button
     inctState.currentDrumBank=(inctState.currentDrumBank+1)%inctState.numberOfDrumBanks;
+    for(var x=0; x<inctState.drumPadState.length; x++){
+      inctState.drumPadState[x]=false;
+    }
     sendToRtp=false;
     syncLeds=true;
     console.log("current drum bank: "+inctState.currentDrumBank); 
   }else if(message[0]==inctState.rightArrowButton[0] && message[1]==inctState.rightArrowButton[1] && message[2]==inctState.rightArrowButton[2]){ // right arrow button
     inctState.currentDrumBank=(inctState.currentDrumBank+(inctState.numberOfDrumBanks-1))%inctState.numberOfDrumBanks;
+    for(var x=0; x<inctState.drumPadState.length; x++){
+      inctState.drumPadState[x]=false;
+    }
     sendToRtp=false;
     syncLeds=true;
     console.log("current drum bank: "+inctState.currentDrumBank);
   }else if(message[0]==inctState.upCircleButton[0] && message[1]==inctState.upCircleButton[1] && message[2]==inctState.upCircleButton[2]){ // up circle button
     sendToRtp=false;
     syncLeds=true;
-    console.log("up circle not hooked up"); 
+    syncWebsocket=true;
+    if(globals.transportState=="play"){
+      globals.transportState="stop";
+      killAllNotes();
+    }else if(globals.transportState=="rec"){
+      globals.transportState="play";
+    }else if(globals.transportState=="stop"){  
+      globals.transportState="play";
+    }
+    console.log("lk up circle changed transport state: "+globals.transportState);
   }else if(message[0]==inctState.downCircleButton[0] && message[1]==inctState.downCircleButton[1] && message[2]==inctState.downCircleButton[2]){ // down circle button
     sendToRtp=false;
     syncLeds=true;
-    console.log("down circle not hooked up"); 
+    syncWebsocket=true;
+    if(globals.transportState=="play"){
+      globals.transportState="rec";
+    }else if(globals.transportState=="rec"){
+      globals.transportState="play";
+    }else if(globals.transportState=="stop"){  
+      globals.transportState="rec";
+    }
+    console.log("lk down circle changed transport state: "+globals.transportState);
   }else if(inctState.ledPads.includes(message[1])){ // pad buttons
     sendToRtp=true;
     if(inctState.padMode==0){ // drum mode
       syncLeds=true;
       inctState.drumPadState[inctState.ledPads.indexOf(message[1])]=(message[2]!=0);
-      bankModifier=inctState.currentDrumBank;
     }
     if(inctState.padMode==1 && message[2]!=0){ // flexbeat mode
       let deck="A";
@@ -151,10 +194,69 @@ inControlInput.on('message', (deltaTime, message) => {
       }
     }
     if(inctState.padMode==2){ // looper mode
+      syncWebsocket=true;
       syncLeds=true;
       sendToRtp=false
+      if(message[1]>=inctState.ledPads[0] && message[1]<=inctState.ledPads[3] &&message[2]!=0){ // loops 1-4
+        if(inctState.loopCopyShiftState){ // set copy mode target
+          let cpTarget=0;
+          if(message[1]==inctState.ledPads[0]){
+            cpTarget=0;
+          }else if(message[1]==inctState.ledPads[1]){
+            cpTarget=1;
+          }else if(message[1]==inctState.ledPads[2]){
+            cpTarget=2;
+          }else if(message[1]==inctState.ledPads[3]){
+            cpTarget=3;
+          } 
+          processAction("copy", cpTarget);
+          inctState.loopCopyShiftState=false;
+          console.log("copied pattern "+globals.selectedPattern+" to pattern "+cpTarget);
+        }else{ // normal loop selection
+          let newSelectedPatten=0;
+          if(message[1]==inctState.ledPads[0]){
+            newSelectedPatten=1;
+          }else if(message[1]==inctState.ledPads[1]){
+            newSelectedPatten=2;
+          }else if(message[1]==inctState.ledPads[2]){
+            newSelectedPatten=3;
+          }else if(message[1]==inctState.ledPads[3]){
+            newSelectedPatten=4;
+          } 
+          if( globals.selectedPattern!=newSelectedPatten || globals.transportState=="stop" ){
+            killAllNotes();
+            console.log("selected pattern: "+newSelectedPatten);
+          }
+          globals.selectedPattern=newSelectedPatten;
+        }
+      }else if(message[1]==inctState.ledPads[14] && message[2]!=0){ //clear circuit
+        processAction("clearCircuit");
+        console.log("lk cleared circuit pattern");
+      }else if(message[1]==inctState.ledPads[15] && message[2]!=0){ // clear roland  
+        processAction("clearRoland");
+        processAction("clearLk");
+        console.log("lk cleared roland pattern");
+      }else if(message[1]==inctState.ledPads[13] && message[2]!=0){ // killnotes button  
+        processAction("killNotes");
+        console.log("lk killed notes");
+      }else if(message[1]==inctState.ledPads[10] && message[2]!=0){ // save button  
+        processAction("save");
+        console.log("lk saved pattern");
+      }else if(message[1]==inctState.ledPads[11] && message[2]!=0){ // recall button  
+        processAction("recall");
+        console.log("lk recalled pattern");
+      }else if(message[1]==inctState.ledPads[9] && message[2]!=0){ // reload button  
+        processAction("reload");
+        console.log("lk reloaded pattern");
+      }else if(message[1]==inctState.ledPads[4] && message[2]!=0){ // length button 
+        globals.selectedLength=(globals.selectedLength+1)%internals.loopLengths.length;
+        console.log("lk changed loop length: "+globals.selectedLength);
+      }else if(message[1]==inctState.ledPads[12]){ // copy (shift) button  
+        inctState.loopCopyShiftState = (message[2]!=0);
+        console.log("lk shift copy: "+inctState.loopCopyShiftState);
+      }   
     }
-    transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(bankModifier*16), message[2]];
+    transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(inctState.currentDrumBank*16), message[2]];
   }else if(message[0]==176 && inctState.knobs.includes(message[1])){ // knobs
     sendToRtp=true;
     transformedMessage=[message[0], message[1], message[2]];
@@ -162,36 +264,65 @@ inControlInput.on('message', (deltaTime, message) => {
     sendToRtp=false;
   }
   if(sendToRtp){
+    recordMessage(transformedMessage, "lkLoopData");
     rtpOutput.sendMessage(transformedMessage);
     console.log("inControlInput transformedMessage: "+transformedMessage);
   }
   if(syncLeds){
     syncLaunchkeyLEDS();
   }
+  if(syncWebsocket){
+    emitSocketMessage();
+  }
 });
 
 function syncLaunchkeyLEDS(){
-  if(inctState.padMode==0){ // padMode 0=orange, 1=red, 2=green
+  syncCircleButtonLEDS(39,7,100); // orange, red, green
+  if(inctState.padMode==0){
     syncDrumPadLEDS(100, 39);
   }else if(inctState.padMode==1){
     syncFlexbeatOnLEDS(39, 7);
   }else{
-    playCursorOnLEDS(100, 100);
+    syncLooperLEDS(39,7,100);
   }
-  function playCursorOnLEDS(ColorOn, ColorOff){
-    let selectedStep=Math.floor(internals.cursor/6);
+  function syncCircleButtonLEDS(orange, red, green){
+    if(globals.transportState=="play"){
+      inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],green]);
+      inControlOutput.sendMessage([inctState.downCircleButton[0],inctState.downCircleButton[1],green]);
+    }else if(globals.transportState=="rec"){
+      inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],red]);
+      inControlOutput.sendMessage([inctState.downCircleButton[0],inctState.downCircleButton[1],red]);
+    }else{
+      inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],orange]);
+      inControlOutput.sendMessage([inctState.downCircleButton[0],inctState.downCircleButton[1],orange]);
+    }
+  }
+  function syncLooperLEDS(orange, red, green){
     let count=0;
     for(var x of inctState.ledPads){
-      if(count==selectedStep && globals.transportState!="stop"){
-        inControlOutput.sendMessage([144,x,ColorOn]);
-      }else{
-        inControlOutput.sendMessage([144,x,ColorOff]);
+      if(count>=0 && count<=3){ // pattern select buttons
+        if(count==globals.selectedPattern-1 ){
+          if(inctState.loopCopyShiftState){ // copy/shift mode
+            inControlOutput.sendMessage([144,x,orange]);
+          }else{
+            inControlOutput.sendMessage([144,x,red]);
+          }
+        }else{
+          if(inctState.loopCopyShiftState){ // copy/shift mode
+            inControlOutput.sendMessage([144,x,red]);
+          }else{
+              inControlOutput.sendMessage([144,x,orange]);
+          }
+        }
+      }else if(count == 13 || count == 14 || count == 15){ // clear buttons
+        inControlOutput.sendMessage([144,x,orange]);
+      }else if(count == 9 || count == 10 || count == 11){ // save/restore buttons
+        inControlOutput.sendMessage([144,x,red]);
+      }else{        
+        inControlOutput.sendMessage([144,x,green]);
       }
       count++;
     }
-    inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],ColorOff]);
-    inControlOutput.sendMessage([inctState.downCircleButton[0],inctState.downCircleButton[1],ColorOff]);
-
   }
   function syncFlexbeatOnLEDS(ColorOn, ColorOff){
     let count=0;
@@ -289,6 +420,12 @@ function clearLoop(scope){
       internals.circuitProgramLoopData[globals.selectedPattern-1][x]=[];
     }
   }
+  if(scope=="lk" || scope == "all"){
+    for(var x=0; x<internals.loopMaxLength; x++){
+      internals.lkLoopData[globals.selectedPattern-1][x]=[];
+    }
+    console.log("cleared lk pattern");
+  }
 }
 
 function killAllNotes(){
@@ -296,6 +433,11 @@ function killAllNotes(){
   for(var x=48; x<=72; x++){
     // rolandOutput.sendMessage([130,parseInt(x, 16),0]);
     rolandOutput.sendMessage([130,x,0]);
+  }
+  for(var x=128; x<=131; x++){
+    for(var y=0; y<=127; y++){
+      rtpOutput.sendMessage([x,y,0]);
+    }
   }
 }
 
@@ -331,6 +473,9 @@ function recordMessage(message, bufferaName){
 }
 
 lkInput.on('message', (deltaTime, message) => {
+  if(globals.transportState=="rec" && message[0]!=248 && message[0]!=250 && message[0]!=252 ){
+    recordMessage(message,"lkLoopData");
+  }
   rtpOutput.sendMessage(message);
   console.log("lkInput: "+ message );
 });
@@ -365,6 +510,7 @@ circuitInput.on('message', (deltaTime, message) => {
     if(globals.eraseEnabled){
       internals.loopData[globals.selectedPattern-1][internals.cursor]=[];
       internals.circuitProgramLoopData[globals.selectedPattern-1][internals.cursor]=[];
+      internals.lkLoopData[globals.selectedPattern-1][internals.cursor]=[];
     }
     for(var x=0; x<internals.loopData[globals.selectedPattern-1][internals.cursor].length; x++){
       var sendMessage=false;
@@ -386,6 +532,18 @@ circuitInput.on('message', (deltaTime, message) => {
       var playbacMessage=internals.circuitProgramLoopData[globals.selectedPattern-1][internals.cursor][x];
       circuitOutput.sendMessage(playbacMessage);
     }
+    for(var x=0; x<internals.lkLoopData[globals.selectedPattern-1][internals.cursor].length; x++){
+      var playbacMessage=internals.lkLoopData[globals.selectedPattern-1][internals.cursor][x];
+      let currentVelocity=playbacMessage[2];
+      let currentLedIndex=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]-inctState.currentDrumBank*16);
+      if(currentLedIndex!=-1 && currentVelocity!=0){
+        inctState.drumPadState[currentLedIndex]=true;
+      }else if(currentLedIndex!=-1 && currentVelocity==0){
+        inctState.drumPadState[currentLedIndex]=false;
+      }
+      rtpOutput.sendMessage(playbacMessage);
+    }
+    syncLaunchkeyLEDS();
   }
 });
 
@@ -394,53 +552,9 @@ rolandInput.on('message', (deltaTime, message) => {
 });
 
 app.get('/action', (req, res) => {
-  var action=req.query.value;
-  console.log('received '+action+' cmd');
-  if(action=="clear"){
-    clearLoop("all");
-  }
-  if(action=="clearRoland"){
-    clearLoop("roland");
-  }
-  if(action=="clearCircuit"){
-    clearLoop("circuit");
-  }
-  if(action=="killnotes"){
-    killAllNotes();
-  }
-  if(action=="recall"){
-    fs.readFile('/root/NimbusPi/midiLooper/presets'+parseInt(globals.presetName)+'.txt', 'utf8', (err, data) => {
-      if (err) {
-        console.error(err);
-        return;
-      }
-      var tempData=JSON.parse(data);
-      internals.loopData=tempData.roland;
-      internals.circuitProgramLoopData=tempData.circuit;
-      console.log('recalled saved presets!');
-    });
-  }
-  if(action=="save"){
-    var fileContents=JSON.stringify({ "roland": internals.loopData, "circuit": internals.circuitProgramLoopData});
-    fs.writeFile('/root/NimbusPi/midiLooper/presets'+parseInt(globals.presetName)+'.txt', fileContents, err => {
-      if (err) {
-        console.error(err);
-      }
-      console.log('saved preset data!');
-    });
-  }
-  if(action=="copy"){
-    internals.loopData[parseInt(req.query.copyTarget-1)]=JSON.parse(JSON.stringify(internals.loopData[globals.selectedPattern-1]));
-    internals.circuitProgramLoopData[parseInt(req.query.copyTarget-1)]=JSON.parse(JSON.stringify(internals.circuitProgramLoopData[globals.selectedPattern-1]));
-  }
-  if(action=="reload"){
-    dir = exec("sudo /usr/sbin/service mtest restart", function(err, stdout, stderr) {
-      if (err) {
-        console.log(err);
-      }
-      console.log(stdout);
-    });
-  }
+  let action=req.query.value;
+  let copyTarget=parseInt(req.query.copyTarget-1);
+  processAction(action, copyTarget);
   res.send('received '+action+' cmd')
 })
 
@@ -468,7 +582,7 @@ app.listen(port, () => {
 
 app.get('/gui', function (req, res) {
   const options = {
-      root: "/root/NimbusPi/midiLooper/"
+      root: internals.rootDir + "/"
   };
 
   const fileName = 'mpanel.html';
@@ -494,9 +608,63 @@ wss.on('connection', function connection(ws) {
 
 function emitSocketMessage(){
   var messagePayload={};
+  syncLaunchkeyLEDS();
   wss.clients.forEach(function each(client) {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(globals));
     }
   });
+}
+
+function processAction(action, copyTarget="dummyValue"){
+  if(action=="clear"){
+    clearLoop("all");
+  }
+  if(action=="clearRoland"){
+    clearLoop("roland");
+  }
+  if(action=="clearCircuit"){
+    clearLoop("circuit");
+  }
+  if(action=="clearLk"){
+    clearLoop("lk");
+  }
+  if(action=="killnotes"){
+    killAllNotes();
+  }
+  if(action=="recall"){
+    fs.readFile(internals.rootDir + internals.presetsPath + parseInt(globals.presetName) + '.txt', 'utf8', (err, data) => {
+      if (err) {
+        console.error(err);
+        return;
+      }
+      var tempData=JSON.parse(data);
+      internals.loopData=tempData.roland;
+      internals.circuitProgramLoopData=tempData.circuit;
+      internals.lkLoopData=tempData.lk;
+      console.log('recalled saved presets!');
+    });
+  }
+  if(action=="save"){
+    var fileContents=JSON.stringify({ "roland": internals.loopData, "circuit": internals.circuitProgramLoopData, "lk": internals.lkLoopData });
+    fs.writeFile(internals.rootDir + internals.presetsPath + parseInt(globals.presetName) + '.txt', fileContents, err => {
+      if (err) {
+        console.error(err);
+      }
+      console.log('saved preset data!');
+    });
+  }
+  if(action=="copy"){
+    internals.loopData[copyTarget]=JSON.parse(JSON.stringify(internals.loopData[globals.selectedPattern-1]));
+    internals.circuitProgramLoopData[copyTarget]=JSON.parse(JSON.stringify(internals.circuitProgramLoopData[globals.selectedPattern-1]));
+    internals.lkLoopData[copyTarget]=JSON.parse(JSON.stringify(internals.lkLoopData[globals.selectedPattern-1]));
+  }
+  if(action=="reload"){
+    dir = exec("sudo /usr/sbin/service mtest restart", function(err, stdout, stderr) {
+      if (err) {
+        console.log(err);
+      }
+      console.log(stdout);
+    });
+  }
 }
