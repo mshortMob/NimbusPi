@@ -67,7 +67,7 @@ function init(){
     downArrowButton: [176,105,127],
     leftArrowButton: [176,106,127],
     rightArrowButton: [176,107,127],
-    knobs: [ 21,22,23,24,25,26,27,28],
+    knobs: [21,22,23,24,25,26,27,28],
   }
   function initLoopData(){
     for(var y=0; y<6; y++){
@@ -150,12 +150,16 @@ inControlInput.on('message', (deltaTime, message) => {
         }
       }
     }
+    if(inctState.padMode==2){ // looper mode
+      syncLeds=true;
+      sendToRtp=false
+    }
     transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(bankModifier*16), message[2]];
   }else if(message[0]==176 && inctState.knobs.includes(message[1])){ // knobs
     sendToRtp=true;
     transformedMessage=[message[0], message[1], message[2]];
   }else{
-    sendToRtp=true;
+    sendToRtp=false;
   }
   if(sendToRtp){
     rtpOutput.sendMessage(transformedMessage);
@@ -405,7 +409,7 @@ app.get('/action', (req, res) => {
     killAllNotes();
   }
   if(action=="recall"){
-    fs.readFile('/root/NimbusPi/midiExperiements/presets'+parseInt(globals.presetName)+'.txt', 'utf8', (err, data) => {
+    fs.readFile('/root/NimbusPi/midiLooper/presets'+parseInt(globals.presetName)+'.txt', 'utf8', (err, data) => {
       if (err) {
         console.error(err);
         return;
@@ -418,7 +422,7 @@ app.get('/action', (req, res) => {
   }
   if(action=="save"){
     var fileContents=JSON.stringify({ "roland": internals.loopData, "circuit": internals.circuitProgramLoopData});
-    fs.writeFile('/root/NimbusPi/midiExperiements/presets'+parseInt(globals.presetName)+'.txt', fileContents, err => {
+    fs.writeFile('/root/NimbusPi/midiLooper/presets'+parseInt(globals.presetName)+'.txt', fileContents, err => {
       if (err) {
         console.error(err);
       }
