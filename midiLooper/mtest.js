@@ -534,16 +534,29 @@ circuitInput.on('message', (deltaTime, message) => {
     }
     for(var x=0; x<internals.lkLoopData[globals.selectedPattern-1][internals.cursor].length; x++){
       var playbacMessage=internals.lkLoopData[globals.selectedPattern-1][internals.cursor][x];
-      let currentVelocity=playbacMessage[2];
-      let currentLedIndex=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]-inctState.currentDrumBank*16);
-      if(currentLedIndex!=-1 && currentVelocity!=0){
-        inctState.drumPadState[currentLedIndex]=true;
-      }else if(currentLedIndex!=-1 && currentVelocity==0){
-        inctState.drumPadState[currentLedIndex]=false;
+      if(inctState.padMode==0){ // drum mode
+        let currentVelocity=playbacMessage[2];
+        let currentLedIndex=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]-inctState.currentDrumBank*16);
+        if(currentLedIndex!=-1 && currentVelocity!=0){
+          inctState.drumPadState[currentLedIndex]=true;
+        }else if(currentLedIndex!=-1 && currentVelocity==0){
+          inctState.drumPadState[currentLedIndex]=false;
+        }
+      }else if(inctState.padMode==1){ // flexbeat mode
+        let currentVelocity=playbacMessage[2];
+        let currentLedIndex=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]);
+        if(currentLedIndex!=-1 && currentVelocity!=0){
+          inctState.ledPadsFlexbeatIndex[currentLedIndex]=playbacMessage[1];
+          if(currentLedIndex<8){
+            inctState.selectedFlexbeatA=inctState.ledPadsFlexbeatIndex[currentLedIndex];
+          }else{
+            inctState.selectedFlexbeatB=inctState.ledPadsFlexbeatIndex[currentLedIndex];
+          }
+        }
       }
       rtpOutput.sendMessage(playbacMessage);
+      syncLaunchkeyLEDS();
     }
-    syncLaunchkeyLEDS();
   }
 });
 
