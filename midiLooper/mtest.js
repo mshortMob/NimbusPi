@@ -112,6 +112,7 @@ inControlInput.on('message', (deltaTime, message) => {
   let sendToRtp=true;
   let syncLeds=false;
   let syncWebsocket=false;
+  let shouldRecordMessage=false;
   let transformedMessage=message;
   if(message[0]==inctState.upArrowButton[0] && message[1]==inctState.upArrowButton[1] && message[2]==inctState.upArrowButton[2]){ // up arrow button
     inctState.padMode=(inctState.padMode+1)%inctState.numberOfPadModes;
@@ -173,10 +174,12 @@ inControlInput.on('message', (deltaTime, message) => {
   }else if(inctState.ledPads.includes(message[1])){ // pad buttons
     sendToRtp=true;
     if(inctState.padMode==0){ // drum mode
+      shouldRecordMessage=true;
       syncLeds=true;
       inctState.drumPadState[inctState.ledPads.indexOf(message[1])]=(message[2]!=0);
     }
     if(inctState.padMode==1 && message[2]!=0){ // flexbeat mode
+      shouldRecordMessage=true;
       let deck="A";
       for(var x=0; x<inctState.ledPads.length; x++){
         if(x>=8){
@@ -264,9 +267,11 @@ inControlInput.on('message', (deltaTime, message) => {
     sendToRtp=false;
   }
   if(sendToRtp){
-    recordMessage(transformedMessage, "lkLoopData");
     rtpOutput.sendMessage(transformedMessage);
     console.log("inControlInput transformedMessage: "+transformedMessage);
+  }
+  if(shouldRecordMessage){
+    recordMessage(transformedMessage, "lkLoopData");
   }
   if(syncLeds){
     syncLaunchkeyLEDS();
