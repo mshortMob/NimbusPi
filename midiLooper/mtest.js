@@ -539,7 +539,7 @@ circuitInput.on('message', (deltaTime, message) => {
     }
     for(var x=0; x<internals.lkLoopData[globals.selectedPattern-1][internals.cursor].length; x++){
       var playbacMessage=internals.lkLoopData[globals.selectedPattern-1][internals.cursor][x];
-      if(inctState.padMode==0){ // drum mode
+      if(inctState.padMode==0 && (playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1 || playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1-16 )){ // drum mode
         let currentVelocity=playbacMessage[2];
         let currentLedIndex=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]-inctState.currentDrumBank*16);
         if(currentLedIndex!=-1 && currentVelocity!=0){
@@ -547,15 +547,14 @@ circuitInput.on('message', (deltaTime, message) => {
         }else if(currentLedIndex!=-1 && currentVelocity==0){
           inctState.drumPadState[currentLedIndex]=false;
         }
-      }else if(inctState.padMode==1){ // flexbeat mode
-        let currentVelocity=playbacMessage[2];
-        let currentLedIndex=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]);
-        if(currentLedIndex!=-1 && currentVelocity!=0){
-          inctState.ledPadsFlexbeatIndex[currentLedIndex]=playbacMessage[1];
-          if(currentLedIndex<8){
-            inctState.selectedFlexbeatA=inctState.ledPadsFlexbeatIndex[currentLedIndex];
+      }else if(inctState.padMode==1 && playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1){ // flexbeat mode
+        let currentVelocity2=playbacMessage[2];
+        let currentLedIndex2=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]);
+        if(currentLedIndex2!=-1 && currentVelocity2!=0){
+          if(currentLedIndex2<8){
+            inctState.selectedFlexbeatA=inctState.ledPadsFlexbeatIndex[currentLedIndex2];
           }else{
-            inctState.selectedFlexbeatB=inctState.ledPadsFlexbeatIndex[currentLedIndex];
+            inctState.selectedFlexbeatB=inctState.ledPadsFlexbeatIndex[currentLedIndex2];
           }
         }
       }
