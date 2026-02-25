@@ -61,8 +61,8 @@ function init(){
     ledPadFlexbeatMap: [96,97,98,99,112,113,114,115,116,117,118,119,100,101,102,103],
     ledPadsFlexbeatIndex: [5,6,7,8,1,2,3,4,1,2,3,4,5,6,7,8],
     drumPadState: [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-    selectedFlexbeatA: 1,
-    selectedFlexbeatB: 1,
+    selectedFlexbeat: [1,1,1,1],
+    flexbeatBank: 0,
     currentDrumBank: 0,
     numberOfDrumBanks: 4,
     upCircleButton: [144,104,127],
@@ -131,21 +131,33 @@ inControlInput.on('message', (deltaTime, message) => {
     }
     console.log("pad mode: "+inctState.padMode); 
   }else if(message[0]==inctState.leftArrowButton[0] && message[1]==inctState.leftArrowButton[1] && message[2]==inctState.leftArrowButton[2]){ // left arrow button
-    inctState.currentDrumBank=(inctState.currentDrumBank+1)%inctState.numberOfDrumBanks;
-    for(var x=0; x<inctState.drumPadState.length; x++){
-      inctState.drumPadState[x]=false;
-    }
     sendToRtp=false;
     syncLeds=true;
-    console.log("current drum bank: "+inctState.currentDrumBank); 
+    if(inctState.padMode==0){ // drum bank
+      inctState.currentDrumBank=(inctState.currentDrumBank+1)%inctState.numberOfDrumBanks;
+      for(var x=0; x<inctState.drumPadState.length; x++){
+        inctState.drumPadState[x]=false;
+      }
+      console.log("current drum bank: "+inctState.currentDrumBank); 
+    }
+    if(inctState.padMode==1){ // flexbeat bank
+      inctState.flexbeatBank=(inctState.flexbeatBank+1)%2;
+      console.log("flexbeat bank: "+inctState.flexbeatBank);
+    }
   }else if(message[0]==inctState.rightArrowButton[0] && message[1]==inctState.rightArrowButton[1] && message[2]==inctState.rightArrowButton[2]){ // right arrow button
-    inctState.currentDrumBank=(inctState.currentDrumBank+(inctState.numberOfDrumBanks-1))%inctState.numberOfDrumBanks;
-    for(var x=0; x<inctState.drumPadState.length; x++){
-      inctState.drumPadState[x]=false;
-    }
     sendToRtp=false;
     syncLeds=true;
-    console.log("current drum bank: "+inctState.currentDrumBank);
+    if(inctState.padMode==0){ // drum bank
+      inctState.currentDrumBank=(inctState.currentDrumBank+(inctState.numberOfDrumBanks-1))%inctState.numberOfDrumBanks;
+      for(var x=0; x<inctState.drumPadState.length; x++){
+        inctState.drumPadState[x]=false;
+      }
+      console.log("current drum bank: "+inctState.currentDrumBank);
+    }
+    if(inctState.padMode==1){ // flexbeat bank
+      inctState.flexbeatBank=(inctState.flexbeatBank+1)%2;
+      console.log("flexbeat bank: "+inctState.flexbeatBank);
+    }
   }else if(message[0]==inctState.upCircleButton[0] && message[1]==inctState.upCircleButton[1] && message[2]==inctState.upCircleButton[2]){ // up circle button
     sendToRtp=false;
     syncLeds=true;
@@ -177,24 +189,21 @@ inControlInput.on('message', (deltaTime, message) => {
       shouldRecordMessage=true;
       syncLeds=true;
       inctState.drumPadState[inctState.ledPads.indexOf(message[1])]=(message[2]!=0);
+      transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(inctState.currentDrumBank*16), message[2]];
     }
     if(inctState.padMode==1 && message[2]!=0){ // flexbeat mode
       shouldRecordMessage=true;
-      let deck="A";
+      let deck=0+inctState.flexbeatBank*2;
       for(var x=0; x<inctState.ledPads.length; x++){
         if(x>=8){
-          deck="B";
+          deck=inctState.flexbeatBank*2+1;
         }
         if(inctState.ledPadFlexbeatMap[x]==message[1]){
-          if(deck=="A"){
-            inctState.selectedFlexbeatA=inctState.ledPadsFlexbeatIndex[x];
-            console.log("selected flexbeat A: "+inctState.selectedFlexbeatA);
-          }else{
-            inctState.selectedFlexbeatB=inctState.ledPadsFlexbeatIndex[x];
-            console.log("selected flexbeat B: "+inctState.selectedFlexbeatB);
-          } 
+          inctState.selectedFlexbeat[deck]=inctState.ledPadsFlexbeatIndex[x];
+          console.log("selected flexbeat "+deck+": "+inctState.selectedFlexbeat[deck]);
         }
       }
+      transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(inctState.flexbeatBank*16), message[2]];
     }
     if(inctState.padMode==2){ // looper mode
       syncWebsocket=true;
@@ -259,7 +268,6 @@ inControlInput.on('message', (deltaTime, message) => {
         console.log("lk shift copy: "+inctState.loopCopyShiftState);
       }   
     }
-    transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(inctState.currentDrumBank*16), message[2]];
   }else if(message[0]==176 && inctState.knobs.includes(message[1])){ // knobs
     sendToRtp=true;
     transformedMessage=[message[0], message[1], message[2]];
@@ -286,7 +294,7 @@ function syncLaunchkeyLEDS(){
   if(inctState.padMode==0){
     syncDrumPadLEDS(100, 39);
   }else if(inctState.padMode==1){
-    syncFlexbeatOnLEDS(39, 7);
+    syncFlexbeatOnLEDS(39,7,100);
   }else{
     syncLooperLEDS(39,7,100);
   }
@@ -329,13 +337,19 @@ function syncLaunchkeyLEDS(){
       count++;
     }
   }
-  function syncFlexbeatOnLEDS(ColorOn, ColorOff){
+  function syncFlexbeatOnLEDS(orange, red, green){
     let count=0;
     for(var x of inctState.ledPadFlexbeatMap){
-      if( inctState.ledPadsFlexbeatIndex[count] == inctState.selectedFlexbeatA && count<8 || inctState.ledPadsFlexbeatIndex[count] == inctState.selectedFlexbeatB && count>=8 ){
-        inControlOutput.sendMessage([144,x,ColorOn]);
+      let bankA=inctState.selectedFlexbeat[inctState.flexbeatBank*2];
+      let bankB=inctState.selectedFlexbeat[1+inctState.flexbeatBank*2];
+      let onColor=orange;
+      if(inctState.flexbeatBank==1){
+        onColor=green;
+      }
+      if( inctState.ledPadsFlexbeatIndex[count] == bankA && count<8 || inctState.ledPadsFlexbeatIndex[count] == bankB && count>=8 ){
+        inControlOutput.sendMessage([144,x,onColor]);
       }else{
-        inControlOutput.sendMessage([144,x,ColorOff]);
+        inControlOutput.sendMessage([144,x,red]);
       }
       count++;
     }
@@ -549,12 +563,12 @@ circuitInput.on('message', (deltaTime, message) => {
         }
       }else if(inctState.padMode==1 && playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1){ // flexbeat mode
         let currentVelocity2=playbacMessage[2];
-        let currentLedIndex2=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]);
+        let currentLedIndex2=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]-inctState.flexbeatBank*16);
         if(currentLedIndex2!=-1 && currentVelocity2!=0){
           if(currentLedIndex2<8){
-            inctState.selectedFlexbeatA=inctState.ledPadsFlexbeatIndex[currentLedIndex2];
+            inctState.selectedFlexbeat[0+inctState.flexbeatBank*2]=inctState.ledPadsFlexbeatIndex[currentLedIndex2];
           }else{
-            inctState.selectedFlexbeatB=inctState.ledPadsFlexbeatIndex[currentLedIndex2];
+            inctState.selectedFlexbeat[1+inctState.flexbeatBank*2]=inctState.ledPadsFlexbeatIndex[currentLedIndex2];
           }
         }
       }
