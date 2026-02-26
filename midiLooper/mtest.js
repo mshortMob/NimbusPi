@@ -109,6 +109,10 @@ function init(){
   initMidiConnections();
 }
 
+lkInput.on('close', (deltaTime) => {
+  console.log("lkInput closed XXXXXXXXXXXXXXXXXXXX");
+});
+
 inControlInput.on('message', (deltaTime, message) => {
   console.log("inControlInput: "+ message);
   let sendToRtp=true;
@@ -439,7 +443,7 @@ function initMidiConnections(){
     rtpInput.openPort(internals.rtpPort);
     rtpOutput.openPort(internals.rtpPort);
   }
-
+  killAllNotes();
   // console.log("A midi device is missing, exiting");
   // process.exit(1);
 }
@@ -449,7 +453,6 @@ function clearLoop(scope){
     for(var x=0; x<internals.loopMaxLength; x++){
       internals.loopData[globals.selectedPattern-1][x]=[];
     }
-    killAllNotes();
   }
   if(scope=="circuit" || scope == "all"){
     for(var x=0; x<internals.loopMaxLength; x++){
@@ -460,8 +463,12 @@ function clearLoop(scope){
     for(var x=0; x<internals.loopMaxLength; x++){
       internals.lkLoopData[globals.selectedPattern-1][x]=[];
     }
+    for(var x=0; x<inctState.drumPadState.length; x++){
+      inctState.drumPadState[x]=false;
+    }
     console.log("cleared lk pattern");
   }
+  killAllNotes();
 }
 
 function killAllNotes(){
