@@ -17,6 +17,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { channel } = require('diagnostics_channel');
 const { emit } = require('process');
+const { clear } = require('console');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -67,6 +68,7 @@ function init(){
     numberOfDrumBanks: 4,
     upCircleButton: [144,104,127],
     downCircleButton: [144,120,127],
+    circleDownState: false,
     upArrowButton: [176,104,127],
     downArrowButton: [176,105,127],
     leftArrowButton: [176,106,127],
@@ -162,27 +164,36 @@ inControlInput.on('message', (deltaTime, message) => {
     sendToRtp=false;
     syncLeds=true;
     syncWebsocket=true;
-    if(globals.transportState=="play"){
-      globals.transportState="stop";
-      killAllNotes();
-    }else if(globals.transportState=="rec"){
-      globals.transportState="play";
-    }else if(globals.transportState=="stop"){  
-      globals.transportState="play";
+    if(!inctState.circleDownState){ // rec vs play toggle
+      if(globals.transportState=="play"){
+        globals.transportState="rec";
+      }else if(globals.transportState=="rec"){
+        globals.transportState="play";
+      }else if(globals.transportState=="stop"){  
+        globals.transportState="play";
+      }
+    }else{ // clear all for pattern
+      clearLoop("all"); 
     }
     console.log("lk up circle changed transport state: "+globals.transportState);
-  }else if(message[0]==inctState.downCircleButton[0] && message[1]==inctState.downCircleButton[1] && message[2]==inctState.downCircleButton[2]){ // down circle button
+  }else if((message[0]==inctState.downCircleButton[0] || message[0]==inctState.downCircleButton[0]-16) && message[1]==inctState.downCircleButton[1]){ // down circle button
     sendToRtp=false;
     syncLeds=true;
     syncWebsocket=true;
-    if(globals.transportState=="play"){
-      globals.transportState="rec";
-    }else if(globals.transportState=="rec"){
-      globals.transportState="play";
-    }else if(globals.transportState=="stop"){  
-      globals.transportState="rec";
+    if(message[2]==inctState.downCircleButton[2]){
+      if(inctState.padMode==0){
+        clearLoop("lk"); 
+        console.log("lk cleared pattern: "+ globals.selectedPattern);
+      }
     }
-    console.log("lk down circle changed transport state: "+globals.transportState);
+    if(message[2]==0){
+      inctState.circleDownState=false;
+      console.log("circleDownState false");
+    }else{
+      inctState.circleDownState=true;
+      console.log("circleDownState true");
+    }
+    console.log("lk down circle cleared pattern: "+ globals.selectedPattern);
   }else if(inctState.ledPads.includes(message[1])){ // pad buttons
     sendToRtp=true;
     if(inctState.padMode==0){ // drum mode
@@ -299,14 +310,20 @@ function syncLaunchkeyLEDS(){
     syncLooperLEDS(39,7,100);
   }
   function syncCircleButtonLEDS(orange, red, green){
-    if(globals.transportState=="play"){
-      inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],green]);
-      inControlOutput.sendMessage([inctState.downCircleButton[0],inctState.downCircleButton[1],green]);
-    }else if(globals.transportState=="rec"){
-      inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],red]);
-      inControlOutput.sendMessage([inctState.downCircleButton[0],inctState.downCircleButton[1],red]);
+    if(!inctState.circleDownState){
+      if(globals.transportState=="play"){
+        inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],green]);
+      }else if(globals.transportState=="rec"){
+        inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],red]);
+      }else{
+        inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],orange]);
+      }
     }else{
       inControlOutput.sendMessage([inctState.upCircleButton[0],inctState.upCircleButton[1],orange]);
+    }
+    if(inctState.circleDownState){
+      inControlOutput.sendMessage([inctState.downCircleButton[0],inctState.downCircleButton[1],red]);
+    }else{
       inControlOutput.sendMessage([inctState.downCircleButton[0],inctState.downCircleButton[1],orange]);
     }
   }
