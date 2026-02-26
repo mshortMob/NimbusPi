@@ -109,10 +109,6 @@ function init(){
   initMidiConnections();
 }
 
-lkInput.on('close', (deltaTime) => {
-  console.log("lkInput closed XXXXXXXXXXXXXXXXXXXX");
-});
-
 inControlInput.on('message', (deltaTime, message) => {
   console.log("inControlInput: "+ message);
   let sendToRtp=true;
