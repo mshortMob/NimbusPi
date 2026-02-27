@@ -181,7 +181,7 @@ inControlInput.on('message', (deltaTime, message) => {
     syncLeds=true;
     syncWebsocket=true;
     if(message[2]!=0){
-      if(inctState.padMode==0){
+      if(inctState.padMode==0 || inctState.padMode==1 || inctState.padMode==2){
         clearLoop("lk"); 
         console.log("lk cleared pattern: "+ globals.selectedPattern);
       }
