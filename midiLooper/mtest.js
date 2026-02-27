@@ -462,6 +462,12 @@ function clearLoop(scope){
     for(var x=0; x<inctState.drumPadState.length; x++){
       inctState.drumPadState[x]=false;
     }
+    for(var x=0; x<inctState.selectedFlexbeat.length; x++){
+      inctState.selectedFlexbeat[x]=1;
+      rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[1]-1, inctState.ledPadsDrumMap[inctState.ledPadsFlexbeatIndex.indexOf(1)]+(x*8), 0]);
+      rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[1]-1, inctState.ledPadsDrumMap[inctState.ledPadsFlexbeatIndex.indexOf(1)]+(x*8), 127]);
+      rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[1]-1, inctState.ledPadsDrumMap[inctState.ledPadsFlexbeatIndex.indexOf(1)]+(x*8), 0]);
+    } 
     console.log("cleared lk pattern");
   }
   killAllNotes();
