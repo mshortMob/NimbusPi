@@ -180,7 +180,7 @@ inControlInput.on('message', (deltaTime, message) => {
     sendToRtp=false;
     syncLeds=true;
     syncWebsocket=true;
-    if(message[2]==inctState.downCircleButton[2]){
+    if(message[2]!=0){
       if(inctState.padMode==0){
         clearLoop("lk"); 
         console.log("lk cleared pattern: "+ globals.selectedPattern);
