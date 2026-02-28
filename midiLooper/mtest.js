@@ -7,10 +7,10 @@ const circuitInput = new midi.Input();
 const circuitOutput = new midi.Output();
 const rolandInput = new midi.Input();
 const rolandOutput = new midi.Output();
-const lkInput = new midi.Input();
-const lkOutput = new midi.Output();
-const inControlInput = new midi.Input();
-const inControlOutput = new midi.Output();
+lkInput = new midi.Input();
+lkOutput = new midi.Output();
+inControlInput = new midi.Input();
+inControlOutput = new midi.Output();
 const rtpInput = new midi.Input();
 const rtpOutput = new midi.Output();
 const express = require('express');
@@ -41,7 +41,8 @@ function init(){
     noteOnChannelOne: 144,
     noteOffChannelOne: 128,
     rootDir: "/root/NimbusPi/midiLooper",
-    presetsPath: "/presets"
+    presetsPath: "/presets",
+    usb_devices: ""
   }
   globals={
     selectedLength: 0,
@@ -76,6 +77,14 @@ function init(){
     knobs: [21,22,23,24,25,26,27,28],
     loopCopyShiftState: false
   }
+  midiState=
+    devices=[
+      [ circuitInput, circuitOutput, "Circuit", "circuitPort", function(){circuitInput.ignoreTypes(true,false,true);} ],
+      [ rolandInput, rolandOutput, "Boutiq", "rolandPort", function(){} ],
+      [ lkInput, lkOutput, "LK Mini MIDI", "lkPort", function(){} ],
+      [ inControlInput, inControlOutput, "InContro", "inControlPort", function(){for(var x=0;x<200;x++){inControlOutput.sendMessage([144,x,127]);}} ],
+      [ rtpInput, rtpOutput, "rtpmidid:mpc-one/MPC-rtpmidi mpc-one Network", "rtpPort", function(){} ]
+    ]
   function initLoopData(){
     for(var y=0; y<6; y++){
       var temp=[];
@@ -384,66 +393,6 @@ function syncLaunchkeyLEDS(){
   }
 }
 
-function initMidiConnections(){
-  console.log(" ");
-  console.log("Listing all MIDI Ports:");
-  console.log("--------------------------");
-  for(var x=0; x<circuitInput.getPortCount(); x++){
-    console.log("Port "+x+": "+circuitInput.getPortName(x));
-  }
-  console.log("--------------------------");
-  console.log(" ");
-  for(var x=0; x<circuitInput.getPortCount(); x++){
-    if(circuitInput.getPortName(x).indexOf("Circuit")!=-1){
-      internals.circuitPort=x;
-      console.log("Found circuit on port: "+x);
-    }
-    if(circuitInput.getPortName(x).indexOf("Boutiq")!=-1){
-      internals.rolandPort=x;
-      console.log("Found roland on port: "+x);
-    }
-    if(circuitInput.getPortName(x).indexOf("Launchkey")!=-1 && internals.lkPort=="None"){
-      internals.lkPort=x;
-      console.log("Found launcheky on port: "+x);
-    }
-    if(circuitInput.getPortName(x).indexOf("InContro")!=-1 && internals.inControlPort=="None"){
-      internals.inControlPort=x;
-      console.log("Found inControl on port: "+x);
-    }
-    if(circuitInput.getPortName(x).indexOf("rtpmidid:mpc-one/MPC-rtpmidi mpc-one Network")!=-1 && internals.rtpPort=="None"){
-      internals.rtpPort=x;
-      console.log("Found rtpMidi on port: "+x);
-    }
-  }
-  if(internals.lkPort!="None"){
-    lkInput.openPort(internals.lkPort);
-    lkOutput.openPort(internals.lkPort);
-  }
-  if(internals.inControlPort!="None"){
-    inControlInput.openPort(internals.inControlPort);
-    inControlOutput.openPort(internals.inControlPort);
-    for(var x=0;x<200;x++){
-      inControlOutput.sendMessage([144,x,127]);  
-    }
-  }
-  if(internals.circuitPort!="None"){
-    circuitInput.openPort(internals.circuitPort);
-    circuitInput.ignoreTypes(true,false,true);
-    circuitOutput.openPort(internals.circuitPort);
-  }
-  if(internals.rolandPort!="None"){
-    rolandInput.openPort(internals.rolandPort);
-    rolandOutput.openPort(internals.rolandPort);
-  }
-  if(internals.rtpPort!="None"){
-    rtpInput.openPort(internals.rtpPort);
-    rtpOutput.openPort(internals.rtpPort);
-  }
-  killAllNotes();
-  // console.log("A midi device is missing, exiting");
-  // process.exit(1);
-}
-
 function clearLoop(scope){
   if(scope=="roland" || scope == "all"){
     for(var x=0; x<internals.loopMaxLength; x++){
@@ -723,5 +672,64 @@ function processAction(action, copyTarget="dummyValue"){
       }
       console.log(stdout);
     });
+  }
+}
+
+app.get('/usbTest', (req, res) => {
+  dir = exec("sudo amidi -l", function(err, stdout, stderr) {
+    if (err) {
+      internals.usb_devices = err;
+    }else{
+      internals.usb_devices = stdout;
+    }
+    res.send(JSON.stringify(internals.usb_devices));
+  });
+})
+
+function checkUSBDevices(){
+  dir = exec("sudo amidi -l", function(err, stdout, stderr) {
+    if (err) {
+      internals.usb_devices = err;
+    }else{
+      internals.usb_devices = stdout;
+    }
+    for(var x=0; x<midiState.length; x++){
+      if((internals.usb_devices.indexOf(midiState[x][2])==-1 || internals[midiState[x][3]]=="None") && midiState[x][2].indexOf("rtpmid")==-1){ 
+        initMidiDevice(midiState[x][0], midiState[x][1], midiState[x][2], midiState[x][3], midiState[x][4]);
+      }
+    }
+  });
+  setTimeout(checkUSBDevices, 5000);
+}
+
+function initMidiConnections(){
+  console.log(" ");
+  console.log("Searching for MIDI Devices:");
+  console.log("--------------------------");
+  for(var x=0; x<midiState.length; x++){
+    initMidiDevice(midiState[x][0], midiState[x][1], midiState[x][2], midiState[x][3], midiState[x][4]);
+  }
+  killAllNotes();
+  console.log("--------------------------");
+  console.log(" ");
+  checkUSBDevices();
+}
+
+function initMidiDevice(midiInObject, midiOutObject, deviceString, portName, specialtyFunc){
+  if(internals[portName]!="None"){
+    midiInObject.closePort();
+    midiOutObject.closePort();
+    internals[portName]="None";
+  }
+  for(var x=0; x<midiInObject.getPortCount(); x++){
+    if(midiInObject.getPortName(x).indexOf(deviceString)!=-1){
+      internals[portName]=x;
+      console.log("FOUND "+deviceString+" ON PORT: "+x);
+    }
+  }
+  if(internals[portName]!="None"){
+    midiInObject.openPort(internals[portName]);
+    midiOutObject.openPort(internals[portName]);
+    specialtyFunc();
   }
 }
