@@ -430,6 +430,7 @@ function killAllNotes(){
   }
   for(var x=128; x<=131; x++){
     for(var y=0; y<=127; y++){
+      rtpOutput.sendMessage([x+16,y,0]);
       rtpOutput.sendMessage([x,y,0]);
     }
   }
