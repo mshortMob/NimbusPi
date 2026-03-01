@@ -16,7 +16,7 @@ const rtpOutput = new midi.Output();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { channel } = require('diagnostics_channel');
-const { emit } = require('process');
+const { emit, kill } = require('process');
 const { clear } = require('console');
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -56,12 +56,13 @@ function init(){
   }
   inctState={
     padMode: 0,
-    numberOfPadModes: 3,
+    numberOfPadModes: 4,
     padsOutputChannels: [14,15,16],
     ledPads: [96,97,98,99,112,113,114,115,116,117,118,119,100,101,102,103],
     ledPadsDrumMap: [40,41,42,43,36,37,38,39,44,45,46,47,48,49,50,51],
     ledPadFlexbeatMap: [96,97,98,99,112,113,114,115,116,117,118,119,100,101,102,103],
     ledPadsFlexbeatIndex: [5,6,7,8,1,2,3,4,1,2,3,4,5,6,7,8],
+    ledSlicerMap: [96,97,98,99,100,101,102,103,112,113,114,115,116,117,118,119],
     drumPadState: [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
     selectedFlexbeat: [1,1,1,1],
     flexbeatBank: 0,
@@ -190,7 +191,7 @@ inControlInput.on('message', (deltaTime, message) => {
     syncLeds=true;
     syncWebsocket=true;
     if(message[2]!=0){
-      if(inctState.padMode==0 || inctState.padMode==1 || inctState.padMode==2){
+      if(inctState.padMode==0 || inctState.padMode==1 || inctState.padMode==2 || inctState.padMode==3){
         clearLoop("lk"); 
         console.log("lk cleared pattern: "+ globals.selectedPattern);
       }
@@ -288,6 +289,16 @@ inControlInput.on('message', (deltaTime, message) => {
         console.log("lk shift copy: "+inctState.loopCopyShiftState);
       }   
     }
+    if(inctState.padMode==3){ // slicer mode
+      shouldRecordMessage=false;
+      sendToRtp=false;
+      syncLeds=true;
+      if(message[2]!=0){
+        let lengthModifier=internals.loopLengths[globals.selectedLength]/16;
+        internals.cursor=(inctState.ledSlicerMap.indexOf(message[1])*lengthModifier)+internals.cursor%6;
+        killAllNotes();
+      }
+    }
   }else if(message[0]==176 && inctState.knobs.includes(message[1])){ // knobs
     sendToRtp=true;
     transformedMessage=[message[0], message[1], message[2]];
@@ -315,8 +326,10 @@ function syncLaunchkeyLEDS(){
     syncDrumPadLEDS(100, 39);
   }else if(inctState.padMode==1){
     syncFlexbeatOnLEDS(39,7,100);
-  }else{
+  }else if(inctState.padMode==2){
     syncLooperLEDS(39,7,100);
+  }else{
+    syncSlicerLEDS(39,7,100);
   }
   function syncCircleButtonLEDS(orange, red, green){
     if(!inctState.circleDownState){
@@ -387,6 +400,18 @@ function syncLaunchkeyLEDS(){
         inControlOutput.sendMessage([144,x,ColorOn]);
       }else{
         inControlOutput.sendMessage([144,x,ColorOff]);
+      }
+      count++;
+    }
+  }
+  function syncSlicerLEDS(orange, red, green){
+    let count=0;
+    let lengthModifier=internals.loopLengths[globals.selectedLength]/16;
+    for(var x of inctState.ledSlicerMap){
+      if( count == (Math.floor(internals.cursor/lengthModifier)) && globals.transportState!="stop" ){
+        inControlOutput.sendMessage([144,x,green]);
+      }else{
+        inControlOutput.sendMessage([144,x,0]);
       }
       count++;
     }
