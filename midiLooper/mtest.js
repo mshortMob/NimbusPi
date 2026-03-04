@@ -146,11 +146,11 @@ inControlInput.on('message', (deltaTime, message) => {
     sendToRtp=false;
     syncLeds=true;
     if(inctState.padMode==0){ // drum bank
-      inctState.currentDrumBank=(inctState.currentDrumBank+1)%inctState.numberOfDrumBanks;
+      inctState.currentDrumBank=(inctState.currentDrumBank+(inctState.numberOfDrumBanks-1))%inctState.numberOfDrumBanks;
       for(var x=0; x<inctState.drumPadState.length; x++){
         inctState.drumPadState[x]=false;
       }
-      console.log("current drum bank: "+inctState.currentDrumBank); 
+      console.log("current drum bank: "+inctState.currentDrumBank);
     }
     if(inctState.padMode==1){ // flexbeat bank
       inctState.flexbeatBank=(inctState.flexbeatBank+1)%inctState.numOfflexbeatBanks;
@@ -160,11 +160,11 @@ inControlInput.on('message', (deltaTime, message) => {
     sendToRtp=false;
     syncLeds=true;
     if(inctState.padMode==0){ // drum bank
-      inctState.currentDrumBank=(inctState.currentDrumBank+(inctState.numberOfDrumBanks-1))%inctState.numberOfDrumBanks;
+      inctState.currentDrumBank=(inctState.currentDrumBank+1)%inctState.numberOfDrumBanks;
       for(var x=0; x<inctState.drumPadState.length; x++){
         inctState.drumPadState[x]=false;
       }
-      console.log("current drum bank: "+inctState.currentDrumBank);
+      console.log("current drum bank: "+inctState.currentDrumBank); 
     }
     if(inctState.padMode==1){ // flexbeat bank
       inctState.flexbeatBank=(inctState.flexbeatBank+(inctState.numOfflexbeatBanks-1))%inctState.numOfflexbeatBanks;
@@ -323,7 +323,7 @@ inControlInput.on('message', (deltaTime, message) => {
 function syncLaunchkeyLEDS(){
   syncCircleButtonLEDS(39,7,100); // orange, red, green
   if(inctState.padMode==0){
-    syncDrumPadLEDS(100, 39);
+    syncDrumPadLEDS(100, 35, 63);
   }else if(inctState.padMode==1){
     syncFlexbeatOnLEDS(39,7,100,63);
   }else if(inctState.padMode==2){
@@ -397,13 +397,17 @@ function syncLaunchkeyLEDS(){
       count++;
     }
   }
-  function syncDrumPadLEDS(ColorOn, ColorOff){
+  function syncDrumPadLEDS(ColorOn, ColorOff, yellow){
     let count=0;
     for(var x of inctState.ledPads){
       if( inctState.drumPadState[count]){
         inControlOutput.sendMessage([144,x,ColorOn]);
       }else{
-        inControlOutput.sendMessage([144,x,ColorOff]);
+        if(count==inctState.currentDrumBank){
+          inControlOutput.sendMessage([144,x,yellow]);
+        }else{
+          inControlOutput.sendMessage([144,x,ColorOff]);
+        }
       }
       count++;
     }
