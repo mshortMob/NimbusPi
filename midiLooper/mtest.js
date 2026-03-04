@@ -295,7 +295,7 @@ inControlInput.on('message', (deltaTime, message) => {
       syncLeds=true;
       if(message[2]!=0){
         let lengthModifier=internals.loopLengths[globals.selectedLength]/16;
-        internals.cursor=(inctState.ledSlicerMap.indexOf(message[1])*lengthModifier)+internals.cursor%6;
+        internals.cursor=(inctState.ledSlicerMap.indexOf(message[1])*lengthModifier);
         killAllNotes();
       }
     }
