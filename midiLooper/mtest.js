@@ -382,17 +382,24 @@ function syncLaunchkeyLEDS(){
       let bankA=inctState.selectedFlexbeat[inctState.flexbeatBank*2];
       let bankB=inctState.selectedFlexbeat[1+inctState.flexbeatBank*2];
       let onColor=orange;
+      let offColor=green;
+     if(inctState.flexbeatBank==0){
+        onColor=orange;
+        offColor=red;
+      }
       if(inctState.flexbeatBank==1){
         onColor=green;
+        offColor=red;
       }
       if(inctState.flexbeatBank==2){
         onColor=yellow;
+        offColor=green;
       }
       inControlOutput.sendMessage([144,x,onColor]);
       if( inctState.ledPadsFlexbeatIndex[count] == bankA && count<8 || inctState.ledPadsFlexbeatIndex[count] == bankB && count>=8 ){
         inControlOutput.sendMessage([144,x,onColor]);
       }else{
-        inControlOutput.sendMessage([144,x,red]);
+        inControlOutput.sendMessage([144,x,offColor]);
       }
       count++;
     }
