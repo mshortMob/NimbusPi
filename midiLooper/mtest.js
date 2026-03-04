@@ -64,8 +64,9 @@ function init(){
     ledPadsFlexbeatIndex: [5,6,7,8,1,2,3,4,1,2,3,4,5,6,7,8],
     ledSlicerMap: [96,97,98,99,100,101,102,103,112,113,114,115,116,117,118,119],
     drumPadState: [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
-    selectedFlexbeat: [1,1,1,1],
+    selectedFlexbeat: [1,1,1,1,1,1],
     flexbeatBank: 0,
+    numOfflexbeatBanks: 3,
     currentDrumBank: 0,
     numberOfDrumBanks: 4,
     upCircleButton: [144,104,127],
@@ -78,14 +79,13 @@ function init(){
     knobs: [21,22,23,24,25,26,27,28],
     loopCopyShiftState: false
   }
-  midiState=
-    devices=[
-      [ circuitInput, circuitOutput, "Circuit", "circuitPort", function(){circuitInput.ignoreTypes(true,false,true);} ],
-      [ rolandInput, rolandOutput, "Boutiq", "rolandPort", function(){} ],
-      [ lkInput, lkOutput, "LK Mini MIDI", "lkPort", function(){} ],
-      [ inControlInput, inControlOutput, "InContro", "inControlPort", function(){for(var x=0;x<200;x++){inControlOutput.sendMessage([144,x,127]);}} ],
-      [ rtpInput, rtpOutput, "rtpmidid:mpc-one/MPC-rtpmidi mpc-one Network", "rtpPort", function(){} ]
-    ]
+  midiState=[
+    [ circuitInput, circuitOutput, "Circuit", "circuitPort", function(){circuitInput.ignoreTypes(true,false,true);} ],
+    [ rolandInput, rolandOutput, "Boutiq", "rolandPort", function(){} ],
+    [ lkInput, lkOutput, "LK Mini MIDI", "lkPort", function(){} ],
+    [ inControlInput, inControlOutput, "InContro", "inControlPort", function(){for(var x=0;x<200;x++){inControlOutput.sendMessage([144,x,127]);}} ],
+    [ rtpInput, rtpOutput, "rtpmidid:mpc-one/MPC-rtpmidi mpc-one Network", "rtpPort", function(){} ]
+  ]
   function initLoopData(){
     for(var y=0; y<6; y++){
       var temp=[];
@@ -153,7 +153,7 @@ inControlInput.on('message', (deltaTime, message) => {
       console.log("current drum bank: "+inctState.currentDrumBank); 
     }
     if(inctState.padMode==1){ // flexbeat bank
-      inctState.flexbeatBank=(inctState.flexbeatBank+1)%2;
+      inctState.flexbeatBank=(inctState.flexbeatBank+1)%inctState.numOfflexbeatBanks;
       console.log("flexbeat bank: "+inctState.flexbeatBank);
     }
   }else if(message[0]==inctState.rightArrowButton[0] && message[1]==inctState.rightArrowButton[1] && message[2]==inctState.rightArrowButton[2]){ // right arrow button
@@ -167,7 +167,7 @@ inControlInput.on('message', (deltaTime, message) => {
       console.log("current drum bank: "+inctState.currentDrumBank);
     }
     if(inctState.padMode==1){ // flexbeat bank
-      inctState.flexbeatBank=(inctState.flexbeatBank+1)%2;
+      inctState.flexbeatBank=(inctState.flexbeatBank+(inctState.numOfflexbeatBanks-1))%inctState.numOfflexbeatBanks;
       console.log("flexbeat bank: "+inctState.flexbeatBank);
     }
   }else if(message[0]==inctState.upCircleButton[0] && message[1]==inctState.upCircleButton[1] && message[2]==inctState.upCircleButton[2]){ // up circle button
@@ -214,7 +214,7 @@ inControlInput.on('message', (deltaTime, message) => {
     }
     if(inctState.padMode==1 && message[2]!=0){ // flexbeat mode
       shouldRecordMessage=true;
-      let deck=0+inctState.flexbeatBank*2;
+      let deck=inctState.flexbeatBank*2;
       for(var x=0; x<inctState.ledPads.length; x++){
         if(x>=8){
           deck=inctState.flexbeatBank*2+1;
@@ -325,7 +325,7 @@ function syncLaunchkeyLEDS(){
   if(inctState.padMode==0){
     syncDrumPadLEDS(100, 39);
   }else if(inctState.padMode==1){
-    syncFlexbeatOnLEDS(39,7,100);
+    syncFlexbeatOnLEDS(39,7,100,63);
   }else if(inctState.padMode==2){
     syncLooperLEDS(39,7,100);
   }else{
@@ -376,7 +376,7 @@ function syncLaunchkeyLEDS(){
       count++;
     }
   }
-  function syncFlexbeatOnLEDS(orange, red, green){
+  function syncFlexbeatOnLEDS(orange, red, green, yellow){
     let count=0;
     for(var x of inctState.ledPadFlexbeatMap){
       let bankA=inctState.selectedFlexbeat[inctState.flexbeatBank*2];
@@ -385,6 +385,10 @@ function syncLaunchkeyLEDS(){
       if(inctState.flexbeatBank==1){
         onColor=green;
       }
+      if(inctState.flexbeatBank==2){
+        onColor=yellow;
+      }
+      inControlOutput.sendMessage([144,x,onColor]);
       if( inctState.ledPadsFlexbeatIndex[count] == bankA && count<8 || inctState.ledPadsFlexbeatIndex[count] == bankB && count>=8 ){
         inControlOutput.sendMessage([144,x,onColor]);
       }else{
@@ -605,7 +609,7 @@ app.post('/setState', (req, res) => {
 })
 
 app.get('/debug', (req, res) => {
-  res.send(JSON.stringify(internals));
+  res.send(JSON.stringify({"int":internals,"inctState":inctState}));
 })
 
 app.listen(port, () => {
@@ -700,17 +704,6 @@ function processAction(action, copyTarget="dummyValue"){
     });
   }
 }
-
-app.get('/usbTest', (req, res) => {
-  dir = exec("sudo amidi -l", function(err, stdout, stderr) {
-    if (err) {
-      internals.usb_devices = err;
-    }else{
-      internals.usb_devices = stdout;
-    }
-    res.send(JSON.stringify(internals.usb_devices));
-  });
-})
 
 function checkUSBDevices(){
   dir = exec("sudo amidi -l", function(err, stdout, stderr) {
