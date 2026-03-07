@@ -256,7 +256,6 @@ inControlInput.on('message', (deltaTime, message) => {
               cpTarget=3;
             } 
             processAction("copy", cpTarget);
-            inctState.loopCopyShiftState=false;
             console.log("copied pattern "+globals.selectedPattern+" to pattern "+cpTarget);
           }else{ // normal loop selection
             let newSelectedPatten=0;
