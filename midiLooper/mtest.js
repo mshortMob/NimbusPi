@@ -64,11 +64,14 @@ function init(){
     ledPadsFlexbeatIndex: [5,6,7,8,1,2,3,4,1,2,3,4,5,6,7,8],
     ledSlicerMap: [96,97,98,99,100,101,102,103,112,113,114,115,116,117,118,119],
     drumPadState: [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
+    looperPadState: [false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false],
     selectedFlexbeat: [1,1,1,1,1,1],
     flexbeatBank: 0,
     numOfflexbeatBanks: 3,
     currentDrumBank: 0,
     numberOfDrumBanks: 4,
+    looperModeBank: 0,
+    numOfLooperModeBanks: 2,
     upCircleButton: [144,104,127],
     downCircleButton: [144,120,127],
     circleDownState: false,
@@ -156,6 +159,10 @@ inControlInput.on('message', (deltaTime, message) => {
       inctState.flexbeatBank=(inctState.flexbeatBank+1)%inctState.numOfflexbeatBanks;
       console.log("flexbeat bank: "+inctState.flexbeatBank);
     }
+    if(inctState.padMode==2){ // looper bank
+      inctState.looperModeBank=(inctState.looperModeBank+1)%inctState.numOfLooperModeBanks;
+      console.log("looper mode bank: "+inctState.looperModeBank);
+    }
   }else if(message[0]==inctState.rightArrowButton[0] && message[1]==inctState.rightArrowButton[1] && message[2]==inctState.rightArrowButton[2]){ // right arrow button
     sendToRtp=false;
     syncLeds=true;
@@ -169,6 +176,10 @@ inControlInput.on('message', (deltaTime, message) => {
     if(inctState.padMode==1){ // flexbeat bank
       inctState.flexbeatBank=(inctState.flexbeatBank+(inctState.numOfflexbeatBanks-1))%inctState.numOfflexbeatBanks;
       console.log("flexbeat bank: "+inctState.flexbeatBank);
+    }
+    if(inctState.padMode==2){ // looper bank
+      inctState.looperModeBank=(inctState.looperModeBank+(inctState.numOfLooperModeBanks-1))%inctState.numOfLooperModeBanks;
+      console.log("looper mode bank: "+inctState.looperModeBank);
     }
   }else if(message[0]==inctState.upCircleButton[0] && message[1]==inctState.upCircleButton[1] && message[2]==inctState.upCircleButton[2]){ // up circle button
     sendToRtp=false;
@@ -227,67 +238,77 @@ inControlInput.on('message', (deltaTime, message) => {
       transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(inctState.flexbeatBank*16), message[2]];
     }
     if(inctState.padMode==2){ // looper mode
-      syncWebsocket=true;
-      syncLeds=true;
-      sendToRtp=false
-      if(message[1]>=inctState.ledPads[0] && message[1]<=inctState.ledPads[3] &&message[2]!=0){ // loops 1-4
-        if(inctState.loopCopyShiftState){ // set copy mode target
-          let cpTarget=0;
-          if(message[1]==inctState.ledPads[0]){
-            cpTarget=0;
-          }else if(message[1]==inctState.ledPads[1]){
-            cpTarget=1;
-          }else if(message[1]==inctState.ledPads[2]){
-            cpTarget=2;
-          }else if(message[1]==inctState.ledPads[3]){
-            cpTarget=3;
-          } 
-          processAction("copy", cpTarget);
-          inctState.loopCopyShiftState=false;
-          console.log("copied pattern "+globals.selectedPattern+" to pattern "+cpTarget);
-        }else{ // normal loop selection
-          let newSelectedPatten=0;
-          if(message[1]==inctState.ledPads[0]){
-            newSelectedPatten=1;
-          }else if(message[1]==inctState.ledPads[1]){
-            newSelectedPatten=2;
-          }else if(message[1]==inctState.ledPads[2]){
-            newSelectedPatten=3;
-          }else if(message[1]==inctState.ledPads[3]){
-            newSelectedPatten=4;
-          } 
-          if( globals.selectedPattern!=newSelectedPatten || globals.transportState=="stop" ){
-            killAllNotes();
-            console.log("selected pattern: "+newSelectedPatten);
+      if(inctState.looperModeBank==0){ // first looper bank, looper controls
+        syncWebsocket=true;
+        syncLeds=true;
+        sendToRtp=false
+        if(message[1]>=inctState.ledPads[0] && message[1]<=inctState.ledPads[3] &&message[2]!=0){ // loops 1-4
+          if(inctState.loopCopyShiftState){ // set copy mode target
+            let cpTarget=0;
+            if(message[1]==inctState.ledPads[0]){
+              cpTarget=0;
+            }else if(message[1]==inctState.ledPads[1]){
+              cpTarget=1;
+            }else if(message[1]==inctState.ledPads[2]){
+              cpTarget=2;
+            }else if(message[1]==inctState.ledPads[3]){
+              cpTarget=3;
+            } 
+            processAction("copy", cpTarget);
+            inctState.loopCopyShiftState=false;
+            console.log("copied pattern "+globals.selectedPattern+" to pattern "+cpTarget);
+          }else{ // normal loop selection
+            let newSelectedPatten=0;
+            if(message[1]==inctState.ledPads[0]){
+              newSelectedPatten=1;
+            }else if(message[1]==inctState.ledPads[1]){
+              newSelectedPatten=2;
+            }else if(message[1]==inctState.ledPads[2]){
+              newSelectedPatten=3;
+            }else if(message[1]==inctState.ledPads[3]){
+              newSelectedPatten=4;
+            } 
+            if( globals.selectedPattern!=newSelectedPatten || globals.transportState=="stop" ){
+              killAllNotes();
+              console.log("selected pattern: "+newSelectedPatten);
+            }
+            globals.selectedPattern=newSelectedPatten;
           }
-          globals.selectedPattern=newSelectedPatten;
-        }
-      }else if(message[1]==inctState.ledPads[14] && message[2]!=0){ //clear circuit
-        processAction("clearCircuit");
-        console.log("lk cleared circuit pattern");
-      }else if(message[1]==inctState.ledPads[15] && message[2]!=0){ // clear roland  
-        processAction("clearRoland");
-        processAction("clearLk");
-        console.log("lk cleared roland pattern");
-      }else if(message[1]==inctState.ledPads[13] && message[2]!=0){ // killnotes button  
-        processAction("killNotes");
-        console.log("lk killed notes");
-      }else if(message[1]==inctState.ledPads[10] && message[2]!=0){ // save button  
-        processAction("save");
-        console.log("lk saved pattern");
-      }else if(message[1]==inctState.ledPads[11] && message[2]!=0){ // recall button  
-        processAction("recall");
-        console.log("lk recalled pattern");
-      }else if(message[1]==inctState.ledPads[9] && message[2]!=0){ // reload button  
-        processAction("reload");
-        console.log("lk reloaded pattern");
-      }else if(message[1]==inctState.ledPads[4] && message[2]!=0){ // length button 
-        globals.selectedLength=(globals.selectedLength+1)%internals.loopLengths.length;
-        console.log("lk changed loop length: "+globals.selectedLength);
-      }else if(message[1]==inctState.ledPads[12]){ // copy (shift) button  
-        inctState.loopCopyShiftState = (message[2]!=0);
-        console.log("lk shift copy: "+inctState.loopCopyShiftState);
-      }   
+        }else if(message[1]==inctState.ledPads[14] && message[2]!=0){ //clear circuit
+          processAction("clearCircuit");
+          console.log("lk cleared circuit pattern");
+        }else if(message[1]==inctState.ledPads[15] && message[2]!=0){ // clear roland  
+          processAction("clearRoland");
+          processAction("clearLk");
+          console.log("lk cleared roland pattern");
+        }else if(message[1]==inctState.ledPads[13] && message[2]!=0){ // killnotes button  
+          processAction("killNotes");
+          console.log("lk killed notes");
+        }else if(message[1]==inctState.ledPads[10] && message[2]!=0){ // save button  
+          processAction("save");
+          console.log("lk saved pattern");
+        }else if(message[1]==inctState.ledPads[11] && message[2]!=0){ // recall button  
+          processAction("recall");
+          console.log("lk recalled pattern");
+        }else if(message[1]==inctState.ledPads[9] && message[2]!=0){ // reload button  
+          processAction("reload");
+          console.log("lk reloaded pattern");
+        }else if(message[1]==inctState.ledPads[4] && message[2]!=0){ // length button 
+          globals.selectedLength=(globals.selectedLength+1)%internals.loopLengths.length;
+          console.log("lk changed loop length: "+globals.selectedLength);
+        }else if(message[1]==inctState.ledPads[12]){ // copy (shift) button  
+          inctState.loopCopyShiftState = (message[2]!=0);
+          console.log("lk shift copy: "+inctState.loopCopyShiftState);
+        }        
+      }
+      if(inctState.looperModeBank==1){ // second looper bank, tbd
+        syncWebsocket=true;
+        syncLeds=true;
+        sendToRtp=true
+        shouldRecordMessage=true;
+        inctState.looperPadState[inctState.ledPads.indexOf(message[1])]=(message[2]!=0);
+        transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(inctState.looperModeBank*16), message[2]];
+      }
     }
     if(inctState.padMode==3){ // slicer mode
       shouldRecordMessage=false;
@@ -352,26 +373,35 @@ function syncLaunchkeyLEDS(){
   function syncLooperLEDS(orange, red, green){
     let count=0;
     for(var x of inctState.ledPads){
-      if(count>=0 && count<=3){ // pattern select buttons
-        if(count==globals.selectedPattern-1 ){
-          if(inctState.loopCopyShiftState){ // copy/shift mode
-            inControlOutput.sendMessage([144,x,orange]);
-          }else{
-            inControlOutput.sendMessage([144,x,red]);
-          }
-        }else{
-          if(inctState.loopCopyShiftState){ // copy/shift mode
-            inControlOutput.sendMessage([144,x,red]);
-          }else{
+      if(inctState.looperModeBank==0){ // first looper bank, looper controls
+        if(count>=0 && count<=3){ // pattern select buttons
+          if(count==globals.selectedPattern-1 ){
+            if(inctState.loopCopyShiftState){ // copy/shift mode
               inControlOutput.sendMessage([144,x,orange]);
+            }else{
+              inControlOutput.sendMessage([144,x,red]);
+            }
+          }else{
+            if(inctState.loopCopyShiftState){ // copy/shift mode
+              inControlOutput.sendMessage([144,x,red]);
+            }else{
+                inControlOutput.sendMessage([144,x,orange]);
+            }
           }
+        }else if(count == 13 || count == 14 || count == 15){ // clear buttons
+          inControlOutput.sendMessage([144,x,orange]);
+        }else if(count == 9 || count == 10 || count == 11){ // save/restore buttons
+          inControlOutput.sendMessage([144,x,red]);
+        }else{        
+          inControlOutput.sendMessage([144,x,green]);
         }
-      }else if(count == 13 || count == 14 || count == 15){ // clear buttons
-        inControlOutput.sendMessage([144,x,orange]);
-      }else if(count == 9 || count == 10 || count == 11){ // save/restore buttons
-        inControlOutput.sendMessage([144,x,red]);
-      }else{        
-        inControlOutput.sendMessage([144,x,green]);
+      }
+      if(inctState.looperModeBank==1){ // second looper bank, tbd
+        if(inctState.looperPadState[count]){
+          inControlOutput.sendMessage([144,x,orange]);
+        }else{
+          inControlOutput.sendMessage([144,x,green]);
+        }
       }
       count++;
     }
@@ -450,6 +480,9 @@ function clearLoop(scope){
     }
     for(var x=0; x<inctState.drumPadState.length; x++){
       inctState.drumPadState[x]=false;
+    }
+    for(var x=0; x<inctState.looperPadState.length; x++){
+      inctState.looperPadState[x]=false;
     }
     for(var x=0; x<inctState.selectedFlexbeat.length; x++){
       inctState.selectedFlexbeat[x]=1;
@@ -586,6 +619,14 @@ circuitInput.on('message', (deltaTime, message) => {
           }else{
             inctState.selectedFlexbeat[1+inctState.flexbeatBank*2]=inctState.ledPadsFlexbeatIndex[currentLedIndex2];
           }
+        }
+      }else if(inctState.padMode==2 && inctState.looperModeBank!=0 && (playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1 || playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1-16 )){ // looper mode second bank
+        let currentVelocity=playbacMessage[2];
+        let currentLedIndex=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]-inctState.looperModeBank*16);
+        if(currentLedIndex!=-1 && currentVelocity!=0){
+          inctState.looperPadState[currentLedIndex]=true;
+        }else if(currentLedIndex!=-1 && currentVelocity==0){
+          inctState.looperPadState[currentLedIndex]=false;
         }
       }
       rtpOutput.sendMessage(playbacMessage);
