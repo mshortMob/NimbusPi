@@ -72,6 +72,7 @@ function init(){
     numberOfDrumBanks: 4,
     looperModeBank: 0,
     numOfLooperModeBanks: 2,
+    mostRecentUpdatedSynthChan: 0,
     upCircleButton: [144,104,127],
     downCircleButton: [144,120,127],
     circleDownState: false,
@@ -203,7 +204,7 @@ inControlInput.on('message', (deltaTime, message) => {
     syncWebsocket=true;
     if(message[2]!=0){
       if(inctState.padMode==0 || inctState.padMode==1 || inctState.padMode==2 || inctState.padMode==3){
-        clearLoop("lk"); 
+        clearLoop("lk.partial"); 
         console.log("lk cleared pattern: "+ globals.selectedPattern);
       }
     }
@@ -491,6 +492,37 @@ function clearLoop(scope){
       rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[1]-1, inctState.ledPadsDrumMap[inctState.ledPadsFlexbeatIndex.indexOf(1)]+(x*8), 0]);
     } 
     console.log("cleared lk pattern");
+  }else if(scope.indexOf("lk")!=-1){
+    for(var x=0; x<internals.loopMaxLength; x++){
+      var tempStep=[];
+      for(var y=0; y<internals.lkLoopData[globals.selectedPattern-1][x].length; y++){
+        var recordedNoteChannel=internals.lkLoopData[globals.selectedPattern-1][x][y][0];
+        var currentOutputChannels=[
+          inctState.padsOutputChannels[inctState.padMode]+144-1,
+          inctState.padsOutputChannels[inctState.padMode]+144-1-16 
+        ]
+        if(inctState.padMode==2 && inctState.looperModeBank!=1){
+          currentOutputChannels=[ 0+144+inctState.mostRecentUpdatedSynthChan, 0+144-16+inctState.mostRecentUpdatedSynthChan];
+        }
+        if(!currentOutputChannels.includes(recordedNoteChannel)){
+          tempStep.push(internals.lkLoopData[globals.selectedPattern-1][x][y]);
+        }
+      }
+      internals.lkLoopData[globals.selectedPattern-1][x]=tempStep;
+    }
+    for(var x=0; x<inctState.drumPadState.length; x++){
+      inctState.drumPadState[x]=false;
+    }
+    for(var x=0; x<inctState.looperPadState.length; x++){
+      inctState.looperPadState[x]=false;
+    }
+    for(var x=0; x<inctState.selectedFlexbeat.length; x++){
+      inctState.selectedFlexbeat[x]=1;
+      rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[1]-1, inctState.ledPadsDrumMap[inctState.ledPadsFlexbeatIndex.indexOf(1)]+(x*8), 0]);
+      rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[1]-1, inctState.ledPadsDrumMap[inctState.ledPadsFlexbeatIndex.indexOf(1)]+(x*8), 127]);
+      rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[1]-1, inctState.ledPadsDrumMap[inctState.ledPadsFlexbeatIndex.indexOf(1)]+(x*8), 0]);
+    } 
+    console.log("cleared lk pattern");
   }
   killAllNotes();
 }
@@ -543,6 +575,11 @@ function recordMessage(message, bufferaName){
 lkInput.on('message', (deltaTime, message) => {
   if(globals.transportState=="rec" && message[0]!=248 && message[0]!=250 && message[0]!=252 ){
     recordMessage(message,"lkLoopData");
+  }
+  for(var x=0; x<3; x++){
+    if(message[0]==144+x || message[0]==128+x){
+      inctState.mostRecentUpdatedSynthChan=x;
+    }
   }
   rtpOutput.sendMessage(message);
   console.log("lkInput: "+ message );
