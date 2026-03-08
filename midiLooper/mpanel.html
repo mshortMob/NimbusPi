@@ -78,8 +78,7 @@
             buttonSelectedColor: "rgba(0, 0, 255, 0.3)",
             buttonBackgroundColor : "rgba(255, 255, 255, 0.25)",
             debounceThreshold: 300,
-            copyEnabled: false,
-            socket: new WebSocket("ws://"+location.hostname+":3003")
+            copyEnabled: false
         }
         
         window.onload = function(){
@@ -93,6 +92,7 @@
                 }
             }
             getState();
+            initWebSocket();
         }
 
         function handleButtonClick(buttonElem){
@@ -301,18 +301,33 @@
             }
         }
 
-        config.socket.addEventListener("open", (event) => {
-        // socket.send("Hello Server!");
-        });
-
-        config.socket.addEventListener("message", (event) => {
-        console.log("Received Socket Message from server "); // event.data
-        if(JSON.parse(event.data).selectedPattern != 'undefined' ){
-            globals=JSON.parse(event.data);
-            syncViewToState();
+        function initWebSocket(){
+            socket = new WebSocket("ws://"+location.hostname+":3003");
+            socket.onopen = function(e) {  console.log("[socket] socket.onopen "); };
+            socket.onerror = function(e) {
+                console.log("[socket] socket.onerror ");
+                console.log(e);
+                setTimeout(function(){
+                    console.log("retrying websocket connection initialization")
+                    initWebSocket();
+                },1000);
+            };
+            socket.onclose = function(e) {
+                console.log("[socket] socket.oneclose ");
+                console.log(e);
+                setTimeout(function(){
+                    console.log("retrying websocket connection initialization")
+                    initWebSocket();
+                },1000);
+            };
+            socket.onmessage = function(e) {  
+                console.log("Received Socket Message from server "); // event.data
+                if(JSON.parse(e.data).selectedPattern != 'undefined' ){
+                    globals=JSON.parse(e.data);
+                    syncViewToState();
+                }
+            };
         }
-        });
-
     </script>
 </body>
 </html>
