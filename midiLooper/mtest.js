@@ -70,6 +70,8 @@ function init(){
     numOfflexbeatBanks: 3,
     currentDrumBank: 0,
     numberOfDrumBanks: 4,
+    drumRepeatBanks: [2,3],
+    drumRepeatState: [],
     looperModeBank: 0,
     numOfLooperModeBanks: 2,
     mostRecentUpdatedSynthChan: 0,
@@ -117,9 +119,19 @@ function init(){
       internals.lkLoopData.push(temp);
     }
   }
+  function initdrumRepeatState(){
+    for(var x=0; x<inctState.drumRepeatBanks.length; x++){
+      var temp=[];
+      for(var y=0; y<16; y++){
+        temp.push(false);
+      }
+      inctState.drumRepeatState.push(temp);
+    }
+  }
   initLoopData();
   initCircuitProgramLoopData();
   initLkLoopData();
+  initdrumRepeatState();
   initMidiConnections();
 }
 
@@ -221,7 +233,13 @@ inControlInput.on('message', (deltaTime, message) => {
     if(inctState.padMode==0){ // drum mode
       shouldRecordMessage=true;
       syncLeds=true;
-      inctState.drumPadState[inctState.ledPads.indexOf(message[1])]=(message[2]!=0);
+      if(inctState.drumRepeatBanks.includes(inctState.currentDrumBank)){
+        sendToRtp=false;
+        inctState.drumPadState[inctState.ledPads.indexOf(message[1])]=(message[2]!=0);
+        inctState.drumRepeatState[inctState.drumRepeatBanks.indexOf(inctState.currentDrumBank)][inctState.ledPads.indexOf(message[1])]=message[2]!=0;
+      }else{
+        inctState.drumPadState[inctState.ledPads.indexOf(message[1])]=(message[2]!=0);
+      }
       transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(inctState.currentDrumBank*16), message[2]];
     }
     if(inctState.padMode==1 && message[2]!=0){ // flexbeat mode
@@ -523,6 +541,11 @@ function clearLoop(scope){
       rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[1]-1, inctState.ledPadsDrumMap[inctState.ledPadsFlexbeatIndex.indexOf(1)]+(x*8), 127]);
       rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[1]-1, inctState.ledPadsDrumMap[inctState.ledPadsFlexbeatIndex.indexOf(1)]+(x*8), 0]);
     } 
+    for(var x=0; x<inctState.drumRepeatBanks.length; x++){ // drum pad auto repeats
+      for(var y=0; y<inctState.drumRepeatState[x].length; y++){
+        inctState.drumRepeatState[x][y]=false;
+      }
+    }
     console.log("cleared lk pattern");
   }
   killAllNotes();
@@ -641,12 +664,18 @@ circuitInput.on('message', (deltaTime, message) => {
     for(var x=0; x<internals.lkLoopData[globals.selectedPattern-1][internals.cursor].length; x++){
       var playbacMessage=internals.lkLoopData[globals.selectedPattern-1][internals.cursor][x];
       if(inctState.padMode==0 && (playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1 || playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1-16 )){ // drum mode
-        let currentVelocity=playbacMessage[2];
+        let currentVelocity=playbacMessage[2]; // normal non-repeated drum hits
         let currentLedIndex=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]-inctState.currentDrumBank*16);
         if(currentLedIndex!=-1 && currentVelocity!=0){
-          inctState.drumPadState[currentLedIndex]=true;
+          inctState["drumPadState"][currentLedIndex]=true;
         }else if(currentLedIndex!=-1 && currentVelocity==0){
-          inctState.drumPadState[currentLedIndex]=false;
+          inctState["drumPadState"][currentLedIndex]=false;
+        }
+        playbackBank= Math.floor((playbacMessage[1]-36)/16); // drum repeat state updates
+        if(currentLedIndex!=-1 && inctState.drumRepeatBanks.includes(playbackBank) && currentVelocity!=0){
+          inctState["drumRepeatState"][inctState.drumRepeatBanks.indexOf(playbackBank)][currentLedIndex]=true;
+        }else if(currentLedIndex!=-1 && inctState.drumRepeatBanks.includes(playbackBank) && currentVelocity==0){
+          inctState["drumRepeatState"][inctState.drumRepeatBanks.indexOf(playbackBank)][currentLedIndex]=false;
         }
       }else if(inctState.padMode==1 && playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1){ // flexbeat mode
         let currentVelocity2=playbacMessage[2];
@@ -669,6 +698,19 @@ circuitInput.on('message', (deltaTime, message) => {
       }
       rtpOutput.sendMessage(playbacMessage);
       syncLaunchkeyLEDS();
+    }
+    for(var x=0; x<inctState.drumRepeatBanks.length; x++){ // drum pad auto repeats
+      for(var y=0; y<inctState.drumRepeatState[x].length; y++){
+        if(inctState.drumRepeatState[x][y]){
+          if(internals.cursor%6==0){
+            rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[0]-1, inctState.ledPadsDrumMap[y]+(inctState.drumRepeatBanks[x]*16), 127]);
+          }
+          if( ((internals.cursor%6)-3) == 0){
+            rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[0]-1, inctState.ledPadsDrumMap[y]+(inctState.drumRepeatBanks[x]*16), 0]);
+            rtpOutput.sendMessage([internals.noteOnChannelOne+inctState.padsOutputChannels[0]-1-16, inctState.ledPadsDrumMap[y]+(inctState.drumRepeatBanks[x]*16), 0]);
+          }
+        }
+      }
     }
   }
 });
