@@ -322,7 +322,16 @@ inControlInput.on('message', (deltaTime, message) => {
           processAction("reload");
           console.log("lk reloaded pattern");
         }else if(message[1]==inctState.ledPads[4] && message[2]!=0){ // length button 
-          globals.selectedLength=(globals.selectedLength+1)%internals.loopLengths.length;
+          globals.selectedLength=0;
+          console.log("lk changed loop length: "+globals.selectedLength);
+        }else if(message[1]==inctState.ledPads[5] && message[2]!=0){ // length button 
+          globals.selectedLength=1;
+          console.log("lk changed loop length: "+globals.selectedLength);
+        }else if(message[1]==inctState.ledPads[6] && message[2]!=0){ // length button 
+          globals.selectedLength=1;
+          console.log("lk changed loop length: "+globals.selectedLength);
+        }else if(message[1]==inctState.ledPads[7] && message[2]!=0){ // length button 
+          globals.selectedLength=2;
           console.log("lk changed loop length: "+globals.selectedLength);
         }else if(message[1]==inctState.ledPads[12]){ // copy (shift) button  
           inctState.loopCopyShiftState = (message[2]!=0);
@@ -420,6 +429,32 @@ function syncLaunchkeyLEDS(){
           inControlOutput.sendMessage([144,x,orange]);
         }else if(count == 9 || count == 10 || count == 11){ // save/restore buttons
           inControlOutput.sendMessage([144,x,red]);
+        }else if(count == 4 || count == 5 || count == 6 || count == 7){ // length buttons
+          if(count==4){
+            if(globals.selectedLength==0){
+              inControlOutput.sendMessage([144,x,red]);
+            }else if(globals.selectedLength==1){
+              inControlOutput.sendMessage([144,x,red]);
+            }else if(globals.selectedLength==2){
+              inControlOutput.sendMessage([144,x,red]);
+            }
+          }else if(count==5){
+            if(globals.selectedLength==0){
+              inControlOutput.sendMessage([144,x,orange]);
+            }else if(globals.selectedLength==1){
+              inControlOutput.sendMessage([144,x,red]);
+            }else if(globals.selectedLength==2){
+              inControlOutput.sendMessage([144,x,red]);
+            }
+          }else if(count==6 || count==7){
+            if(globals.selectedLength==0){
+              inControlOutput.sendMessage([144,x,orange]);
+            }else if(globals.selectedLength==1){
+              inControlOutput.sendMessage([144,x,orange]);
+            }else if(globals.selectedLength==2){
+              inControlOutput.sendMessage([144,x,red]);
+            }
+          }
         }else{        
           inControlOutput.sendMessage([144,x,green]);
         }
