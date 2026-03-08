@@ -500,10 +500,12 @@ function clearLoop(scope){
           inctState.padsOutputChannels[inctState.padMode]+144-1,
           inctState.padsOutputChannels[inctState.padMode]+144-1-16 
         ]
-        if(inctState.padMode==2 && inctState.looperModeBank!=1){
+        if(inctState.padMode==2 && inctState.looperModeBank!=1){ // clear synth instruments in looper mode
           currentOutputChannels=[ 0+144+inctState.mostRecentUpdatedSynthChan, 0+144-16+inctState.mostRecentUpdatedSynthChan];
         }
-        if(!currentOutputChannels.includes(recordedNoteChannel)){
+        if(!currentOutputChannels.includes(recordedNoteChannel)){ // retain messages from other channels
+          tempStep.push(internals.lkLoopData[globals.selectedPattern-1][x][y]);
+        }else if(inctState.padMode==0 && inctState.currentDrumBank!=Math.floor((internals.lkLoopData[globals.selectedPattern-1][x][y][1]-36)/16) ){ // retain drum hits from other banks
           tempStep.push(internals.lkLoopData[globals.selectedPattern-1][x][y]);
         }
       }
