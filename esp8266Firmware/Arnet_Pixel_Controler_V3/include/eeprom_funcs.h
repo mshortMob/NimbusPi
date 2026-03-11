@@ -1,6 +1,6 @@
 #include <EEPROM.h>
 
-bool writeEEPROM=false;
+int eeprom_signature=12345;
 
 struct {
   char ssid[64] = "NimbusPi-ApcMini"; // This is what gets stored in EEPROM if you uncomment 
@@ -63,14 +63,18 @@ struct {
   int presetTypes[5]={1,1,1,0,0};
 }epdata;
 
-void setup_eeprom(){
-  EEPROM.begin(4096);
-  delay(1000);
-  if(writeEEPROM){
+struct {
+  int hasInitializedEeprom;
+}eptemp;
+
+void reset_eeprom_to_initial_values(void){
     Serial.println("Initializing - i.e. over-writing - EEPROM now");
+    Serial.println();  
     EEPROM.put(0,epdata); //usefull if you want to flash it with the correct wifi data already
     EEPROM.commit();
-  }
+}
+
+void eeprom_load_all(void){
   EEPROM.get(0,epdata);
   delay(1000);
   Serial.println("");
@@ -117,4 +121,30 @@ void setup_eeprom(){
     Serial.println("-------");
   }
   Serial.println("");
+}
+
+bool need_eeprom_reset(void){
+  bool result=false;
+  Serial.println("Checking if EEPROM needs to be initialized...");
+  EEPROM.get(4064,eptemp);
+  delay(100);
+  Serial.println("hasInitializedEeprom:");
+  Serial.println(eptemp.hasInitializedEeprom);
+  Serial.println();  
+  if(eptemp.hasInitializedEeprom!=eeprom_signature){
+    result=true;
+    eptemp.hasInitializedEeprom=eeprom_signature;
+    EEPROM.put(4064,eptemp);
+    EEPROM.commit();
+  }
+  return result;
+}
+
+void setup_eeprom(){
+  EEPROM.begin(4096);
+  delay(1000);
+  if(need_eeprom_reset()){
+    reset_eeprom_to_initial_values();
+  }
+  eeprom_load_all();
 }
