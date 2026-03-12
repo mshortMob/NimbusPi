@@ -4,6 +4,7 @@
 const char *password = "mshort123";
 
 bool wifiConnected=false;
+bool hasDisplayedEepromResetFlash=false;
 
 void startStandaloneHotspot(){
   Serial.println("Configuring access point...");
@@ -21,6 +22,11 @@ void startStandaloneHotspot(){
 }
 
 boolean connectToSavedWifi(char* savedWifiName, char* savedWifiPassword){
+  if(!hasDisplayedEepromResetFlash && eeprom_was_reset_on_startup ){
+    hasDisplayedEepromResetFlash=true;
+    setLEDSToASingleColor(3,0,25);
+    delay(2000);
+  }
   setLEDSToASingleColor(25,0,0);
   boolean state = true;
   int i = 0;
