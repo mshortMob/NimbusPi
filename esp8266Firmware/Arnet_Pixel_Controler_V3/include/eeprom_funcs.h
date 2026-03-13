@@ -3,12 +3,12 @@
 int eeprom_signature=123456;
 bool eeprom_was_reset_on_startup=false;
 
-struct {
-  char ssid[64] = "NimbusPi-ApcMini"; // This is what gets stored in EEPROM if you uncomment 
-  char password[64] = "NimbusPi123"; //  EEPROM.put and EEPROM.commit in setup
+struct ConfigSettings {
+  char ssid[64] = "NimbusPi-ApcMini";
+  char password[64] = "NimbusPi123";
   char universe[32] = "1";
   char startChan[64] = "25";
-  char fixtureMode[64] = "2";   //fixtureMode 0= 3chan ; fixtureMode 1= indiviudal addressable ; fixtureMode 2= chase patterns
+  char fixtureMode[64] = "2"; // fixtureMode 0=3chan ; fixtureMode 1=indiviudal addressable ; fixtureMode 2=chase patterns
   int num_base_leds = 100;
   int pixel_start_offset = 0;
   char ap_name[64] = "EspTestBed";
@@ -62,68 +62,10 @@ struct {
     {138,156,156,156,156,156,156,156}}
   };
   int presetTypes[5]={1,1,1,0,0};
-}epdata;
+};
 
-struct {
-  char ssid[64] = "NimbusPi-ApcMini"; // This is what gets stored in EEPROM if you uncomment 
-  char password[64] = "NimbusPi123"; //  EEPROM.put and EEPROM.commit in setup
-  char universe[32] = "1";
-  char startChan[64] = "25";
-  char fixtureMode[64] = "2";   //fixtureMode 0= 3chan ; fixtureMode 1= indiviudal addressable ; fixtureMode 2= chase patterns
-  int num_base_leds = 100;
-  int pixel_start_offset = 0;
-  char ap_name[64] = "EspTestBed";
-  int ledPresets[5][8] = {
-    {130,50,200,4,4,3,0,50},
-    {50,134,130,16,30,4,0,187},
-    {200,2,220,12,1,5,0,55},
-    {130,161,200,38,4,3,0,50},
-    {50,134,130,16,174,12,0,69}
-  };
-  int pixelMap[5][8][8] = {
-   {{156,156,156,156,156,156,156,138},
-    {156,156,156,156,156,156,138,156},
-    {156,156,156,156,156,138,156,156},
-    {156,156,156,156,28,156,156,156},
-    {156,156,156,28,156,156,156,156},
-    {156,156,138,156,156,156,156,156},
-    {156,138,156,156,156,156,156,156},
-    {138,156,156,156,156,156,156,156}},
-   {{156,156,156,156,156,156,156,24},
-    {156,156,156,156,156,156,156,24},
-    {156,101,101,101,101,101,101,156},
-    {156,101,156,156,156,156,101,156},
-    {156,101,156,156,156,156,101,156},
-    {156,101,101,101,101,101,101,156},
-    {24,156,156,156,156,156,156,156},
-    {24,156,156,156,156,156,156,156}},
-   {{156,156,156,156,156,156,156,156},
-    {156,156,156,156,156,156,50,156},
-    {31,31,31,156,156,156,50,156},
-    {156,156,31,156,156,50,50,156},
-    {156,156,31,156,156,50,156,156},
-    {156,156,156,156,50,50,156,156},
-    {156,156,156,156,50,156,156,156},
-    {156,156,156,156,156,156,156,156}},
-   {{156,156,156,156,156,156,156,24},
-    {156,156,156,156,156,156,156,24},
-    {156,101,101,101,101,101,101,156},
-    {156,101,156,156,156,156,101,156},
-    {156,101,156,156,156,156,101,156},
-    {156,101,101,101,101,101,101,156},
-    {24,156,156,156,156,156,156,156},
-    {24,156,156,156,156,156,156,156}},
-   {{156,156,156,156,156,156,156,138},
-    {156,156,156,156,156,156,138,156},
-    {156,156,156,156,156,138,156,156},
-    {156,156,156,156,28,156,156,156},
-    {156,156,156,28,156,156,156,156},
-    {156,156,138,156,156,156,156,156},
-    {156,138,156,156,156,156,156,156},
-    {138,156,156,156,156,156,156,156}}
-  };
-  int presetTypes[5]={1,1,1,0,0};
-}initial_epdata;
+ConfigSettings epdata;
+ConfigSettings initial_epdata;
 
 struct {
   int hasInitializedEeprom;
