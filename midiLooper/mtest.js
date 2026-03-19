@@ -353,98 +353,98 @@ inControlInput.on('message', (deltaTime, message) => {
           inctState.looperModeDeckValues[deck]=padNum%8;
           if(padNum==0){
             var mix=0;
-            var steps=16;
+            var steps=2;
             var freeze=0;
             var steplength=127;
             var interval=127;
           }else if(padNum==1){
-            var mix=84;
-            var steps=16;
+            var mix=127;
+            var steps=2;
             var freeze=0;
             var steplength=127;
             var interval=127;
           }else if(padNum==2){
             var mix= 127;
             var steps=16;
-            var freeze= 0;
+            var freeze=0;
             var steplength=127;
-            var interval=96;
+            var interval=127;
           }else if(padNum==3){
             var mix= 127;
-            var steps=16;
-            var freeze= 127;
+            var steps=2;
+            var freeze=0;
             var steplength=127;
             var interval=96;     
           }else if(padNum==4){
-            var mix= 127;
-            var steps=16;
-            var freeze= 127;
-            var steplength=127;
-            var interval=96;   
+            var mix=127;
+            var steps=2;
+            var freeze=0;
+            var steplength=64;
+            var interval=96;  
           }else if(padNum==5){
             var mix= 127;
             var steps=16;
-            var freeze= 127;
+            var freeze=0;
             var steplength=96;
-            var interval=64;  
+            var interval=96;  
           }else if(padNum==6){
-            var mix= 127;
-            var steps=2;
-            var freeze= 127;
-            var steplength=64;
-            var interval=64;              
+            var mix=127;
+            var steps=16;
+            var freeze=0;
+            var steplength=56;
+            var interval=96;             
           }else if(padNum==7){
-            var mix= 127;
-            var steps=2;
-            var freeze= 127;
+            var mix=127;
+            var steps=16;
+            var freeze=0;
             var steplength=24;
             var interval=64;                 
           }else if(padNum==8){
-            var mix= 0;
-            var steps=16;
-            var freeze= 0;
+            var mix=0;
+            var steps=2;
+            var freeze=0;
             var steplength=127;
             var interval=127;
           }else if(padNum==9){
-            var mix= 84;
-            var steps=16;
-            var freeze= 0;
+            var mix=127;
+            var steps=2;
+            var freeze=0;
             var steplength=127;
             var interval=127;
           }else if(padNum==10){
             var mix= 127;
             var steps=16;
-            var freeze= 0;
+            var freeze=0;
             var steplength=127;
-            var interval=96;
+            var interval=127;
           }else if(padNum==11){
             var mix= 127;
-            var steps=16;
-            var freeze= 127;
+            var steps=2;
+            var freeze=0;
             var steplength=127;
             var interval=96;     
           }else if(padNum==12){
-            var mix= 127;
-            var steps=16;
-            var freeze= 127;
-            var steplength=127;
-            var interval=96;   
+            var mix=127;
+            var steps=2;
+            var freeze=0;
+            var steplength=64;
+            var interval=96;  
           }else if(padNum==13){
             var mix= 127;
             var steps=16;
-            var freeze= 127;
+            var freeze=0;
             var steplength=96;
-            var interval=64;  
+            var interval=96;  
           }else if(padNum==14){
-            var mix= 127;
-            var steps=2;
-            var freeze= 127;
-            var steplength=64;
-            var interval=64;              
+            var mix=127;
+            var steps=16;
+            var freeze=0;
+            var steplength=56;
+            var interval=96;             
           }else if(padNum==15){
-            var mix= 127;
-            var steps=2;
-            var freeze= 127;
+            var mix=127;
+            var steps=16;
+            var freeze=0;
             var steplength=24;
             var interval=64;  
           }
@@ -898,98 +898,98 @@ circuitInput.on('message', (deltaTime, message) => {
         var outputChannel=internals.noteOnChannelOne+inctState.padsOutputChannels[2]-1;
         if(playbacMessage[1]==0){
           var mix=0;
-          var steps=16;
+          var steps=2;
           var freeze=0;
           var steplength=127;
           var interval=127;
         }else if(playbacMessage[1]==1){
-          var mix=84;
-          var steps=16;
+          var mix=127;
+          var steps=2;
           var freeze=0;
           var steplength=127;
           var interval=127;
         }else if(playbacMessage[1]==2){
           var mix= 127;
           var steps=16;
-          var freeze= 0;
+          var freeze=0;
           var steplength=127;
-          var interval=96;
+          var interval=127;
         }else if(playbacMessage[1]==3){
           var mix= 127;
-          var steps=16;
-          var freeze= 127;
+          var steps=2;
+          var freeze=0;
           var steplength=127;
           var interval=96;     
         }else if(playbacMessage[1]==4){
-          var mix= 127;
-          var steps=16;
-          var freeze= 127;
-          var steplength=127;
-          var interval=96;   
+          var mix=127;
+          var steps=2;
+          var freeze=0;
+          var steplength=64;
+          var interval=96;  
         }else if(playbacMessage[1]==5){
           var mix= 127;
           var steps=16;
-          var freeze= 127;
+          var freeze=0;
           var steplength=96;
-          var interval=64;  
+          var interval=96;  
         }else if(playbacMessage[1]==6){
-          var mix= 127;
-          var steps=2;
-          var freeze= 127;
-          var steplength=64;
-          var interval=64;              
+          var mix=127;
+          var steps=16;
+          var freeze=0;
+          var steplength=56;
+          var interval=96;             
         }else if(playbacMessage[1]==7){
-          var mix= 127;
-          var steps=2;
-          var freeze= 127;
+          var mix=127;
+          var steps=16;
+          var freeze=0;
           var steplength=24;
           var interval=64;                 
         }else if(playbacMessage[1]==8){
-          var mix= 0;
-          var steps=16;
-          var freeze= 0;
+          var mix=0;
+          var steps=2;
+          var freeze=0;
           var steplength=127;
           var interval=127;
         }else if(playbacMessage[1]==9){
-          var mix= 84;
-          var steps=16;
-          var freeze= 0;
+          var mix=127;
+          var steps=2;
+          var freeze=0;
           var steplength=127;
           var interval=127;
         }else if(playbacMessage[1]==10){
           var mix= 127;
           var steps=16;
-          var freeze= 0;
+          var freeze=0;
           var steplength=127;
-          var interval=96;
+          var interval=127;
         }else if(playbacMessage[1]==11){
           var mix= 127;
-          var steps=16;
-          var freeze= 127;
+          var steps=2;
+          var freeze=0;
           var steplength=127;
           var interval=96;     
         }else if(playbacMessage[1]==12){
-          var mix= 127;
-          var steps=16;
-          var freeze= 127;
-          var steplength=127;
-          var interval=96;   
+          var mix=127;
+          var steps=2;
+          var freeze=0;
+          var steplength=64;
+          var interval=96;  
         }else if(playbacMessage[1]==13){
           var mix= 127;
           var steps=16;
-          var freeze= 127;
+          var freeze=0;
           var steplength=96;
-          var interval=64;  
+          var interval=96;  
         }else if(playbacMessage[1]==14){
-          var mix= 127;
-          var steps=2;
-          var freeze= 127;
-          var steplength=64;
-          var interval=64;              
+          var mix=127;
+          var steps=16;
+          var freeze=0;
+          var steplength=56;
+          var interval=96;             
         }else if(playbacMessage[1]==15){
-          var mix= 127;
-          var steps=2;
-          var freeze= 127;
+          var mix=127;
+          var steps=16;
+          var freeze=0;
           var steplength=24;
           var interval=64;  
         }
