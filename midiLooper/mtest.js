@@ -80,6 +80,7 @@ function init(){
     repeatControlsLedPadsFullMap: [112,113,114,115,96,97,98,99,116,117,118,119,100,101,102,103],
     looperModeBank: 0,
     numOfLooperModeBanks: 2,
+    looperModeDeckValues: [0,0],
     mostRecentUpdatedSynthChan: 0,
     upCircleButton: [144,104,127],
     downCircleButton: [144,120,127],
@@ -341,10 +342,119 @@ inControlInput.on('message', (deltaTime, message) => {
       if(inctState.looperModeBank==1){ // second looper bank, tbd
         syncWebsocket=true;
         syncLeds=true;
-        sendToRtp=true
-        shouldRecordMessage=true;
-        inctState.looperPadState[inctState.ledPads.indexOf(message[1])]=(message[2]!=0);
-        transformedMessage=[message[0]+inctState.padsOutputChannels[inctState.padMode]-1, inctState.ledPadsDrumMap[inctState.ledPads.indexOf(message[1])]+(inctState.looperModeBank*16), message[2]];
+        shouldRecordMessage=false;
+        sendToRtp=false;
+        var padNum=inctState.repeatControlsLedPadsFullMap.indexOf(message[1]);
+        var outputChannel=message[0]+inctState.padsOutputChannels[inctState.padMode]-1;
+        var baseNote=inctState.ledPads[0];
+        var deck=padNum>=8 ? 1 : 0;
+        if(message[2]!=0){
+          shouldRecordMessage=true;
+          inctState.looperModeDeckValues[deck]=padNum%8;
+          if(padNum==0){
+            var mix=0;
+            var steps=16;
+            var freeze=0;
+            var steplength=127;
+            var interval=127;
+          }else if(padNum==1){
+            var mix=84;
+            var steps=16;
+            var freeze=0;
+            var steplength=127;
+            var interval=127;
+          }else if(padNum==2){
+            var mix= 127;
+            var steps=16;
+            var freeze= 0;
+            var steplength=127;
+            var interval=96;
+          }else if(padNum==3){
+            var mix= 127;
+            var steps=16;
+            var freeze= 127;
+            var steplength=127;
+            var interval=96;     
+          }else if(padNum==4){
+            var mix= 127;
+            var steps=16;
+            var freeze= 127;
+            var steplength=127;
+            var interval=96;   
+          }else if(padNum==5){
+            var mix= 127;
+            var steps=16;
+            var freeze= 127;
+            var steplength=96;
+            var interval=64;  
+          }else if(padNum==6){
+            var mix= 127;
+            var steps=2;
+            var freeze= 127;
+            var steplength=64;
+            var interval=64;              
+          }else if(padNum==7){
+            var mix= 127;
+            var steps=2;
+            var freeze= 127;
+            var steplength=24;
+            var interval=64;                 
+          }else if(padNum==8){
+            var mix= 0;
+            var steps=16;
+            var freeze= 0;
+            var steplength=127;
+            var interval=127;
+          }else if(padNum==9){
+            var mix= 84;
+            var steps=16;
+            var freeze= 0;
+            var steplength=127;
+            var interval=127;
+          }else if(padNum==10){
+            var mix= 127;
+            var steps=16;
+            var freeze= 0;
+            var steplength=127;
+            var interval=96;
+          }else if(padNum==11){
+            var mix= 127;
+            var steps=16;
+            var freeze= 127;
+            var steplength=127;
+            var interval=96;     
+          }else if(padNum==12){
+            var mix= 127;
+            var steps=16;
+            var freeze= 127;
+            var steplength=127;
+            var interval=96;   
+          }else if(padNum==13){
+            var mix= 127;
+            var steps=16;
+            var freeze= 127;
+            var steplength=96;
+            var interval=64;  
+          }else if(padNum==14){
+            var mix= 127;
+            var steps=2;
+            var freeze= 127;
+            var steplength=64;
+            var interval=64;              
+          }else if(padNum==15){
+            var mix= 127;
+            var steps=2;
+            var freeze= 127;
+            var steplength=24;
+            var interval=64;  
+          }
+          rtpOutput.sendMessage([outputChannel, (8*deck)+baseNote+1, steps]);
+          rtpOutput.sendMessage([outputChannel, (8*deck)+baseNote+3, steplength]);
+          rtpOutput.sendMessage([outputChannel, (8*deck)+baseNote+4, interval]);
+          rtpOutput.sendMessage([outputChannel, (8*deck)+baseNote+0, mix]);
+          rtpOutput.sendMessage([outputChannel, (8*deck)+baseNote+2, freeze]);
+          transformedMessage=[outputChannel, padNum, 127];
+        }
       }
     }
     if(inctState.padMode==3){ // slicer mode
@@ -409,7 +519,7 @@ function syncLaunchkeyLEDS(){
   }
   function syncLooperLEDS(orange, red, green){
     let count=0;
-    for(var x of inctState.ledPads){
+    for(var x of inctState.repeatControlsLedPadsFullMap){
       if(inctState.looperModeBank==0){ // first looper bank, looper controls
         if(count>=0 && count<=3){ // pattern select buttons
           if(count==globals.selectedPattern-1 ){
@@ -460,8 +570,9 @@ function syncLaunchkeyLEDS(){
         }
       }
       if(inctState.looperModeBank==1){ // second looper bank, tbd
-        if(inctState.looperPadState[count]){
-          inControlOutput.sendMessage([144,x,orange]);
+        var deck=count>=8 ? 1 : 0;
+        if(inctState.looperModeDeckValues[deck]==count%8){
+          inControlOutput.sendMessage([144,x,red]);
         }else{
           inControlOutput.sendMessage([144,x,green]);
         }
@@ -568,8 +679,15 @@ function clearLoop(scope){
     for(var x=0; x<inctState.drumPadState.length; x++){
       inctState.drumPadState[x]=false;
     }
-    for(var x=0; x<inctState.looperPadState.length; x++){
-      inctState.looperPadState[x]=false;
+    for(var x=0; x<inctState.looperModeDeckValues.length; x++){
+      inctState.looperModeDeckValues[x]=0;
+      var baseNote=inctState.ledPads[0];
+      var outputChannel=internals.noteOnChannelOne+inctState.padsOutputChannels[2]-1;
+      rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+1, 0]);
+      rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+3, 0]);
+      rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+4, 0]);
+      rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+0, 0]);
+      rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+2, 0]);
     }
     for(var x=0; x<inctState.selectedFlexbeat.length; x++){
       inctState.selectedFlexbeat[x]=1;
@@ -601,8 +719,17 @@ function clearLoop(scope){
     for(var x=0; x<inctState.drumPadState.length; x++){
       inctState.drumPadState[x]=false;
     }
-    for(var x=0; x<inctState.looperPadState.length; x++){
-      inctState.looperPadState[x]=false;
+    for(var x=0; x<inctState.looperModeDeckValues.length; x++){
+      if(inctState.looperModeBank!=0 && inctState.padMode==2){ 
+        inctState.looperModeDeckValues[x]=0;
+        var baseNote=inctState.ledPads[0];
+        var outputChannel=internals.noteOnChannelOne+inctState.padsOutputChannels[2]-1;
+        rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+1, 0]);
+        rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+3, 0]);
+        rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+4, 0]);
+        rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+0, 0]);
+        rtpOutput.sendMessage([outputChannel, (8*x)+baseNote+2, 0]);
+      }
     }
     for(var x=0; x<inctState.selectedFlexbeat.length; x++){
       inctState.selectedFlexbeat[x]=1;
@@ -764,14 +891,113 @@ circuitInput.on('message', (deltaTime, message) => {
             inctState.selectedFlexbeat[1+inctState.flexbeatBank*2]=inctState.ledPadsFlexbeatIndex[currentLedIndex2];
           }
         }
-      }else if(inctState.padMode==2 && inctState.looperModeBank!=0 && (playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1 || playbacMessage[0] == inctState.padsOutputChannels[inctState.padMode]+144-1-16 )){ // looper mode second bank
-        let currentVelocity=playbacMessage[2];
-        let currentLedIndex=inctState.ledPadsDrumMap.indexOf(playbacMessage[1]-inctState.looperModeBank*16);
-        if(currentLedIndex!=-1 && currentVelocity!=0){
-          inctState.looperPadState[currentLedIndex]=true;
-        }else if(currentLedIndex!=-1 && currentVelocity==0){
-          inctState.looperPadState[currentLedIndex]=false;
+      }else if((playbacMessage[0] == inctState.padsOutputChannels[2]+144-1 || playbacMessage[0] == inctState.padsOutputChannels[2]+144-1-16 )){ // looper mode second bank
+        sendRtp=false;
+        inctState.looperModeDeckValues[Math.floor(playbacMessage[1]/8)]=playbacMessage[1]%8;
+        var baseNote=inctState.ledPads[0];
+        var outputChannel=internals.noteOnChannelOne+inctState.padsOutputChannels[2]-1;
+        if(playbacMessage[1]==0){
+          var mix=0;
+          var steps=16;
+          var freeze=0;
+          var steplength=127;
+          var interval=127;
+        }else if(playbacMessage[1]==1){
+          var mix=84;
+          var steps=16;
+          var freeze=0;
+          var steplength=127;
+          var interval=127;
+        }else if(playbacMessage[1]==2){
+          var mix= 127;
+          var steps=16;
+          var freeze= 0;
+          var steplength=127;
+          var interval=96;
+        }else if(playbacMessage[1]==3){
+          var mix= 127;
+          var steps=16;
+          var freeze= 127;
+          var steplength=127;
+          var interval=96;     
+        }else if(playbacMessage[1]==4){
+          var mix= 127;
+          var steps=16;
+          var freeze= 127;
+          var steplength=127;
+          var interval=96;   
+        }else if(playbacMessage[1]==5){
+          var mix= 127;
+          var steps=16;
+          var freeze= 127;
+          var steplength=96;
+          var interval=64;  
+        }else if(playbacMessage[1]==6){
+          var mix= 127;
+          var steps=2;
+          var freeze= 127;
+          var steplength=64;
+          var interval=64;              
+        }else if(playbacMessage[1]==7){
+          var mix= 127;
+          var steps=2;
+          var freeze= 127;
+          var steplength=24;
+          var interval=64;                 
+        }else if(playbacMessage[1]==8){
+          var mix= 0;
+          var steps=16;
+          var freeze= 0;
+          var steplength=127;
+          var interval=127;
+        }else if(playbacMessage[1]==9){
+          var mix= 84;
+          var steps=16;
+          var freeze= 0;
+          var steplength=127;
+          var interval=127;
+        }else if(playbacMessage[1]==10){
+          var mix= 127;
+          var steps=16;
+          var freeze= 0;
+          var steplength=127;
+          var interval=96;
+        }else if(playbacMessage[1]==11){
+          var mix= 127;
+          var steps=16;
+          var freeze= 127;
+          var steplength=127;
+          var interval=96;     
+        }else if(playbacMessage[1]==12){
+          var mix= 127;
+          var steps=16;
+          var freeze= 127;
+          var steplength=127;
+          var interval=96;   
+        }else if(playbacMessage[1]==13){
+          var mix= 127;
+          var steps=16;
+          var freeze= 127;
+          var steplength=96;
+          var interval=64;  
+        }else if(playbacMessage[1]==14){
+          var mix= 127;
+          var steps=2;
+          var freeze= 127;
+          var steplength=64;
+          var interval=64;              
+        }else if(playbacMessage[1]==15){
+          var mix= 127;
+          var steps=2;
+          var freeze= 127;
+          var steplength=24;
+          var interval=64;  
         }
+        rtpOutput.sendMessage([outputChannel, (8*Math.floor(playbacMessage[1]/8))+baseNote+1, steps]);
+        rtpOutput.sendMessage([outputChannel, (8*Math.floor(playbacMessage[1]/8))+baseNote+3, steplength]);
+        rtpOutput.sendMessage([outputChannel, (8*Math.floor(playbacMessage[1]/8))+baseNote+4, interval]);
+        rtpOutput.sendMessage([outputChannel, (8*Math.floor(playbacMessage[1]/8))+baseNote+0, mix]);
+        rtpOutput.sendMessage([outputChannel, (8*Math.floor(playbacMessage[1]/8))+baseNote+2, freeze]);
       }
       if(sendRtp){
         rtpOutput.sendMessage(playbacMessage);
