@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            body{
+                background-color: #2e2e2e;
+                cursor: none;
+                display: grid;
+                position: absolute;
+                width:99%;
+                height:99%;
+                grid-template-rows: 1.5% 9.5% 1% 85% 2.5%;
+            }
+            .spacerRow, .spacerCol{
+                display: grid;
+            }
+            #page-selector-row {
+                display: grid;
+                grid-template-columns: 1.5% 97% 1.5%;
+            }
+            #page-selector {
+                display: grid;
+                box-sizing: border-box;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+                padding: 10px;
+                border-radius: 10px;
+                background: #1a1a1a;
+            }
+            #data-container {
+                display: none;
+                box-sizing: border-box;
+                position: relative;
+                overflow: hidden;
+                width: 100%;
+                height: 100%;
+                border-radius: 10px;
+                background: #1a1a1a;
+            }
+            .page-selector-item {
+                border: 2px solid #555;
+                border-radius: 8px;
+                font-size: 20px;
+                text-align: center;
+                align-content: center;
+                font-weight: bold;
+                background-color: #2e2e2e;
+                color: #aaa;
+            }
+            .page-selector-item.active {
+                border-color: #888;
+                background-color: #444;
+                color: #eee;
+            }
+            #center-row{
+                grid-template-columns: 1.5% 97% 1.5%;
+            }
+            #content-wrapper {
+                width: 100%;
+                height: 100%;
+            }
+            #grid-container {
+                display: grid;
+                box-sizing: border-box;
+                width: 100%;
+                height: 100%;
+                grid-template-columns: repeat(5, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+                gap: 10px;
+                padding: 10px;
+                border-radius: 10px;
+                background: #1a1a1a;
+            }
+            #settings-grid-container {
+                display: none;
+                box-sizing: border-box;
+                width: 100%;
+                height: 100%;
+                grid-template-columns: repeat(5, 1fr);
+                grid-template-rows: repeat(4, 1fr);
+                gap: 10px;
+                padding: 10px;
+                border-radius: 10px;
+                background: #1a1a1a;
+            }
+            .grid-item {
+                border: 2px solid #777;
+                border-radius: 8px;
+                font-size: 24px;
+                text-align: center;
+                align-content: center;
+                display: grid;
+                font-weight: bold;
+                color: #fff;
+                background-color: #484848;
+            }
+        </style>
+    <script src="/dependencies/three.min.js"></script>
+    </head>
+<body>
+    <div class="spacerRow"></div>
+    <div id="page-selector-row">
+        <div class="spacerCol"></div>
+        <div id="page-selector">
+            <div class="page-selector-item active" id="mainPageBtn" onclick="handlePageSelectClick(this, 'main');" onmousemove="this.onclick();">Main</div>
+            <div class="page-selector-item" id="settingsPageBtn" onclick="handlePageSelectClick(this, 'settings');" onmousemove="this.onclick();">Settings</div>
+            <div class="page-selector-item" id="dataPageBtn" onclick="handlePageSelectClick(this, 'data');" onmousemove="this.onclick();">Data</div>
+        </div>
+        <div class="spacerCol"></div>
+    </div>
+    <div class="spacerRow"></div>
+    <div class="spacerRow" id="center-row">
+        <div class="spacerCol"></div>
+        <div id="content-wrapper">
+            <div id="grid-container">
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recButton">Rec</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="playButton">Play</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="stopButton">Stop</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearCircuitButton">Clear Circuit</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearRolandButton">Clear Roland</div>
+                <div class="grid-item" onclick="this.patternNum=1; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern1" >1</div>
+                <div class="grid-item" onclick="this.patternNum=2; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern2" >2</div>
+                <div class="grid-item" onclick="this.patternNum=3; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern3" >3</div>
+                <div class="grid-item" onclick="this.patternNum=4; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern4" >4</div>
+                <div class="grid-item" onclick="this.patternNum=5; handleButtonClick(this);" onmousemove="this.onclick();" id="pattern5" >5</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="lengthButton">Length 1</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="killButton">Kill Notes</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="quantizeButton">Quantize</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="saveButton">Save</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="recallButton">Recall</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="reloadButton">Reload</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="programOverrideButton">Program Override</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="copyButton">Copy Pattern</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="eraseButton">Erase</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="presetNameButton">Preset Name: X</div>
+            </div>
+            <div id="settings-grid-container">
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="stopPiRtpButton">Stop Pi RTP</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="startPiRtpButton">Start Pi RTP</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="stopMpcRtpButton">Stop MPC RTP</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="startMpcRtpButton">Start MPC RTP</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="restartSshButton">Restart SSH</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="padModeBtn0">Drums</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="padModeBtn1">FlexBeat</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="padModeBtn2a">Looper A</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="padModeBtn2b">Looper B</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="padModeBtn3">Slicer</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearCircuitSettingsButton">Clear Circuit</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearRolandSettingsButton">Clear Roland</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearLkButton">Clear LK</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearAllButton">Clear All</div>
+                <div class="grid-item" id="setting15">Etc</div>
+                <div class="grid-item" id="deviceStatus0">Novation Circuit</div>
+                <div class="grid-item" id="deviceStatus1">Roland Boutiq</div>
+                <div class="grid-item" id="deviceStatus2">LK Mini MIDI</div>
+                <div class="grid-item" id="deviceStatus3">LK InControl</div>
+                <div class="grid-item" id="deviceStatus4">RTP MIDI</div>
+            </div>
+            <div id="data-container"><canvas id="dataCanvas" style="position:absolute;top:0;left:0;width:100%;height:100%;border-radius:10px;display:block;"></canvas></div>
+        </div>
+        <div class="spacerCol"></div>
+    </div>
+    <div class="spacerRow"></div>
+    <script>
+
+        globals={
+            quantize: false,
+            selectedLength: 0,
+            selectedPattern:1,
+            presetName: 0,
+            transportState:"play",
+            programOverride: false,
+            programOnly: false,
+            eraseEnabled: false
+        }
+
+        config={
+            buttonSelectedColor: "#2a4a8a",
+            buttonBackgroundColor: "#484848",
+            debounceThreshold: 300,
+            reloadButtonDebounceTime: 800,
+            reloadButtonDoubleTapTime: 5000,
+            copyEnabled: false
+        }
+
+        frontendInctState={padMode: 0, looperModeBank: 0}
+        lastDeviceStatuses=[]
+        var dataRefreshTimer=null
+        var currentPage='main'
+        var threeCtx=null
+
+        window.onload = function(){
+            document.getElementById("mainPageBtn").lastClickedTime=parseInt(new Date().getTime()-10000);
+            document.getElementById("settingsPageBtn").lastClickedTime=parseInt(new Date().getTime()-10000);
+            document.getElementById("dataPageBtn").lastClickedTime=parseInt(new Date().getTime()-10000);
+            const buttons = document.getElementsByClassName("grid-item");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons.item(i).lastClickedTime=parseInt(new Date().getTime()-10000);
+                if( buttons.item(i).id == "killButton" || buttons.item(i).id == "clearCircuitButton" || buttons.item(i).id == "clearRolandButton" || buttons.item(i).id == "saveButton" || buttons.item(i).id == "recallButton" || buttons.item(i).id == "restartSshButton" || buttons.item(i).id == "clearCircuitSettingsButton" || buttons.item(i).id == "clearRolandSettingsButton" || buttons.item(i).id == "clearLkButton" || buttons.item(i).id == "clearAllButton" ){
+                    buttons.item(i).isMomentary=true
+                }else{
+                    buttons.item(i).isMomentary=false;
+                }
+                if(buttons.item(i).id=="reloadButton"){
+                    buttons.item(i).state="normal";
+                    buttons.item(i).watchButtonState=function(buttonElem){
+                        syncViewToState();
+                        console.log("buttonElem.state: "+buttonElem.state);
+                        if(buttonElem.state!="normal"){
+                            setTimeout(function(){
+                                buttonElem.watchButtonState(buttonElem);
+                            },200)
+                        }
+                    }
+                }
+                if(buttons.item(i).id=="stopPiRtpButton"||buttons.item(i).id=="startPiRtpButton"||buttons.item(i).id=="stopMpcRtpButton"||buttons.item(i).id=="startMpcRtpButton"){
+                    buttons.item(i).state="normal";
+                    buttons.item(i).originalLabel=buttons.item(i).innerHTML;
+                    buttons.item(i).watchButtonState=function(buttonElem){
+                        syncViewToState();
+                        if(buttonElem.state!="normal"){
+                            setTimeout(function(){ buttonElem.watchButtonState(buttonElem); },200);
+                        }
+                    };
+                }
+            }
+            getState();
+            initWebSocket();
+        }
+
+        function handlePageSelectClick(buttonElem, page) {
+            if( (new Date().getTime() - buttonElem.lastClickedTime) > config.debounceThreshold ){
+                buttonElem.lastClickedTime=new Date().getTime();
+                selectPage(page);
+            }
+        }
+
+        function selectPage(page) {
+            const mainGrid = document.getElementById('grid-container');
+            const settingsGrid = document.getElementById('settings-grid-container');
+            const pageBtns = document.querySelectorAll('.page-selector-item');
+
+            currentPage=page;
+            if(dataRefreshTimer){ clearInterval(dataRefreshTimer); dataRefreshTimer=null; }
+
+            var dataContainer=document.getElementById('data-container');
+            mainGrid.style.display='none';
+            settingsGrid.style.display='none';
+            dataContainer.style.display='none';
+            pageBtns.forEach(function(btn){ btn.classList.remove('active'); });
+
+            if(page==='main'){
+                mainGrid.style.display='grid';
+                pageBtns[0].classList.add('active');
+            }else if(page==='settings'){
+                settingsGrid.style.display='grid';
+                pageBtns[1].classList.add('active');
+            }else if(page==='data'){
+                dataContainer.style.display='block';
+                pageBtns[2].classList.add('active');
+                setTimeout(fetchAndDrawLoopData, 0);
+                dataRefreshTimer=setInterval(fetchAndDrawLoopData, 2500);
+            }
+        }
+
+        function handleButtonClick(buttonElem){
+            buttonElem.buttonClickBlip=function(){
+                syncViewToState();
+                setTimeout(function(){syncViewToState()},parseInt(config.debounceThreshold + 100));
+            }
+            if( (new Date().getTime() - buttonElem.lastClickedTime) > config.debounceThreshold ){
+                buttonElem.lastClickedTime=new Date().getTime();
+                if(buttonElem.id=="recButton"){
+                    globals.transportState="rec";
+                }
+                if(buttonElem.id=="playButton"){
+                    globals.transportState="play";
+                }
+                if(buttonElem.id=="stopButton"){
+                    globals.transportState="stop";
+                }
+                if(buttonElem.id=="lengthButton"){
+                    globals.selectedLength=(globals.selectedLength+1)%3;
+                }
+                if(buttonElem.id=="quantizeButton"){
+                    globals.quantize=!globals.quantize;
+                }
+                if(buttonElem.id.indexOf("pattern")!=-1){
+                    if(!config.copyEnabled){
+                        globals.selectedPattern=buttonElem.patternNum;
+                    }else{
+                        sendEvent("copy",buttonElem.patternNum);
+                        buttonElem.buttonClickBlip();
+                    }
+                }
+                var rtpEventMap={"stopPiRtpButton":"stopPiRtp","startPiRtpButton":"startPiRtp","stopMpcRtpButton":"stopMpcRtp","startMpcRtpButton":"startMpcRtp"};
+                if(rtpEventMap[buttonElem.id]){
+                    var rtpEvent=rtpEventMap[buttonElem.id];
+                    if(buttonElem.state=="normal"){
+                        buttonElem.state="debounce_lock";
+                        buttonElem.watchButtonState(buttonElem);
+                        setTimeout(function(){
+                            buttonElem.state="awaiting_double_tap";
+                            setTimeout(function(){
+                                if(buttonElem.state=="awaiting_double_tap"){ buttonElem.state="normal"; syncViewToState(); }
+                            },config.reloadButtonDoubleTapTime);
+                        },config.reloadButtonDebounceTime);
+                    }else if(buttonElem.state=="awaiting_double_tap"){
+                        buttonElem.state="executing";
+                        sendEvent(rtpEvent);
+                        setTimeout(function(){ buttonElem.state="normal"; syncViewToState(); },2000);
+                    }
+                }
+                if(buttonElem.id=="restartSshButton"){
+                    sendEvent("restartSsh");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="padModeBtn0"){
+                    frontendInctState.padMode=0;
+                    sendEvent("setPadMode0");
+                }
+                if(buttonElem.id=="padModeBtn1"){
+                    frontendInctState.padMode=1;
+                    sendEvent("setPadMode1");
+                }
+                if(buttonElem.id=="padModeBtn2a"){
+                    frontendInctState.padMode=2;
+                    frontendInctState.looperModeBank=0;
+                    sendEvent("setLooperBankA");
+                }
+                if(buttonElem.id=="padModeBtn2b"){
+                    frontendInctState.padMode=2;
+                    frontendInctState.looperModeBank=1;
+                    sendEvent("setLooperBankB");
+                }
+                if(buttonElem.id=="padModeBtn3"){
+                    frontendInctState.padMode=3;
+                    sendEvent("setPadMode3");
+                }
+                if(buttonElem.id=="clearCircuitSettingsButton"){
+                    sendEvent("clearCircuit");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="clearRolandSettingsButton"){
+                    sendEvent("clearRoland");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="clearLkButton"){
+                    sendEvent("clearLk");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="clearAllButton"){
+                    sendEvent("clearAll");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="killButton"){
+                    sendEvent("killnotes");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="clearCircuitButton"){
+                    sendEvent("clearCircuit");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="clearRolandButton"){
+                    sendEvent("clearRoland");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="recallButton"){
+                    sendEvent("recall");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="saveButton"){
+                    sendEvent("save");
+                    buttonElem.buttonClickBlip();
+                }
+                if(buttonElem.id=="reloadButton"){
+                    if(buttonElem.state=="normal"){
+                        buttonElem.state="debounce_lock";
+                        buttonElem.watchButtonState(buttonElem);
+                        setTimeout(function(){
+                            buttonElem.state="awaiting_double_tap";
+                            setTimeout(function(){
+                                if(buttonElem.state=="awaiting_double_tap"){
+                                    buttonElem.state="normal";
+                                }
+                            },config.reloadButtonDoubleTapTime);
+                        },config.reloadButtonDebounceTime);
+                    }else if(buttonElem.state=="debounce_lock"){
+                        console.log("reload button is debounce locked, ignoring click");
+                    }else if(buttonElem.state=="awaiting_double_tap"){
+                        buttonElem.state="reloading";
+                        sendEvent("reload");
+                        setTimeout(function(){
+                            window.location.href=window.location.href;
+                        },3000);
+                    }
+                }
+                if(buttonElem.id=="programOverrideButton"){
+                    if(!globals.programOverride && !globals.programOnly){
+                        globals.programOverride=true;
+                    }else if(globals.programOverride){
+                        globals.programOverride=false;
+                        globals.programOnly=true;
+                    }else if(globals.programOnly){
+                        globals.programOverride=false;
+                        globals.programOnly=false;
+                    }
+                    console.log("Pgm Override: "+globals.programOverride);
+                    console.log("Pgm Only: "+globals.programOnly);
+                }
+                if(buttonElem.id=="presetNameButton"){
+                    globals.presetName=(globals.presetName+1)%4
+                }
+                if(buttonElem.id=="copyButton"){
+                    config.copyEnabled=!config.copyEnabled;
+                }
+                if(buttonElem.id=="eraseButton"){
+                    globals.eraseEnabled=!globals.eraseEnabled;
+                }
+                syncViewToState();
+                setState();
+            }
+        }
+
+        function getState(){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(xhttp.responseText);
+                    globals=JSON.parse(xhttp.response);
+                    syncViewToState();
+                }
+            };
+            xhttp.open("GET", 'http://'+location.host+'/'+'getState', true);
+            xhttp.send();
+        }
+
+        function setState(){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log(xhttp.responseText);
+                }
+            };
+            xhttp.open("POST", 'http://'+location.host+'/'+'setState', true);
+            xhttp.setRequestHeader("content-type", "application/json");
+            xhttp.send(JSON.stringify(globals));
+        }
+
+        function sendEvent(eventName, copyTarget){
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    console.log("processed "+eventName+" event");
+                }
+            };
+            if(eventName=="copy"){
+                xhttp.open("GET", 'http://'+location.host+'/'+'action?value='+eventName+'&copyTarget='+parseInt(copyTarget), true);
+            }else{
+                xhttp.open("GET", 'http://'+location.host+'/'+'action?value='+eventName, true);
+            }
+            xhttp.send();
+        }
+
+        function syncViewToState(){
+            // init whole grid backgrounds + handle momentary button blips
+            const buttons = document.querySelectorAll('.grid-item');
+            for (let i = 0; i < buttons.length; i++) {
+                if( (parseInt(new Date().getTime()-buttons.item(i).lastClickedTime) < config.debounceThreshold) && (buttons.item(i).isMomentary || (config.copyEnabled && buttons.item(i).id.indexOf("pattern")!=-1)) ){
+                    buttons.item(i).style.backgroundColor=config.buttonSelectedColor;
+                }else{
+                    buttons.item(i).style.backgroundColor=config.buttonBackgroundColor;
+                }
+            }
+
+            // transport buttons
+            if(globals.transportState=="rec"){
+                document.getElementById("recButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("playButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("stopButton").style.backgroundColor=config.buttonBackgroundColor;
+            }else
+            if(globals.transportState=="play"){
+                document.getElementById("recButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("playButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("stopButton").style.backgroundColor=config.buttonBackgroundColor;
+            }else
+            if(globals.transportState=="stop"){
+                document.getElementById("recButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("playButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("stopButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+
+            // selected pattern button
+            document.getElementById("pattern"+globals.selectedPattern).style.backgroundColor=config.buttonSelectedColor;
+
+            //quantize button
+            if(globals.quantize==true){
+                document.getElementById("quantizeButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("quantizeButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // loop length button
+            var loopLengths=[1,2,4];
+            document.getElementById("lengthButton").innerHTML="Length "+loopLengths[globals.selectedLength];
+
+            // preset name button
+            document.getElementById("presetNameButton").innerHTML='Preset Name: '+parseInt(globals.presetName)
+
+            // program override button
+            if(globals.programOverride==true){
+                document.getElementById("programOverrideButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("programOverrideButton").innerHTML='Program Override';
+            }
+            else
+            if(globals.programOnly==true){
+                document.getElementById("programOverrideButton").style.backgroundColor=config.buttonSelectedColor;
+                document.getElementById("programOverrideButton").innerHTML='Program only';
+            }
+            else
+            {
+                document.getElementById("programOverrideButton").style.backgroundColor=config.buttonBackgroundColor;
+                document.getElementById("programOverrideButton").innerHTML='Program Override';
+            }
+
+            // copy button
+            if(config.copyEnabled){
+                document.getElementById("copyButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("copyButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // erase button
+            if(globals.eraseEnabled){
+                document.getElementById("eraseButton").style.backgroundColor=config.buttonSelectedColor;
+            }
+            else
+            {
+                document.getElementById("eraseButton").style.backgroundColor=config.buttonBackgroundColor;
+            }
+
+            // reload button
+            var reloadButton=document.getElementById("reloadButton");
+            if(reloadButton.state=="debounce_lock"){
+                reloadButton.style.backgroundColor="#7a7a1a";
+                reloadButton.innerHTML="Lock";
+            }else if(reloadButton.state=="awaiting_double_tap"){
+                reloadButton.style.backgroundColor="#7a2020";
+                reloadButton.innerHTML="Confirm";
+            }else if(reloadButton.state=="reloading"){
+                reloadButton.style.backgroundColor="#1a7a1a";
+                reloadButton.innerHTML="Reloading";
+             }else{
+                reloadButton.style.backgroundColor=config.buttonBackgroundColor;
+                reloadButton.innerHTML="Reload";
+             }
+
+            // rtp buttons
+            ["stopPiRtpButton","startPiRtpButton","stopMpcRtpButton","startMpcRtpButton"].forEach(function(id){
+                var btn=document.getElementById(id);
+                if(!btn||!btn.state) return;
+                if(btn.state=="debounce_lock"){ btn.style.backgroundColor="#7a7a1a"; btn.innerHTML="Lock"; }
+                else if(btn.state=="awaiting_double_tap"){ btn.style.backgroundColor="#7a2020"; btn.innerHTML="Confirm"; }
+                else if(btn.state=="executing"){ btn.style.backgroundColor="#1a7a1a"; btn.innerHTML="Sending..."; }
+                else{ btn.style.backgroundColor=config.buttonBackgroundColor; btn.innerHTML=btn.originalLabel; }
+            });
+            updatePadModeUI();
+            updateDeviceStatus(lastDeviceStatuses);
+        }
+
+        function updatePadModeUI(){
+            var padModeBtns=["padModeBtn0","padModeBtn1","padModeBtn2a","padModeBtn2b","padModeBtn3"];
+            for(var i=0; i<padModeBtns.length; i++){
+                var btn=document.getElementById(padModeBtns[i]);
+                if(btn){ btn.style.backgroundColor=config.buttonBackgroundColor; }
+            }
+            var activeId=null;
+            if(frontendInctState.padMode==0){ activeId="padModeBtn0"; }
+            else if(frontendInctState.padMode==1){ activeId="padModeBtn1"; }
+            else if(frontendInctState.padMode==2 && frontendInctState.looperModeBank==0){ activeId="padModeBtn2a"; }
+            else if(frontendInctState.padMode==2 && frontendInctState.looperModeBank==1){ activeId="padModeBtn2b"; }
+            else if(frontendInctState.padMode==3){ activeId="padModeBtn3"; }
+            if(activeId){ document.getElementById(activeId).style.backgroundColor=config.buttonSelectedColor; }
+        }
+
+        function updateDeviceStatus(statuses){
+            lastDeviceStatuses=statuses;
+            for(var i=0; i<statuses.length; i++){
+                var btn=document.getElementById("deviceStatus"+i);
+                if(btn){
+                    btn.style.backgroundColor=statuses[i].present ? "#1a7a1a" : "#7a7a1a";
+                }
+            }
+        }
+
+        function fetchAndDrawLoopData(){
+            var xhttp=new XMLHttpRequest();
+            xhttp.onreadystatechange=function(){
+                if(this.readyState==4 && this.status==200){
+                    drawLoopData(JSON.parse(this.responseText));
+                }
+            };
+            xhttp.open("GET",'http://'+location.host+'/getLoopData',true);
+            xhttp.send();
+        }
+
+        function disposeGroup(group){
+            while(group.children.length>0){
+                var child=group.children[0];
+                if(child.geometry) child.geometry.dispose();
+                if(child.material){
+                    if(child.material.map) child.material.map.dispose();
+                    child.material.dispose();
+                }
+                group.remove(child);
+            }
+        }
+
+        function drawLoopData(data){
+            var canvas=document.getElementById('dataCanvas');
+            var container=document.getElementById('data-container');
+            var w=container.clientWidth, h=container.clientHeight;
+            if(w===0||h===0) return;
+
+            if(!threeCtx){
+                var renderer=new THREE.WebGLRenderer({canvas:canvas,antialias:false});
+                renderer.setClearColor(0x1a1a1a,1);
+                renderer.setPixelRatio(1);
+                var scene=new THREE.Scene();
+                var camera=new THREE.OrthographicCamera(0,w,h,0,-1,1);
+                var staticGroup=new THREE.Group();
+                var dataGroup=new THREE.Group();
+                scene.add(staticGroup);
+                scene.add(dataGroup);
+                threeCtx={renderer:renderer,scene:scene,camera:camera,staticGroup:staticGroup,dataGroup:dataGroup,w:-1,h:-1,minNote:-1,maxNote:-1};
+            }
+            var tc=threeCtx;
+
+            var patternIdx=globals.selectedPattern-1;
+            var ticksPerStep=6, numSteps=64;
+            var sources=[
+                {data:data.loopData[patternIdx],               rgb:{r:0,  g:0,   b:255}},
+                {data:data.lkLoopData[patternIdx],             rgb:{r:0,  g:255, b:0}},
+                {data:data.circuitProgramLoopData[patternIdx], rgb:{r:255,g:0,   b:0}}
+            ];
+
+            function msgIsPlottable(msg){ return (msg[0]>=144&&msg[0]<=159&&msg[2]>0)||(msg[0]>=192&&msg[0]<=207); }
+            function msgVelocity(msg){ return (msg[0]>=192&&msg[0]<=207)?1.0:msg[2]/127; }
+
+            var minNote=127, maxNote=0, hasNotes=false;
+            sources.forEach(function(src){
+                if(!src.data) return;
+                for(var t=0;t<src.data.length;t++){
+                    for(var m=0;m<src.data[t].length;m++){
+                        var msg=src.data[t][m];
+                        if(msgIsPlottable(msg)){ minNote=Math.min(minNote,msg[1]); maxNote=Math.max(maxNote,msg[1]); hasNotes=true; }
+                    }
+                }
+            });
+            if(!hasNotes){ minNote=48; maxNote=71; }
+            minNote=Math.max(0,minNote-2);
+            maxNote=Math.min(127,maxNote+2);
+            var numNotes=maxNote-minNote+1;
+            var marginLeft=32, marginTop=10, marginBottom=18, marginRight=10;
+            var gridW=w-marginLeft-marginRight, gridH=h-marginTop-marginBottom;
+            var colW=gridW/numSteps, rowH=gridH/numNotes;
+
+            var needStatic=(tc.w!==w||tc.h!==h||tc.minNote!==minNote||tc.maxNote!==maxNote);
+            if(needStatic){
+                tc.renderer.setSize(w,h,false);
+                tc.camera.right=w; tc.camera.top=h; tc.camera.updateProjectionMatrix();
+                tc.w=w; tc.h=h; tc.minNote=minNote; tc.maxNote=maxNote;
+                disposeGroup(tc.staticGroup);
+
+                var sc=document.createElement('canvas');
+                sc.width=w; sc.height=h;
+                var s2=sc.getContext('2d');
+                s2.fillStyle='#1a1a1a'; s2.fillRect(0,0,w,h);
+                for(var bar=0;bar<4;bar++){
+                    s2.fillStyle=bar%2===0?'#1e1e1e':'#222';
+                    s2.fillRect(marginLeft+bar*16*colW,marginTop,16*colW,gridH);
+                }
+                for(var ss=0;ss<=numSteps;ss++){
+                    var sx=marginLeft+ss*colW;
+                    s2.strokeStyle=ss%16===0?'#555':ss%4===0?'#333':'#242424';
+                    s2.lineWidth=ss%16===0?1:0.5;
+                    s2.beginPath(); s2.moveTo(sx,marginTop); s2.lineTo(sx,marginTop+gridH); s2.stroke();
+                }
+                for(var nn=0;nn<=numNotes;nn++){
+                    var sy=marginTop+nn*rowH;
+                    s2.strokeStyle='#2a2a2a'; s2.lineWidth=0.5;
+                    s2.beginPath(); s2.moveTo(marginLeft,sy); s2.lineTo(w,sy); s2.stroke();
+                }
+                var lfs=Math.max(8,Math.min(11,rowH*0.75));
+                s2.font=lfs+'px sans-serif'; s2.textAlign='right';
+                for(var nn=0;nn<numNotes;nn++){
+                    var note=maxNote-nn;
+                    if(note%12===0){ s2.fillStyle='#888'; s2.fillText('C'+(Math.floor(note/12)-1),marginLeft-3,marginTop+nn*rowH+rowH*0.75); }
+                }
+                s2.fillStyle='#666'; s2.font='10px sans-serif'; s2.textAlign='center';
+                for(var bar=0;bar<4;bar++){ s2.fillText('Bar '+(bar+1),marginLeft+(bar*16+8)*colW,h-4); }
+
+                var tex=new THREE.CanvasTexture(sc);
+                var geo=new THREE.PlaneGeometry(w,h);
+                var mat=new THREE.MeshBasicMaterial({map:tex});
+                var mesh=new THREE.Mesh(geo,mat);
+                mesh.position.set(w/2,h/2,-0.5);
+                tc.staticGroup.add(mesh);
+            }
+
+            disposeGroup(tc.dataGroup);
+
+            var cells={};
+            sources.forEach(function(src){
+                if(!src.data) return;
+                for(var t=0;t<src.data.length;t++){
+                    var step=Math.floor(t/ticksPerStep);
+                    if(step>=numSteps) continue;
+                    for(var m=0;m<src.data[t].length;m++){
+                        var msg=src.data[t][m];
+                        if(msgIsPlottable(msg)&&msg[1]>=minNote&&msg[1]<=maxNote){
+                            var vel=msgVelocity(msg);
+                            var key=step+'_'+msg[1];
+                            if(!cells[key]) cells[key]={step:step,note:msg[1],r:0,g:0,b:0};
+                            cells[key].r=Math.min(255,cells[key].r+Math.round(src.rgb.r*vel));
+                            cells[key].g=Math.min(255,cells[key].g+Math.round(src.rgb.g*vel));
+                            cells[key].b=Math.min(255,cells[key].b+Math.round(src.rgb.b*vel));
+                        }
+                    }
+                }
+            });
+            Object.keys(cells).forEach(function(key){
+                var c=cells[key];
+                var cx=marginLeft+c.step*colW+1;
+                var cy=marginTop+(maxNote-c.note)*rowH+1;
+                var cw=Math.max(1,colW-2);
+                var ch=Math.max(1,rowH-1);
+                var geo=new THREE.PlaneGeometry(cw,ch);
+                var mat=new THREE.MeshBasicMaterial({color:new THREE.Color(c.r/255,c.g/255,c.b/255)});
+                var mesh=new THREE.Mesh(geo,mat);
+                mesh.position.set(cx+cw/2, h-cy-ch/2, 0);
+                tc.dataGroup.add(mesh);
+            });
+
+            tc.renderer.render(tc.scene,tc.camera);
+        }
+
+        function initWebSocket(){
+            socket = new WebSocket("ws://"+location.hostname+":3003");
+            socket.onopen = function(e) {  console.log("[socket] socket.onopen "); };
+            socket.onerror = function(e) {
+                console.log("[socket] socket.onerror ");
+                console.log(e);
+                setTimeout(function(){
+                    console.log("retrying websocket connection initialization")
+                    initWebSocket();
+                },1000);
+            };
+            socket.onclose = function(e) {
+                console.log("[socket] socket.oneclose ");
+                console.log(e);
+                setTimeout(function(){
+                    console.log("retrying websocket connection initialization")
+                    initWebSocket();
+                },1000);
+            };
+            socket.onmessage = function(e) {
+                console.log("Received Socket Message from server "); // event.data
+                var data=JSON.parse(e.data);
+                if(data.deviceStatuses){
+                    updateDeviceStatus(data.deviceStatuses);
+                }else if(data.inctState){
+                    frontendInctState.padMode=data.inctState.padMode;
+                    frontendInctState.looperModeBank=data.inctState.looperModeBank;
+                    updatePadModeUI();
+                }else if(data.selectedPattern != 'undefined'){
+                    globals=data;
+                    syncViewToState();
+                }
+            };
+        }
+    </script>
+</body>
+</html>
