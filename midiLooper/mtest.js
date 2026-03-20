@@ -183,7 +183,7 @@ function syncLaunchkeyLEDS(){
   }
   function syncLooperLEDS(orange, red, green){
     let count=0;
-    for(var x of inctState.repeatControlsLedPadsFullMap){
+    for(var x of inctState.ledPads){
       if(inctState.looperModeBank==0){ // first looper bank, looper controls
         if(count>=0 && count<=3){ // pattern select buttons
           if(count==globals.selectedPattern-1 ){
@@ -236,9 +236,9 @@ function syncLaunchkeyLEDS(){
       if(inctState.looperModeBank==1){ // second looper bank, stutter
         var deck=count>=8 ? 1 : 0;
         if(inctState.looperModeDeckValues[deck]==count%8){
-          inControlOutput.sendMessage([144,x,red]);
+          inControlOutput.sendMessage([144,inctState.repeatControlsLedPadsFullMap[count],red]);
         }else{
-          inControlOutput.sendMessage([144,x,green]);
+          inControlOutput.sendMessage([144,inctState.repeatControlsLedPadsFullMap[count],green]);
         }
       }
       count++;
