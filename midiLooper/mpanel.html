@@ -78,6 +78,8 @@
             buttonSelectedColor: "rgba(0, 0, 255, 0.3)",
             buttonBackgroundColor : "rgba(255, 255, 255, 0.25)",
             debounceThreshold: 300,
+            reloadButtonDebounceTime: 800,
+            reloadButtonDoubleTapTime: 5000,
             copyEnabled: false
         }
         
@@ -85,10 +87,22 @@
             const buttons = document.getElementsByClassName("grid-item");
             for (let i = 0; i < buttons.length; i++) {
                 buttons.item(i).lastClickedTime=parseInt(new Date().getTime()-10000);
-                if( buttons.item(i).id == "killButton" || buttons.item(i).id == "clearCircuitButton" || buttons.item(i).id == "clearRolandButton" || buttons.item(i).id == "saveButton" || buttons.item(i).id == "recallButton" || buttons.item(i).id == "reloadButton" ){
+                if( buttons.item(i).id == "killButton" || buttons.item(i).id == "clearCircuitButton" || buttons.item(i).id == "clearRolandButton" || buttons.item(i).id == "saveButton" || buttons.item(i).id == "recallButton" ){
                     buttons.item(i).isMomentary=true
                 }else{
                     buttons.item(i).isMomentary=false;
+                }
+                if(buttons.item(i).id=="reloadButton"){
+                    buttons.item(i).state="normal";
+                    buttons.item(i).watchButtonState=function(buttonElem){
+                        syncViewToState();
+                        console.log("buttonElem.state: "+buttonElem.state);
+                        if(buttonElem.state!="normal"){
+                            setTimeout(function(){
+                                buttonElem.watchButtonState(buttonElem);
+                            },200)
+                        }
+                    }
                 }
             }
             getState();
@@ -146,11 +160,26 @@
                     buttonElem.buttonClickBlip();
                 }
                 if(buttonElem.id=="reloadButton"){
-                    sendEvent("reload");
-                    buttonElem.buttonClickBlip();
-                    setTimeout(function(){
-                        window.location.href=window.location.href;
-                    },1000);
+                    if(buttonElem.state=="normal"){
+                        buttonElem.state="debounce_lock";
+                        buttonElem.watchButtonState(buttonElem);
+                        setTimeout(function(){
+                            buttonElem.state="awaiting_double_tap";
+                            setTimeout(function(){
+                                if(buttonElem.state=="awaiting_double_tap"){
+                                    buttonElem.state="normal";
+                                }
+                            },config.reloadButtonDoubleTapTime);
+                        },config.reloadButtonDebounceTime);
+                    }else if(buttonElem.state=="debounce_lock"){
+                        console.log("reload button is debounce locked, ignoring click");
+                    }else if(buttonElem.state=="awaiting_double_tap"){
+                        buttonElem.state="reloading";
+                        sendEvent("reload");
+                        setTimeout(function(){
+                            window.location.href=window.location.href;
+                        },3000);
+                    }
                 }
                 if(buttonElem.id=="programOverrideButton"){
                     if(!globals.programOverride && !globals.programOnly){
@@ -299,6 +328,22 @@
             {
                 document.getElementById("eraseButton").style.backgroundColor=config.buttonBackgroundColor;
             }
+
+            // reload button
+            var reloadButton=document.getElementById("reloadButton");
+            if(reloadButton.state=="debounce_lock"){
+                reloadButton.style.backgroundColor="rgba(255, 255, 0, 0.5)";
+                reloadButton.innerHTML="Lock";
+            }else if(reloadButton.state=="awaiting_double_tap"){
+                reloadButton.style.backgroundColor="rgba(255, 0, 0, 0.5)";
+                reloadButton.innerHTML="Confirm";
+            }else if(reloadButton.state=="reloading"){
+                reloadButton.style.backgroundColor="rgba(0, 255, 0, 0.5)";
+                reloadButton.innerHTML="Reloading";
+             }else{
+                reloadButton.style.backgroundColor=config.buttonBackgroundColor;
+                reloadButton.innerHTML="Reload";
+             }
         }
 
         function initWebSocket(){

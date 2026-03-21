@@ -1024,7 +1024,7 @@ function initMidiDevice(midiInObject, midiOutObject, deviceString, portName, spe
     internals[portName]="None";
   }
   for(var x=0; x<midiInObject.getPortCount(); x++){
-    console.log("LISTED PORT: "+midiInObject.getPortName(x));
+    // console.log("LISTED PORT: "+midiInObject.getPortName(x));
     if(midiInObject.getPortName(x).indexOf(deviceString)!=-1){
       internals[portName]=x;
       console.log("FOUND "+deviceString+" ON PORT: "+x);
