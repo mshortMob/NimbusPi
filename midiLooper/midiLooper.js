@@ -26,6 +26,13 @@ const port = 3000;
 
 init();
 function init(){
+  config={
+    rootDir: "/root/NimbusPi/midiLooper",
+    presetsPath: "/presets",
+    rtpResetScriptPath: "/scripts/restartRtpMidi.sh",
+    guiPath: "/midiLooper.html",
+    systemdServiceName: "midiLooper"
+  }
   internals={
     circuitPort: "None",
     rolandPort: "None",
@@ -40,8 +47,6 @@ function init(){
     loopLengths: [96*1, 96*2, 96*4],
     noteOnChannelOne: 144,
     noteOffChannelOne: 128,
-    rootDir: "/root/NimbusPi/midiLooper",
-    presetsPath: "/presets",
     usb_devices: "",
     last_rtp_reset_time: 0
   }
@@ -902,10 +907,10 @@ app.listen(port, () => {
 
 app.get('/gui', function (req, res) {
   const options = {
-      root: internals.rootDir + "/"
+      root: config.rootDir + "/"
   };
 
-  const fileName = 'mpanel.html';
+  const fileName = config.guiPath;
   res.sendFile(fileName, options, function (err) {
       if (err) {
           next(err);
@@ -953,7 +958,7 @@ function processAction(action, copyTarget="dummyValue"){
     killAllNotes();
   }
   if(action=="recall"){
-    fs.readFile(internals.rootDir + internals.presetsPath + parseInt(globals.presetName) + '.txt', 'utf8', (err, data) => {
+    fs.readFile(config.rootDir + config.presetsPath + parseInt(globals.presetName) + '.txt', 'utf8', (err, data) => {
       if (err) {
         console.error(err);
         return;
@@ -967,7 +972,7 @@ function processAction(action, copyTarget="dummyValue"){
   }
   if(action=="save"){
     var fileContents=JSON.stringify({ "roland": internals.loopData, "circuit": internals.circuitProgramLoopData, "lk": internals.lkLoopData });
-    fs.writeFile(internals.rootDir + internals.presetsPath + parseInt(globals.presetName) + '.txt', fileContents, err => {
+    fs.writeFile(config.rootDir + config.presetsPath + parseInt(globals.presetName) + '.txt', fileContents, err => {
       if (err) {
         console.error(err);
       }
@@ -980,7 +985,7 @@ function processAction(action, copyTarget="dummyValue"){
     internals.lkLoopData[copyTarget]=JSON.parse(JSON.stringify(internals.lkLoopData[globals.selectedPattern-1]));
   }
   if(action=="reload"){
-    dir = exec("sudo /usr/sbin/service mtest restart", function(err, stdout, stderr) {
+    dir = exec("sudo /usr/sbin/service " + config.systemdServiceName + " restart", function(err, stdout, stderr) {
       if (err) {
         console.log(err);
       }
@@ -994,7 +999,7 @@ function restartRtpMidi(midiInObject, midiOutObject, deviceString, portName, spe
     console.log("rtp midi was restarted less than 1 minute ago");
   }else{
     internals.last_rtp_reset_time = Date.now();
-    dir = exec("/root/NimbusPi/midiLooper/bounce_rtp.sh", function(err, stdout, stderr) {
+    dir = exec(config.rootDir + config.rtpResetScriptPath, function(err, stdout, stderr) {
       if (err) {
         console.log("error restarting rtp midi:");
         console.log(err);

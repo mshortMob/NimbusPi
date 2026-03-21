@@ -3,7 +3,7 @@ Description=midi_controller_app
 After=network.target
 
 [Service]
-ExecStart=/usr/bin/node /root/NimbusPi/midiExperiements/mtest.js 
+ExecStart=/usr/bin/node /root/NimbusPi/midiLooper/midiLooper.js 
 WorkingDirectory=/root
 StandardOutput=inherit
 StandardError=inherit
