@@ -42,7 +42,8 @@ function init(){
     noteOffChannelOne: 128,
     rootDir: "/root/NimbusPi/midiLooper",
     presetsPath: "/presets",
-    usb_devices: ""
+    usb_devices: "",
+    last_rtp_reset_time: 0
   }
   globals={
     selectedLength: 0,
@@ -955,6 +956,23 @@ function processAction(action, copyTarget="dummyValue"){
   }
 }
 
+function restartRtpMidi(midiInObject, midiOutObject, deviceString, portName, specialtyFunc){
+  if(Date.now() - internals.last_rtp_reset_time < 60000){
+    console.log("rtp midi was restarted less than 1 minute ago");
+  }else{
+    internals.last_rtp_reset_time = Date.now();
+    dir = exec("/root/NimbusPi/midiLooper/bounce_rtp.sh", function(err, stdout, stderr) {
+      if (err) {
+        console.log("error restarting rtp midi:");
+        console.log(err);
+      }else{
+        console.log("restarted rtp midi");
+        setTimeout(initMidiDevice, 5000, midiInObject, midiOutObject, deviceString, portName, specialtyFunc);
+      }
+    });
+  }
+}
+
 function checkUSBDevices(){
   dir = exec("sudo amidi -l", function(err, stdout, stderr) {
     if (err) {
@@ -965,6 +983,21 @@ function checkUSBDevices(){
     for(var x=0; x<midiState.length; x++){
       if((internals.usb_devices.indexOf(midiState[x][2])==-1 || internals[midiState[x][3]]=="None") && midiState[x][2].indexOf("rtpmid")==-1){ 
         initMidiDevice(midiState[x][0], midiState[x][1], midiState[x][2], midiState[x][3], midiState[x][4]);
+      }
+      if(midiState[x][2].indexOf("rtpmid")!=-1){
+        var rtpIsActive=false;
+        for(var y=0; y<midiState[x][0].getPortCount(); y++){
+          if(midiState[x][0].getPortName(y).indexOf(midiState[x][2])!=-1){
+            rtpIsActive=true;
+          }
+        }
+        if(rtpIsActive){
+          console.log("rtpmid device ACTIVE");
+        }else{
+          console.log("rtpmid device INACTIVE");
+          restartRtpMidi(midiState[x][0], midiState[x][1], midiState[x][2], midiState[x][3], midiState[x][4]);
+        }
+
       }
     }
   });
@@ -991,6 +1024,7 @@ function initMidiDevice(midiInObject, midiOutObject, deviceString, portName, spe
     internals[portName]="None";
   }
   for(var x=0; x<midiInObject.getPortCount(); x++){
+    console.log("LISTED PORT: "+midiInObject.getPortName(x));
     if(midiInObject.getPortName(x).indexOf(deviceString)!=-1){
       internals[portName]=x;
       console.log("FOUND "+deviceString+" ON PORT: "+x);
