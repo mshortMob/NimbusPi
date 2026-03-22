@@ -466,16 +466,21 @@ function recordMessage(message, bufferaName){
         internals[bufferaName][globals.selectedPattern-1][internals.cursor].push(message);
       }
     }else{
+      var quantizeDirection=0;
+      if(internals.cursor%6>=3){ // quantize to previous beat
+        quantizeDirection=6;
+      }
+      var quantizedCursor=(internals.cursor+quantizeDirection-(internals.cursor%6))%96;
       if(globals.selectedLength==0){
-        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)].push(message);
-        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*1].push(message);
-        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*2].push(message);
-        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*3].push(message);
+        internals[bufferaName][globals.selectedPattern-1][quantizedCursor].push(message);
+        internals[bufferaName][globals.selectedPattern-1][quantizedCursor+96*1].push(message);
+        internals[bufferaName][globals.selectedPattern-1][quantizedCursor+96*2].push(message);
+        internals[bufferaName][globals.selectedPattern-1][quantizedCursor+96*3].push(message);
       }else if(globals.selectedLength==1){   
-        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)].push(message);
-        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)+96*2].push(message);
+        internals[bufferaName][globals.selectedPattern-1][quantizedCursor].push(message);
+        internals[bufferaName][globals.selectedPattern-1][quantizedCursor+96*2].push(message);
       }else{
-        internals[bufferaName][globals.selectedPattern-1][internals.cursor-(internals.cursor%6)].push(message);
+        internals[bufferaName][globals.selectedPattern-1][quantizedCursor].push(message);
       }
     }
   }
