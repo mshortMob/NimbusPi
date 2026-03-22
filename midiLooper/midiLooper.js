@@ -40,6 +40,8 @@ function init(){
     inControlPort: "None",
     rtpPort: "None",
     cursor: 0,
+    newCursor: 0,
+    needToUpdateCursor: false,
     loopData: [],
     circuitProgramLoopData: [],
     lkLoopData: [],
@@ -76,7 +78,7 @@ function init(){
     numOfflexbeatBanks: 3,
     currentDrumBank: 0,
     numberOfDrumBanks: 4,
-    drumRepeatBanks: [2,3],
+    drumRepeatBanks: [],
     drumRepeatFreqs: [6,3], // in steps, 6 steps == 1 beat
     drumRepeatIntervals: [24,18,12,9,6,3,2,1],
     drumRepeatValues: [4,4],
@@ -470,7 +472,7 @@ function recordMessage(message, bufferaName){
       if(internals.cursor%6>=3){ // quantize to previous beat
         quantizeDirection=6;
       }
-      var quantizedCursor=(internals.cursor+quantizeDirection-(internals.cursor%6))%96;
+      var quantizedCursor=(internals.cursor+quantizeDirection-(internals.cursor%6))%(internals.loopLengths[globals.selectedLength]);
       if(globals.selectedLength==0){
         internals[bufferaName][globals.selectedPattern-1][quantizedCursor].push(message);
         internals[bufferaName][globals.selectedPattern-1][quantizedCursor+96*1].push(message);
@@ -710,8 +712,15 @@ inControlInput.on('message', (deltaTime, message) => {
       syncLeds=true;
       if(message[2]!=0){
         let lengthModifier=internals.loopLengths[globals.selectedLength]/16;
-        internals.cursor=(inctState.ledSlicerMap.indexOf(message[1])*lengthModifier);
+        var quantizeDirection=0;
+        if(internals.cursor%6>=3){ // quantize to previous beat
+          quantizeDirection=6;
+        }
         killAllNotes();
+        var newCursor=inctState.ledSlicerMap.indexOf(message[1])*lengthModifier;
+        // var quantizedCursor=(newCursor+quantizeDirection-(newCursor%6))%(internals.loopLengths[globals.selectedLength]);
+        internals.newCursor=newCursor;
+        internals.needToUpdateCursor=true;
       }
     }
   }else if(message[0]==176 && inctState.knobs.includes(message[1])){ // knobs
@@ -766,6 +775,10 @@ circuitInput.on('message', (deltaTime, message) => {
     // console.log(internals.cursor);
     internals.cursor=(internals.cursor+1)%internals.loopLengths[globals.selectedLength];
     if( internals.cursor%6 == 0){
+      if(internals.needToUpdateCursor){
+        internals.cursor=internals.newCursor;
+        internals.needToUpdateCursor=false;
+      }
       syncLaunchkeyLEDS();
     }
   }
