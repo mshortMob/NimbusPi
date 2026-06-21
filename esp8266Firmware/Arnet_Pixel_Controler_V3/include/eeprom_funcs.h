@@ -1,13 +1,14 @@
 #include <EEPROM.h>
 
-bool writeEEPROM=false;
+int eeprom_signature=123456;
+bool eeprom_was_reset_on_startup=false;
 
-struct {
-  char ssid[64] = "NimbusPi-ApcMini"; // This is what gets stored in EEPROM if you uncomment 
-  char password[64] = "NimbusPi123"; //  EEPROM.put and EEPROM.commit in setup
+struct ConfigSettings {
+  char ssid[64] = "NimbusPi-ApcMini";
+  char password[64] = "NimbusPi123";
   char universe[32] = "1";
   char startChan[64] = "25";
-  char fixtureMode[64] = "2";   //fixtureMode 0= 3chan ; fixtureMode 1= indiviudal addressable ; fixtureMode 2= chase patterns
+  char fixtureMode[64] = "2"; // fixtureMode 0=3chan ; fixtureMode 1=indiviudal addressable ; fixtureMode 2=chase patterns
   int num_base_leds = 100;
   int pixel_start_offset = 0;
   char ap_name[64] = "EspTestBed";
@@ -61,16 +62,16 @@ struct {
     {138,156,156,156,156,156,156,156}}
   };
   int presetTypes[5]={1,1,1,0,0};
-}epdata;
+};
 
-void setup_eeprom(){
-  EEPROM.begin(4096);
-  delay(1000);
-  if(writeEEPROM){
-    Serial.println("Initializing - i.e. over-writing - EEPROM now");
-    EEPROM.put(0,epdata); //usefull if you want to flash it with the correct wifi data already
-    EEPROM.commit();
-  }
+ConfigSettings epdata;
+ConfigSettings initial_epdata;
+
+struct {
+  int hasInitializedEeprom;
+}eptemp;
+
+void eeprom_load_all(void){
   EEPROM.get(0,epdata);
   delay(1000);
   Serial.println("");
@@ -117,4 +118,40 @@ void setup_eeprom(){
     Serial.println("-------");
   }
   Serial.println("");
+}
+
+void reset_eeprom_to_initial_values(void){
+    Serial.println("Initializing - i.e. over-writing - EEPROM now");
+    Serial.println();  
+    EEPROM.put(0,initial_epdata);
+    EEPROM.commit();
+    eeprom_was_reset_on_startup=true;
+    eeprom_load_all();
+}
+
+bool need_eeprom_reset(void){
+  bool result=false;
+  Serial.println("Checking if EEPROM needs to be initialized...");
+  EEPROM.get(4064,eptemp);
+  delay(100);
+  Serial.println("hasInitializedEeprom:");
+  Serial.println(eptemp.hasInitializedEeprom);
+  Serial.println();  
+  if(eptemp.hasInitializedEeprom!=eeprom_signature){
+    result=true;
+    eptemp.hasInitializedEeprom=eeprom_signature;
+    EEPROM.put(4064,eptemp);
+    EEPROM.commit();
+  }
+  return result;
+}
+
+void setup_eeprom(){
+  EEPROM.begin(4096);
+  delay(1000);
+  if(need_eeprom_reset()){
+    reset_eeprom_to_initial_values();
+  }else{
+    eeprom_load_all();
+  }
 }

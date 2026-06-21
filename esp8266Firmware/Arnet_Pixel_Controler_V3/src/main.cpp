@@ -15,7 +15,7 @@ void setup() {
   setup_button();
   setup_accelerometer();
   setup_leds();
-  wifiConnected=setup_ap(epdata.ssid, epdata.password);
+  wifiConnected=setup_ap(epdata.ssid, epdata.password, epdata.ap_name);
   setup_http_server();
   setup_socket_server();
 }
