@@ -2,6 +2,40 @@
     <head>
       <title>FlowMapper</title>
       <style>
+        /* theme */
+        :root{
+            --bg-app: #0a0c11;
+            --bg-app-2: #10131a;
+            --bg-surface: #151923;
+            --bg-surface-2: #1b2029;
+            --bg-elevated: #232937;
+            --border-subtle: #272d3a;
+            --border-strong: #3a4256;
+            --text-primary: #eef1f7;
+            --text-secondary: #97a1b8;
+            --text-muted: #5b647a;
+            --accent: #aaaaff;
+            --accent-strong: #c2c2ff;
+            --accent-contrast: #1a1a33;
+            --radius-sm: 6px;
+            --radius-md: 10px;
+            --radius-lg: 14px;
+            --shadow-card: 0 2px 10px rgba(0,0,0,0.35);
+        }
+        *, *::before, *::after{
+            box-sizing: border-box;
+        }
+        html, body{
+            height:100%;
+            width:100%;
+        }
+        button, input{
+            font-family: inherit;
+        }
+        button:focus-visible{
+            outline: 2px solid var(--accent);
+            outline-offset: 1px;
+        }
         /* global */
         #background {
             position:absolute;
@@ -9,41 +43,126 @@
             height:100%;
             width:100%;
             z-index: 10000;
-            background-color: grey;
+            background-color: var(--bg-app);
+            background-image: radial-gradient(circle at 50% 0%, var(--bg-app-2) 0%, var(--bg-app) 55%);
             overflow: auto;
         }
         body{
           margin: 0px;
           height:100%;
           width:100%;
-          /* display:grid; */
+          font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+          background-color: var(--bg-app);
+          color: var(--text-primary);
+          -webkit-user-select:none;
+          user-select:none;
+          -webkit-tap-highlight-color: transparent;
+        }
+        input, textarea{
+          -webkit-user-select:text;
+          user-select:text;
         }
         #header {
             width:100%;
             height:70px;
-            display: grid;
-            grid-template-columns: 2% auto auto auto auto auto auto auto auto auto auto auto 5%;
-            background-color: #020240;
-            border-bottom:3px solid darkgrey;
-            /* border-top:2px solid darkgrey; */
-            /* border-top:1px solid #eeeeee; */
+            display: flex;
+            align-items: stretch;
+            background-color: var(--bg-surface);
+            border-bottom: 1px solid var(--border-subtle);
+            box-shadow: var(--shadow-card);
+            padding: 0 4%;
         }
         #mainLogo{
-            font-size: medium;
+            font-size: 1.05rem;
+            letter-spacing: .04em;
+            font-weight: 700;
+            color: var(--accent);
+            background: none;
+        }
+        #headerSpacer{
+            flex: 1 1 auto;
         }
         .header-item {
-            color:#eeeeee;
-            background-color: #020240;
-            font-size: small;
-            font-weight:bold;
+            color:var(--text-secondary);
+            background-color: transparent;
+            font-size: .72rem;
+            font-weight:600;
+            text-transform: uppercase;
+            letter-spacing: .06em;
             text-align: center;
-            border: 0px solid #020240;
-            /* border-top:3px solid darkgrey; */
+            border: none;
+            padding: 0 18px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
             height:100%;
+            cursor: pointer;
+            transition: color .15s ease, background-color .15s ease;
+        }
+        .header-item:hover, .header-item:focus-visible{
+            color: var(--text-primary);
+            background-color: var(--bg-surface-2);
+        }
+        .nav-btn.active{
+            color: var(--accent);
+        }
+        #navMenuToggle{
+            display:none;
+            font-size: 1.6rem;
+            padding: 0 14px;
+        }
+        #navMenu{
+            display:none;
+            flex-direction: column;
+            position:absolute;
+            top:70px;
+            left:0;
+            width:100%;
+            background-color: var(--bg-surface);
+            border:1px solid var(--border-subtle);
+            border-top:none;
+            box-shadow: var(--shadow-card);
+            z-index: 10001;
+            overflow:hidden;
+        }
+        #navMenu.open{
+            display:flex;
+        }
+        .navMenuItem{
+            background-color: transparent;
+            color: var(--text-secondary);
+            border:none;
+            border-bottom:1px solid var(--border-subtle);
+            padding: 16px 4%;
+            font-size:.78rem;
+            font-weight:600;
+            text-transform:uppercase;
+            letter-spacing:.06em;
+            text-align:left;
+            cursor:pointer;
+            transition: color .15s ease, background-color .15s ease;
+        }
+        .navMenuItem:last-child{
+            border-bottom:none;
+        }
+        .navMenuItem:hover, .navMenuItem:focus-visible{
+            color:var(--text-primary);
+            background-color:var(--bg-surface-2);
+        }
+        .navMenuItem.active{
+            color:var(--accent);
+        }
+        @media (max-width: 600px){
+            .nav-btn{
+                display:none;
+            }
+            #navMenuToggle{
+                display:flex;
+            }
         }
         #topSpacer{
             width:100%;
-            height:24px;    
+            height:24px;
         }
         #bottomSpacer{
             height:20px;
@@ -71,7 +190,11 @@
             display:grid;
             height: 80%;
             width: 100%;
-            border: 3px solid black;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-surface);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
         }
         .dataPageGraphCanvas{
             display:grid;
@@ -81,21 +204,28 @@
         .dataPageLabelItem{
             display:grid;
             height: 80%;
-            border: 3px solid black;  
-            grid-template-rows: 38% 29% 33%;    
-            margin-right:-6px;  
-            background-color:rgb(100, 100, 100);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            grid-template-rows: 38% 29% 33%;
+            margin-right:12px;
+            background-color: var(--bg-elevated);
+            box-shadow: var(--shadow-card);
+            overflow: hidden;
         }
         .dataPageLabelSpacer{
             display:grid;
+            align-items: center;
             border: 0px solid black;
             text-align: center;
             height:100%;
-            font-weight: bold;
+            font-weight: 700;
+            font-size: .8rem;
+            color: var(--text-secondary);
+            letter-spacing: .03em;
         }
         /* settingsPage */
-        #settingPage{
-            grid-template-columns: 100%;
+        #settingsPage{
+            padding-top: 8px;
         }
         .settingsPageRow{
             display: block;
@@ -104,79 +234,118 @@
             margin-bottom:36px;
         }
         .settingsPageLabel {
-            border: 2px solid black;
-            color:black;
-            background-color:rgb(100, 100, 100);
-            border-radius: 23px;
-            text-align:middle;
-            line-height: 43px;
-            font-size:small;
+            border: 1px solid var(--border-strong);
+            color:var(--text-primary);
+            background-color:var(--bg-elevated);
+            border-radius: var(--radius-md);
+            text-align:center;
+            height:43px;
+            line-height: 41px;
+            font-size:.78rem;
             width:30%;
-            display: inline;
-            font-weight:bold;
+            display: inline-block;
+            vertical-align: top;
+            font-weight:600;
+            letter-spacing: .02em;
         }
         .settingsPageInput, #saveButton{
-            background-color: white;
-            padding-left: 2%;
-            border: 2px solid black;
+            background-color: var(--text-primary);
+            color: var(--bg-app);
+            padding-left: 3%;
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
             width:68%;
             margin-left:2%;
-            display: inline;
+            display: inline-block;
             height:43px;
+            font-size: .85rem;
         }
         #saveButton{
-            background-color:rgb(60, 60, 60);
-            /* height:150%; */
+            background-color:var(--accent);
+            color: var(--accent-contrast);
             margin-left:32%;
             margin-bottom: 36px;
-            color: black;
-            font-size:large;
-            border: 2px solid black;
+            font-size:.95rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            border: 1px solid var(--accent-strong);
+            cursor: pointer;
+            width: auto;
+            padding: 0 24px;
+            transition: background-color .15s ease;
+        }
+        #saveButton:hover{
+            background-color: var(--accent-strong);
         }
         /* presetsPage */
         #presetsPage{
-            grid-template-rows: 12% 72% 16%;
+            grid-template-rows: 3px 12% calc(72% - 3px) 16%;
         }
         #selectedPresetContainer{
+            grid-row: 2;
             margin-bottom:20px;
             grid-template-columns: 15% 10% 10% 10% 10% 10% 5% 10% 10% 10%;
             display: grid;
             margin-top:-6px;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            background-color: var(--bg-surface);
+            overflow: hidden;
         }
         .selectedPresetContainerButton, .selectedPresetContainerLabel {
-            background-color: #555555;
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
             height:100%;
-            border: 3px solid black;
-            margin-left:-3px;
-            font-size: x-small;
+            border: none;
+            border-right: 1px solid var(--border-subtle);
+            margin-left:0px;
+            font-size: .68rem;
+            font-weight: 600;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            transition: background-color .15s ease, color .15s ease;
         }
         .selectedPresetContainerLabel{
-            font-weight: bold;
-            background-color: #444444;
+            font-weight: 700;
+            background-color: var(--bg-surface-2);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: .03em;
+            font-size: .6rem;
         }
         #selectedPresetTypeSpacer{
             border-top:0px;
             border-bottom: 0px;
-            background-color: grey;
+            border-right: none;
+            background-color: transparent;
         }
         #pixelMapContainer{
-            background-color: grey;
+            grid-row: 3;
+            background-color: var(--border-subtle);
             z-index: 4000000000;
             margin-bottom:20px;
             display:grid;
             grid-template-columns: auto auto auto auto auto auto auto auto;
+            border: 2px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            gap: 2px;
+            overflow: hidden;
         }
         .pixel{
             display:grid;
-            border:3px solid black;
-            background-color: red;
+            background-color: var(--bg-elevated);
         }
         #colorPickerContainer{
-            border:3px solid black;
+            grid-row: 4;
+            border:1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
             margin:0px;
             padding:0px;
             height:100%;
             grid-template-columns: auto;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
         }
         #cpCanvas{
             display:grid;
@@ -184,56 +353,82 @@
             height:100%;
         }
         #synthSlidersContainer{
-            background-color: grey;
-            height:121%;
+            background-color: transparent;
+            height:100%;
             display:none;
+            flex-direction: column;
             width:100%;
-            grid-template-rows: 20% 80%;
+            grid-row: 3 / span 2;
             margin-left:-3px;
         }
         #labelsDiv {
             display: grid;
             width:100%;
+            flex: 0 0 auto;
+            height: 24%;
+            max-height: 54px;
             grid-template-columns: 12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5% 12.5%;
         }
         #slidersDiv {
             display: grid;
             width:100%;
+            flex: 1 1 auto;
+            min-height: 0;
             grid-template-columns: auto auto auto auto auto auto auto auto;
         }
         .sliderLabel {
-            background-color: #222222;
-            width: 100%;
-            border: 3px solid black;
-            border-bottom: 0px;
-            color: #aaaaaa;
-            font-size: xx-small;
-            text-align: center;
-        }
-        .slider {
-            background-color: rgb(70,70,70);
+            background-color: var(--bg-elevated);
             width: 100%;
             height: 100%;
-            border: 3px solid black;
+            border: 1px solid var(--border-subtle);
+            border-bottom: 0px;
+            color: var(--text-secondary);
+            font-size: 7.5px;
+            line-height: 1.15;
+            font-weight: 600;
+            text-align: center;
+            padding: 2px 2px;
+            overflow: hidden;
+            word-break: normal;
+            overflow-wrap: normal;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+        }
+        .sliderLabelShort{
+            display:none;
+        }
+        @media (max-width: 430px){
+            .sliderLabelFull{
+                display:none;
+            }
+            .sliderLabelShort{
+                display:inline;
+            }
+        }
+        .slider {
+            background-color: var(--accent);
+            width: 100%;
+            height: 100%;
+            border: 1px solid var(--border-subtle);
+            border-radius: 4px;
         }
       </style>
     </head>
     <body>
         <div id="background">
             <div id="header">
-                <button class="header-item"></button>
-                <button class="header-item" id="mainLogo"onclick="requestFullScreen();">NimbusKit</button>
-                <button class="header-item"></button>  
-                <button class="header-item"></button>
-                <button class="header-item"></button>
-                <button class="header-item"></button>
-                <button class="header-item"></button>
-                <button class="header-item"></button>
-                <button class="header-item"></button>
-                <button class="header-item" onclick="goToPage('presetsPage');">Presets</button>
-                <button class="header-item" onclick="goToPage('settingsPage');">Settings</button>
-                <button class="header-item" onclick="goToPage('dataPage');">Data</button>
-                <button class="header-item"></button>
+                <button class="header-item" id="mainLogo" onclick="requestFullScreen();">NimbusKit</button>
+                <div id="headerSpacer"></div>
+                <button class="header-item nav-btn" id="navPresets" onclick="goToPage('presetsPage');">Presets</button>
+                <button class="header-item nav-btn" id="navSettings" onclick="goToPage('settingsPage');">Settings</button>
+                <button class="header-item nav-btn" id="navData" onclick="goToPage('dataPage');">Data</button>
+                <button class="header-item" id="navMenuToggle" onclick="toggleNavMenu();">&#9776;</button>
+            </div>
+            <div id="navMenu">
+                <button class="navMenuItem" id="navMenuPresets" onclick="goToPage('presetsPage');toggleNavMenu(false);">Presets</button>
+                <button class="navMenuItem" id="navMenuSettings" onclick="goToPage('settingsPage');toggleNavMenu(false);">Settings</button>
+                <button class="navMenuItem" id="navMenuData" onclick="goToPage('dataPage');toggleNavMenu(false);">Data</button>
             </div>
             <div id="topSpacer">
             </div>
@@ -250,7 +445,7 @@
                     <button id="selectedPresetButton4" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">4</button>
                     <button id="selectedPresetButton5" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">5</button>
                     <button id="selectedPresetTypeSpacer" class="selectedPresetContainerButton"></button>
-                    <button class="selectedPresetContainerLabel">Type:</button>      
+                    <button class="selectedPresetContainerLabel">Type:</button>
                     <button id="synthTypeButton" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton('synth','typebutton')">Synth</button>
                     <button id="pixelTypeButton" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton('pixel','typebutton')">Pixel</button>
                 </div>
@@ -398,6 +593,13 @@
                 }
                 document.addEventListener("mouseup", logButtons);
                 document.addEventListener("mousedown", logButtons);
+                document.addEventListener("click", function(event){
+                    var menu=document.getElementById('navMenu');
+                    var toggle=document.getElementById('navMenuToggle');
+                    if(menu.classList.contains('open') && !menu.contains(event.target) && event.target!==toggle){
+                        toggleNavMenu(false);
+                    }
+                });
                 createDataPage();
                 createSettingsPage();
                 createPixelMapUI();
@@ -444,22 +646,28 @@
                 // selected preset
                 for(var x=1;x<6;x++){
                     if(x!=globals.selectedPreset){
-                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#555555';
+                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='var(--bg-elevated)';
+                        document.getElementById("selectedPresetButton"+x).style.color='var(--text-primary)';
                     }else{
-                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='#888888';
+                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='var(--accent)';
+                        document.getElementById("selectedPresetButton"+x).style.color='var(--accent-contrast)';
                     }
                 }
                 // selected preset type
                 if(globals.presetTypes[globals.selectedPreset-1]=="synth"){
-                    document.getElementById("synthTypeButton").style.backgroundColor='#888888';
-                    document.getElementById("pixelTypeButton").style.backgroundColor='#555555';
-                    document.getElementById("synthSlidersContainer").style.display='grid';
+                    document.getElementById("synthTypeButton").style.backgroundColor='var(--accent)';
+                    document.getElementById("synthTypeButton").style.color='var(--accent-contrast)';
+                    document.getElementById("pixelTypeButton").style.backgroundColor='var(--bg-elevated)';
+                    document.getElementById("pixelTypeButton").style.color='var(--text-primary)';
+                    document.getElementById("synthSlidersContainer").style.display='flex';
                     document.getElementById("pixelMapContainer").style.display='none';
                     document.getElementById("colorPickerContainer").style.display='none';
                 }else{
                     if(globals.presetTypes[globals.selectedPreset-1]=="pixel"){
-                        document.getElementById("synthTypeButton").style.backgroundColor='#555555';
-                        document.getElementById("pixelTypeButton").style.backgroundColor='#888888';
+                        document.getElementById("synthTypeButton").style.backgroundColor='var(--bg-elevated)';
+                        document.getElementById("synthTypeButton").style.color='var(--text-primary)';
+                        document.getElementById("pixelTypeButton").style.backgroundColor='var(--accent)';
+                        document.getElementById("pixelTypeButton").style.color='var(--accent-contrast)';
                         document.getElementById("synthSlidersContainer").style.display='none';
                         document.getElementById("pixelMapContainer").style.display='grid';
                         document.getElementById("colorPickerContainer").style.display='block';
@@ -474,6 +682,9 @@
             }
 
             function resizePages(){
+                if(window.innerWidth>600){
+                    toggleNavMenu(false);
+                }
                 // Header vs body size
                 const pages = document.getElementsByClassName("page");
                 for (let i = 0; i < pages.length; i++) {
@@ -527,8 +738,20 @@
                     }else{
                         pages.item(i).style.display='none'
                     }
-                }            
+                }
+                document.getElementById('navPresets').classList.toggle('active', pageName=='presetsPage');
+                document.getElementById('navSettings').classList.toggle('active', pageName=='settingsPage');
+                document.getElementById('navData').classList.toggle('active', pageName=='dataPage');
+                document.getElementById('navMenuPresets').classList.toggle('active', pageName=='presetsPage');
+                document.getElementById('navMenuSettings').classList.toggle('active', pageName=='settingsPage');
+                document.getElementById('navMenuData').classList.toggle('active', pageName=='dataPage');
                 syncView();
+            }
+
+            function toggleNavMenu(forceState){
+                var menu=document.getElementById('navMenu');
+                var shouldOpen=(typeof forceState=='boolean') ? forceState : !menu.classList.contains('open');
+                menu.classList.toggle('open', shouldOpen);
             }
 
             function handleSelectedPresetButton(inputValue, buttonType){
@@ -538,14 +761,14 @@
                     globals.selectedPreset=inputValue;
                 }
                 makeUpdateLedPresetsCall();
-                syncView();                    
+                syncView();
             }
 
 			function requestFullScreen() {
 				// Supports most browsers and their versions.
 				var element = document.getElementById("background"); // Make the body go full screen.
 				var requestMethod = element.requestFullScreen || element.webkitRequestFullScreen || element.mozRequestFullScreen || element.msRequestFullScreen;
-			
+
 				if (requestMethod) { // Native full screen.
 					requestMethod.call(element);
 				} else if (typeof window.ActiveXObject !== "undefined") { // Older IE.
@@ -590,18 +813,18 @@
                     canvas.className="dataPageGraphCanvas"
                     canvas.id="dataPageGraphCanvas_"+x
                     canvas.num=x;
-                    canvas.width=parseInt(document.getElementById("dataPage").offsetWidth*.8);   
-                    canvas.height=parseInt(document.getElementById("dataPage").offsetHeight/4*.8);             
+                    canvas.width=parseInt(document.getElementById("dataPage").offsetWidth*.8);
+                    canvas.height=parseInt(document.getElementById("dataPage").offsetHeight/4*.8);
                     canvas.refreshCanvas=function(){
                         this.width=parseInt(document.getElementById("dataPage").offsetWidth*.8);
                         this.height=parseInt(document.getElementById("dataPage").offsetHeight/4*.8);
                         var ctx = this.getContext("2d");
                         ctx.clearRect(0, 0, this.width, this.height);
-                        ctx.fillStyle = "#555555";
+                        ctx.fillStyle = "#1a1e28";
                         ctx.fillRect(0, 0, this.width, this.height );
 
                         ctx.lineWidth = 2;
-                        ctx.strokeStyle = '#bbbbbb';
+                        ctx.strokeStyle = '#f2a93c';
                         ctx.beginPath();
                         for(var x=0; x<globals.dataHistoryBuffer[0].length; x++){
                             if(x==0){
@@ -673,7 +896,7 @@
                     catch{}
                 }
             }
-      
+
             function createPixelMapUI(){
                 for(var x=0;x<(globals.numRows);x++){
                     for(var y=0;y<(globals.numCols);y++){
@@ -740,12 +963,12 @@
                             }
                             catch{}
                         }
-                        document.getElementById("pixelMapContainer").appendChild(canvas);           
-                    }    
+                        document.getElementById("pixelMapContainer").appendChild(canvas);
+                    }
                 }
             }
 
-            function createColorPicker(){ 
+            function createColorPicker(){
                 var cpCanvas=document.createElement('canvas');
                 cpCanvas.className="cpCanvas"
                 cpCanvas.id="cpCanvas"
@@ -767,7 +990,6 @@
                 cpCanvas.updateValue=function(event){
                     this.refreshCanvas();
                     var ctx = this.getContext("2d");
-                    ctx.fillStyle = "rgba(5,5,5,.8)";
                     var tabWidth=8;
                     if(event.offsetX<0){
                         event.offsetX=0;
@@ -776,7 +998,11 @@
                         event.offsetX=this.offsetWidth;
                     }
                     var tabCenter=(event.offsetX/this.offsetWidth*this.width);
-                    ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );  
+                    ctx.fillStyle = "rgba(255,255,255,0.92)";
+                    ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );
+                    ctx.strokeStyle = "rgba(10,12,17,0.65)";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );
                     globals.selectedColor=globals.colorMap[0].length-1-parseInt(event.offsetX/this.offsetWidth*globals.colorMap[0].length);
                     if(globals.selectedColor<0){
                         globals.selectedColor=0;
@@ -802,10 +1028,13 @@
                 cpCanvas.setValue=function(value){
                     this.refreshCanvas();
                     var ctx = this.getContext("2d");
-                    ctx.fillStyle = "rgba(5,5,5,.8)";
                     var tabWidth=8;
                     var tabCenter=(value/(globals.colorMap[0].length-1)*this.width);
-                    ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );  
+                    ctx.fillStyle = "rgba(255,255,255,0.92)";
+                    ctx.fillRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );
+                    ctx.strokeStyle = "rgba(10,12,17,0.65)";
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(tabCenter-tabWidth/2, 0, tabWidth, this.height );
                 }
                 cpCanvas.ontouchstart=function(event){
                     this.isSelected=true;
@@ -849,8 +1078,8 @@
                     canvas.updateValue=function(event){
                         var ctx = this.getContext("2d");
                         ctx.clearRect(0, 0, this.width, this.height);
-                        ctx.fillStyle = "#222222";
-                        ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height ); 
+                        ctx.fillStyle = "#0a0c11";
+                        ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height );
                         var value=255-parseInt(event.offsetY/this.offsetHeight*255);
                         if(value<12){
                             value=0;
@@ -882,7 +1111,7 @@
                     canvas.setValue=function(value){
                         var ctx = this.getContext("2d");
                         ctx.clearRect(0, 0, this.width, this.height);
-                        ctx.fillStyle = "#222222";
+                        ctx.fillStyle = "#0a0c11";
                         ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) );
                     }
                     canvas.ontouchstart=function(event){
@@ -905,21 +1134,21 @@
                             }
                             if(eventOffsetY>=this.offsetHeight){
                                 eventOffsetX=this.offsetHeight;
-                            }  
-                            event.offsetY=eventOffsetY;  
+                            }
+                            event.offsetY=eventOffsetY;
                             this.updateValue(event);
                         }
-                    }                    
+                    }
                     slidersDiv.appendChild(canvas);
                     var sliderLabelValues=[
                         'Color',
-                        'ColorSpread',
-                        'CycleTime',
-                        'TrailLength',
-                        'TrailSpread',
+                        'Color<wbr>Spread',
+                        'Cycle<wbr>Time',
+                        'Trail<wbr>Length',
+                        'Trail<wbr>Spread',
                         'Direction',
                         'Strobe',
-                        'Brightness'
+                        '<span class="sliderLabelFull">Brightness</span><span class="sliderLabelShort">Bright</span>'
                     ]
                     var label=document.createElement('span');
                     label.className="sliderLabel";
@@ -927,14 +1156,14 @@
                     labelsDiv.appendChild(label)
                     label.innerHTML=sliderLabelValues[canvas.num-1];
                     label.refreshLabel=function(){
-                        this.style.lineHeight=parseInt(this.parentNode.offsetHeight*.9)+'px';
+                        // vertical centering is handled by flex layout now
                     }
                 }
             }
 
             function makeGetSettingsCall(){
                 var urlString='http://'+location.host + '/getSettings'
-                var xhttp = new XMLHttpRequest(); 
+                var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
                 if(this.readyState == 4 && this.status == 200){
                     var getResponse=JSON.parse(this.response);
@@ -956,7 +1185,7 @@
                     payload[globals.settingsPageFields[x].name]=document.getElementById(globals.settingsPageFields[x].name).value;
                 }
                 var urlString='http://'+location.host + '/updateSettings'
-                var xhttp = new XMLHttpRequest(); 
+                var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
                     if(this.readyState == 4 && this.status == 200){
                         console.log(this.responseText);
@@ -969,7 +1198,7 @@
 
             function makeGetLedPresetsCall(){
                 var urlString='http://'+location.host + '/getLedPresets'
-                var xhttp = new XMLHttpRequest(); 
+                var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
                     if(this.readyState == 4 && this.status == 200){
                         var getResponse=JSON.parse(this.response);
@@ -1008,7 +1237,7 @@
                 }
                 var payload={"ledPresets":globals.synthSliderValues, "selectedPreset":parseInt(globals.selectedPreset-1), "presetTypes": tempPresetTypes};
                 var urlString='http://'+location.host + '/updateLedPresets'
-                var xhttp = new XMLHttpRequest(); 
+                var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
                 if(this.readyState == 4 && this.status == 200){
                     console.log(this.responseText);
@@ -1021,7 +1250,7 @@
 
             function makeGetPixelMapCall(){
                 var urlString='http://'+location.host + '/getPixelMapPresets'
-                var xhttp = new XMLHttpRequest(); 
+                var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
                     if(this.readyState == 4 && this.status == 200){
                         var getResponse=JSON.parse(this.response);
@@ -1044,7 +1273,7 @@
             function makeUpdatPixelMapCall(){
                 var payload={"pixelMap":globals.pixelMap};
                 var urlString='http://'+location.host + '/updatePixelMap'
-                var xhttp = new XMLHttpRequest(); 
+                var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
                 if(this.readyState == 4 && this.status == 200){
                     console.log(this.responseText);
@@ -1074,7 +1303,7 @@
                         initWebSocket();
                     },1000);
                 };
-                socket.onmessage = function(e) {  
+                socket.onmessage = function(e) {
                     console.log('Received data from websocket: '+e.data);
                     globals.socketConnectivityCheck=new Date().getTime();
                     var incomingData=e.data.split(',');
@@ -1090,7 +1319,7 @@
                     return true;
                 };
             }
-        
+
             function initOrientationListener(){
                 var orientation = (screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation;
                 processOrientation(orientation);
@@ -1150,7 +1379,7 @@
                     document.getElementById("selectedPresetContainer").style.marginBottom='';
                     document.getElementById("selectedPresetContainer").style.height='';
                     document.getElementById("pixelMapContainer").style.marginBottom='';
-                    document.getElementById("colorPickerContainer").style.height='';                   
+                    document.getElementById("colorPickerContainer").style.height='';
                 }
             }
 
