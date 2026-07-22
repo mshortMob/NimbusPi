@@ -6,6 +6,7 @@
 #include <accelerometer_funcs.h>
 #include <socket_server.h>
 #include <http_server.h>
+#include <ota_funcs.h>
 
 void setup() {
   delay(1000);
@@ -18,6 +19,7 @@ void setup() {
   wifiConnected=setup_ap(epdata.ssid, epdata.password, epdata.ap_name);
   setup_http_server();
   setup_socket_server();
+  setup_ota();
 }
 
 void loop() {
@@ -27,4 +29,5 @@ void loop() {
   handle_accelerometer();
   handle_socket_server();
   handle_artnet();
+  handle_ota();
 }
