@@ -49,7 +49,7 @@ boolean connectToSavedWifi(char* savedWifiName, char* savedWifiPassword, char* s
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-    if (i > 25 | interupt_startup_routine() ){
+    if (i > 55 | interupt_startup_routine() ){
       state = false;
       break;
     }

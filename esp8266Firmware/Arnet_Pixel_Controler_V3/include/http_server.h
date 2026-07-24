@@ -161,10 +161,15 @@ void handleIndex(){
   server.serveStatic("/index.html", SPIFFS, "/index.html");
 }
 
+void handleFavicon(){
+  server.serveStatic("/favicon.svg", SPIFFS, "/favicon.svg");
+}
+
 void setup_http_server(){
   SPIFFS.begin();
   handleRoot();
   handleIndex();
+  handleFavicon();
   handleGetSettings();
   handleGetLedPresets();
   handleUpdateSettings();

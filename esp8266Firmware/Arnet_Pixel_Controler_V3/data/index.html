@@ -1,6 +1,8 @@
 <html>
     <head>
       <title>FlowMapper</title>
+      <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+      <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg">
       <style>
         /* theme */
         :root{
@@ -78,6 +80,10 @@
             font-weight: 700;
             color: #f2a93c;
             background: none;
+            gap: 4px;
+        }
+        #mainLogoIcon{
+            flex-shrink: 0;
         }
         #headerSpacer{
             flex: 1 1 auto;
@@ -435,7 +441,10 @@
     <body>
         <div id="background">
             <div id="header">
-                <button class="header-item" id="mainLogo" onclick="requestFullScreen();">NimbusKit</button>
+                <button class="header-item" id="mainLogo" onclick="requestFullScreen();">
+                    <svg id="mainLogoIcon" viewBox="0 0 24 24" width="35" height="35" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M18.2 18H6a3.3 3.3 0 0 1-.7-6.53 3.2 3.2 0 0 1 2.2-3.5 2.2 2.2 0 0 1 2 3 3.4 3.4 0 0 1 2.3-3 2.3 2.3 0 0 1 2.5 2.6 3.6 3.6 0 0 1 2.6-2.7 3.8 3.8 0 0 1 2.9 2.83A4.1 4.1 0 0 1 18.2 18Z"/></svg>
+                    <span>NimbusKit</span>
+                </button>
                 <div id="headerSpacer"></div>
                 <button class="header-item nav-btn" id="navPresets" onclick="goToPage('presetsPage');">Presets</button>
                 <button class="header-item nav-btn" id="navSettings" onclick="goToPage('settingsPage');">Settings</button>
