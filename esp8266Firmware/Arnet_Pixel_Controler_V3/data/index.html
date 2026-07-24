@@ -76,7 +76,7 @@
             font-size: 1.05rem;
             letter-spacing: .04em;
             font-weight: 700;
-            color: var(--accent);
+            color: #f2a93c;
             background: none;
         }
         #headerSpacer{
@@ -247,6 +247,23 @@
             vertical-align: top;
             font-weight:600;
             letter-spacing: .02em;
+        }
+        .settingsPasswordToggle{
+            position:absolute;
+            right:0;
+            top:0;
+            height:43px;
+            width:36px;
+            border:none;
+            background:transparent;
+            color:var(--bg-app);
+            font-size:1rem;
+            line-height:1;
+            padding:0;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
         }
         .settingsPageInput, #saveButton{
             background-color: var(--text-primary);
@@ -852,12 +869,30 @@
                     // label.for=globals.settingsPageFields[x].name;
                     label.innerHTML=globals.settingsPageFields[x].text;
                     row.appendChild(label);
-                    var input = document.createElement('input');
-                    input.type='text';
+                    let input = document.createElement('input');
+                    input.type=(globals.settingsPageFields[x].name=='password') ? 'password' : 'text';
                     input.className="settingsPageInput";
                     input.id=globals.settingsPageFields[x].name;
                     input.value=globals.settingsPageFields[x].initVal;
                     row.appendChild(input);
+                    if(globals.settingsPageFields[x].name=='password'){
+                        var eyeIconOpen='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
+                        var eyeIconClosed='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+                        var passwordToggle=document.createElement('button');
+                        passwordToggle.type='button';
+                        passwordToggle.className='settingsPasswordToggle';
+                        passwordToggle.innerHTML=eyeIconOpen;
+                        passwordToggle.onclick=function(){
+                            if(input.type=='password'){
+                                input.type='text';
+                                this.innerHTML=eyeIconClosed;
+                            }else{
+                                input.type='password';
+                                this.innerHTML=eyeIconOpen;
+                            }
+                        }
+                        row.appendChild(passwordToggle);
+                    }
                     document.getElementById("settingsPage").appendChild(row);
                 }
                 var row = document.createElement('div');
