@@ -25,7 +25,7 @@ void setup() {
 void loop() {
   buttonState button_state=handle_button(wifiConnected);
   wifiConnected=handle_ap( wifiConnected, button_state.buttonWasPressed);
-  handle_leds(button_state.selectedMode, wifiConnected);
+  handle_leds(button_state.selectedMode);
   handle_accelerometer();
   handle_socket_server();
   handle_artnet();

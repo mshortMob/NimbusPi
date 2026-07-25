@@ -2,8 +2,6 @@
 #include <ESP8266mDNS.h>
 #include <WiFiClient.h>
 
-const char *password = "mshort123";
-
 bool wifiConnected=false;
 bool hasDisplayedEepromResetFlash=false;
 
@@ -15,8 +13,8 @@ void startStandaloneHotspot(){
   Serial.print("SSID: ");
   Serial.println(epdata.ap_name);
   Serial.print("Password: ");
-  Serial.println(password);
-  WiFi.softAP(epdata.ap_name, password);
+  Serial.println(epdata.ap_password);
+  WiFi.softAP(epdata.ap_name, epdata.ap_password);
   IPAddress myIP = WiFi.softAPIP();
   if (MDNS.begin(epdata.ap_name)) {
     Serial.println("mDNS responder started");
@@ -35,6 +33,14 @@ boolean connectToSavedWifi(char* savedWifiName, char* savedWifiPassword, char* s
   setLEDSToASingleColor(25,0,0);
   boolean state = true;
   int i = 0;
+  int timeoutSeconds = epdata.ssid_timeout_seconds;
+  if(timeoutSeconds<5){
+    timeoutSeconds=5;
+  }
+  if(timeoutSeconds>120){
+    timeoutSeconds=120;
+  }
+  int max_wifi_connect_iterations = timeoutSeconds * 2;
   WiFi.mode(WIFI_STA);
   WiFi.hostname(savedAPName); 
   WiFi.begin(savedWifiName, savedWifiPassword);
@@ -49,7 +55,7 @@ boolean connectToSavedWifi(char* savedWifiName, char* savedWifiPassword, char* s
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
     Serial.print(".");
-    if (i > 55 | interupt_startup_routine() ){
+    if (i > max_wifi_connect_iterations | interupt_startup_routine() ){
       state = false;
       break;
     }
@@ -61,6 +67,8 @@ boolean connectToSavedWifi(char* savedWifiName, char* savedWifiPassword, char* s
     Serial.println(savedWifiName);
     Serial.print("IP address: ");
     Serial.println(WiFi.localIP());
+    setLEDSToASingleColor(25,25,0);
+    delay(2500);
   } else {
     Serial.println("");
     Serial.println("Connection failed.");

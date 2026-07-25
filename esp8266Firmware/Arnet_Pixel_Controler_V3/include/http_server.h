@@ -9,7 +9,7 @@ static AsyncWebServer server(80);
 void handleGetSettings(){
   server.on("/getSettings", HTTP_GET, [](AsyncWebServerRequest *request) {
     EEPROM.get(0,epdata);
-    StaticJsonDocument<640> data;
+    StaticJsonDocument<768> data;
     data["ssid"]=epdata.ssid;
     data["password"]=epdata.password;
     data["universe"]=epdata.universe;
@@ -18,6 +18,10 @@ void handleGetSettings(){
     data["num_base_leds"]=epdata.num_base_leds;
     data["pixel_start_offset"]=epdata.pixel_start_offset;
     data["ap_name"]=epdata.ap_name;
+    data["ssid_timeout"]=epdata.ssid_timeout_seconds;
+    data["ap_password"]=epdata.ap_password;
+    data["control_mode"]=epdata.control_mode;
+    data["max_brightness_percent"]=epdata.max_brightness_percent;
     String response;
     serializeJson(data, response);
     request->send(200, "application/json", response);
@@ -26,7 +30,7 @@ void handleGetSettings(){
 
 void handleUpdateSettings(){
   AsyncCallbackJsonWebHandler *updateSettingsProcessor = new AsyncCallbackJsonWebHandler("/updateSettings", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    StaticJsonDocument<640> data;
+    StaticJsonDocument<768> data;
     if (json.is<JsonArray>())
     {
       data = json.as<JsonArray>();
@@ -43,6 +47,10 @@ void handleUpdateSettings(){
     epdata.num_base_leds=int(data["num_base_leds"]);
     epdata.pixel_start_offset=int(data["pixel_start_offset"]);
     data["ap_name"].as<String>().toCharArray(epdata.ap_name,64);
+    epdata.ssid_timeout_seconds=int(data["ssid_timeout"]);
+    data["ap_password"].as<String>().toCharArray(epdata.ap_password,64);
+    epdata.control_mode=int(data["control_mode"]);
+    epdata.max_brightness_percent=int(data["max_brightness_percent"]);
     EEPROM.put(0,epdata);
     EEPROM.commit();
     Serial.println("Updated EEPROM values");
@@ -51,6 +59,7 @@ void handleUpdateSettings(){
     request->send(200, "application/json", response);
     Serial.println(response);
     FastLED.clear();
+    apply_max_brightness();
   });
   server.addHandler(updateSettingsProcessor);
 }

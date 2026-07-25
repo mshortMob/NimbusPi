@@ -4,10 +4,22 @@
 CRGB leds[NUM_LEDS];
 #include <led_synth.h>
 
+void apply_max_brightness(void){
+  int percent = epdata.max_brightness_percent;
+  if(percent<1){
+    percent=1;
+  }
+  if(percent>100){
+    percent=100;
+  }
+  FastLED.setBrightness(map(percent, 0, 100, 0, 255));
+}
+
 void setup_leds(void){
   pinMode(LED_PIN, OUTPUT);
   FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
   FastLED.clear();
+  apply_max_brightness();
 }
 
 void clear_leds(){
@@ -41,9 +53,9 @@ void setLEDSForArtnet(uint8_t* data, int filterChan, int fixtureMode){
   }
 }
 
-void handle_leds(int currentMode, bool wifiConnected){
+void handle_leds(int currentMode){
   // chasePattern(colorIndex, colorSpread, cycleTime, trailLength, trailSpread, dir, strobe, brightness); // Normalized to 0-255 Range
-  if(!wifiConnected){
+  if(epdata.control_mode==0){
     if(epdata.presetTypes[currentMode]==1){
       POVPlayer(currentMode);
     }else{

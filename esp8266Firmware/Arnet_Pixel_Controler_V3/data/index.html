@@ -1,6 +1,6 @@
 <html>
     <head>
-      <title>FlowMapper</title>
+      <title>NimbusKit</title>
       <link rel="icon" type="image/svg+xml" href="/favicon.svg">
       <link rel="shortcut icon" type="image/svg+xml" href="/favicon.svg">
       <style>
@@ -88,6 +88,21 @@
         #headerSpacer{
             flex: 1 1 auto;
         }
+        .statusDot{
+            width:10px;
+            height:10px;
+            border-radius:50%;
+            align-self:center;
+            margin: 0 16px 0 6px;
+            flex-shrink:0;
+            background-color: #3ecf6e;
+            box-shadow: 0 0 6px rgba(62,207,110,0.7);
+            transition: background-color .15s ease, box-shadow .15s ease;
+        }
+        .statusDot.artnet{
+            background-color: #e5534b;
+            box-shadow: 0 0 6px rgba(229,83,75,0.7);
+        }
         .header-item {
             color:var(--text-secondary);
             background-color: transparent;
@@ -114,7 +129,6 @@
         }
         #navMenuToggle{
             display:none;
-            font-size: 1.6rem;
             padding: 0 14px;
         }
         #navMenu{
@@ -128,7 +142,7 @@
             border:1px solid var(--border-subtle);
             border-top:none;
             box-shadow: var(--shadow-card);
-            z-index: 10001;
+            z-index: 20000;
             overflow:hidden;
         }
         #navMenu.open{
@@ -233,6 +247,43 @@
         #settingsPage{
             padding-top: 8px;
         }
+        .settingsSection{
+            margin-bottom: 20px;
+        }
+        .settingsSectionHeader{
+            width:100%;
+            height:57px;
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-strong);
+            border-left: 4px solid var(--accent);
+            border-radius: var(--radius-md);
+            display:flex;
+            align-items:center;
+            justify-content:space-between;
+            padding: 0 16px;
+            font-size:.78rem;
+            font-weight:700;
+            letter-spacing:.02em;
+            text-transform: uppercase;
+            cursor:pointer;
+        }
+        .settingsSectionTitle, .settingsSectionChevron{
+            pointer-events:none;
+        }
+        .settingsSectionChevron{
+            display:inline-block;
+            font-size: 1.56rem;
+            line-height: 1;
+            color: var(--accent);
+            transition: transform .15s ease;
+        }
+        .settingsSectionHeader.open .settingsSectionChevron{
+            transform: rotate(180deg);
+        }
+        .settingsSectionContent{
+            padding-top: 20px;
+        }
         .settingsPageRow{
             display: block;
             position: relative;
@@ -286,14 +337,15 @@
         #saveButton{
             background-color:var(--accent);
             color: var(--accent-contrast);
-            margin-left:32%;
+            margin-left:0;
             margin-bottom: 36px;
             font-size:.95rem;
             font-weight: 700;
             letter-spacing: .03em;
+            text-align: center;
             border: 1px solid var(--accent-strong);
             cursor: pointer;
-            width: auto;
+            width: 100%;
             padding: 0 24px;
             transition: background-color .15s ease;
         }
@@ -346,7 +398,7 @@
         #pixelMapContainer{
             grid-row: 3;
             background-color: var(--border-subtle);
-            z-index: 4000000000;
+            z-index: 10;
             margin-bottom:20px;
             display:grid;
             grid-template-columns: auto auto auto auto auto auto auto auto;
@@ -449,7 +501,8 @@
                 <button class="header-item nav-btn" id="navPresets" onclick="goToPage('presetsPage');">Presets</button>
                 <button class="header-item nav-btn" id="navSettings" onclick="goToPage('settingsPage');">Settings</button>
                 <button class="header-item nav-btn" id="navData" onclick="goToPage('dataPage');">Data</button>
-                <button class="header-item" id="navMenuToggle" onclick="toggleNavMenu();">&#9776;</button>
+                <button class="header-item" id="navMenuToggle" onclick="toggleNavMenu();"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+                <div class="statusDot artnet" id="controlModeDot" title="Control Source: Loading..."></div>
             </div>
             <div id="navMenu">
                 <button class="navMenuItem" id="navMenuPresets" onclick="goToPage('presetsPage');toggleNavMenu(false);">Presets</button>
@@ -509,42 +562,85 @@
                 {
                     "name":"ssid",
                     "text":"SSID:",
+                    "section":"Local Wifi Settings",
+                    "initVal":"---"
+                },
+                {
+                    "name":"ssid_timeout",
+                    "text":"SSID Timeout:",
+                    "section":"Local Wifi Settings",
                     "initVal":"---"
                 },
                 {
                     "name":"password",
                     "text":"Password:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"universe",
-                    "text":"Universe:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"startChan",
-                    "text":"Start Channel:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"fixtureMode",
-                    "text":"Fixture Mode:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"num_base_leds",
-                    "text":"Num of Pixels:",
-                    "initVal":"---"
-                },
-                {
-                    "name":"pixel_start_offset",
-                    "text":"Pixel Offset:",
+                    "section":"Local Wifi Settings",
                     "initVal":"---"
                 },
                 {
                     "name":"ap_name",
                     "text":"AP Name:",
+                    "section":"Hotspot / Access Point",
                     "initVal":"---"
+                },
+                {
+                    "name":"ap_password",
+                    "text":"AP Password:",
+                    "section":"Hotspot / Access Point",
+                    "initVal":"---"
+                },
+                {
+                    "name":"num_base_leds",
+                    "text":"Num of Pixels:",
+                    "section":"LED Settings",
+                    "initVal":"---"
+                },
+                {
+                    "name":"pixel_start_offset",
+                    "text":"Pixel Offset:",
+                    "section":"LED Settings",
+                    "initVal":"---"
+                },
+                {
+                    "name":"max_brightness_percent",
+                    "text":"Max Brightness:",
+                    "section":"LED Settings",
+                    "initVal":"---"
+                },
+                {
+                    "name":"fixtureMode",
+                    "text":"Fixture Mode:",
+                    "section":"ArtNet / DMX",
+                    "initVal":"---",
+                    "type":"select",
+                    "options":[
+                        {"value":"0","label":"Single Color (RGB)"},
+                        {"value":"1","label":"Individually Addressable Pixels"},
+                        {"value":"2","label":"Chase Pattern Control"}
+                    ]
+                },
+                {
+                    "name":"startChan",
+                    "text":"Start Channel:",
+                    "section":"ArtNet / DMX",
+                    "initVal":"---"
+                },
+                {
+                    "name":"universe",
+                    "text":"Universe:",
+                    "section":"ArtNet / DMX",
+                    "initVal":"---"
+                },
+                {
+                    "name":"control_mode",
+                    "text":"Control Source:",
+                    "section":"ArtNet / DMX",
+                    "initVal":"---",
+                    "type":"select",
+                    "options":[
+                        {"value":"0","label":"GUI Presets"},
+                        {"value":"1","label":"ArtNet / DMX"}
+                    ]
                 }
             ],
                 numRows: 8,
@@ -622,7 +718,7 @@
                 document.addEventListener("click", function(event){
                     var menu=document.getElementById('navMenu');
                     var toggle=document.getElementById('navMenuToggle');
-                    if(menu.classList.contains('open') && !menu.contains(event.target) && event.target!==toggle){
+                    if(menu.classList.contains('open') && !menu.contains(event.target) && !toggle.contains(event.target)){
                         toggleNavMenu(false);
                     }
                 });
@@ -707,6 +803,20 @@
                 resizePages();
             }
 
+            function adjustSettingsPageHeight(){
+                if(globals.currentPage=="settingsPage"){
+                    var contentHeight=document.getElementById("settingsPage").scrollHeight;
+                    var pageHeight=window.innerHeight;
+                    if(contentHeight<pageHeight){
+                        document.getElementById("background").style.height='100%';
+                    }else{
+                        document.getElementById("background").style.height=contentHeight+'px';
+                    }
+                }else{
+                    document.getElementById("background").style.height='100%';
+                }
+            }
+
             function resizePages(){
                 if(window.innerWidth>600){
                     toggleNavMenu(false);
@@ -724,17 +834,7 @@
                     catch{}
                 }
                 // Settings page background extend
-                if(globals.currentPage=="settingsPage"){
-                    var fieldStaticHeight=parseInt(79*(globals.settingsPageFields.length+1) + 130);
-                    var pageHeight=window.innerHeight;
-                    if(fieldStaticHeight<pageHeight){
-                        document.getElementById("background").style.height='100%';
-                    }else{
-                        document.getElementById("background").style.height=fieldStaticHeight+'px';
-                    }
-                }else{
-                    document.getElementById("background").style.height='100%';
-                }
+                adjustSettingsPageHeight();
                 // Color picker canvas
                 document.getElementById("cpCanvas").setValue(globals.colorMap[0].length-globals.selectedColor)
                 // Synth Slider Labels
@@ -868,23 +968,82 @@
                 }
             }
 
+            function toggleSettingsSection(headerEl){
+                var content=headerEl.nextElementSibling;
+                var isOpen = content.style.display!=='none';
+                var allHeaders=document.getElementsByClassName('settingsSectionHeader');
+                for(var i=0;i<allHeaders.length;i++){
+                    allHeaders[i].nextElementSibling.style.display='none';
+                    allHeaders[i].classList.remove('open');
+                }
+                if(!isOpen){
+                    content.style.display='block';
+                    headerEl.classList.add('open');
+                }
+                adjustSettingsPageHeight();
+            }
+
             function createSettingsPage(){
+                var sectionContents={};
                 for (var x in globals.settingsPageFields){
+                    var field=globals.settingsPageFields[x];
+                    if(!sectionContents[field.section]){
+                        var sectionDiv=document.createElement('div');
+                        sectionDiv.className='settingsSection';
+                        var header=document.createElement('button');
+                        header.type='button';
+                        header.className='settingsSectionHeader';
+                        header.innerHTML='<span class="settingsSectionTitle">'+field.section+'</span><span class="settingsSectionChevron">&#9662;</span>';
+                        header.onclick=function(){
+                            toggleSettingsSection(this);
+                        }
+                        var content=document.createElement('div');
+                        content.className='settingsSectionContent';
+                        content.style.display='none';
+                        sectionDiv.appendChild(header);
+                        sectionDiv.appendChild(content);
+                        document.getElementById("settingsPage").appendChild(sectionDiv);
+                        sectionContents[field.section]=content;
+                    }
                     var row = document.createElement('div');
                     row.id="settingsPageRow_"+x;
                     row.className='settingsPageRow';
                     var label = document.createElement('button');
                     label.className="settingsPageLabel";
-                    // label.for=globals.settingsPageFields[x].name;
-                    label.innerHTML=globals.settingsPageFields[x].text;
+                    label.innerHTML=field.text;
                     row.appendChild(label);
-                    let input = document.createElement('input');
-                    input.type=(globals.settingsPageFields[x].name=='password') ? 'password' : 'text';
+                    let isPasswordField = (field.name=='password' || field.name=='ap_password');
+                    let input;
+                    if(field.type=='select'){
+                        input=document.createElement('select');
+                        var placeholderOpt=document.createElement('option');
+                        placeholderOpt.value=field.initVal;
+                        placeholderOpt.innerHTML=field.initVal;
+                        placeholderOpt.disabled=true;
+                        input.appendChild(placeholderOpt);
+                        for(var o=0;o<field.options.length;o++){
+                            var opt=document.createElement('option');
+                            opt.value=field.options[o].value;
+                            opt.innerHTML=field.options[o].label;
+                            input.appendChild(opt);
+                        }
+                    }else{
+                        input=document.createElement('input');
+                        if(isPasswordField){
+                            input.type='password';
+                        }else if(field.type=='number'){
+                            input.type='number';
+                            input.min=field.min;
+                            input.max=field.max;
+                        }else{
+                            input.type='text';
+                        }
+                    }
                     input.className="settingsPageInput";
-                    input.id=globals.settingsPageFields[x].name;
-                    input.value=globals.settingsPageFields[x].initVal;
+                    input.id=field.name;
+                    input.value=field.initVal;
                     row.appendChild(input);
-                    if(globals.settingsPageFields[x].name=='password'){
+                    if(isPasswordField){
                         var eyeIconOpen='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
                         var eyeIconClosed='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
                         var passwordToggle=document.createElement('button');
@@ -902,7 +1061,7 @@
                         }
                         row.appendChild(passwordToggle);
                     }
-                    document.getElementById("settingsPage").appendChild(row);
+                    sectionContents[field.section].appendChild(row);
                 }
                 var row = document.createElement('div');
                 row.id='saveButton_row'
@@ -1205,6 +1364,13 @@
                 }
             }
 
+            function updateControlModeDot(controlModeValue){
+                var dot=document.getElementById('controlModeDot');
+                var isArtnet = (String(controlModeValue)=='1');
+                dot.classList.toggle('artnet', isArtnet);
+                dot.title = isArtnet ? 'Control Source: ArtNet / DMX' : 'Control Source: GUI Presets';
+            }
+
             function makeGetSettingsCall(){
                 var urlString='http://'+location.host + '/getSettings'
                 var xhttp = new XMLHttpRequest();
@@ -1215,6 +1381,7 @@
                     for (var x in globals.settingsPageFields){
                         document.getElementById(globals.settingsPageFields[x].name).value=getResponse[globals.settingsPageFields[x].name];
                     }
+                    updateControlModeDot(getResponse['control_mode']);
                     makeGetLedPresetsCall();
                 }
                 };
@@ -1238,6 +1405,7 @@
                 xhttp.open('POST', urlString, true);
                 xhttp.setRequestHeader('Content-Type', 'application/json')
                 xhttp.send(JSON.stringify(payload));
+                updateControlModeDot(payload['control_mode']);
             }
 
             function makeGetLedPresetsCall(){

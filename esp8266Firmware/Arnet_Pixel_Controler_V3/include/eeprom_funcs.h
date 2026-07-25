@@ -12,6 +12,10 @@ struct ConfigSettings {
   int num_base_leds = 100;
   int pixel_start_offset = 0;
   char ap_name[64] = "EspTestBed";
+  int ssid_timeout_seconds = 30;
+  char ap_password[64] = "EspTestBed";
+  int control_mode = 0; // control_mode 0=GUI Presets ; 1=ArtNet/DMX
+  int max_brightness_percent = 100;
   int ledPresets[5][8] = {
     {130,50,200,4,4,3,0,50},
     {50,134,130,16,30,4,0,187},
@@ -92,6 +96,14 @@ void eeprom_load_all(void){
   Serial.println(epdata.pixel_start_offset);
   Serial.print("ap_name: ");
   Serial.println(epdata.ap_name);
+  Serial.print("ssid_timeout_seconds: ");
+  Serial.println(epdata.ssid_timeout_seconds);
+  Serial.print("ap_password: ");
+  Serial.println(epdata.ap_password);
+  Serial.print("control_mode: ");
+  Serial.println(epdata.control_mode);
+  Serial.print("max_brightness_percent: ");
+  Serial.println(epdata.max_brightness_percent);
   Serial.println("ledPresets: ");
   for(int x=0;x<5;x++){
     for(int y=0;y<8;y++){
@@ -136,7 +148,7 @@ bool need_eeprom_reset(void){
   delay(100);
   Serial.println("hasInitializedEeprom:");
   Serial.println(eptemp.hasInitializedEeprom);
-  Serial.println();  
+  Serial.println();
   if(eptemp.hasInitializedEeprom!=eeprom_signature){
     result=true;
     eptemp.hasInitializedEeprom=eeprom_signature;
