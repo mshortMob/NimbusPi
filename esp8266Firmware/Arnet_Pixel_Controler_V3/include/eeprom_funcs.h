@@ -71,6 +71,7 @@ struct ConfigSettings {
   char mesh_password[64] = "NimbusMesh123";
   int mesh_leader = 0; // mesh_leader 0=Pure Node ; 1=Leader (sets mesh root for faster/more reliable formation)
   int enable_led_yield = 1; // enable_led_yield 1=Enabled ; 0=Disabled
+  char lan_peers[8][64] = {"","","","","","","",""}; // manually-entered LAN peer hostnames/IPs for standalone-mode targeted control
 };
 
 ConfigSettings epdata;
@@ -79,6 +80,29 @@ ConfigSettings initial_epdata;
 struct {
   int hasInitializedEeprom;
 }eptemp;
+
+// lan_peers was appended after other fields ever got their signature-reset
+// treatment on already-deployed devices, so a stale EEPROM region can hand
+// back unterminated garbage instead of the empty-string default. Force
+// null-termination and blank out anything that isn't printable ASCII so a
+// garbage entry reads as "empty" rather than corrupting the peers list.
+void sanitize_lan_peers(void){
+  for(int x=0;x<8;x++){
+    epdata.lan_peers[x][63]='\0';
+    int len=strnlen(epdata.lan_peers[x],64);
+    bool looksValid=true;
+    for(int c=0;c<len;c++){
+      char ch=epdata.lan_peers[x][c];
+      if(ch<32 || ch>126){
+        looksValid=false;
+        break;
+      }
+    }
+    if(!looksValid){
+      epdata.lan_peers[x][0]='\0';
+    }
+  }
+}
 
 void eeprom_load_all(void){
   EEPROM.get(0,epdata);
@@ -119,6 +143,11 @@ void eeprom_load_all(void){
   Serial.println(epdata.mesh_leader);
   Serial.print("enable_led_yield: ");
   Serial.println(epdata.enable_led_yield);
+  sanitize_lan_peers();
+  Serial.println("lan_peers: ");
+  for(int x=0;x<8;x++){
+    Serial.println(epdata.lan_peers[x]);
+  }
   Serial.println("ledPresets: ");
   for(int x=0;x<5;x++){
     for(int y=0;y<8;y++){

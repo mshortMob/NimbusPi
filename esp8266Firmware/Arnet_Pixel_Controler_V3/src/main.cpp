@@ -6,6 +6,7 @@
 #include <accelerometer_funcs.h>
 #include <socket_server.h>
 #include <http_server.h>
+#include <lan_peers_funcs.h>
 #include <mesh_funcs.h>
 #include <ota_funcs.h>
 
@@ -23,6 +24,7 @@ void setup() {
     wifiConnected=setup_ap(epdata.ssid, epdata.password, epdata.ap_name);
   }
   setup_http_server();
+  setup_lan_peers();
   setup_socket_server();
   setup_ota();
 }
@@ -38,6 +40,7 @@ void loop() {
     }
   }else{
     wifiConnected=handle_ap( wifiConnected, button_state.buttonWasPressed);
+    handle_lan_peers();
   }
   handle_leds(button_state.selectedMode);
   handle_accelerometer();

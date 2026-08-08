@@ -303,6 +303,9 @@
             color: var(--text-secondary);
             margin-left: 6px;
         }
+        .meshTabHidden{
+            display:none !important;
+        }
         .settingsPageRow{
             display: block;
             position: relative;
@@ -370,6 +373,96 @@
         }
         #saveButton:hover{
             background-color: var(--accent-strong);
+        }
+        /* nodesPage */
+        #nodesPage{
+            padding-top: 8px;
+        }
+        #nodesPageControls{
+            display:flex;
+            gap:10px;
+            margin-bottom:20px;
+        }
+        #lanPeersAddRow{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:20px;
+        }
+        .nodesControlButton{
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            height:38px;
+            padding:0 16px;
+            font-size:.78rem;
+            font-weight:600;
+            letter-spacing:.02em;
+            cursor:pointer;
+        }
+        .nodesControlButton:hover{
+            background-color: var(--bg-surface-2);
+        }
+        .nodeRow{
+            display:flex;
+            align-items:center;
+            height:57px;
+            background-color: var(--bg-elevated);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 0 16px;
+            margin-bottom:12px;
+            cursor:pointer;
+        }
+        .nodeRowCheckbox{
+            width:18px;
+            height:18px;
+            margin-right:14px;
+            accent-color: var(--accent);
+            cursor:pointer;
+        }
+        .nodeRowHostname{
+            color: var(--text-primary);
+            font-size:.85rem;
+            font-weight:700;
+            letter-spacing:.02em;
+            flex-grow:1;
+        }
+        .nodeRowBadge{
+            font-size:.62rem;
+            font-weight:700;
+            letter-spacing:.03em;
+            text-transform:uppercase;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 3px 8px;
+            margin-left:8px;
+        }
+        .nodeRowBadge.leaderBadge{
+            color: var(--accent-contrast);
+            background-color: var(--accent);
+            border-color: var(--accent-strong);
+        }
+        .nodeRowRemoveButton{
+            background:transparent;
+            border:none;
+            color: var(--text-secondary);
+            font-size:1.1rem;
+            line-height:1;
+            padding:0 4px;
+            margin-left:8px;
+            cursor:pointer;
+        }
+        .nodeRowRemoveButton:hover{
+            color: var(--text-primary);
+        }
+        #nodesEmptyMessage{
+            color: var(--text-secondary);
+            font-size:.8rem;
+            text-align:center;
+            padding: 30px 0;
         }
         /* presetsPage */
         #presetsPage{
@@ -517,6 +610,7 @@
                     <span>NimbusKit</span>
                 </button>
                 <div id="headerSpacer"></div>
+                <button class="header-item nav-btn meshTabHidden" id="navNodes" onclick="goToPage('nodesPage');">Nodes</button>
                 <button class="header-item nav-btn" id="navPresets" onclick="goToPage('presetsPage');">Presets</button>
                 <button class="header-item nav-btn" id="navSettings" onclick="goToPage('settingsPage');">Settings</button>
                 <button class="header-item nav-btn" id="navData" onclick="goToPage('dataPage');">Data</button>
@@ -524,6 +618,7 @@
                 <div class="statusDot artnet" id="controlModeDot" title="Control Source: Loading..."></div>
             </div>
             <div id="navMenu">
+                <button class="navMenuItem meshTabHidden" id="navMenuNodes" onclick="goToPage('nodesPage');toggleNavMenu(false);">Nodes</button>
                 <button class="navMenuItem" id="navMenuPresets" onclick="goToPage('presetsPage');toggleNavMenu(false);">Presets</button>
                 <button class="navMenuItem" id="navMenuSettings" onclick="goToPage('settingsPage');toggleNavMenu(false);">Settings</button>
                 <button class="navMenuItem" id="navMenuData" onclick="goToPage('dataPage');toggleNavMenu(false);">Data</button>
@@ -556,6 +651,18 @@
             </div>
             <div id="settingsPage" class="page">
             </div>
+            <div id="nodesPage" class="page">
+                <div id="nodesPageControls">
+                    <button class="nodesControlButton" onclick="refreshNodesPage();">Refresh</button>
+                    <button class="nodesControlButton" onclick="selectAllNodes();">Select All</button>
+                    <button class="nodesControlButton" onclick="clearNodeSelection();">Clear Selection</button>
+                </div>
+                <div id="lanPeersAddRow" style="display:none;">
+                    <input type="text" id="lanPeerAddInput" class="settingsPageInput" placeholder="Hostname or IP address" style="width:68%;margin-left:0;">
+                    <button class="nodesControlButton" onclick="addLanPeer();">Add Peer</button>
+                </div>
+                <div id="nodesListContainer"></div>
+            </div>
             <div id="bottomSpacer">
             </div>
         </div>
@@ -563,6 +670,13 @@
 
             globals={
                 currentPage: "presetsPage",
+                selectedNodeIds: [],
+                lastKnownNodeIds: [],
+                lastKnownManualPeers: [],
+                lanPeerAddresses: {},
+                lanSelfHostname: "",
+                networkMode: "0",
+                controlMode: "0",
                 dataHistoryBuffer: [
                     [
                         .5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5
@@ -919,7 +1033,7 @@
                 for (let i = 0; i < pages.length; i++) {
                     console.log(pages.item(i).id)
                     if(pages.item(i).id==pageName){
-                        if(pageName=="settingsPage"){
+                        if(pageName=="settingsPage" || pageName=="nodesPage"){
                             pages.item(i).style.display='block';
                         }else{
                             pages.item(i).style.display='grid';
@@ -932,9 +1046,19 @@
                 document.getElementById('navPresets').classList.toggle('active', pageName=='presetsPage');
                 document.getElementById('navSettings').classList.toggle('active', pageName=='settingsPage');
                 document.getElementById('navData').classList.toggle('active', pageName=='dataPage');
+                document.getElementById('navNodes').classList.toggle('active', pageName=='nodesPage');
                 document.getElementById('navMenuPresets').classList.toggle('active', pageName=='presetsPage');
                 document.getElementById('navMenuSettings').classList.toggle('active', pageName=='settingsPage');
                 document.getElementById('navMenuData').classList.toggle('active', pageName=='dataPage');
+                document.getElementById('navMenuNodes').classList.toggle('active', pageName=='nodesPage');
+                if(pageName=='nodesPage'){
+                    document.getElementById('lanPeersAddRow').style.display = (globals.networkMode=='1') ? 'none' : 'flex';
+                    if(globals.networkMode=='1'){
+                        makeGetMeshNodesCall();
+                    }else{
+                        makeGetLanPeersCall();
+                    }
+                }
                 syncView();
             }
 
@@ -1057,7 +1181,7 @@
                         var header=document.createElement('button');
                         header.type='button';
                         header.className='settingsSectionHeader';
-                        var sectionTitleIds={'ArtNet / DMX':'artnetDmxSectionTitle','Local Wifi Settings':'localWifiSectionTitle'};
+                        var sectionTitleIds={'ArtNet / DMX':'artnetDmxSectionTitle','Local Wifi Settings':'localWifiSectionTitle','Mesh Network':'meshNetworkSectionTitle'};
                         var titleSpanId=sectionTitleIds[field.section] ? ' id="'+sectionTitleIds[field.section]+'"' : '';
                         header.innerHTML='<span class="settingsSectionTitle"'+titleSpanId+'>'+field.section+'</span><span class="settingsSectionChevron">&#9662;</span>';
                         header.onclick=function(){
@@ -1068,7 +1192,7 @@
                         content.style.display='none';
                         sectionDiv.appendChild(header);
                         sectionDiv.appendChild(content);
-                        var sectionIds={'ArtNet / DMX':'artnetDmxSection','Local Wifi Settings':'localWifiSection'};
+                        var sectionIds={'ArtNet / DMX':'artnetDmxSection','Local Wifi Settings':'localWifiSection','Mesh Network':'meshNetworkSection'};
                         if(sectionIds[field.section]){
                             sectionDiv.id=sectionIds[field.section];
                         }
@@ -1115,6 +1239,13 @@
                     if(field.name=='network_mode'){
                         input.onchange=function(){
                             updateMeshModeUI(this.value);
+                            updateNodesTabVisibility(this.value, document.getElementById('control_mode').value);
+                        }
+                    }
+                    if(field.name=='control_mode'){
+                        input.onchange=function(){
+                            updateControlModeDot(this.value);
+                            updateNodesTabVisibility(document.getElementById('network_mode').value, this.value);
                         }
                     }
                     row.appendChild(input);
@@ -1481,10 +1612,39 @@
                 var isMesh = (String(networkModeValue)=='1');
                 deemphasizeSection('artnetDmxSection', 'artnetDmxSectionTitle', 'ArtNet / DMX', isMesh, 'unavailable in Mesh Fleet mode');
                 deemphasizeSection('localWifiSection', 'localWifiSectionTitle', 'Local Wifi Settings', isMesh, 'unused in Mesh Fleet mode');
+            }
+
+            // The Nodes tab makes sense in Mesh Fleet mode always, and in
+            // Standalone mode only while GUI Presets (not ArtNet/DMX) are
+            // actually driving the LEDs - targeting presets to specific
+            // devices has no effect when DMX data is what's playing. This
+            // also covers cross-cutting deemphasis that depends on BOTH
+            // network_mode and control_mode together (the AP Password field
+            // is irrelevant in either Mesh Fleet mode OR ArtNet/DMX mode),
+            // since both cached values are available here regardless of
+            // which one just changed.
+            function updateNodesTabVisibility(networkModeValue, controlModeValue){
+                globals.networkMode = String(networkModeValue);
+                globals.controlMode = String(controlModeValue);
+                var isMesh = (globals.networkMode=='1');
+                var isArtnet = (globals.controlMode=='1');
+                var isAvailable = isMesh || (globals.networkMode=='0' && !isArtnet);
+                document.getElementById('navNodes').classList.toggle('meshTabHidden', !isAvailable);
+                document.getElementById('navMenuNodes').classList.toggle('meshTabHidden', !isAvailable);
+                if(!isAvailable){
+                    globals.selectedNodeIds=[];
+                    if(globals.currentPage=='nodesPage'){
+                        goToPage('presetsPage');
+                    }
+                }
+
+                deemphasizeSection('meshNetworkSection', 'meshNetworkSectionTitle', 'Mesh Network', isArtnet, 'unavailable when using ArtNet/DMX');
+
                 var apPasswordInput = document.getElementById('ap_password');
                 if(apPasswordInput){
-                    apPasswordInput.parentElement.classList.toggle('rowDeemphasized', isMesh);
-                    apPasswordInput.disabled = isMesh;
+                    var apPasswordDeemphasized = isMesh || isArtnet;
+                    apPasswordInput.parentElement.classList.toggle('rowDeemphasized', apPasswordDeemphasized);
+                    apPasswordInput.disabled = apPasswordDeemphasized;
                 }
             }
 
@@ -1500,6 +1660,7 @@
                     }
                     updateControlModeDot(getResponse['control_mode']);
                     updateMeshModeUI(getResponse['network_mode']);
+                    updateNodesTabVisibility(getResponse['network_mode'], getResponse['control_mode']);
                     makeGetLedPresetsCall();
                 }
                 };
@@ -1525,6 +1686,7 @@
                 xhttp.send(JSON.stringify(payload));
                 updateControlModeDot(payload['control_mode']);
                 updateMeshModeUI(payload['network_mode']);
+                updateNodesTabVisibility(payload['network_mode'], payload['control_mode']);
             }
 
             function makeGetLedPresetsCall(){
@@ -1556,6 +1718,45 @@
                 xhttp.send();
             }
 
+            function postToHost(host, path, payload){
+                var urlString='http://'+host+path;
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200){
+                        console.log(this.responseText);
+                    }
+                };
+                xhttp.open('POST', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send(JSON.stringify(payload));
+            }
+
+            // In mesh mode, targeting still works the way it always has -
+            // one request to whichever device is serving this page, which
+            // relays over the mesh to the selected nodes. In standalone/LAN
+            // mode there's no device-to-device relay at all: the browser
+            // instead sends one independent request directly to each
+            // selected device's own address, using location.host for
+            // whichever selected entry is this device (guaranteeing that
+            // particular request stays same-origin, no CORS involved).
+            function sendPresetPayload(path, payload){
+                if(globals.selectedNodeIds && globals.selectedNodeIds.length>0){
+                    if(globals.networkMode=='1'){
+                        payload["targetNodes"]=globals.selectedNodeIds;
+                        postToHost(location.host, path, payload);
+                    }else{
+                        for(var i=0;i<globals.selectedNodeIds.length;i++){
+                            var hostname=globals.selectedNodeIds[i];
+                            var isSelf=(hostname==globals.lanSelfHostname);
+                            var address=isSelf ? location.host : (globals.lanPeerAddresses[hostname] || hostname);
+                            postToHost(address, path, payload);
+                        }
+                    }
+                }else{
+                    postToHost(location.host, path, payload);
+                }
+            }
+
             function makeUpdateLedPresetsCall(){
                 globals.presetValueDebounceTime=new Date().getTime();
                 var tempPresetTypes=[];
@@ -1567,16 +1768,7 @@
                     }
                 }
                 var payload={"ledPresets":globals.synthSliderValues, "selectedPreset":parseInt(globals.selectedPreset-1), "presetTypes": tempPresetTypes};
-                var urlString='http://'+location.host + '/updateLedPresets'
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    console.log(this.responseText);
-                }
-                };
-                xhttp.open('POST', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send(JSON.stringify(payload));
+                sendPresetPayload('/updateLedPresets', payload);
             }
 
             function makeGetPixelMapCall(){
@@ -1603,16 +1795,237 @@
 
             function makeUpdatPixelMapCall(){
                 var payload={"pixelMap":globals.pixelMap};
-                var urlString='http://'+location.host + '/updatePixelMap'
+                sendPresetPayload('/updatePixelMap', payload);
+            }
+
+            function makeGetMeshNodesCall(){
+                var urlString='http://'+location.host + '/getMeshNodes'
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    console.log(this.responseText);
+                    if(this.readyState == 4 && this.status == 200){
+                        var getResponse=JSON.parse(this.response);
+                        console.log(getResponse);
+                        renderNodesList(getResponse['nodes'] || []);
+                    }
+                };
+                xhttp.open('GET', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send();
+            }
+
+            function renderNodesList(nodes){
+                globals.lastKnownNodeIds=nodes.map(function(n){ return n.nodeId; });
+                // Drop selections for nodes that dropped off the mesh since the last refresh.
+                globals.selectedNodeIds=globals.selectedNodeIds.filter(function(id){
+                    return globals.lastKnownNodeIds.indexOf(id)!=-1;
+                });
+                var container=document.getElementById('nodesListContainer');
+                container.innerHTML='';
+                if(nodes.length==0){
+                    var empty=document.createElement('div');
+                    empty.id='nodesEmptyMessage';
+                    empty.innerHTML='No mesh nodes found.';
+                    container.appendChild(empty);
+                    return;
                 }
+                for(var i=0;i<nodes.length;i++){
+                    var node=nodes[i];
+                    var row=document.createElement('div');
+                    row.className='nodeRow';
+
+                    var checkbox=document.createElement('input');
+                    checkbox.type='checkbox';
+                    checkbox.className='nodeRowCheckbox';
+                    checkbox.checked=(globals.selectedNodeIds.indexOf(node.nodeId)!=-1);
+                    checkbox.onchange=(function(nodeId){
+                        return function(){ toggleNodeSelection(nodeId); };
+                    })(node.nodeId);
+                    row.appendChild(checkbox);
+
+                    var hostname=document.createElement('span');
+                    hostname.className='nodeRowHostname';
+                    hostname.innerHTML=node.hostname + (node.isSelf==1 ? ' (this device)' : '');
+                    row.appendChild(hostname);
+
+                    if(node.isLeader==1){
+                        var leaderBadge=document.createElement('span');
+                        leaderBadge.className='nodeRowBadge leaderBadge';
+                        leaderBadge.innerHTML='Leader';
+                        row.appendChild(leaderBadge);
+                    }
+
+                    row.onclick=(function(checkbox){
+                        return function(e){
+                            if(e.target===checkbox || e.target.tagName=='BUTTON'){
+                                return;
+                            }
+                            checkbox.checked=!checkbox.checked;
+                            checkbox.onchange();
+                        };
+                    })(checkbox);
+
+                    container.appendChild(row);
+                }
+            }
+
+            function toggleNodeSelection(nodeId){
+                var idx=globals.selectedNodeIds.indexOf(nodeId);
+                if(idx==-1){
+                    globals.selectedNodeIds.push(nodeId);
+                }else{
+                    globals.selectedNodeIds.splice(idx,1);
+                }
+            }
+
+            function refreshNodesPage(){
+                if(globals.networkMode=='1'){
+                    makeGetMeshNodesCall();
+                }else{
+                    makeGetLanPeersCall();
+                }
+            }
+
+            function selectAllNodes(){
+                globals.selectedNodeIds=(globals.lastKnownNodeIds || []).slice();
+                refreshNodesPage();
+            }
+
+            function clearNodeSelection(){
+                globals.selectedNodeIds=[];
+                refreshNodesPage();
+            }
+
+            function makeGetLanPeersCall(){
+                var urlString='http://'+location.host + '/getLanPeers'
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200){
+                        var getResponse=JSON.parse(this.response);
+                        console.log(getResponse);
+                        renderLanPeersList(getResponse['peers'] || []);
+                    }
+                };
+                xhttp.open('GET', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send();
+            }
+
+            function renderLanPeersList(peers){
+                globals.lastKnownNodeIds=peers.map(function(p){ return p.hostname; });
+                globals.lastKnownManualPeers=peers.filter(function(p){ return p.source=='manual'; }).map(function(p){ return p.hostname; });
+                // The browser sends preset updates directly to each selected
+                // device's own address now (see sendPresetPayload), rather
+                // than having one device relay to the others - so it needs
+                // each peer's real address, and which one is this device
+                // (addressed via location.host instead, to guarantee that
+                // particular request stays same-origin).
+                globals.lanPeerAddresses={};
+                globals.lanSelfHostname="";
+                peers.forEach(function(p){
+                    globals.lanPeerAddresses[p.hostname]=p.ip || p.hostname;
+                    if(p.isSelf==1){
+                        globals.lanSelfHostname=p.hostname;
+                    }
+                });
+                globals.selectedNodeIds=globals.selectedNodeIds.filter(function(id){
+                    return globals.lastKnownNodeIds.indexOf(id)!=-1;
+                });
+                var container=document.getElementById('nodesListContainer');
+                container.innerHTML='';
+                if(peers.length==0){
+                    var empty=document.createElement('div');
+                    empty.id='nodesEmptyMessage';
+                    empty.innerHTML='No LAN peers found yet.';
+                    container.appendChild(empty);
+                    return;
+                }
+                for(var i=0;i<peers.length;i++){
+                    var peer=peers[i];
+                    var row=document.createElement('div');
+                    row.className='nodeRow';
+
+                    var checkbox=document.createElement('input');
+                    checkbox.type='checkbox';
+                    checkbox.className='nodeRowCheckbox';
+                    checkbox.checked=(globals.selectedNodeIds.indexOf(peer.hostname)!=-1);
+                    checkbox.onchange=(function(hostname){
+                        return function(){ toggleNodeSelection(hostname); };
+                    })(peer.hostname);
+                    row.appendChild(checkbox);
+
+                    var hostname=document.createElement('span');
+                    hostname.className='nodeRowHostname';
+                    hostname.innerHTML=peer.hostname + (peer.isSelf==1 ? ' (this device)' : '');
+                    row.appendChild(hostname);
+
+                    if(peer.ip){
+                        var ipBadge=document.createElement('span');
+                        ipBadge.className='nodeRowBadge';
+                        ipBadge.innerHTML=peer.ip;
+                        row.appendChild(ipBadge);
+                    }else if(peer.source=='manual'){
+                        var pendingBadge=document.createElement('span');
+                        pendingBadge.className='nodeRowBadge';
+                        pendingBadge.innerHTML='not yet seen';
+                        row.appendChild(pendingBadge);
+                    }
+
+                    if(peer.source=='manual'){
+                        var removeButton=document.createElement('button');
+                        removeButton.className='nodeRowRemoveButton';
+                        removeButton.innerHTML='&times;';
+                        removeButton.title='Remove';
+                        removeButton.onclick=(function(hostname){
+                            return function(){ removeLanPeer(hostname); };
+                        })(peer.hostname);
+                        row.appendChild(removeButton);
+                    }
+
+                    row.onclick=(function(checkbox){
+                        return function(e){
+                            if(e.target===checkbox || e.target.tagName=='BUTTON'){
+                                return;
+                            }
+                            checkbox.checked=!checkbox.checked;
+                            checkbox.onchange();
+                        };
+                    })(checkbox);
+
+                    container.appendChild(row);
+                }
+            }
+
+            function saveLanPeers(peerList){
+                var payload={"peers":peerList};
+                var urlString='http://'+location.host + '/updateLanPeers'
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200){
+                        makeGetLanPeersCall();
+                    }
                 };
                 xhttp.open('POST', urlString, true);
                 xhttp.setRequestHeader('Content-Type', 'application/json')
                 xhttp.send(JSON.stringify(payload));
+            }
+
+            function addLanPeer(){
+                var input=document.getElementById('lanPeerAddInput');
+                var value=input.value.trim();
+                if(!value){
+                    return;
+                }
+                var current=(globals.lastKnownManualPeers || []).slice();
+                if(current.indexOf(value)==-1){
+                    current.push(value);
+                }
+                input.value='';
+                saveLanPeers(current);
+            }
+
+            function removeLanPeer(hostname){
+                var current=(globals.lastKnownManualPeers || []).filter(function(h){ return h!=hostname; });
+                saveLanPeers(current);
             }
 
             function initWebSocket(){

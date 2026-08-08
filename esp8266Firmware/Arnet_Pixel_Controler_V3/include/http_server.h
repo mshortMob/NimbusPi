@@ -7,6 +7,16 @@
 // Defined later in mesh_funcs.h (included after this file in main.cpp). No-op
 // when epdata.network_mode!=1, so every call site here stays unconditional.
 void mesh_broadcast_json(String typeTag, JsonVariant payload);
+// Also defined in mesh_funcs.h - used by the Presets-page handlers below to
+// support targeting specific mesh nodes instead of the whole fleet. In
+// standalone/LAN mode, targeting works differently: the browser sends one
+// independent, CORS-enabled request directly to each selected device (see
+// the Nodes-page JS and the CORS setup below) rather than any one device
+// relaying to the others, so no device-to-device dispatch exists for LAN
+// mode at all - every request a device receives here is already meant for
+// just that device.
+bool mesh_targets_include_self(JsonArray targetNodeIds);
+void mesh_send_to_targets(String typeTag, JsonVariant payload, JsonArray targetNodeIds);
 
 static AsyncWebServer server(80);
 
@@ -120,7 +130,10 @@ void apply_led_presets_update(JsonVariant data){
 
 void handleUpdateLedPresets(){
   AsyncCallbackJsonWebHandler *updateLedPresetsProcessor = new AsyncCallbackJsonWebHandler("/updateLedPresets", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    StaticJsonDocument<1560> data;
+    // 1560 fits ledPresets/presetTypes/selectedPreset alone (see handleGetLedPresets);
+    // padded up here to leave headroom for the optional targetNodes array without
+    // risking the exact silent-overflow bug already hit once on the mesh envelope side.
+    StaticJsonDocument<1700> data;
     if (json.is<JsonArray>())
     {
       data = json.as<JsonArray>();
@@ -130,12 +143,26 @@ void handleUpdateLedPresets(){
       data = json.as<JsonObject>();
     }
     Serial.println("handleUpdateLedPresets");
-    apply_led_presets_update(data);
+    // targetNodes only ever has meaning in mesh mode now - in standalone/LAN
+    // mode the browser addresses each selected device directly, so a plain
+    // request here always means "apply to me."
+    JsonArray targetNodes = data["targetNodes"];
+    bool hasMeshTargets = (epdata.network_mode==1) && !(targetNodes.isNull() || targetNodes.size()==0);
+    bool applyLocally = hasMeshTargets ? mesh_targets_include_self(targetNodes) : true;
     String response;
     serializeJson(data, response);
-    request->send(200, "application/json", response);
+    if(applyLocally){
+      apply_led_presets_update(data);
+      request->send(200, "application/json", response);
+    }else{
+      request->send(200, "application/json", "{\"status\":\"dispatched\"}");
+    }
     Serial.println(response);
-    mesh_broadcast_json("ledPresets", data);
+    if(hasMeshTargets){
+      mesh_send_to_targets("ledPresets", data, targetNodes);
+    }else{
+      mesh_broadcast_json("ledPresets", data); // no-op outside mesh mode
+    }
   });
   server.addHandler(updateLedPresetsProcessor);
 }
@@ -169,7 +196,10 @@ void apply_pixel_map_update(JsonVariant data){
 
 void handleUpdatePixelMapPresets(){
   AsyncCallbackJsonWebHandler *updatePixelMapProcessor = new AsyncCallbackJsonWebHandler("/updatePixelMap", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    StaticJsonDocument<1560> data;
+    // Padded past pixelMap's own 1560 (see handleGetPixelMapPresets) to leave
+    // headroom for the optional targetNodes array - same overflow risk already
+    // hit once on the mesh envelope side, avoided here the same way.
+    StaticJsonDocument<1700> data;
     if (json.is<JsonArray>())
     {
       data = json.as<JsonArray>();
@@ -179,12 +209,26 @@ void handleUpdatePixelMapPresets(){
       data = json.as<JsonObject>();
     }
     Serial.println("handleUpdatePixelMap");
-    apply_pixel_map_update(data);
+    // targetNodes only ever has meaning in mesh mode now - in standalone/LAN
+    // mode the browser addresses each selected device directly, so a plain
+    // request here always means "apply to me."
+    JsonArray targetNodes = data["targetNodes"];
+    bool hasMeshTargets = (epdata.network_mode==1) && !(targetNodes.isNull() || targetNodes.size()==0);
+    bool applyLocally = hasMeshTargets ? mesh_targets_include_self(targetNodes) : true;
     String response;
     serializeJson(data, response);
-    request->send(200, "application/json", response);
+    if(applyLocally){
+      apply_pixel_map_update(data);
+      request->send(200, "application/json", response);
+    }else{
+      request->send(200, "application/json", "{\"status\":\"dispatched\"}");
+    }
     Serial.println(response);
-    mesh_broadcast_json("pixelMap", data);
+    if(hasMeshTargets){
+      mesh_send_to_targets("pixelMap", data, targetNodes);
+    }else{
+      mesh_broadcast_json("pixelMap", data); // no-op outside mesh mode
+    }
   });
   server.addHandler(updatePixelMapProcessor);
 }
@@ -203,8 +247,25 @@ void handleFavicon(){
   server.serveStatic("/favicon.svg", SPIFFS, "/favicon.svg");
 }
 
+// Standalone/LAN-mode targeting has the browser POST directly to each
+// selected device's own address, which makes it a cross-origin request from
+// the browser's perspective (the page itself was loaded from a *different*
+// device). Content-Type: application/json makes it a "non-simple" request,
+// so the browser sends a preflight OPTIONS check first - it has to succeed,
+// and the actual response needs the Allow-Origin header too, or the browser
+// throws the whole exchange away before our code ever sees it.
+void handleCorsPreflight(const char* path){
+  server.on(path, HTTP_OPTIONS, [](AsyncWebServerRequest *request){
+    AsyncWebServerResponse *response = request->beginResponse(204);
+    response->addHeader("Access-Control-Allow-Methods", "POST");
+    response->addHeader("Access-Control-Allow-Headers", "Content-Type");
+    request->send(response);
+  });
+}
+
 void setup_http_server(){
   SPIFFS.begin();
+  DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
   handleRoot();
   handleIndex();
   handleFavicon();
@@ -214,6 +275,8 @@ void setup_http_server(){
   handleUpdateLedPresets();
   handleGetPixelMapPresets();
   handleUpdatePixelMapPresets();
+  handleCorsPreflight("/updateLedPresets");
+  handleCorsPreflight("/updatePixelMap");
   server.begin();
 }
 
