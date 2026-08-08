@@ -66,6 +66,11 @@ struct ConfigSettings {
     {138,156,156,156,156,156,156,156}}
   };
   int presetTypes[5]={1,1,1,0,0};
+  int network_mode = 0; // network_mode 0=Standalone ; 1=Mesh Fleet
+  char mesh_name[64] = "NimbusMesh";
+  char mesh_password[64] = "NimbusMesh123";
+  int mesh_leader = 0; // mesh_leader 0=Pure Node ; 1=Leader (sets mesh root for faster/more reliable formation)
+  int enable_led_yield = 1; // enable_led_yield 1=Enabled ; 0=Disabled
 };
 
 ConfigSettings epdata;
@@ -104,6 +109,16 @@ void eeprom_load_all(void){
   Serial.println(epdata.control_mode);
   Serial.print("max_brightness_percent: ");
   Serial.println(epdata.max_brightness_percent);
+  Serial.print("network_mode: ");
+  Serial.println(epdata.network_mode);
+  Serial.print("mesh_name: ");
+  Serial.println(epdata.mesh_name);
+  Serial.print("mesh_password: ");
+  Serial.println(epdata.mesh_password);
+  Serial.print("mesh_leader: ");
+  Serial.println(epdata.mesh_leader);
+  Serial.print("enable_led_yield: ");
+  Serial.println(epdata.enable_led_yield);
   Serial.println("ledPresets: ");
   for(int x=0;x<5;x++){
     for(int y=0;y<8;y++){

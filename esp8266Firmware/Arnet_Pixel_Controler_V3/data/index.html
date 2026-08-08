@@ -284,6 +284,25 @@
         .settingsSectionContent{
             padding-top: 20px;
         }
+        .sectionDeemphasized .settingsSectionHeader{
+            opacity: .45;
+        }
+        .sectionDeemphasized .settingsSectionContent{
+            opacity: .45;
+            pointer-events: none;
+        }
+        .rowDeemphasized{
+            opacity: .45;
+            pointer-events: none;
+        }
+        .sectionNote{
+            font-size: .62rem;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--text-secondary);
+            margin-left: 6px;
+        }
         .settingsPageRow{
             display: block;
             position: relative;
@@ -590,6 +609,40 @@
                     "initVal":"---"
                 },
                 {
+                    "name":"network_mode",
+                    "text":"Network Mode:",
+                    "section":"Mesh Network",
+                    "initVal":"---",
+                    "type":"select",
+                    "options":[
+                        {"value":"0","label":"Standalone"},
+                        {"value":"1","label":"Mesh Fleet"}
+                    ]
+                },
+                {
+                    "name":"mesh_name",
+                    "text":"Mesh Name:",
+                    "section":"Mesh Network",
+                    "initVal":"---"
+                },
+                {
+                    "name":"mesh_password",
+                    "text":"Mesh Password:",
+                    "section":"Mesh Network",
+                    "initVal":"---"
+                },
+                {
+                    "name":"mesh_leader",
+                    "text":"Mesh Leader:",
+                    "section":"Mesh Network",
+                    "initVal":"---",
+                    "type":"select",
+                    "options":[
+                        {"value":"0","label":"Pure Node"},
+                        {"value":"1","label":"Leader"}
+                    ]
+                },
+                {
                     "name":"num_base_leds",
                     "text":"Num of Pixels:",
                     "section":"LED Settings",
@@ -606,6 +659,17 @@
                     "text":"Max Brightness:",
                     "section":"LED Settings",
                     "initVal":"---"
+                },
+                {
+                    "name":"enable_led_yield",
+                    "text":"WiFi Yield:",
+                    "section":"LED Settings",
+                    "initVal":"---",
+                    "type":"select",
+                    "options":[
+                        {"value":"1","label":"Enabled"},
+                        {"value":"0","label":"Disabled"}
+                    ]
                 },
                 {
                     "name":"fixtureMode",
@@ -993,7 +1057,9 @@
                         var header=document.createElement('button');
                         header.type='button';
                         header.className='settingsSectionHeader';
-                        header.innerHTML='<span class="settingsSectionTitle">'+field.section+'</span><span class="settingsSectionChevron">&#9662;</span>';
+                        var sectionTitleIds={'ArtNet / DMX':'artnetDmxSectionTitle','Local Wifi Settings':'localWifiSectionTitle'};
+                        var titleSpanId=sectionTitleIds[field.section] ? ' id="'+sectionTitleIds[field.section]+'"' : '';
+                        header.innerHTML='<span class="settingsSectionTitle"'+titleSpanId+'>'+field.section+'</span><span class="settingsSectionChevron">&#9662;</span>';
                         header.onclick=function(){
                             toggleSettingsSection(this);
                         }
@@ -1002,6 +1068,10 @@
                         content.style.display='none';
                         sectionDiv.appendChild(header);
                         sectionDiv.appendChild(content);
+                        var sectionIds={'ArtNet / DMX':'artnetDmxSection','Local Wifi Settings':'localWifiSection'};
+                        if(sectionIds[field.section]){
+                            sectionDiv.id=sectionIds[field.section];
+                        }
                         document.getElementById("settingsPage").appendChild(sectionDiv);
                         sectionContents[field.section]=content;
                     }
@@ -1012,7 +1082,7 @@
                     label.className="settingsPageLabel";
                     label.innerHTML=field.text;
                     row.appendChild(label);
-                    let isPasswordField = (field.name=='password' || field.name=='ap_password');
+                    let isPasswordField = (field.name=='password' || field.name=='ap_password' || field.name=='mesh_password');
                     let input;
                     if(field.type=='select'){
                         input=document.createElement('select');
@@ -1042,6 +1112,11 @@
                     input.className="settingsPageInput";
                     input.id=field.name;
                     input.value=field.initVal;
+                    if(field.name=='network_mode'){
+                        input.onchange=function(){
+                            updateMeshModeUI(this.value);
+                        }
+                    }
                     row.appendChild(input);
                     if(isPasswordField){
                         var eyeIconOpen='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -1062,6 +1137,22 @@
                         row.appendChild(passwordToggle);
                     }
                     sectionContents[field.section].appendChild(row);
+                    if(field.name=='network_mode'){
+                        var networkModeNote=document.createElement('div');
+                        networkModeNote.className='sectionNote';
+                        networkModeNote.style.margin='-24px 0 24px 0';
+                        networkModeNote.style.marginLeft='0';
+                        networkModeNote.innerHTML='Changing this requires a device reboot to take effect.';
+                        sectionContents[field.section].appendChild(networkModeNote);
+                    }
+                    if(field.name=='mesh_leader'){
+                        var meshLeaderNote=document.createElement('div');
+                        meshLeaderNote.className='sectionNote';
+                        meshLeaderNote.style.margin='-24px 0 24px 0';
+                        meshLeaderNote.style.marginLeft='0';
+                        meshLeaderNote.innerHTML='Stability hint only - set exactly one device per fleet as Leader. Does not change how the UI is reached.';
+                        sectionContents[field.section].appendChild(meshLeaderNote);
+                    }
                 }
                 var row = document.createElement('div');
                 row.id='saveButton_row'
@@ -1371,6 +1462,32 @@
                 dot.title = isArtnet ? 'Control Source: ArtNet / DMX' : 'Control Source: GUI Presets';
             }
 
+            function deemphasizeSection(sectionId, titleId, titleText, isMesh, noteText){
+                var section = document.getElementById(sectionId);
+                if(section){
+                    section.classList.toggle('sectionDeemphasized', isMesh);
+                    var inputs = section.querySelectorAll('.settingsPageInput');
+                    for(var i=0;i<inputs.length;i++){
+                        inputs[i].disabled = isMesh;
+                    }
+                }
+                var title = document.getElementById(titleId);
+                if(title){
+                    title.innerHTML = titleText + (isMesh ? ' <span class="sectionNote">('+noteText+')</span>' : '');
+                }
+            }
+
+            function updateMeshModeUI(networkModeValue){
+                var isMesh = (String(networkModeValue)=='1');
+                deemphasizeSection('artnetDmxSection', 'artnetDmxSectionTitle', 'ArtNet / DMX', isMesh, 'unavailable in Mesh Fleet mode');
+                deemphasizeSection('localWifiSection', 'localWifiSectionTitle', 'Local Wifi Settings', isMesh, 'unused in Mesh Fleet mode');
+                var apPasswordInput = document.getElementById('ap_password');
+                if(apPasswordInput){
+                    apPasswordInput.parentElement.classList.toggle('rowDeemphasized', isMesh);
+                    apPasswordInput.disabled = isMesh;
+                }
+            }
+
             function makeGetSettingsCall(){
                 var urlString='http://'+location.host + '/getSettings'
                 var xhttp = new XMLHttpRequest();
@@ -1382,6 +1499,7 @@
                         document.getElementById(globals.settingsPageFields[x].name).value=getResponse[globals.settingsPageFields[x].name];
                     }
                     updateControlModeDot(getResponse['control_mode']);
+                    updateMeshModeUI(getResponse['network_mode']);
                     makeGetLedPresetsCall();
                 }
                 };
@@ -1406,6 +1524,7 @@
                 xhttp.setRequestHeader('Content-Type', 'application/json')
                 xhttp.send(JSON.stringify(payload));
                 updateControlModeDot(payload['control_mode']);
+                updateMeshModeUI(payload['network_mode']);
             }
 
             function makeGetLedPresetsCall(){
