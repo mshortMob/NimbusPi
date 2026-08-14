@@ -18,21 +18,21 @@ unsigned long lastLanAnnounce = 0;
 // This device-listing feature only makes sense when: we're actually on a
 // real LAN (STA-connected to an external router, not the isolated AP
 // hotspot fallback) and GUI Presets - not ArtNet/DMX - are what's actually
-// driving the LEDs. In mesh mode the equivalent lives in mesh_funcs.h.
+// driving the LEDs.
 //
-// Unlike mesh mode, standalone/LAN devices never talk to each other at all -
-// this module only handles discovery (so the Nodes page can list peers and
-// their addresses). Targeted preset changes are sent by the browser
-// directly to each selected device's own address (see the Nodes-page JS in
-// data/index.html and the CORS setup in http_server.h); a device here never
-// relays anything to another device. An earlier device-to-device relay
-// design was scrapped after it repeatedly crashed the ESP8266 - starting
-// outbound async connections from a device, even carefully throttled to one
-// at a time, kept running into ESP8266-specific ESPAsyncTCP/AsyncWebServer
-// fragility (see github.com/me-no-dev/ESPAsyncWebServer issues #364, #89).
-// Having the browser fan out instead avoids all of that entirely.
+// Devices never talk to each other at all - this module only handles
+// discovery (so the Nodes page can list peers and their addresses).
+// Targeted preset changes are sent by the browser directly to each selected
+// device's own address (see the Nodes-page JS in data/index.html and the
+// CORS setup in http_server.h); a device here never relays anything to
+// another device. An earlier device-to-device relay design was scrapped
+// after it repeatedly crashed the ESP8266 - starting outbound async
+// connections from a device, even carefully throttled to one at a time,
+// kept running into ESP8266-specific ESPAsyncTCP/AsyncWebServer fragility
+// (see github.com/me-no-dev/ESPAsyncWebServer issues #364, #89). Having the
+// browser fan out instead avoids all of that entirely.
 bool lan_targeting_available(void){
-  return epdata.network_mode==0 && wifiConnected && epdata.control_mode==0;
+  return wifiConnected && epdata.control_mode==0;
 }
 
 void announce_lan_peer_info(void){

@@ -4,20 +4,10 @@
 #include <ESPAsyncWebServer.h>
 #include <FS.h>
 
-// Defined later in mesh_funcs.h (included after this file in main.cpp). No-op
-// when epdata.network_mode!=1, so every call site here stays unconditional.
-void mesh_broadcast_json(String typeTag, JsonVariant payload);
-// Also defined in mesh_funcs.h - used by the Presets-page handlers below to
-// support targeting specific mesh nodes instead of the whole fleet. In
-// standalone/LAN mode, targeting works differently: the browser sends one
-// independent, CORS-enabled request directly to each selected device (see
-// the Nodes-page JS and the CORS setup below) rather than any one device
-// relaying to the others, so no device-to-device dispatch exists for LAN
-// mode at all - every request a device receives here is already meant for
-// just that device.
-bool mesh_targets_include_self(JsonArray targetNodeIds);
-void mesh_send_to_targets(String typeTag, JsonVariant payload, JsonArray targetNodeIds);
-
+// Standalone/LAN-mode targeting has the browser send one independent,
+// CORS-enabled request directly to each selected device (see the Nodes-page
+// JS and the CORS setup below) - there's no device-to-device relay, so every
+// request a device receives here is already meant for just that device.
 static AsyncWebServer server(80);
 
 void handleGetSettings(){
@@ -36,10 +26,6 @@ void handleGetSettings(){
     data["ap_password"]=epdata.ap_password;
     data["control_mode"]=epdata.control_mode;
     data["max_brightness_percent"]=epdata.max_brightness_percent;
-    data["network_mode"]=epdata.network_mode;
-    data["mesh_name"]=epdata.mesh_name;
-    data["mesh_password"]=epdata.mesh_password;
-    data["mesh_leader"]=epdata.mesh_leader;
     data["enable_led_yield"]=epdata.enable_led_yield;
     String response;
     serializeJson(data, response);
@@ -60,10 +46,6 @@ void apply_settings_update(JsonVariant data){
   data["ap_password"].as<String>().toCharArray(epdata.ap_password,64);
   epdata.control_mode=int(data["control_mode"]);
   epdata.max_brightness_percent=int(data["max_brightness_percent"]);
-  epdata.network_mode=int(data["network_mode"]);
-  data["mesh_name"].as<String>().toCharArray(epdata.mesh_name,64);
-  data["mesh_password"].as<String>().toCharArray(epdata.mesh_password,64);
-  epdata.mesh_leader=int(data["mesh_leader"]);
   epdata.enable_led_yield=int(data["enable_led_yield"]);
   EEPROM.put(0,epdata);
   EEPROM.commit();
@@ -88,27 +70,38 @@ void handleUpdateSettings(){
     serializeJson(data, response);
     request->send(200, "application/json", response);
     Serial.println(response);
-    mesh_broadcast_json("settings", data);
   });
   server.addHandler(updateSettingsProcessor);
 }
 
 void handleGetLedPresets(){
   server.on("/getLedPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
-    // EEPROM.get(0,epdata);
-    StaticJsonDocument<1560> data;
     Serial.println("handleGetLedPresets");
-    for(int x=0;x<5;x++){
-      for(int y=0;y<8;y++){
-          data["ledPresets"][x][y]=epdata.ledPresets[x][y];
-      }
-    }
-    for(int x=0;x<5;x++){
-      data["presetTypes"][x]=epdata.presetTypes[x];
-    }
-    data["selectedPreset"]=selectedMode%5;
+    // Built via plain string concatenation instead of ArduinoJson - v7's
+    // document model allocates dynamically per element (confirmed via a
+    // captured crash: a heap-exhaustion null-pointer write inside
+    // AsyncWebServerResponse's constructor, with an ArduinoJson
+    // MemberProxy::getOrCreateData() call on the same stack), which adds up
+    // for this shape under tight heap conditions. This is simple, regular
+    // data - string-building it directly is much lighter.
     String response;
-    serializeJson(data, response);
+    response.reserve(280);
+    response += "{\"ledPresets\":[";
+    for(int x=0;x<5;x++){
+      response += "[";
+      for(int y=0;y<8;y++){
+        response += String(epdata.ledPresets[x][y]);
+        if(y<7) response += ",";
+      }
+      response += "]";
+      if(x<4) response += ",";
+    }
+    response += "],\"presetTypes\":[";
+    for(int x=0;x<5;x++){
+      response += String(epdata.presetTypes[x]);
+      if(x<4) response += ",";
+    }
+    response += "],\"selectedPreset\":" + String(selectedMode%5) + "}";
     request->send(200, "application/json", response);
   });
 }
@@ -130,10 +123,8 @@ void apply_led_presets_update(JsonVariant data){
 
 void handleUpdateLedPresets(){
   AsyncCallbackJsonWebHandler *updateLedPresetsProcessor = new AsyncCallbackJsonWebHandler("/updateLedPresets", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    // 1560 fits ledPresets/presetTypes/selectedPreset alone (see handleGetLedPresets);
-    // padded up here to leave headroom for the optional targetNodes array without
-    // risking the exact silent-overflow bug already hit once on the mesh envelope side.
-    StaticJsonDocument<1700> data;
+    // 1560 fits ledPresets/presetTypes/selectedPreset (see handleGetLedPresets).
+    StaticJsonDocument<1560> data;
     if (json.is<JsonArray>())
     {
       data = json.as<JsonArray>();
@@ -143,43 +134,46 @@ void handleUpdateLedPresets(){
       data = json.as<JsonObject>();
     }
     Serial.println("handleUpdateLedPresets");
-    // targetNodes only ever has meaning in mesh mode now - in standalone/LAN
-    // mode the browser addresses each selected device directly, so a plain
-    // request here always means "apply to me."
-    JsonArray targetNodes = data["targetNodes"];
-    bool hasMeshTargets = (epdata.network_mode==1) && !(targetNodes.isNull() || targetNodes.size()==0);
-    bool applyLocally = hasMeshTargets ? mesh_targets_include_self(targetNodes) : true;
+    apply_led_presets_update(data);
     String response;
     serializeJson(data, response);
-    if(applyLocally){
-      apply_led_presets_update(data);
-      request->send(200, "application/json", response);
-    }else{
-      request->send(200, "application/json", "{\"status\":\"dispatched\"}");
-    }
+    // The CORS header is added only on this specific response (not via
+    // DefaultHeaders, which applies to every response) since standalone/LAN
+    // targeted requests (browser fanning out to each selected device's own
+    // address) are the only ones ever cross-origin.
+    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", response);
+    resp->addHeader("Access-Control-Allow-Origin", "*");
+    request->send(resp);
     Serial.println(response);
-    if(hasMeshTargets){
-      mesh_send_to_targets("ledPresets", data, targetNodes);
-    }else{
-      mesh_broadcast_json("ledPresets", data); // no-op outside mesh mode
-    }
   });
   server.addHandler(updateLedPresetsProcessor);
 }
 
 void handleGetPixelMapPresets(){
   server.on("/getPixelMapPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
-    StaticJsonDocument<1560> data;
     Serial.println("handleGetPixelMap");
-    for(int x=0;x<5;x++){
-      for(int y=0;y<8;y++){
-        for(int z=0;z<8;z++){
-          data["pixelMap"][x][y][z]=epdata.pixelMap[x][y][z];
-        }
-      }
-    }
+    // Built via plain string concatenation instead of ArduinoJson - see the
+    // comment in handleGetLedPresets. This is by far the biggest of these
+    // responses (5x8x8 = 320 values), so the heaviest place ArduinoJson's
+    // per-element dynamic allocation was adding up.
     String response;
-    serializeJson(data, response);
+    response.reserve(1400);
+    response += "{\"pixelMap\":[";
+    for(int x=0;x<5;x++){
+      response += "[";
+      for(int y=0;y<8;y++){
+        response += "[";
+        for(int z=0;z<8;z++){
+          response += String(epdata.pixelMap[x][y][z]);
+          if(z<7) response += ",";
+        }
+        response += "]";
+        if(y<7) response += ",";
+      }
+      response += "]";
+      if(x<4) response += ",";
+    }
+    response += "]}";
     request->send(200, "application/json", response);
   });
 }
@@ -196,10 +190,8 @@ void apply_pixel_map_update(JsonVariant data){
 
 void handleUpdatePixelMapPresets(){
   AsyncCallbackJsonWebHandler *updatePixelMapProcessor = new AsyncCallbackJsonWebHandler("/updatePixelMap", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    // Padded past pixelMap's own 1560 (see handleGetPixelMapPresets) to leave
-    // headroom for the optional targetNodes array - same overflow risk already
-    // hit once on the mesh envelope side, avoided here the same way.
-    StaticJsonDocument<1700> data;
+    // 1560 fits pixelMap alone (see handleGetPixelMapPresets).
+    StaticJsonDocument<1560> data;
     if (json.is<JsonArray>())
     {
       data = json.as<JsonArray>();
@@ -209,26 +201,15 @@ void handleUpdatePixelMapPresets(){
       data = json.as<JsonObject>();
     }
     Serial.println("handleUpdatePixelMap");
-    // targetNodes only ever has meaning in mesh mode now - in standalone/LAN
-    // mode the browser addresses each selected device directly, so a plain
-    // request here always means "apply to me."
-    JsonArray targetNodes = data["targetNodes"];
-    bool hasMeshTargets = (epdata.network_mode==1) && !(targetNodes.isNull() || targetNodes.size()==0);
-    bool applyLocally = hasMeshTargets ? mesh_targets_include_self(targetNodes) : true;
+    apply_pixel_map_update(data);
     String response;
     serializeJson(data, response);
-    if(applyLocally){
-      apply_pixel_map_update(data);
-      request->send(200, "application/json", response);
-    }else{
-      request->send(200, "application/json", "{\"status\":\"dispatched\"}");
-    }
+    // See handleUpdateLedPresets - CORS header scoped to just this response,
+    // not applied globally via DefaultHeaders.
+    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", response);
+    resp->addHeader("Access-Control-Allow-Origin", "*");
+    request->send(resp);
     Serial.println(response);
-    if(hasMeshTargets){
-      mesh_send_to_targets("pixelMap", data, targetNodes);
-    }else{
-      mesh_broadcast_json("pixelMap", data); // no-op outside mesh mode
-    }
   });
   server.addHandler(updatePixelMapProcessor);
 }
@@ -257,6 +238,7 @@ void handleFavicon(){
 void handleCorsPreflight(const char* path){
   server.on(path, HTTP_OPTIONS, [](AsyncWebServerRequest *request){
     AsyncWebServerResponse *response = request->beginResponse(204);
+    response->addHeader("Access-Control-Allow-Origin", "*");
     response->addHeader("Access-Control-Allow-Methods", "POST");
     response->addHeader("Access-Control-Allow-Headers", "Content-Type");
     request->send(response);
@@ -265,7 +247,6 @@ void handleCorsPreflight(const char* path){
 
 void setup_http_server(){
   SPIFFS.begin();
-  DefaultHeaders::Instance().addHeader("Access-Control-Allow-Origin", "*");
   handleRoot();
   handleIndex();
   handleFavicon();

@@ -284,13 +284,6 @@
         .settingsSectionContent{
             padding-top: 20px;
         }
-        .sectionDeemphasized .settingsSectionHeader{
-            opacity: .45;
-        }
-        .sectionDeemphasized .settingsSectionContent{
-            opacity: .45;
-            pointer-events: none;
-        }
         .rowDeemphasized{
             opacity: .45;
             pointer-events: none;
@@ -303,7 +296,7 @@
             color: var(--text-secondary);
             margin-left: 6px;
         }
-        .meshTabHidden{
+        .navTabHidden{
             display:none !important;
         }
         .settingsPageRow{
@@ -610,7 +603,7 @@
                     <span>NimbusKit</span>
                 </button>
                 <div id="headerSpacer"></div>
-                <button class="header-item nav-btn meshTabHidden" id="navNodes" onclick="goToPage('nodesPage');">Nodes</button>
+                <button class="header-item nav-btn navTabHidden" id="navNodes" onclick="goToPage('nodesPage');">Nodes</button>
                 <button class="header-item nav-btn" id="navPresets" onclick="goToPage('presetsPage');">Presets</button>
                 <button class="header-item nav-btn" id="navSettings" onclick="goToPage('settingsPage');">Settings</button>
                 <button class="header-item nav-btn" id="navData" onclick="goToPage('dataPage');">Data</button>
@@ -618,7 +611,7 @@
                 <div class="statusDot artnet" id="controlModeDot" title="Control Source: Loading..."></div>
             </div>
             <div id="navMenu">
-                <button class="navMenuItem meshTabHidden" id="navMenuNodes" onclick="goToPage('nodesPage');toggleNavMenu(false);">Nodes</button>
+                <button class="navMenuItem navTabHidden" id="navMenuNodes" onclick="goToPage('nodesPage');toggleNavMenu(false);">Nodes</button>
                 <button class="navMenuItem" id="navMenuPresets" onclick="goToPage('presetsPage');toggleNavMenu(false);">Presets</button>
                 <button class="navMenuItem" id="navMenuSettings" onclick="goToPage('settingsPage');toggleNavMenu(false);">Settings</button>
                 <button class="navMenuItem" id="navMenuData" onclick="goToPage('dataPage');toggleNavMenu(false);">Data</button>
@@ -657,7 +650,7 @@
                     <button class="nodesControlButton" onclick="selectAllNodes();">Select All</button>
                     <button class="nodesControlButton" onclick="clearNodeSelection();">Clear Selection</button>
                 </div>
-                <div id="lanPeersAddRow" style="display:none;">
+                <div id="lanPeersAddRow">
                     <input type="text" id="lanPeerAddInput" class="settingsPageInput" placeholder="Hostname or IP address" style="width:68%;margin-left:0;">
                     <button class="nodesControlButton" onclick="addLanPeer();">Add Peer</button>
                 </div>
@@ -675,7 +668,6 @@
                 lastKnownManualPeers: [],
                 lanPeerAddresses: {},
                 lanSelfHostname: "",
-                networkMode: "0",
                 controlMode: "0",
                 dataHistoryBuffer: [
                     [
@@ -721,40 +713,6 @@
                     "text":"AP Password:",
                     "section":"Hotspot / Access Point",
                     "initVal":"---"
-                },
-                {
-                    "name":"network_mode",
-                    "text":"Network Mode:",
-                    "section":"Mesh Network",
-                    "initVal":"---",
-                    "type":"select",
-                    "options":[
-                        {"value":"0","label":"Standalone"},
-                        {"value":"1","label":"Mesh Fleet"}
-                    ]
-                },
-                {
-                    "name":"mesh_name",
-                    "text":"Mesh Name:",
-                    "section":"Mesh Network",
-                    "initVal":"---"
-                },
-                {
-                    "name":"mesh_password",
-                    "text":"Mesh Password:",
-                    "section":"Mesh Network",
-                    "initVal":"---"
-                },
-                {
-                    "name":"mesh_leader",
-                    "text":"Mesh Leader:",
-                    "section":"Mesh Network",
-                    "initVal":"---",
-                    "type":"select",
-                    "options":[
-                        {"value":"0","label":"Pure Node"},
-                        {"value":"1","label":"Leader"}
-                    ]
                 },
                 {
                     "name":"num_base_leds",
@@ -924,8 +882,13 @@
                 setInterval(function(){
                     var now=new Date().getTime();
                     if( (now-globals.socketConnectivityCheck) > 5000){
-                        initWebSocket();
-                        gobals.socketConnectivityCheck=now;
+                        // Reset the check BEFORE reconnecting (not just on a
+                        // successful open) - otherwise, while the connection
+                        // is struggling, this fires again every single tick
+                        // forever, stacking on top of the onerror/onclose
+                        // retries below.
+                        globals.socketConnectivityCheck=now;
+                        scheduleWebSocketReconnect();
                     }
                 },5000);
             }
@@ -1052,12 +1015,7 @@
                 document.getElementById('navMenuData').classList.toggle('active', pageName=='dataPage');
                 document.getElementById('navMenuNodes').classList.toggle('active', pageName=='nodesPage');
                 if(pageName=='nodesPage'){
-                    document.getElementById('lanPeersAddRow').style.display = (globals.networkMode=='1') ? 'none' : 'flex';
-                    if(globals.networkMode=='1'){
-                        makeGetMeshNodesCall();
-                    }else{
-                        makeGetLanPeersCall();
-                    }
+                    makeGetLanPeersCall();
                 }
                 syncView();
             }
@@ -1181,7 +1139,7 @@
                         var header=document.createElement('button');
                         header.type='button';
                         header.className='settingsSectionHeader';
-                        var sectionTitleIds={'ArtNet / DMX':'artnetDmxSectionTitle','Local Wifi Settings':'localWifiSectionTitle','Mesh Network':'meshNetworkSectionTitle'};
+                        var sectionTitleIds={'ArtNet / DMX':'artnetDmxSectionTitle','Local Wifi Settings':'localWifiSectionTitle'};
                         var titleSpanId=sectionTitleIds[field.section] ? ' id="'+sectionTitleIds[field.section]+'"' : '';
                         header.innerHTML='<span class="settingsSectionTitle"'+titleSpanId+'>'+field.section+'</span><span class="settingsSectionChevron">&#9662;</span>';
                         header.onclick=function(){
@@ -1192,7 +1150,7 @@
                         content.style.display='none';
                         sectionDiv.appendChild(header);
                         sectionDiv.appendChild(content);
-                        var sectionIds={'ArtNet / DMX':'artnetDmxSection','Local Wifi Settings':'localWifiSection','Mesh Network':'meshNetworkSection'};
+                        var sectionIds={'ArtNet / DMX':'artnetDmxSection','Local Wifi Settings':'localWifiSection'};
                         if(sectionIds[field.section]){
                             sectionDiv.id=sectionIds[field.section];
                         }
@@ -1206,7 +1164,7 @@
                     label.className="settingsPageLabel";
                     label.innerHTML=field.text;
                     row.appendChild(label);
-                    let isPasswordField = (field.name=='password' || field.name=='ap_password' || field.name=='mesh_password');
+                    let isPasswordField = (field.name=='password' || field.name=='ap_password');
                     let input;
                     if(field.type=='select'){
                         input=document.createElement('select');
@@ -1236,16 +1194,10 @@
                     input.className="settingsPageInput";
                     input.id=field.name;
                     input.value=field.initVal;
-                    if(field.name=='network_mode'){
-                        input.onchange=function(){
-                            updateMeshModeUI(this.value);
-                            updateNodesTabVisibility(this.value, document.getElementById('control_mode').value);
-                        }
-                    }
                     if(field.name=='control_mode'){
                         input.onchange=function(){
                             updateControlModeDot(this.value);
-                            updateNodesTabVisibility(document.getElementById('network_mode').value, this.value);
+                            updateNodesTabVisibility(this.value);
                         }
                     }
                     row.appendChild(input);
@@ -1268,22 +1220,6 @@
                         row.appendChild(passwordToggle);
                     }
                     sectionContents[field.section].appendChild(row);
-                    if(field.name=='network_mode'){
-                        var networkModeNote=document.createElement('div');
-                        networkModeNote.className='sectionNote';
-                        networkModeNote.style.margin='-24px 0 24px 0';
-                        networkModeNote.style.marginLeft='0';
-                        networkModeNote.innerHTML='Changing this requires a device reboot to take effect.';
-                        sectionContents[field.section].appendChild(networkModeNote);
-                    }
-                    if(field.name=='mesh_leader'){
-                        var meshLeaderNote=document.createElement('div');
-                        meshLeaderNote.className='sectionNote';
-                        meshLeaderNote.style.margin='-24px 0 24px 0';
-                        meshLeaderNote.style.marginLeft='0';
-                        meshLeaderNote.innerHTML='Stability hint only - set exactly one device per fleet as Leader. Does not change how the UI is reached.';
-                        sectionContents[field.section].appendChild(meshLeaderNote);
-                    }
                 }
                 var row = document.createElement('div');
                 row.id='saveButton_row'
@@ -1593,44 +1529,17 @@
                 dot.title = isArtnet ? 'Control Source: ArtNet / DMX' : 'Control Source: GUI Presets';
             }
 
-            function deemphasizeSection(sectionId, titleId, titleText, isMesh, noteText){
-                var section = document.getElementById(sectionId);
-                if(section){
-                    section.classList.toggle('sectionDeemphasized', isMesh);
-                    var inputs = section.querySelectorAll('.settingsPageInput');
-                    for(var i=0;i<inputs.length;i++){
-                        inputs[i].disabled = isMesh;
-                    }
-                }
-                var title = document.getElementById(titleId);
-                if(title){
-                    title.innerHTML = titleText + (isMesh ? ' <span class="sectionNote">('+noteText+')</span>' : '');
-                }
-            }
-
-            function updateMeshModeUI(networkModeValue){
-                var isMesh = (String(networkModeValue)=='1');
-                deemphasizeSection('artnetDmxSection', 'artnetDmxSectionTitle', 'ArtNet / DMX', isMesh, 'unavailable in Mesh Fleet mode');
-                deemphasizeSection('localWifiSection', 'localWifiSectionTitle', 'Local Wifi Settings', isMesh, 'unused in Mesh Fleet mode');
-            }
-
-            // The Nodes tab makes sense in Mesh Fleet mode always, and in
-            // Standalone mode only while GUI Presets (not ArtNet/DMX) are
-            // actually driving the LEDs - targeting presets to specific
-            // devices has no effect when DMX data is what's playing. This
-            // also covers cross-cutting deemphasis that depends on BOTH
-            // network_mode and control_mode together (the AP Password field
-            // is irrelevant in either Mesh Fleet mode OR ArtNet/DMX mode),
-            // since both cached values are available here regardless of
-            // which one just changed.
-            function updateNodesTabVisibility(networkModeValue, controlModeValue){
-                globals.networkMode = String(networkModeValue);
+            // The Nodes tab makes sense only while GUI Presets (not
+            // ArtNet/DMX) are actually driving the LEDs - targeting presets
+            // to specific devices has no effect when DMX data is what's
+            // playing. The AP Password field is similarly irrelevant in
+            // ArtNet/DMX mode.
+            function updateNodesTabVisibility(controlModeValue){
                 globals.controlMode = String(controlModeValue);
-                var isMesh = (globals.networkMode=='1');
                 var isArtnet = (globals.controlMode=='1');
-                var isAvailable = isMesh || (globals.networkMode=='0' && !isArtnet);
-                document.getElementById('navNodes').classList.toggle('meshTabHidden', !isAvailable);
-                document.getElementById('navMenuNodes').classList.toggle('meshTabHidden', !isAvailable);
+                var isAvailable = !isArtnet;
+                document.getElementById('navNodes').classList.toggle('navTabHidden', !isAvailable);
+                document.getElementById('navMenuNodes').classList.toggle('navTabHidden', !isAvailable);
                 if(!isAvailable){
                     globals.selectedNodeIds=[];
                     if(globals.currentPage=='nodesPage'){
@@ -1638,13 +1547,10 @@
                     }
                 }
 
-                deemphasizeSection('meshNetworkSection', 'meshNetworkSectionTitle', 'Mesh Network', isArtnet, 'unavailable when using ArtNet/DMX');
-
                 var apPasswordInput = document.getElementById('ap_password');
                 if(apPasswordInput){
-                    var apPasswordDeemphasized = isMesh || isArtnet;
-                    apPasswordInput.parentElement.classList.toggle('rowDeemphasized', apPasswordDeemphasized);
-                    apPasswordInput.disabled = apPasswordDeemphasized;
+                    apPasswordInput.parentElement.classList.toggle('rowDeemphasized', isArtnet);
+                    apPasswordInput.disabled = isArtnet;
                 }
             }
 
@@ -1659,8 +1565,7 @@
                         document.getElementById(globals.settingsPageFields[x].name).value=getResponse[globals.settingsPageFields[x].name];
                     }
                     updateControlModeDot(getResponse['control_mode']);
-                    updateMeshModeUI(getResponse['network_mode']);
-                    updateNodesTabVisibility(getResponse['network_mode'], getResponse['control_mode']);
+                    updateNodesTabVisibility(getResponse['control_mode']);
                     makeGetLedPresetsCall();
                 }
                 };
@@ -1685,8 +1590,7 @@
                 xhttp.setRequestHeader('Content-Type', 'application/json')
                 xhttp.send(JSON.stringify(payload));
                 updateControlModeDot(payload['control_mode']);
-                updateMeshModeUI(payload['network_mode']);
-                updateNodesTabVisibility(payload['network_mode'], payload['control_mode']);
+                updateNodesTabVisibility(payload['control_mode']);
             }
 
             function makeGetLedPresetsCall(){
@@ -1731,26 +1635,18 @@
                 xhttp.send(JSON.stringify(payload));
             }
 
-            // In mesh mode, targeting still works the way it always has -
-            // one request to whichever device is serving this page, which
-            // relays over the mesh to the selected nodes. In standalone/LAN
-            // mode there's no device-to-device relay at all: the browser
-            // instead sends one independent request directly to each
-            // selected device's own address, using location.host for
-            // whichever selected entry is this device (guaranteeing that
-            // particular request stays same-origin, no CORS involved).
+            // There's no device-to-device relay at all: the browser sends
+            // one independent request directly to each selected device's
+            // own address, using location.host for whichever selected entry
+            // is this device (guaranteeing that particular request stays
+            // same-origin, no CORS involved).
             function sendPresetPayload(path, payload){
                 if(globals.selectedNodeIds && globals.selectedNodeIds.length>0){
-                    if(globals.networkMode=='1'){
-                        payload["targetNodes"]=globals.selectedNodeIds;
-                        postToHost(location.host, path, payload);
-                    }else{
-                        for(var i=0;i<globals.selectedNodeIds.length;i++){
-                            var hostname=globals.selectedNodeIds[i];
-                            var isSelf=(hostname==globals.lanSelfHostname);
-                            var address=isSelf ? location.host : (globals.lanPeerAddresses[hostname] || hostname);
-                            postToHost(address, path, payload);
-                        }
+                    for(var i=0;i<globals.selectedNodeIds.length;i++){
+                        var hostname=globals.selectedNodeIds[i];
+                        var isSelf=(hostname==globals.lanSelfHostname);
+                        var address=isSelf ? location.host : (globals.lanPeerAddresses[hostname] || hostname);
+                        postToHost(address, path, payload);
                     }
                 }else{
                     postToHost(location.host, path, payload);
@@ -1798,74 +1694,23 @@
                 sendPresetPayload('/updatePixelMap', payload);
             }
 
-            function makeGetMeshNodesCall(){
-                var urlString='http://'+location.host + '/getMeshNodes'
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200){
-                        var getResponse=JSON.parse(this.response);
-                        console.log(getResponse);
-                        renderNodesList(getResponse['nodes'] || []);
-                    }
-                };
-                xhttp.open('GET', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send();
-            }
-
-            function renderNodesList(nodes){
-                globals.lastKnownNodeIds=nodes.map(function(n){ return n.nodeId; });
-                // Drop selections for nodes that dropped off the mesh since the last refresh.
+            // Only drops a selected id after it's been missing for several
+            // consecutive refreshes in a row, rather than the very first
+            // one - a transient discovery miss shouldn't silently and
+            // permanently degrade a multi-device selection down to fewer
+            // devices without ever being unchecked.
+            function pruneStaleSelection(knownIds){
+                globals.missingSelectionCounts=globals.missingSelectionCounts||{};
+                var stillKnown={};
+                knownIds.forEach(function(id){ stillKnown[id]=true; });
                 globals.selectedNodeIds=globals.selectedNodeIds.filter(function(id){
-                    return globals.lastKnownNodeIds.indexOf(id)!=-1;
-                });
-                var container=document.getElementById('nodesListContainer');
-                container.innerHTML='';
-                if(nodes.length==0){
-                    var empty=document.createElement('div');
-                    empty.id='nodesEmptyMessage';
-                    empty.innerHTML='No mesh nodes found.';
-                    container.appendChild(empty);
-                    return;
-                }
-                for(var i=0;i<nodes.length;i++){
-                    var node=nodes[i];
-                    var row=document.createElement('div');
-                    row.className='nodeRow';
-
-                    var checkbox=document.createElement('input');
-                    checkbox.type='checkbox';
-                    checkbox.className='nodeRowCheckbox';
-                    checkbox.checked=(globals.selectedNodeIds.indexOf(node.nodeId)!=-1);
-                    checkbox.onchange=(function(nodeId){
-                        return function(){ toggleNodeSelection(nodeId); };
-                    })(node.nodeId);
-                    row.appendChild(checkbox);
-
-                    var hostname=document.createElement('span');
-                    hostname.className='nodeRowHostname';
-                    hostname.innerHTML=node.hostname + (node.isSelf==1 ? ' (this device)' : '');
-                    row.appendChild(hostname);
-
-                    if(node.isLeader==1){
-                        var leaderBadge=document.createElement('span');
-                        leaderBadge.className='nodeRowBadge leaderBadge';
-                        leaderBadge.innerHTML='Leader';
-                        row.appendChild(leaderBadge);
+                    if(stillKnown[id]){
+                        delete globals.missingSelectionCounts[id];
+                        return true;
                     }
-
-                    row.onclick=(function(checkbox){
-                        return function(e){
-                            if(e.target===checkbox || e.target.tagName=='BUTTON'){
-                                return;
-                            }
-                            checkbox.checked=!checkbox.checked;
-                            checkbox.onchange();
-                        };
-                    })(checkbox);
-
-                    container.appendChild(row);
-                }
+                    globals.missingSelectionCounts[id]=(globals.missingSelectionCounts[id]||0)+1;
+                    return globals.missingSelectionCounts[id]<3;
+                });
             }
 
             function toggleNodeSelection(nodeId){
@@ -1878,11 +1723,7 @@
             }
 
             function refreshNodesPage(){
-                if(globals.networkMode=='1'){
-                    makeGetMeshNodesCall();
-                }else{
-                    makeGetLanPeersCall();
-                }
+                makeGetLanPeersCall();
             }
 
             function selectAllNodes(){
@@ -1927,9 +1768,7 @@
                         globals.lanSelfHostname=p.hostname;
                     }
                 });
-                globals.selectedNodeIds=globals.selectedNodeIds.filter(function(id){
-                    return globals.lastKnownNodeIds.indexOf(id)!=-1;
-                });
+                pruneStaleSelection(globals.lastKnownNodeIds);
                 var container=document.getElementById('nodesListContainer');
                 container.innerHTML='';
                 if(peers.length==0){
@@ -2028,24 +1867,60 @@
                 saveLanPeers(current);
             }
 
+            // A single failed connection attempt fires BOTH onerror and
+            // onclose, and the periodic health-check in window.onload can
+            // ALSO decide a reconnect is needed at the same time - without
+            // this guard, all three independently schedule their own
+            // initWebSocket() call, and under real-world WiFi contention
+            // (more likely to make the very first handshake fail) those
+            // pile up into several overlapping connection attempts. That's
+            // exactly what a captured crash log showed: the same client
+            // opening 5 WebSocket connections in a row, crashing the
+            // device's WebSocketsServer right on the 5th. This ensures at
+            // most one reconnect is ever pending regardless of how many of
+            // the three triggers fire.
+            var socket; // was never actually declared before - only ever
+                        // created via assignment inside initWebSocket(),
+                        // which made referencing it beforehand (as the new
+                        // reconnect guard below needs to) throw.
+            var wsReconnectScheduled=false;
+            function scheduleWebSocketReconnect(){
+                if(wsReconnectScheduled){
+                    return;
+                }
+                wsReconnectScheduled=true;
+                setTimeout(function(){
+                    wsReconnectScheduled=false;
+                    console.log("retrying websocket connection initialization");
+                    initWebSocket();
+                },1000);
+            }
+
             function initWebSocket(){
+                if(socket){
+                    // Detach the outgoing socket's handlers first, so a
+                    // late-firing event from it can't also schedule a
+                    // reconnect on top of the fresh one we're about to open.
+                    socket.onopen=null;
+                    socket.onerror=null;
+                    socket.onclose=null;
+                    socket.onmessage=null;
+                    try{ socket.close(); }catch(e){}
+                }
                 socket = new WebSocket("ws:/" + "/" + location.host + ":81");
-                socket.onopen = function(e) {  console.log("[socket] socket.onopen "); };
+                socket.onopen = function(e) {
+                    console.log("[socket] socket.onopen ");
+                    globals.socketConnectivityCheck=new Date().getTime();
+                };
                 socket.onerror = function(e) {
                     console.log("[socket] socket.onerror ");
                     console.log(e);
-                    setTimeout(function(){
-                        console.log("retrying websocket connection initialization")
-                        initWebSocket();
-                    },1000);
+                    scheduleWebSocketReconnect();
                 };
                 socket.onclose = function(e) {
-                    console.log("[socket] socket.onerror ");
+                    console.log("[socket] socket.onclose ");
                     console.log(e);
-                    setTimeout(function(){
-                        console.log("retrying websocket connection initialization")
-                        initWebSocket();
-                    },1000);
+                    scheduleWebSocketReconnect();
                 };
                 socket.onmessage = function(e) {
                     console.log('Received data from websocket: '+e.data);
