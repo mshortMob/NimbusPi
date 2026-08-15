@@ -477,7 +477,7 @@
         /* presetsPage */
         #presetsPage{
             grid-template-rows: 3px 12% calc(72% - 3px) 16%;
-            grid-template-columns: 90% 8%;
+            grid-template-columns: 92.8% 5.2%;
             column-gap: 2%;
         }
         #presetNodeSelectorContainer{
@@ -1702,6 +1702,46 @@
                 xhttp.send();
             }
 
+            // Greys the Save button out while a save is in flight, then
+            // briefly flashes it a dull green/red for success/failure
+            // (including no response inside 10s) before it settles back to
+            // its normal default look. Uses inline styles rather than CSS
+            // classes so this always wins regardless of the button's own
+            // #saveButton/:hover rules, and a requestId guard so an old,
+            // already-timed-out request can't still flash a stale result
+            // after a newer save has started.
+            var saveButtonRequestId=0;
+            function setSaveButtonState(state){
+                var btn=document.getElementById('saveButton');
+                if(!btn){
+                    return;
+                }
+                if(state=='pending'){
+                    btn.disabled=true;
+                    btn.style.backgroundColor='var(--bg-elevated)';
+                    btn.style.color='var(--text-secondary)';
+                    btn.style.cursor='not-allowed';
+                }else if(state=='success'){
+                    btn.style.backgroundColor='#3f7d52';
+                    btn.style.color='var(--text-primary)';
+                }else if(state=='error'){
+                    btn.style.backgroundColor='#8a3f3f';
+                    btn.style.color='var(--text-primary)';
+                }else{
+                    btn.disabled=false;
+                    btn.style.backgroundColor='';
+                    btn.style.color='';
+                    btn.style.cursor='';
+                }
+            }
+
+            function flashSaveButton(state){
+                setSaveButtonState(state);
+                setTimeout(function(){
+                    setSaveButtonState('default');
+                },900);
+            }
+
             function makeUpdateSettingsCall(){
                 var payload={};
                 for (var x in globals.settingsPageFields){
@@ -1709,9 +1749,30 @@
                 }
                 var urlString='http://'+location.host + '/updateSettings'
                 var xhttp = new XMLHttpRequest();
+                var requestId=++saveButtonRequestId;
+                var settled=false;
+                setSaveButtonState('pending');
+                var timeoutHandle=setTimeout(function(){
+                    if(settled || requestId!=saveButtonRequestId){
+                        return;
+                    }
+                    settled=true;
+                    xhttp.abort();
+                    flashSaveButton('error');
+                },10000);
                 xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200){
-                        console.log(this.responseText);
+                    if(this.readyState == 4){
+                        if(settled || requestId!=saveButtonRequestId){
+                            return;
+                        }
+                        settled=true;
+                        clearTimeout(timeoutHandle);
+                        if(this.status == 200){
+                            console.log(this.responseText);
+                            flashSaveButton('success');
+                        }else{
+                            flashSaveButton('error');
+                        }
                     }
                 };
                 xhttp.open('POST', urlString, true);
@@ -2001,13 +2062,43 @@
             // .presetNodeButton flex-grow/max-height CSS), so it shrinks as
             // more nodes come online and stays capped at a sane size when
             // there are only a few.
+            // Measures how wide a label's text would render on a single
+            // line - matching the real label's font/weight/letter-spacing
+            // exactly (copied from an already-rendered label, rather than
+            // re-derived, so this can't drift out of sync with the CSS) -
+            // via an off-screen probe forced to nowrap. Used to decide
+            // whether a hostname would actually wrap in its button, rather
+            // than relying on the browser's own after-the-fact wrap
+            // behavior (which depends on flex layout timing/quirks that
+            // proved unreliable here).
+            function measureNaturalLabelWidth(text, referenceLabelEl){
+                var probe=document.createElement('span');
+                var refStyle=window.getComputedStyle(referenceLabelEl);
+                probe.style.position='absolute';
+                probe.style.visibility='hidden';
+                probe.style.whiteSpace='nowrap';
+                probe.style.left='-9999px';
+                probe.style.top='0';
+                probe.style.fontSize=refStyle.fontSize;
+                probe.style.fontWeight=refStyle.fontWeight;
+                probe.style.fontFamily=refStyle.fontFamily;
+                probe.style.letterSpacing=refStyle.letterSpacing;
+                probe.innerHTML=text;
+                document.body.appendChild(probe);
+                var width=probe.offsetWidth;
+                document.body.removeChild(probe);
+                return width;
+            }
+
             function renderPresetNodeSelectorButtons(peers){
                 var container=document.getElementById('presetNodeSelectorContainer');
                 if(!container){
                     return;
                 }
                 container.innerHTML='';
-                (peers || []).forEach(function(peer){
+                var entries=peers || [];
+                var labelEls=[];
+                entries.forEach(function(peer){
                     var btn=document.createElement('button');
                     btn.className='presetNodeButton'+(globals.selectedNodeIds.indexOf(peer.hostname)!=-1 ? ' selected' : '');
                     btn.title=peer.hostname;
@@ -2019,24 +2110,27 @@
                         return function(){ toggleNodeSelection(hostname); };
                     })(peer.hostname);
                     container.appendChild(btn);
+                    labelEls.push(label);
                 });
                 // Narrow screens (e.g. a phone in portrait) don't have room
-                // for full hostnames in this column - once any one label
-                // actually wraps to more than one line, switch every button
-                // to a plain top-to-bottom 1,2,3... enumeration instead,
-                // rather than letting some wrap and others not.
-                var labels=container.querySelectorAll('.presetNodeButtonLabel');
-                var anyWrapped=false;
-                for(var i=0;i<labels.length;i++){
-                    if(labels[i].getClientRects().length>1){
-                        anyWrapped=true;
+                // for full hostnames in this column - if any one name's
+                // actual unwrapped width exceeds the space available in its
+                // button, switch every button to a plain top-to-bottom
+                // 1,2,3... enumeration instead, rather than letting some
+                // wrap and others not.
+                var anyOverflows=false;
+                for(var i=0;i<labelEls.length;i++){
+                    var btn=labelEls[i].parentElement;
+                    var style=window.getComputedStyle(btn);
+                    var available=btn.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+                    var natural=measureNaturalLabelWidth(entries[i].hostname, labelEls[i]);
+                    if(natural > available){
+                        anyOverflows=true;
                         break;
                     }
                 }
-                if(anyWrapped){
-                    for(var i=0;i<labels.length;i++){
-                        labels[i].innerHTML=(i+1);
-                    }
+                if(anyOverflows){
+                    labelEls.forEach(function(label, i){ label.innerHTML=(i+1); });
                 }
             }
 

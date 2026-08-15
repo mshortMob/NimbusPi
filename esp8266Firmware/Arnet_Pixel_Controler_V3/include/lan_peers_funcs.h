@@ -5,11 +5,14 @@
 
 #define LAN_DISCOVERY_PORT 5556
 #define LAN_NODE_INFO_INTERVAL_MS 5000
-// A peer not heard from within this many ms is dropped - 2.4x the announce
-// interval tolerates a couple of missed beats without flickering, while
-// keeping the total real-world drop-off (this, plus the frontend's own
-// refresh interval) close to the ~15s target.
-#define LAN_PEER_STALE_MS 12000
+// A peer not heard from within this many ms is dropped. UDP broadcasts have
+// no retry/ack, so on a busy WiFi network the occasional announce is simply
+// lost - a too-tight threshold (previously 12s, barely more than one missed
+// beat) meant a single dropped packet could flicker a node off the Nodes
+// page even though it never actually went offline. 57s tolerates ~11
+// consecutive missed beats before giving up, landing the total real-world
+// drop-off (this, plus the frontend's own ~3s refresh interval) at ~1 minute.
+#define LAN_PEER_STALE_MS 57000
 
 struct LanPeerInfo {
   String hostname;
