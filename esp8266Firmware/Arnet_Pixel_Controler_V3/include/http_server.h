@@ -102,7 +102,12 @@ void handleGetLedPresets(){
       if(x<4) response += ",";
     }
     response += "],\"selectedPreset\":" + String(selectedMode%5) + "}";
-    request->send(200, "application/json", response);
+    // CORS-scoped like the update handlers - the Nodes/Presets-page node
+    // selector fetches each peer's own current values directly from that
+    // peer's address, which is cross-origin from the page's perspective.
+    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", response);
+    resp->addHeader("Access-Control-Allow-Origin", "*");
+    request->send(resp);
   });
 }
 
@@ -174,7 +179,11 @@ void handleGetPixelMapPresets(){
       if(x<4) response += ",";
     }
     response += "]}";
-    request->send(200, "application/json", response);
+    // See handleGetLedPresets - CORS-scoped for the same cross-origin
+    // node-selector fetches.
+    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", response);
+    resp->addHeader("Access-Control-Allow-Origin", "*");
+    request->send(resp);
   });
 }
 

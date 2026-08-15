@@ -4,7 +4,12 @@
 #include <map>
 
 #define LAN_DISCOVERY_PORT 5556
-#define LAN_NODE_INFO_INTERVAL_MS 10000
+#define LAN_NODE_INFO_INTERVAL_MS 5000
+// A peer not heard from within this many ms is dropped - 2.4x the announce
+// interval tolerates a couple of missed beats without flickering, while
+// keeping the total real-world drop-off (this, plus the frontend's own
+// refresh interval) close to the ~15s target.
+#define LAN_PEER_STALE_MS 12000
 
 struct LanPeerInfo {
   String hostname;
@@ -53,6 +58,16 @@ void handle_lan_peers(void){
   if(now - lastLanAnnounce > LAN_NODE_INFO_INTERVAL_MS){
     announce_lan_peer_info();
     lastLanAnnounce = now;
+    // Age out peers we haven't heard an announce from in a while, so a
+    // device that's gone offline actually disappears from the Nodes page
+    // instead of lingering there forever.
+    for(auto it=discoveredLanPeers.begin(); it!=discoveredLanPeers.end();){
+      if(now - it->second.lastSeen > LAN_PEER_STALE_MS){
+        it = discoveredLanPeers.erase(it);
+      }else{
+        ++it;
+      }
+    }
   }
   int packetSize = lanDiscoveryUdp.parsePacket();
   if(packetSize > 0){
