@@ -477,13 +477,20 @@
         /* presetsPage */
         #presetsPage{
             grid-template-rows: 3px 12% calc(72% - 3px) 16%;
-            grid-template-columns: 92.8% 5.2%;
-            column-gap: 2%;
+            grid-template-columns: 92.8% 6.2%;
+            column-gap: 1%;
+        }
+        @media (max-width: 600px) and (orientation: portrait){
+            /* Mobile portrait is tighter on width than the node selector
+               column needs relative to the sliders/pixel map - trade back
+               ~5% of the content column's own width to the selector. */
+            #presetsPage{
+                grid-template-columns: 88.16% 10.84%;
+            }
         }
         #presetNodeSelectorContainer{
-            grid-row: 2 / span 3;
+            grid-row: 3 / span 2;
             grid-column: 2;
-            margin-top:-6px;
             display:flex;
             flex-direction: column;
             justify-content: flex-start;
@@ -529,7 +536,7 @@
         }
         #selectedPresetContainer{
             grid-row: 2;
-            grid-column: 1;
+            grid-column: 1 / span 2;
             margin-bottom:20px;
             grid-template-columns: 15% 10% 10% 10% 10% 10% 5% 10% 10% 10%;
             display: grid;
