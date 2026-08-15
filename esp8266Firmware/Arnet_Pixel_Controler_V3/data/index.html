@@ -284,6 +284,21 @@
         .settingsSectionContent{
             padding-top: 20px;
         }
+        .rowDeemphasized{
+            opacity: .45;
+            pointer-events: none;
+        }
+        .sectionNote{
+            font-size: .62rem;
+            font-weight: 500;
+            text-transform: none;
+            letter-spacing: 0;
+            color: var(--text-secondary);
+            margin-left: 6px;
+        }
+        .navTabHidden{
+            display:none !important;
+        }
         .settingsPageRow{
             display: block;
             position: relative;
@@ -352,12 +367,169 @@
         #saveButton:hover{
             background-color: var(--accent-strong);
         }
+        /* nodesPage */
+        #nodesPage{
+            padding-top: 8px;
+        }
+        #nodesPageControls{
+            display:flex;
+            gap:10px;
+            margin-bottom:20px;
+        }
+        #lanPeersAddRow{
+            display:flex;
+            align-items:center;
+            gap:10px;
+            margin-bottom:20px;
+        }
+        #lanPeersAddRow .nodesControlButton{
+            flex:1 1 0;
+        }
+        .nodesControlButton{
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            height:38px;
+            padding:0 16px;
+            font-size:.78rem;
+            font-weight:600;
+            letter-spacing:.02em;
+            cursor:pointer;
+        }
+        .nodesControlButton:hover{
+            background-color: var(--bg-surface-2);
+        }
+        .nodeRow{
+            display:flex;
+            align-items:center;
+            height:57px;
+            background-color: var(--bg-elevated);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-md);
+            padding: 0 16px;
+            margin-bottom:12px;
+            cursor:pointer;
+        }
+        .nodeRowCheckbox{
+            width:18px;
+            height:18px;
+            margin-right:14px;
+            accent-color: var(--accent);
+            cursor:pointer;
+        }
+        .nodeRowHostname{
+            color: var(--text-primary);
+            font-size:.85rem;
+            font-weight:700;
+            letter-spacing:.02em;
+            flex-grow:1;
+        }
+        .nodeRowBadge{
+            font-size:.62rem;
+            font-weight:700;
+            letter-spacing:.03em;
+            text-transform:uppercase;
+            color: var(--text-secondary);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 3px 8px;
+            margin-left:8px;
+        }
+        .nodeRowBadge.leaderBadge{
+            color: var(--accent-contrast);
+            background-color: var(--accent);
+            border-color: var(--accent-strong);
+        }
+        .nodeRowRemoveButton{
+            background:transparent;
+            border:none;
+            color: var(--text-secondary);
+            font-size:1.1rem;
+            line-height:1;
+            padding:0 4px;
+            margin-left:8px;
+            cursor:pointer;
+        }
+        .nodeRowRemoveButton:hover{
+            color: var(--text-primary);
+        }
+        .nodeRowSettingsButton{
+            background:transparent;
+            border:none;
+            color: var(--text-secondary);
+            line-height:1;
+            padding:0 4px;
+            margin-left:8px;
+            cursor:pointer;
+            display:flex;
+            align-items:center;
+        }
+        .nodeRowSettingsButton:hover{
+            color: var(--text-primary);
+        }
+        #nodesEmptyMessage{
+            color: var(--text-secondary);
+            font-size:.8rem;
+            text-align:center;
+            padding: 30px 0;
+        }
         /* presetsPage */
         #presetsPage{
             grid-template-rows: 3px 12% calc(72% - 3px) 16%;
+            grid-template-columns: 92.8% 5.2%;
+            column-gap: 2%;
+        }
+        #presetNodeSelectorContainer{
+            grid-row: 2 / span 3;
+            grid-column: 2;
+            margin-top:-6px;
+            display:flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap:8px;
+            overflow:hidden;
+        }
+        .presetNodeButton{
+            flex:1 1 0;
+            min-height:0;
+            max-height:64px;
+            width:100%;
+            border-radius: var(--radius-sm);
+            border:2px solid var(--border-strong);
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            font-size:.6rem;
+            font-weight:700;
+            letter-spacing:.02em;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            cursor:pointer;
+            padding:2px 4px;
+            overflow:hidden;
+            transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+        }
+        .presetNodeButton.selected{
+            background-color: var(--accent);
+            color: var(--accent-contrast);
+            border-color: var(--accent-strong);
+        }
+        .presetNodeButtonLabel{
+            min-width:0;
+            width:100%;
+            text-align:center;
+            overflow-wrap: break-word;
+            word-break: break-word;
+        }
+        .pixel.mixedValue{
+            background-color: transparent;
+            background-image: repeating-linear-gradient(45deg, var(--bg-elevated) 0 4px, var(--border-strong) 4px 8px);
         }
         #selectedPresetContainer{
             grid-row: 2;
+            grid-column: 1;
             margin-bottom:20px;
             grid-template-columns: 15% 10% 10% 10% 10% 10% 5% 10% 10% 10%;
             display: grid;
@@ -397,6 +569,7 @@
         }
         #pixelMapContainer{
             grid-row: 3;
+            grid-column: 1;
             background-color: var(--border-subtle);
             z-index: 10;
             margin-bottom:20px;
@@ -413,6 +586,7 @@
         }
         #colorPickerContainer{
             grid-row: 4;
+            grid-column: 1;
             border:1px solid var(--border-subtle);
             border-radius: var(--radius-md);
             margin:0px;
@@ -434,6 +608,7 @@
             flex-direction: column;
             width:100%;
             grid-row: 3 / span 2;
+            grid-column: 1;
             margin-left:-3px;
         }
         #labelsDiv {
@@ -498,6 +673,7 @@
                     <span>NimbusKit</span>
                 </button>
                 <div id="headerSpacer"></div>
+                <button class="header-item nav-btn navTabHidden" id="navNodes" onclick="goToPage('nodesPage');">Nodes</button>
                 <button class="header-item nav-btn" id="navPresets" onclick="goToPage('presetsPage');">Presets</button>
                 <button class="header-item nav-btn" id="navSettings" onclick="goToPage('settingsPage');">Settings</button>
                 <button class="header-item nav-btn" id="navData" onclick="goToPage('dataPage');">Data</button>
@@ -505,6 +681,7 @@
                 <div class="statusDot artnet" id="controlModeDot" title="Control Source: Loading..."></div>
             </div>
             <div id="navMenu">
+                <button class="navMenuItem navTabHidden" id="navMenuNodes" onclick="goToPage('nodesPage');toggleNavMenu(false);">Nodes</button>
                 <button class="navMenuItem" id="navMenuPresets" onclick="goToPage('presetsPage');toggleNavMenu(false);">Presets</button>
                 <button class="navMenuItem" id="navMenuSettings" onclick="goToPage('settingsPage');toggleNavMenu(false);">Settings</button>
                 <button class="navMenuItem" id="navMenuData" onclick="goToPage('dataPage');toggleNavMenu(false);">Data</button>
@@ -534,8 +711,22 @@
                 </div>
                 <div id="colorPickerContainer">
                 </div>
+                <div id="presetNodeSelectorContainer">
+                </div>
             </div>
             <div id="settingsPage" class="page">
+            </div>
+            <div id="nodesPage" class="page">
+                <div id="nodesPageControls">
+                    <button class="nodesControlButton" onclick="refreshNodesPage();">Refresh</button>
+                    <button class="nodesControlButton" onclick="selectAllNodes();">Select All</button>
+                    <button class="nodesControlButton" onclick="clearNodeSelection();">Clear Selection</button>
+                </div>
+                <div id="lanPeersAddRow">
+                    <input type="text" id="lanPeerAddInput" class="settingsPageInput" placeholder="Hostname or IP address" style="width:68%;margin-left:0;">
+                    <button class="nodesControlButton" onclick="addLanPeer();">Add Peer</button>
+                </div>
+                <div id="nodesListContainer"></div>
             </div>
             <div id="bottomSpacer">
             </div>
@@ -544,6 +735,12 @@
 
             globals={
                 currentPage: "presetsPage",
+                selectedNodeIds: [],
+                lastKnownNodeIds: [],
+                lastKnownManualPeers: [],
+                lanPeerAddresses: {},
+                lanSelfHostname: "",
+                controlMode: "0",
                 dataHistoryBuffer: [
                     [
                         .5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5
@@ -606,6 +803,17 @@
                     "text":"Max Brightness:",
                     "section":"LED Settings",
                     "initVal":"---"
+                },
+                {
+                    "name":"enable_led_yield",
+                    "text":"WiFi Yield:",
+                    "section":"LED Settings",
+                    "initVal":"---",
+                    "type":"select",
+                    "options":[
+                        {"value":"1","label":"Enabled"},
+                        {"value":"0","label":"Disabled"}
+                    ]
                 },
                 {
                     "name":"fixtureMode",
@@ -707,6 +915,17 @@
                 needToUpdateLedPresets: false,
                 socketConnectivityCheck: new Date().getTime(),
                 presetValueDebounceTime: new Date().getTime(),
+                // Per-node preset/pixel data, keyed by hostname - see
+                // getNodeData()/refreshPresetsDisplay(). The flat
+                // synthSliderValues/pixelMap/presetTypes/selectedPreset
+                // fields above remain the DISPLAY cache (what's currently
+                // rendered), recomputed from this whenever the selection
+                // changes or a node's data loads.
+                nodeData: {},
+                mixedSliderMask: null,
+                mixedPixelMask: null,
+                selfSelectionSeeded: false,
+                lastKnownPeers: [],
             }
 
             window.onload = function(){
@@ -728,8 +947,20 @@
                 createColorPicker();
                 createSynthSliders();
                 initOrientationListener();
+                // A Nodes-page "Settings" button navigates here with
+                // #settingsPage so the freshly-loaded page opens straight to
+                // that tab instead of the default Presets page.
+                if(window.location.hash){
+                    var hashPage=window.location.hash.substring(1);
+                    var hashPageEl=document.getElementById(hashPage);
+                    if(hashPageEl && hashPageEl.classList.contains('page')){
+                        globals.currentPage=hashPage;
+                    }
+                }
                 goToPage(globals.currentPage);
                 makeGetSettingsCall();
+                makeGetLanPeersCall();
+                setInterval(makeGetLanPeersCall, 3000);
                 updatePixelMapInterv=setInterval(function(){
                     if(globals.needToUpdatePixelMap){
                         globals.needToUpdatePixelMap=false;
@@ -746,8 +977,13 @@
                 setInterval(function(){
                     var now=new Date().getTime();
                     if( (now-globals.socketConnectivityCheck) > 5000){
-                        initWebSocket();
-                        gobals.socketConnectivityCheck=now;
+                        // Reset the check BEFORE reconnecting (not just on a
+                        // successful open) - otherwise, while the connection
+                        // is struggling, this fires again every single tick
+                        // forever, stacking on top of the onerror/onclose
+                        // retries below.
+                        globals.socketConnectivityCheck=now;
+                        scheduleWebSocketReconnect();
                     }
                 },5000);
             }
@@ -760,7 +996,8 @@
                 // pixel map grid
                 for(var x=0;x<globals.numRows;x++){
                     for(var y=0; y<globals.numCols;y++){
-                        document.getElementById("pixel_"+x+"_"+y).setValue(globals.pixelMap[globals.selectedPreset-1][x][y]);
+                        var pixelMixed=globals.mixedPixelMask && globals.mixedPixelMask[x][y];
+                        document.getElementById("pixel_"+x+"_"+y).setValue(globals.pixelMap[globals.selectedPreset-1][x][y], pixelMixed);
                     }
                 }
                 // color picker
@@ -797,7 +1034,8 @@
                 }
                 // synth slider values
                 for(var x=1; x<9; x++){
-                    document.getElementById("slider"+x).setValue(globals.synthSliderValues[globals.selectedPreset-1][x-1]);
+                    var sliderMixed=globals.mixedSliderMask && globals.mixedSliderMask[x-1];
+                    document.getElementById("slider"+x).setValue(globals.synthSliderValues[globals.selectedPreset-1][x-1], sliderMixed);
                 }
                 // resize all
                 resizePages();
@@ -847,6 +1085,9 @@
                 }
                 // adjust for screen orientation
                 processOrientation((screen.orientation || {}).type || screen.mozOrientation || screen.msOrientation);
+                // Re-check whether the Presets-page node selector labels
+                // still fit on one line at this width
+                renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
             }
 
             function goToPage(pageName){
@@ -855,7 +1096,7 @@
                 for (let i = 0; i < pages.length; i++) {
                     console.log(pages.item(i).id)
                     if(pages.item(i).id==pageName){
-                        if(pageName=="settingsPage"){
+                        if(pageName=="settingsPage" || pageName=="nodesPage"){
                             pages.item(i).style.display='block';
                         }else{
                             pages.item(i).style.display='grid';
@@ -868,9 +1109,14 @@
                 document.getElementById('navPresets').classList.toggle('active', pageName=='presetsPage');
                 document.getElementById('navSettings').classList.toggle('active', pageName=='settingsPage');
                 document.getElementById('navData').classList.toggle('active', pageName=='dataPage');
+                document.getElementById('navNodes').classList.toggle('active', pageName=='nodesPage');
                 document.getElementById('navMenuPresets').classList.toggle('active', pageName=='presetsPage');
                 document.getElementById('navMenuSettings').classList.toggle('active', pageName=='settingsPage');
                 document.getElementById('navMenuData').classList.toggle('active', pageName=='dataPage');
+                document.getElementById('navMenuNodes').classList.toggle('active', pageName=='nodesPage');
+                if(pageName=='nodesPage'){
+                    makeGetLanPeersCall();
+                }
                 syncView();
             }
 
@@ -883,11 +1129,13 @@
             function handleSelectedPresetButton(inputValue, buttonType){
                 if(buttonType=="typebutton"){
                     globals.presetTypes[globals.selectedPreset-1]=inputValue;
+                    applyToSelectedNodes(function(nd){ nd.presetTypes[globals.selectedPreset-1]=inputValue; });
                 }else if(buttonType=="numberbutton"){
                     globals.selectedPreset=inputValue;
+                    applyToSelectedNodes(function(nd){ nd.selectedPreset=inputValue; });
                 }
                 makeUpdateLedPresetsCall();
-                syncView();
+                refreshPresetsDisplay();
             }
 
 			function requestFullScreen() {
@@ -993,7 +1241,9 @@
                         var header=document.createElement('button');
                         header.type='button';
                         header.className='settingsSectionHeader';
-                        header.innerHTML='<span class="settingsSectionTitle">'+field.section+'</span><span class="settingsSectionChevron">&#9662;</span>';
+                        var sectionTitleIds={'ArtNet / DMX':'artnetDmxSectionTitle','Local Wifi Settings':'localWifiSectionTitle'};
+                        var titleSpanId=sectionTitleIds[field.section] ? ' id="'+sectionTitleIds[field.section]+'"' : '';
+                        header.innerHTML='<span class="settingsSectionTitle"'+titleSpanId+'>'+field.section+'</span><span class="settingsSectionChevron">&#9662;</span>';
                         header.onclick=function(){
                             toggleSettingsSection(this);
                         }
@@ -1002,6 +1252,10 @@
                         content.style.display='none';
                         sectionDiv.appendChild(header);
                         sectionDiv.appendChild(content);
+                        var sectionIds={'ArtNet / DMX':'artnetDmxSection','Local Wifi Settings':'localWifiSection'};
+                        if(sectionIds[field.section]){
+                            sectionDiv.id=sectionIds[field.section];
+                        }
                         document.getElementById("settingsPage").appendChild(sectionDiv);
                         sectionContents[field.section]=content;
                     }
@@ -1042,6 +1296,12 @@
                     input.className="settingsPageInput";
                     input.id=field.name;
                     input.value=field.initVal;
+                    if(field.name=='control_mode'){
+                        input.onchange=function(){
+                            updateControlModeDot(this.value);
+                            updateNodesTabVisibility(this.value);
+                        }
+                    }
                     row.appendChild(input);
                     if(isPasswordField){
                         var eyeIconOpen='<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>';
@@ -1111,6 +1371,7 @@
                         canvas.value=0;
                         canvas.num=x;
                         canvas.updateValue=function(event,action){
+                            this.classList.remove('mixedValue');
                             if(action=="add"){
                                 this.style.backgroundColor = "rgb("+globals.colorMap[0][globals.selectedColor]+","+globals.colorMap[1][globals.selectedColor]+","+globals.colorMap[2][globals.selectedColor]+")";
                                 this.value=globals.selectedColor;
@@ -1119,11 +1380,12 @@
                                 this.style.backgroundColor = "rgb("+globals.colorMap[0][globals.colorMap[0].length-1]+","+globals.colorMap[1][globals.colorMap[0].length-1]+","+globals.colorMap[2][globals.colorMap[0].length-1]+")";
                                 this.value=globals.colorMap[0].length-1;
                             }
-                            for(var x=0;x<globals.numRows;x++){
-                                for(var y=0; y<globals.numCols;y++){
-                                    globals.pixelMap[globals.selectedPreset-1][x][y]=document.getElementById("pixel_"+x+"_"+y).value;
-                                }
+                            globals.pixelMap[globals.selectedPreset-1][this.x][this.y]=this.value;
+                            if(globals.mixedPixelMask){
+                                globals.mixedPixelMask[this.x][this.y]=false;
                             }
+                            var cellX=this.x, cellY=this.y, cellValue=this.value, presetIdx=globals.selectedPreset-1;
+                            applyToSelectedNodes(function(nd){ nd.pixelMap[presetIdx][cellX][cellY]=cellValue; });
                             globals.needToUpdatePixelMap=true;
                         }
                         canvas.onmousedown=function(event){
@@ -1143,20 +1405,19 @@
                                 this.updateValue(event,"remove");
                             }
                         }
-                        canvas.setValue=function(value){
+                        canvas.setValue=function(value, mixed){
                             this.value=value;
-                            this.style.backgroundColor = "rgb("+globals.colorMap[0][this.value]+","+globals.colorMap[1][this.value]+","+globals.colorMap[2][this.value]+")";
+                            if(mixed){
+                                this.style.backgroundColor='';
+                                this.classList.add('mixedValue');
+                            }else{
+                                this.classList.remove('mixedValue');
+                                this.style.backgroundColor = "rgb("+globals.colorMap[0][this.value]+","+globals.colorMap[1][this.value]+","+globals.colorMap[2][this.value]+")";
+                            }
                         }
                         canvas.ontouchstart=function(event){
-                            console.log(event)
                             globals.needToUpdatePixelMap=true;
-                            this.style.backgroundColor = "rgb("+globals.colorMap[0][globals.selectedColor]+","+globals.colorMap[1][globals.selectedColor]+","+globals.colorMap[2][globals.selectedColor]+")";
-                            this.value=globals.selectedColor;
-                            for(var x=0;x<globals.numRows;x++){
-                                for(var y=0; y<globals.numCols;y++){
-                                    globals.pixelMap[globals.selectedPreset-1][x][y]=document.getElementById("pixel_"+x+"_"+y).value;
-                                }
-                            }
+                            this.updateValue(event,"add");
                         }
                         canvas.ontouchmove=function(event){
                             globals.needToUpdatePixelMap=true;
@@ -1276,23 +1537,25 @@
                     canvas.refresh=function(){
                         this.width=parseInt(document.getElementById("slidersDiv").offsetWidth/8);
                         this.height=parseInt(document.getElementById("slidersDiv").offsetHeight*.8);
-                        this.setValue(globals.synthSliderValues[globals.selectedPreset-1][this.num-1]);
+                        var mixed=globals.mixedSliderMask && globals.mixedSliderMask[this.num-1];
+                        this.setValue(globals.synthSliderValues[globals.selectedPreset-1][this.num-1], mixed);
                     }
                     canvas.updateValue=function(event){
-                        var ctx = this.getContext("2d");
-                        ctx.clearRect(0, 0, this.width, this.height);
-                        ctx.fillStyle = "#0a0c11";
-                        ctx.fillRect(0, 0, this.width, event.offsetY/this.offsetHeight*this.height );
                         var value=255-parseInt(event.offsetY/this.offsetHeight*255);
                         if(value<12){
                             value=0;
                         }
+                        this.setValue(value, false);
                         for(var y=1;y<9;y++){
                             if(this.num==y){
                                 globals.synthSliderValues[globals.selectedPreset-1][y-1]=value;
                             }
                         }
-                        console.log('slider updateValue');
+                        if(globals.mixedSliderMask){
+                            globals.mixedSliderMask[this.num-1]=false;
+                        }
+                        var sliderIdx=this.num-1, presetIdx=globals.selectedPreset-1;
+                        applyToSelectedNodes(function(nd){ nd.ledPresets[presetIdx][sliderIdx]=value; });
                         globals.needToUpdateLedPresets=true;
                     }
                     canvas.onmouseup=function(event){
@@ -1311,9 +1574,29 @@
                             this.updateValue(event);
                         }
                     }
-                    canvas.setValue=function(value){
+                    canvas.setValue=function(value, mixed){
                         var ctx = this.getContext("2d");
                         ctx.clearRect(0, 0, this.width, this.height);
+                        if(mixed){
+                            // Diagonal hatch across the whole slider instead
+                            // of a fill level - the selected nodes disagree
+                            // on this value, so there's no single level to
+                            // show.
+                            ctx.save();
+                            ctx.beginPath();
+                            ctx.rect(0, 0, this.width, this.height);
+                            ctx.clip();
+                            ctx.strokeStyle = "#3a4256";
+                            ctx.lineWidth = 3;
+                            for(var off=-this.height; off<this.width; off+=10){
+                                ctx.beginPath();
+                                ctx.moveTo(off, this.height);
+                                ctx.lineTo(off+this.height, 0);
+                                ctx.stroke();
+                            }
+                            ctx.restore();
+                            return;
+                        }
                         ctx.fillStyle = "#0a0c11";
                         ctx.fillRect(0, 0, this.width, parseInt((255-value)/255*this.height) );
                     }
@@ -1371,6 +1654,24 @@
                 dot.title = isArtnet ? 'Control Source: ArtNet / DMX' : 'Control Source: GUI Presets';
             }
 
+            // The Nodes tab makes sense only while GUI Presets (not
+            // ArtNet/DMX) are actually driving the LEDs - targeting presets
+            // to specific devices has no effect when DMX data is what's
+            // playing.
+            function updateNodesTabVisibility(controlModeValue){
+                globals.controlMode = String(controlModeValue);
+                var isArtnet = (globals.controlMode=='1');
+                var isAvailable = !isArtnet;
+                document.getElementById('navNodes').classList.toggle('navTabHidden', !isAvailable);
+                document.getElementById('navMenuNodes').classList.toggle('navTabHidden', !isAvailable);
+                if(!isAvailable){
+                    globals.selectedNodeIds=[];
+                    if(globals.currentPage=='nodesPage'){
+                        goToPage('presetsPage');
+                    }
+                }
+            }
+
             function makeGetSettingsCall(){
                 var urlString='http://'+location.host + '/getSettings'
                 var xhttp = new XMLHttpRequest();
@@ -1382,12 +1683,63 @@
                         document.getElementById(globals.settingsPageFields[x].name).value=getResponse[globals.settingsPageFields[x].name];
                     }
                     updateControlModeDot(getResponse['control_mode']);
+                    updateNodesTabVisibility(getResponse['control_mode']);
+                    globals.lanSelfHostname=getResponse['ap_name'];
+                    // Self starts selected by default (see the Nodes page),
+                    // but only seed that once - after that it's up to the
+                    // user, same as any other node.
+                    if(!globals.selfSelectionSeeded){
+                        globals.selfSelectionSeeded=true;
+                        if(globals.selectedNodeIds.indexOf(globals.lanSelfHostname)==-1){
+                            globals.selectedNodeIds.push(globals.lanSelfHostname);
+                        }
+                    }
                     makeGetLedPresetsCall();
                 }
                 };
                 xhttp.open('GET', urlString, true);
                 xhttp.setRequestHeader('Content-Type', 'application/json')
                 xhttp.send();
+            }
+
+            // Greys the Save button out while a save is in flight, then
+            // briefly flashes it a dull green/red for success/failure
+            // (including no response inside 10s) before it settles back to
+            // its normal default look. Uses inline styles rather than CSS
+            // classes so this always wins regardless of the button's own
+            // #saveButton/:hover rules, and a requestId guard so an old,
+            // already-timed-out request can't still flash a stale result
+            // after a newer save has started.
+            var saveButtonRequestId=0;
+            function setSaveButtonState(state){
+                var btn=document.getElementById('saveButton');
+                if(!btn){
+                    return;
+                }
+                if(state=='pending'){
+                    btn.disabled=true;
+                    btn.style.backgroundColor='var(--bg-elevated)';
+                    btn.style.color='var(--text-secondary)';
+                    btn.style.cursor='not-allowed';
+                }else if(state=='success'){
+                    btn.style.backgroundColor='#3f7d52';
+                    btn.style.color='var(--text-primary)';
+                }else if(state=='error'){
+                    btn.style.backgroundColor='#8a3f3f';
+                    btn.style.color='var(--text-primary)';
+                }else{
+                    btn.disabled=false;
+                    btn.style.backgroundColor='';
+                    btn.style.color='';
+                    btn.style.cursor='';
+                }
+            }
+
+            function flashSaveButton(state){
+                setSaveButtonState(state);
+                setTimeout(function(){
+                    setSaveButtonState('default');
+                },900);
             }
 
             function makeUpdateSettingsCall(){
@@ -1397,15 +1749,37 @@
                 }
                 var urlString='http://'+location.host + '/updateSettings'
                 var xhttp = new XMLHttpRequest();
+                var requestId=++saveButtonRequestId;
+                var settled=false;
+                setSaveButtonState('pending');
+                var timeoutHandle=setTimeout(function(){
+                    if(settled || requestId!=saveButtonRequestId){
+                        return;
+                    }
+                    settled=true;
+                    xhttp.abort();
+                    flashSaveButton('error');
+                },10000);
                 xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200){
-                        console.log(this.responseText);
+                    if(this.readyState == 4){
+                        if(settled || requestId!=saveButtonRequestId){
+                            return;
+                        }
+                        settled=true;
+                        clearTimeout(timeoutHandle);
+                        if(this.status == 200){
+                            console.log(this.responseText);
+                            flashSaveButton('success');
+                        }else{
+                            flashSaveButton('error');
+                        }
                     }
                 };
                 xhttp.open('POST', urlString, true);
                 xhttp.setRequestHeader('Content-Type', 'application/json')
                 xhttp.send(JSON.stringify(payload));
                 updateControlModeDot(payload['control_mode']);
+                updateNodesTabVisibility(payload['control_mode']);
             }
 
             function makeGetLedPresetsCall(){
@@ -1428,6 +1802,10 @@
                                 globals.presetTypes[x]="synth";
                             }
                         }
+                        var selfData=getNodeData(globals.lanSelfHostname);
+                        selfData.ledPresets=globals.synthSliderValues.map(function(row){ return row.slice(); });
+                        selfData.presetTypes=globals.presetTypes.slice();
+                        selfData.selectedPreset=parseInt(getResponse["selectedPreset"])+1;
                         handleSelectedPresetButton(parseInt(getResponse["selectedPreset"]+1),"numberbutton");
                         makeGetPixelMapCall();
                     }
@@ -1437,27 +1815,195 @@
                 xhttp.send();
             }
 
-            function makeUpdateLedPresetsCall(){
-                globals.presetValueDebounceTime=new Date().getTime();
-                var tempPresetTypes=[];
-                for(var x=0; x<5;x++){
-                    if(globals.presetTypes[x]=="pixel"){
-                        tempPresetTypes.push(1);
-                    }else{
-                        tempPresetTypes.push(0);
-                    }
-                }
-                var payload={"ledPresets":globals.synthSliderValues, "selectedPreset":parseInt(globals.selectedPreset-1), "presetTypes": tempPresetTypes};
-                var urlString='http://'+location.host + '/updateLedPresets'
+            function postToHost(host, path, payload){
+                var urlString='http://'+host+path;
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    console.log(this.responseText);
-                }
+                    if(this.readyState == 4 && this.status == 200){
+                        console.log(this.responseText);
+                    }
                 };
                 xhttp.open('POST', urlString, true);
                 xhttp.setRequestHeader('Content-Type', 'application/json')
                 xhttp.send(JSON.stringify(payload));
+            }
+
+            // There's no device-to-device relay at all: the browser sends
+            // one independent request directly to each selected device's
+            // own address, using location.host for whichever selected entry
+            // is this device (guaranteeing that particular request stays
+            // same-origin, no CORS involved).
+            function resolveNodeAddress(hostname){
+                if(hostname==globals.lanSelfHostname){
+                    return location.host;
+                }
+                return globals.lanPeerAddresses[hostname] || hostname;
+            }
+
+            function makeEmptyPixelMap(){
+                var pixelMap=[];
+                for(var p=0;p<5;p++){
+                    var preset=[];
+                    for(var x=0;x<8;x++){
+                        var row=[];
+                        for(var y=0;y<8;y++){ row.push(0); }
+                        preset.push(row);
+                    }
+                    pixelMap.push(preset);
+                }
+                return pixelMap;
+            }
+
+            function makeDefaultLedPresets(){
+                var ledPresets=[];
+                for(var p=0;p<5;p++){
+                    var row=[];
+                    for(var s=0;s<8;s++){ row.push(128); }
+                    ledPresets.push(row);
+                }
+                return ledPresets;
+            }
+
+            // Per-node preset/pixel data store - see the comment on
+            // globals.nodeData. A fresh, not-yet-loaded stub is created on
+            // first reference so a node can be selected/edited immediately
+            // even before its real values have been fetched.
+            function getNodeData(hostname){
+                if(!globals.nodeData[hostname]){
+                    globals.nodeData[hostname]={
+                        ledPresets: makeDefaultLedPresets(),
+                        presetTypes: ["pixel","pixel","pixel","synth","synth"],
+                        pixelMap: makeEmptyPixelMap(),
+                        selectedPreset: 1,
+                        loaded: false,
+                        loading: false,
+                    };
+                }
+                return globals.nodeData[hostname];
+            }
+
+            // Fetches a node's current preset/pixel-map bank the first time
+            // it's identified (see renderLanPeersList), so its own values
+            // are ready to show/recall as soon as it's selected. Skips the
+            // Content-Type header deliberately - these are simple GETs with
+            // no body, and adding it would turn a same-origin-or-not GET
+            // into a CORS preflight-triggering request for no benefit.
+            function ensureNodeDataLoaded(hostname){
+                var nd=getNodeData(hostname);
+                if(nd.loaded || nd.loading){
+                    return;
+                }
+                nd.loading=true;
+                var address=resolveNodeAddress(hostname);
+                var ledDone=false, pixelDone=false;
+                function checkDone(){
+                    if(ledDone && pixelDone){
+                        nd.loading=false;
+                        nd.loaded=true;
+                        refreshPresetsDisplay();
+                    }
+                }
+                var ledXhr=new XMLHttpRequest();
+                ledXhr.onreadystatechange=function(){
+                    if(this.readyState==4){
+                        if(this.status==200){
+                            try{
+                                var resp=JSON.parse(this.response);
+                                nd.ledPresets=resp["ledPresets"];
+                                nd.presetTypes=resp["presetTypes"].map(function(t){ return t==1 ? "pixel" : "synth"; });
+                                nd.selectedPreset=parseInt(resp["selectedPreset"])+1;
+                            }catch(e){}
+                        }
+                        ledDone=true;
+                        checkDone();
+                    }
+                };
+                ledXhr.open('GET', 'http://'+address+'/getLedPresets', true);
+                ledXhr.send();
+                var pixelXhr=new XMLHttpRequest();
+                pixelXhr.onreadystatechange=function(){
+                    if(this.readyState==4){
+                        if(this.status==200){
+                            try{
+                                var resp=JSON.parse(this.response);
+                                nd.pixelMap=resp["pixelMap"];
+                            }catch(e){}
+                        }
+                        pixelDone=true;
+                        checkDone();
+                    }
+                };
+                pixelXhr.open('GET', 'http://'+address+'/getPixelMapPresets', true);
+                pixelXhr.send();
+            }
+
+            // Applies a live edit (slider drag, pixel paint, preset
+            // type/number change) to every currently-selected node's own
+            // stored bank, so each node keeps its own values instead of all
+            // selected nodes being forced to match whichever one is shown.
+            function applyToSelectedNodes(fn){
+                (globals.selectedNodeIds || []).forEach(function(hostname){
+                    fn(getNodeData(hostname));
+                });
+            }
+
+            // Recomputes the flat display fields (what syncView() renders)
+            // from the current selection's per-node data. With exactly one
+            // node effectively selected, shows that node's own values
+            // as-is. With more than one, values the selected nodes disagree
+            // on are masked out (see mixedSliderMask/mixedPixelMask) so a
+            // single arbitrary value is never shown as if it were shared.
+            function refreshPresetsDisplay(){
+                var selected=(globals.selectedNodeIds || []).slice();
+                var representative=selected.length>0 ? selected[0] : globals.lanSelfHostname;
+                if(!representative){
+                    return;
+                }
+                ensureNodeDataLoaded(representative);
+                var repData=getNodeData(representative);
+                globals.selectedPreset=repData.selectedPreset || globals.selectedPreset;
+                globals.presetTypes=repData.presetTypes.slice();
+                globals.synthSliderValues=repData.ledPresets.map(function(row){ return row.slice(); });
+                globals.pixelMap=repData.pixelMap.map(function(preset){ return preset.map(function(row){ return row.slice(); }); });
+                if(selected.length>1){
+                    selected.forEach(ensureNodeDataLoaded);
+                    var presetIdx=globals.selectedPreset-1;
+                    globals.mixedSliderMask=[];
+                    for(var s=0;s<8;s++){
+                        var sliderVals=selected.map(function(h){ return getNodeData(h).ledPresets[presetIdx][s]; });
+                        globals.mixedSliderMask[s]=sliderVals.some(function(v){ return v!=sliderVals[0]; });
+                    }
+                    globals.mixedPixelMask=[];
+                    for(var px=0;px<8;px++){
+                        globals.mixedPixelMask[px]=[];
+                        for(var py=0;py<8;py++){
+                            var pixelVals=selected.map(function(h){ return getNodeData(h).pixelMap[presetIdx][px][py]; });
+                            globals.mixedPixelMask[px][py]=pixelVals.some(function(v){ return v!=pixelVals[0]; });
+                        }
+                    }
+                }else{
+                    globals.mixedSliderMask=null;
+                    globals.mixedPixelMask=null;
+                }
+                syncView();
+            }
+
+            function sendLedPresetsToNode(hostname){
+                var nd=getNodeData(hostname);
+                var tempPresetTypes=nd.presetTypes.map(function(t){ return t=="pixel" ? 1 : 0; });
+                var payload={"ledPresets":nd.ledPresets, "selectedPreset":parseInt(nd.selectedPreset-1), "presetTypes": tempPresetTypes};
+                postToHost(resolveNodeAddress(hostname), '/updateLedPresets', payload);
+            }
+
+            function sendPixelMapToNode(hostname){
+                var nd=getNodeData(hostname);
+                var payload={"pixelMap":nd.pixelMap};
+                postToHost(resolveNodeAddress(hostname), '/updatePixelMap', payload);
+            }
+
+            function makeUpdateLedPresetsCall(){
+                globals.presetValueDebounceTime=new Date().getTime();
+                (globals.selectedNodeIds || []).forEach(sendLedPresetsToNode);
             }
 
             function makeGetPixelMapCall(){
@@ -1474,7 +2020,11 @@
                                 }
                             }
                         }
-                        syncView();
+                        var selfData=getNodeData(globals.lanSelfHostname);
+                        selfData.pixelMap=globals.pixelMap.map(function(preset){ return preset.map(function(row){ return row.slice(); }); });
+                        selfData.loading=false;
+                        selfData.loaded=true;
+                        refreshPresetsDisplay();
                     }
                 };
                 xhttp.open('GET', urlString, true);
@@ -1483,37 +2033,339 @@
             }
 
             function makeUpdatPixelMapCall(){
-                var payload={"pixelMap":globals.pixelMap};
-                var urlString='http://'+location.host + '/updatePixelMap'
+                (globals.selectedNodeIds || []).forEach(sendPixelMapToNode);
+            }
+
+            // Only drops a selected id after it's been missing for several
+            // consecutive refreshes in a row, rather than the very first
+            // one - a transient discovery miss shouldn't silently and
+            // permanently degrade a multi-device selection down to fewer
+            // devices without ever being unchecked.
+            function pruneStaleSelection(knownIds){
+                globals.missingSelectionCounts=globals.missingSelectionCounts||{};
+                var stillKnown={};
+                knownIds.forEach(function(id){ stillKnown[id]=true; });
+                globals.selectedNodeIds=globals.selectedNodeIds.filter(function(id){
+                    if(stillKnown[id]){
+                        delete globals.missingSelectionCounts[id];
+                        return true;
+                    }
+                    globals.missingSelectionCounts[id]=(globals.missingSelectionCounts[id]||0)+1;
+                    return globals.missingSelectionCounts[id]<3;
+                });
+            }
+
+            // Mirrors the Nodes-page checkbox list as a column of buttons
+            // on the Presets page itself, so a node can be targeted without
+            // leaving the page being edited. Height is shared out evenly
+            // across however many nodes are currently known (see the
+            // .presetNodeButton flex-grow/max-height CSS), so it shrinks as
+            // more nodes come online and stays capped at a sane size when
+            // there are only a few.
+            // Measures how wide a label's text would render on a single
+            // line - matching the real label's font/weight/letter-spacing
+            // exactly (copied from an already-rendered label, rather than
+            // re-derived, so this can't drift out of sync with the CSS) -
+            // via an off-screen probe forced to nowrap. Used to decide
+            // whether a hostname would actually wrap in its button, rather
+            // than relying on the browser's own after-the-fact wrap
+            // behavior (which depends on flex layout timing/quirks that
+            // proved unreliable here).
+            function measureNaturalLabelWidth(text, referenceLabelEl){
+                var probe=document.createElement('span');
+                var refStyle=window.getComputedStyle(referenceLabelEl);
+                probe.style.position='absolute';
+                probe.style.visibility='hidden';
+                probe.style.whiteSpace='nowrap';
+                probe.style.left='-9999px';
+                probe.style.top='0';
+                probe.style.fontSize=refStyle.fontSize;
+                probe.style.fontWeight=refStyle.fontWeight;
+                probe.style.fontFamily=refStyle.fontFamily;
+                probe.style.letterSpacing=refStyle.letterSpacing;
+                probe.innerHTML=text;
+                document.body.appendChild(probe);
+                var width=probe.offsetWidth;
+                document.body.removeChild(probe);
+                return width;
+            }
+
+            function renderPresetNodeSelectorButtons(peers){
+                var container=document.getElementById('presetNodeSelectorContainer');
+                if(!container){
+                    return;
+                }
+                container.innerHTML='';
+                var entries=peers || [];
+                var labelEls=[];
+                entries.forEach(function(peer){
+                    var btn=document.createElement('button');
+                    btn.className='presetNodeButton'+(globals.selectedNodeIds.indexOf(peer.hostname)!=-1 ? ' selected' : '');
+                    btn.title=peer.hostname;
+                    var label=document.createElement('span');
+                    label.className='presetNodeButtonLabel';
+                    label.innerHTML=peer.hostname;
+                    btn.appendChild(label);
+                    btn.onclick=(function(hostname){
+                        return function(){ toggleNodeSelection(hostname); };
+                    })(peer.hostname);
+                    container.appendChild(btn);
+                    labelEls.push(label);
+                });
+                // Narrow screens (e.g. a phone in portrait) don't have room
+                // for full hostnames in this column - if any one name's
+                // actual unwrapped width exceeds the space available in its
+                // button, switch every button to a plain top-to-bottom
+                // 1,2,3... enumeration instead, rather than letting some
+                // wrap and others not.
+                var anyOverflows=false;
+                for(var i=0;i<labelEls.length;i++){
+                    var btn=labelEls[i].parentElement;
+                    var style=window.getComputedStyle(btn);
+                    var available=btn.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+                    var natural=measureNaturalLabelWidth(entries[i].hostname, labelEls[i]);
+                    if(natural > available){
+                        anyOverflows=true;
+                        break;
+                    }
+                }
+                if(anyOverflows){
+                    labelEls.forEach(function(label, i){ label.innerHTML=(i+1); });
+                }
+            }
+
+            function toggleNodeSelection(nodeId){
+                var idx=globals.selectedNodeIds.indexOf(nodeId);
+                if(idx==-1){
+                    globals.selectedNodeIds.push(nodeId);
+                }else{
+                    globals.selectedNodeIds.splice(idx,1);
+                }
+                renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
+                refreshPresetsDisplay();
+            }
+
+            function refreshNodesPage(){
+                makeGetLanPeersCall();
+            }
+
+            function selectAllNodes(){
+                globals.selectedNodeIds=(globals.lastKnownNodeIds || []).slice();
+                renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
+                refreshPresetsDisplay();
+                refreshNodesPage();
+            }
+
+            function clearNodeSelection(){
+                globals.selectedNodeIds=[];
+                renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
+                refreshPresetsDisplay();
+                refreshNodesPage();
+            }
+
+            function makeGetLanPeersCall(){
+                var urlString='http://'+location.host + '/getLanPeers'
                 var xhttp = new XMLHttpRequest();
                 xhttp.onreadystatechange = function() {
-                if(this.readyState == 4 && this.status == 200){
-                    console.log(this.responseText);
+                    if(this.readyState == 4 && this.status == 200){
+                        var getResponse=JSON.parse(this.response);
+                        console.log(getResponse);
+                        renderLanPeersList(getResponse['peers'] || []);
+                    }
+                };
+                xhttp.open('GET', urlString, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json')
+                xhttp.send();
+            }
+
+            function renderLanPeersList(peers){
+                globals.lastKnownPeers=peers;
+                globals.lastKnownNodeIds=peers.map(function(p){ return p.hostname; });
+                globals.lastKnownManualPeers=peers.filter(function(p){ return p.source=='manual'; }).map(function(p){ return p.hostname; });
+                // The browser sends preset updates directly to each selected
+                // device's own address (see resolveNodeAddress), rather than
+                // having one device relay to the others - so it needs each
+                // peer's real address, and which one is this device
+                // (addressed via location.host instead, to guarantee that
+                // particular request stays same-origin).
+                globals.lanPeerAddresses={};
+                globals.lanSelfHostname="";
+                peers.forEach(function(p){
+                    globals.lanPeerAddresses[p.hostname]=p.ip || p.hostname;
+                    if(p.isSelf==1){
+                        globals.lanSelfHostname=p.hostname;
+                    }
+                });
+                pruneStaleSelection(globals.lastKnownNodeIds);
+                // Retrieve each newly-identified node's current values so
+                // they're ready to show/recall as soon as it's selected.
+                peers.forEach(function(p){ ensureNodeDataLoaded(p.hostname); });
+                renderPresetNodeSelectorButtons(peers);
+                refreshPresetsDisplay();
+                var container=document.getElementById('nodesListContainer');
+                container.innerHTML='';
+                if(peers.length==0){
+                    var empty=document.createElement('div');
+                    empty.id='nodesEmptyMessage';
+                    empty.innerHTML='No LAN peers found yet.';
+                    container.appendChild(empty);
+                    return;
                 }
+                for(var i=0;i<peers.length;i++){
+                    var peer=peers[i];
+                    var row=document.createElement('div');
+                    row.className='nodeRow';
+
+                    var checkbox=document.createElement('input');
+                    checkbox.type='checkbox';
+                    checkbox.className='nodeRowCheckbox';
+                    checkbox.checked=(globals.selectedNodeIds.indexOf(peer.hostname)!=-1);
+                    checkbox.onchange=(function(hostname){
+                        return function(){ toggleNodeSelection(hostname); };
+                    })(peer.hostname);
+                    row.appendChild(checkbox);
+
+                    var hostname=document.createElement('span');
+                    hostname.className='nodeRowHostname';
+                    hostname.innerHTML=peer.hostname + (peer.isSelf==1 ? ' (this device)' : '');
+                    row.appendChild(hostname);
+
+                    if(peer.ip){
+                        var ipBadge=document.createElement('span');
+                        ipBadge.className='nodeRowBadge';
+                        ipBadge.innerHTML=peer.ip;
+                        row.appendChild(ipBadge);
+                    }else if(peer.source=='manual'){
+                        var pendingBadge=document.createElement('span');
+                        pendingBadge.className='nodeRowBadge';
+                        pendingBadge.innerHTML='not yet seen';
+                        row.appendChild(pendingBadge);
+                    }
+
+                    var settingsButton=document.createElement('button');
+                    settingsButton.className='nodeRowSettingsButton';
+                    settingsButton.title='Open settings';
+                    settingsButton.innerHTML='<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>';
+                    settingsButton.onclick=(function(hostname){
+                        return function(e){
+                            e.stopPropagation();
+                            window.location.href='http://'+resolveNodeAddress(hostname)+'/index.html#settingsPage';
+                        };
+                    })(peer.hostname);
+                    row.appendChild(settingsButton);
+
+                    if(peer.source=='manual'){
+                        var removeButton=document.createElement('button');
+                        removeButton.className='nodeRowRemoveButton';
+                        removeButton.innerHTML='&times;';
+                        removeButton.title='Remove';
+                        removeButton.onclick=(function(hostname){
+                            return function(){ removeLanPeer(hostname); };
+                        })(peer.hostname);
+                        row.appendChild(removeButton);
+                    }
+
+                    row.onclick=(function(checkbox){
+                        return function(e){
+                            if(e.target===checkbox || e.target.tagName=='BUTTON'){
+                                return;
+                            }
+                            checkbox.checked=!checkbox.checked;
+                            checkbox.onchange();
+                        };
+                    })(checkbox);
+
+                    container.appendChild(row);
+                }
+            }
+
+            function saveLanPeers(peerList){
+                var payload={"peers":peerList};
+                var urlString='http://'+location.host + '/updateLanPeers'
+                var xhttp = new XMLHttpRequest();
+                xhttp.onreadystatechange = function() {
+                    if(this.readyState == 4 && this.status == 200){
+                        makeGetLanPeersCall();
+                    }
                 };
                 xhttp.open('POST', urlString, true);
                 xhttp.setRequestHeader('Content-Type', 'application/json')
                 xhttp.send(JSON.stringify(payload));
             }
 
+            function addLanPeer(){
+                var input=document.getElementById('lanPeerAddInput');
+                var value=input.value.trim();
+                if(!value){
+                    return;
+                }
+                var current=(globals.lastKnownManualPeers || []).slice();
+                if(current.indexOf(value)==-1){
+                    current.push(value);
+                }
+                input.value='';
+                saveLanPeers(current);
+            }
+
+            function removeLanPeer(hostname){
+                var current=(globals.lastKnownManualPeers || []).filter(function(h){ return h!=hostname; });
+                saveLanPeers(current);
+            }
+
+            // A single failed connection attempt fires BOTH onerror and
+            // onclose, and the periodic health-check in window.onload can
+            // ALSO decide a reconnect is needed at the same time - without
+            // this guard, all three independently schedule their own
+            // initWebSocket() call, and under real-world WiFi contention
+            // (more likely to make the very first handshake fail) those
+            // pile up into several overlapping connection attempts. That's
+            // exactly what a captured crash log showed: the same client
+            // opening 5 WebSocket connections in a row, crashing the
+            // device's WebSocketsServer right on the 5th. This ensures at
+            // most one reconnect is ever pending regardless of how many of
+            // the three triggers fire.
+            var socket; // was never actually declared before - only ever
+                        // created via assignment inside initWebSocket(),
+                        // which made referencing it beforehand (as the new
+                        // reconnect guard below needs to) throw.
+            var wsReconnectScheduled=false;
+            function scheduleWebSocketReconnect(){
+                if(wsReconnectScheduled){
+                    return;
+                }
+                wsReconnectScheduled=true;
+                setTimeout(function(){
+                    wsReconnectScheduled=false;
+                    console.log("retrying websocket connection initialization");
+                    initWebSocket();
+                },1000);
+            }
+
             function initWebSocket(){
+                if(socket){
+                    // Detach the outgoing socket's handlers first, so a
+                    // late-firing event from it can't also schedule a
+                    // reconnect on top of the fresh one we're about to open.
+                    socket.onopen=null;
+                    socket.onerror=null;
+                    socket.onclose=null;
+                    socket.onmessage=null;
+                    try{ socket.close(); }catch(e){}
+                }
                 socket = new WebSocket("ws:/" + "/" + location.host + ":81");
-                socket.onopen = function(e) {  console.log("[socket] socket.onopen "); };
+                socket.onopen = function(e) {
+                    console.log("[socket] socket.onopen ");
+                    globals.socketConnectivityCheck=new Date().getTime();
+                };
                 socket.onerror = function(e) {
                     console.log("[socket] socket.onerror ");
                     console.log(e);
-                    setTimeout(function(){
-                        console.log("retrying websocket connection initialization")
-                        initWebSocket();
-                    },1000);
+                    scheduleWebSocketReconnect();
                 };
                 socket.onclose = function(e) {
-                    console.log("[socket] socket.onerror ");
+                    console.log("[socket] socket.onclose ");
                     console.log(e);
-                    setTimeout(function(){
-                        console.log("retrying websocket connection initialization")
-                        initWebSocket();
-                    },1000);
+                    scheduleWebSocketReconnect();
                 };
                 socket.onmessage = function(e) {
                     console.log('Received data from websocket: '+e.data);

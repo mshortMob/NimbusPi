@@ -53,6 +53,9 @@ void POVPlayer(int currentMode){
     }
     FastLED.setBrightness(50);
     FastLED.show();
+    if(epdata.enable_led_yield){
+      yield();
+    }
     if(povPlayerFrame==7 and povDirection==1){
       povDirection=-1*povDirection;
     }else if(povPlayerFrame==0 and povDirection==-1){
@@ -365,6 +368,9 @@ void chasePatternCore(int colorIndex, int colorSpread, int cycleTime, int trailL
   filteredBrightness=stepTowardsValue(filteredBrightness,brightness,tc);
   FastLED.setBrightness(filteredBrightness);
   FastLED.show();
+  if(epdata.enable_led_yield){
+    yield();
+  }
 }
 
 void chasePattern(int colorIndex, int colorSpread, int cycleTime, int trailLength, int trailSpread, int dir, int strobe, int brightness){
