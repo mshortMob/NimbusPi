@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <eeprom_funcs.h>
+#include <preset_store.h>
 #include <button_funcs.h>
 #include <led_funcs.h>
 #include <artnet_funcs.h>
@@ -14,7 +15,9 @@ void setup() {
   Serial.begin(115200);
   Serial.println();
   setup_eeprom();
+  setup_preset_store();
   setup_button();
+  load_active_preset(selectedMode);
   setup_accelerometer();
   setup_leds();
   wifiConnected=setup_ap(epdata.ssid, epdata.password, epdata.ap_name);

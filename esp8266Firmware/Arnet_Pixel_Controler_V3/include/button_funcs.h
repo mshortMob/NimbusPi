@@ -10,7 +10,8 @@ struct buttonState {
 };
 
 void cycle_mode(void){
-  selectedMode=(selectedMode+1)%5;
+  selectedMode=(selectedMode+1)%NUM_PRESETS;
+  load_active_preset(selectedMode);
   Serial.println("SelectedMode: "+ (String) selectedMode);
 }
 
@@ -33,6 +34,7 @@ void check_for_startup_button_hold(int initial_mode_button_value){
       }
       if(!has_changed_after_initial_value){
         reset_eeprom_to_initial_values();
+        preset_store_reset_all();
       }
     }
 }

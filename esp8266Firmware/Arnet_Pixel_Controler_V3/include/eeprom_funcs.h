@@ -1,6 +1,15 @@
 #include <EEPROM.h>
 
-int eeprom_signature=123456;
+// Bumped whenever ConfigSettings's layout changes - removing
+// ledPresets/pixelMap/presetTypes (now on the filesystem, see
+// preset_store.h) shifted every field after them, so a device still
+// running the old layout needs to be force-reset rather than booting with
+// misread values. Bumped again for the OSC/accelerometer fields below -
+// appended at the end so it's not strictly required this time, but a fresh,
+// deterministic default (rather than whatever garbage happens to be in that
+// previously-unused EEPROM range) is worth it for fields that control
+// active network transmission (send_osc/osc_ip/osc_port).
+int eeprom_signature=123458;
 bool eeprom_was_reset_on_startup=false;
 
 struct ConfigSettings {
@@ -16,58 +25,15 @@ struct ConfigSettings {
   char ap_password[64] = "EspTestBed";
   int control_mode = 0; // control_mode 0=GUI Presets ; 1=ArtNet/DMX
   int max_brightness_percent = 100;
-  int ledPresets[5][8] = {
-    {130,50,200,4,4,3,0,50},
-    {50,134,130,16,30,4,0,187},
-    {200,2,220,12,1,5,0,55},
-    {130,161,200,38,4,3,0,50},
-    {50,134,130,16,174,12,0,69}
-  };
-  int pixelMap[5][8][8] = {
-   {{156,156,156,156,156,156,156,138},
-    {156,156,156,156,156,156,138,156},
-    {156,156,156,156,156,138,156,156},
-    {156,156,156,156,28,156,156,156},
-    {156,156,156,28,156,156,156,156},
-    {156,156,138,156,156,156,156,156},
-    {156,138,156,156,156,156,156,156},
-    {138,156,156,156,156,156,156,156}},
-   {{156,156,156,156,156,156,156,24},
-    {156,156,156,156,156,156,156,24},
-    {156,101,101,101,101,101,101,156},
-    {156,101,156,156,156,156,101,156},
-    {156,101,156,156,156,156,101,156},
-    {156,101,101,101,101,101,101,156},
-    {24,156,156,156,156,156,156,156},
-    {24,156,156,156,156,156,156,156}},
-   {{156,156,156,156,156,156,156,156},
-    {156,156,156,156,156,156,50,156},
-    {31,31,31,156,156,156,50,156},
-    {156,156,31,156,156,50,50,156},
-    {156,156,31,156,156,50,156,156},
-    {156,156,156,156,50,50,156,156},
-    {156,156,156,156,50,156,156,156},
-    {156,156,156,156,156,156,156,156}},
-   {{156,156,156,156,156,156,156,24},
-    {156,156,156,156,156,156,156,24},
-    {156,101,101,101,101,101,101,156},
-    {156,101,156,156,156,156,101,156},
-    {156,101,156,156,156,156,101,156},
-    {156,101,101,101,101,101,101,156},
-    {24,156,156,156,156,156,156,156},
-    {24,156,156,156,156,156,156,156}},
-   {{156,156,156,156,156,156,156,138},
-    {156,156,156,156,156,156,138,156},
-    {156,156,156,156,156,138,156,156},
-    {156,156,156,156,28,156,156,156},
-    {156,156,156,28,156,156,156,156},
-    {156,156,138,156,156,156,156,156},
-    {156,138,156,156,156,156,156,156},
-    {138,156,156,156,156,156,156,156}}
-  };
-  int presetTypes[5]={1,1,1,0,0};
   int enable_led_yield = 1; // enable_led_yield 1=Enabled ; 0=Disabled
   char lan_peers[8][64] = {"","","","","","","",""}; // manually-entered LAN peer hostnames/IPs for standalone-mode targeted control
+  int accelerometer_mode = 1; // accelerometer_mode 0=Disabled ; 1=Enabled (ESP-sourced) ; 2=Mobile (browser-sourced)
+  int send_osc = 0; // send_osc 0=Disabled ; 1=Enabled - only meaningful when accelerometer_mode==1
+  char osc_ip[32] = "192.168.1.100";
+  int osc_port = 9000;
+  char osc_path_x[32] = "/accel/x";
+  char osc_path_y[32] = "/accel/y";
+  char osc_path_z[32] = "/accel/z";
 };
 
 ConfigSettings epdata;
@@ -131,37 +97,28 @@ void eeprom_load_all(void){
   Serial.println(epdata.max_brightness_percent);
   Serial.print("enable_led_yield: ");
   Serial.println(epdata.enable_led_yield);
+  Serial.print("accelerometer_mode: ");
+  Serial.println(epdata.accelerometer_mode);
+  Serial.print("send_osc: ");
+  Serial.println(epdata.send_osc);
+  Serial.print("osc_ip: ");
+  Serial.println(epdata.osc_ip);
+  Serial.print("osc_port: ");
+  Serial.println(epdata.osc_port);
+  Serial.print("osc_path_x: ");
+  Serial.println(epdata.osc_path_x);
+  Serial.print("osc_path_y: ");
+  Serial.println(epdata.osc_path_y);
+  Serial.print("osc_path_z: ");
+  Serial.println(epdata.osc_path_z);
   sanitize_lan_peers();
   Serial.println("lan_peers: ");
   for(int x=0;x<8;x++){
     Serial.println(epdata.lan_peers[x]);
   }
-  Serial.println("ledPresets: ");
-  for(int x=0;x<5;x++){
-    for(int y=0;y<8;y++){
-      Serial.print(epdata.ledPresets[x][y]);
-      Serial.print(",");
-    }
-    Serial.println("");
-  }
-  Serial.println("presetType: ");
-  for(int x=0;x<5;x++){
-    Serial.print(epdata.presetTypes[x]);
-    Serial.print(",");
-  }
   Serial.println("");
-  Serial.println("pixelMap: ");
-  for(int x=0;x<5;x++){
-    for(int y=0;y<8;y++){
-      for(int z=0;z<8;z++){
-        Serial.print(epdata.pixelMap[x][y][z]);
-        Serial.print(",");
-      }
-      Serial.println("");
-    }
-    Serial.println("-------");
-  }
-  Serial.println("");
+  // ledPresets/pixelMap/presetTypes now live in the presets file (see
+  // preset_store.h), not EEPROM.
 }
 
 void reset_eeprom_to_initial_values(void){

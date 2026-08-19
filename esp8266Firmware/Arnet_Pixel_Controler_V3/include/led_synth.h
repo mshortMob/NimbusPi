@@ -46,9 +46,9 @@ void POVPlayer(int currentMode){
     FastLED.clear();
     for(int i=epdata.pixel_start_offset;i<(epdata.pixel_start_offset+epdata.num_base_leds);i++){
       if((i%16)<8){
-        leds[i]=CRGB(colorMap[0][epdata.pixelMap[currentMode][i%8][povPlayerFrame]], colorMap[1][epdata.pixelMap[currentMode][i%8][povPlayerFrame]], colorMap[2][epdata.pixelMap[currentMode][i%8][povPlayerFrame]]);
+        leds[i]=CRGB(colorMap[0][activePreset.pixelMap[i%8][povPlayerFrame]], colorMap[1][activePreset.pixelMap[i%8][povPlayerFrame]], colorMap[2][activePreset.pixelMap[i%8][povPlayerFrame]]);
       }else{
-        leds[i]=CRGB(colorMap[0][epdata.pixelMap[currentMode][7-(i%8)][povPlayerFrame]], colorMap[1][epdata.pixelMap[currentMode][7-(i%8)][povPlayerFrame]], colorMap[2][epdata.pixelMap[currentMode][7-(i%8)][povPlayerFrame]]);
+        leds[i]=CRGB(colorMap[0][activePreset.pixelMap[7-(i%8)][povPlayerFrame]], colorMap[1][activePreset.pixelMap[7-(i%8)][povPlayerFrame]], colorMap[2][activePreset.pixelMap[7-(i%8)][povPlayerFrame]]);
       }
     }
     FastLED.setBrightness(50);

@@ -56,10 +56,10 @@ void setLEDSForArtnet(uint8_t* data, int filterChan, int fixtureMode){
 void handle_leds(int currentMode){
   // chasePattern(colorIndex, colorSpread, cycleTime, trailLength, trailSpread, dir, strobe, brightness); // Normalized to 0-255 Range
   if(epdata.control_mode==0){
-    if(epdata.presetTypes[currentMode]==1){
+    if(activePreset.presetType==1){
       POVPlayer(currentMode);
     }else{
-      chasePattern(epdata.ledPresets[currentMode][0],epdata.ledPresets[currentMode][1],epdata.ledPresets[currentMode][2],epdata.ledPresets[currentMode][3],epdata.ledPresets[currentMode][4],epdata.ledPresets[currentMode][5],epdata.ledPresets[currentMode][6],epdata.ledPresets[currentMode][7]);
+      chasePattern(activePreset.ledPresets[0],activePreset.ledPresets[1],activePreset.ledPresets[2],activePreset.ledPresets[3],activePreset.ledPresets[4],activePreset.ledPresets[5],activePreset.ledPresets[6],activePreset.ledPresets[7]);
     }
   }else{
     if(atoi(epdata.fixtureMode)==2){

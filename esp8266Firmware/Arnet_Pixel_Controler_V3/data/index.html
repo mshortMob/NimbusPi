@@ -474,6 +474,60 @@
             text-align:center;
             padding: 30px 0;
         }
+        /* scenesPage */
+        #scenesPage{
+            padding-top: 8px;
+        }
+        #scenesContentContainer{
+            display:flex;
+            flex-direction: column;
+            height:100%;
+            gap:12px;
+        }
+        #scenesGridContainer{
+            display:grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 12px;
+            flex: 1 1 0;
+            min-height: 0;
+        }
+        .pageSaveButton{
+            flex: 0 0 auto;
+            height: 50px;
+            background-color:var(--accent);
+            color: var(--accent-contrast);
+            font-size:.95rem;
+            font-weight: 700;
+            letter-spacing: .03em;
+            text-align: center;
+            border: 1px solid var(--accent-strong);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            width: 100%;
+            transition: background-color .15s ease;
+        }
+        .pageSaveButton:hover{
+            background-color: var(--accent-strong);
+        }
+        .sceneButton{
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border-strong);
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+        }
+        .sceneButton.selected{
+            background-color: var(--accent);
+            color: var(--accent-contrast);
+            border-color: var(--accent-strong);
+        }
         /* presetsPage */
         #presetsPage{
             grid-template-rows: 3px 12% calc(72% - 3px) 16%;
@@ -530,6 +584,10 @@
             overflow-wrap: break-word;
             word-break: break-word;
         }
+        .copyToggleButton{
+            flex: 0 0 36px;
+            margin-top: auto;
+        }
         .pixel.mixedValue{
             background-color: transparent;
             background-image: repeating-linear-gradient(45deg, var(--bg-elevated) 0 4px, var(--border-strong) 4px 8px);
@@ -538,7 +596,7 @@
             grid-row: 2;
             grid-column: 1 / span 2;
             margin-bottom:20px;
-            grid-template-columns: 15% 10% 10% 10% 10% 10% 5% 10% 10% 10%;
+            grid-template-columns: 12% 6% 9% 9% 9% 9% 6% 4% 9% 13.5% 13.5%;
             display: grid;
             margin-top:-6px;
             border: 1px solid var(--border-subtle);
@@ -573,6 +631,10 @@
             border-bottom: 0px;
             border-right: none;
             background-color: transparent;
+        }
+        #presetBankLeftArrow:disabled, #presetBankRightArrow:disabled{
+            opacity: .35;
+            cursor: not-allowed;
         }
         #pixelMapContainer{
             grid-row: 3;
@@ -682,6 +744,7 @@
                 <div id="headerSpacer"></div>
                 <button class="header-item nav-btn navTabHidden" id="navNodes" onclick="goToPage('nodesPage');">Nodes</button>
                 <button class="header-item nav-btn" id="navPresets" onclick="goToPage('presetsPage');">Presets</button>
+                <button class="header-item nav-btn navTabHidden" id="navScenes" onclick="goToPage('scenesPage');">Scenes</button>
                 <button class="header-item nav-btn" id="navSettings" onclick="goToPage('settingsPage');">Settings</button>
                 <button class="header-item nav-btn" id="navData" onclick="goToPage('dataPage');">Data</button>
                 <button class="header-item" id="navMenuToggle" onclick="toggleNavMenu();"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
@@ -690,6 +753,7 @@
             <div id="navMenu">
                 <button class="navMenuItem navTabHidden" id="navMenuNodes" onclick="goToPage('nodesPage');toggleNavMenu(false);">Nodes</button>
                 <button class="navMenuItem" id="navMenuPresets" onclick="goToPage('presetsPage');toggleNavMenu(false);">Presets</button>
+                <button class="navMenuItem navTabHidden" id="navMenuScenes" onclick="goToPage('scenesPage');toggleNavMenu(false);">Scenes</button>
                 <button class="navMenuItem" id="navMenuSettings" onclick="goToPage('settingsPage');toggleNavMenu(false);">Settings</button>
                 <button class="navMenuItem" id="navMenuData" onclick="goToPage('dataPage');toggleNavMenu(false);">Data</button>
             </div>
@@ -702,11 +766,12 @@
             <div id="presetsPage" class="page">
                 <div id="selectedPresetContainer">
                     <button class="selectedPresetContainerLabel">Number:</button>
-                    <button id="selectedPresetButton1" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">1</button>
-                    <button id="selectedPresetButton2" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">2</button>
-                    <button id="selectedPresetButton3" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">3</button>
-                    <button id="selectedPresetButton4" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">4</button>
-                    <button id="selectedPresetButton5" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">5</button>
+                    <button id="presetBankLeftArrow" class="selectedPresetContainerButton" onclick="shiftPresetBank(-1);">&#8592;</button>
+                    <button id="selectedPresetButtonSlot1" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">1</button>
+                    <button id="selectedPresetButtonSlot2" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">2</button>
+                    <button id="selectedPresetButtonSlot3" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">3</button>
+                    <button id="selectedPresetButtonSlot4" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton(parseInt(this.innerHTML),'numberbutton')">4</button>
+                    <button id="presetBankRightArrow" class="selectedPresetContainerButton" onclick="shiftPresetBank(1);">&#8594;</button>
                     <button id="selectedPresetTypeSpacer" class="selectedPresetContainerButton"></button>
                     <button class="selectedPresetContainerLabel">Type:</button>
                     <button id="synthTypeButton" class="selectedPresetContainerButton" onclick="handleSelectedPresetButton('synth','typebutton')">Synth</button>
@@ -735,6 +800,12 @@
                 </div>
                 <div id="nodesListContainer"></div>
             </div>
+            <div id="scenesPage" class="page">
+                <div id="scenesContentContainer">
+                    <div id="scenesGridContainer"></div>
+                    <button id="scenesSaveButton" class="pageSaveButton" onclick="saveCurrentPresetToAllNodes();">Save</button>
+                </div>
+            </div>
             <div id="bottomSpacer">
             </div>
         </div>
@@ -748,6 +819,7 @@
                 lanPeerAddresses: {},
                 lanSelfHostname: "",
                 controlMode: "0",
+                accelerometerMode: "1",
                 dataHistoryBuffer: [
                     [
                         .5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5,.5
@@ -856,83 +928,110 @@
                         {"value":"0","label":"GUI Presets"},
                         {"value":"1","label":"ArtNet / DMX"}
                     ]
+                },
+                {
+                    "name":"accelerometer_mode",
+                    "text":"Accelerometer:",
+                    "section":"OSC / Accelerometer",
+                    "initVal":"---",
+                    "type":"select",
+                    "options":[
+                        {"value":"0","label":"Disabled"},
+                        {"value":"1","label":"Enabled"},
+                        {"value":"2","label":"Mobile"}
+                    ]
+                },
+                {
+                    "name":"send_osc",
+                    "text":"Send OSC:",
+                    "section":"OSC / Accelerometer",
+                    "initVal":"---",
+                    "type":"select",
+                    "options":[
+                        {"value":"0","label":"Disabled"},
+                        {"value":"1","label":"Enabled"}
+                    ]
+                },
+                {
+                    "name":"osc_ip",
+                    "text":"OSC IP:",
+                    "section":"OSC / Accelerometer",
+                    "initVal":"---"
+                },
+                {
+                    "name":"osc_port",
+                    "text":"OSC Port:",
+                    "section":"OSC / Accelerometer",
+                    "initVal":"---",
+                    "type":"number"
+                },
+                {
+                    "name":"osc_path_x",
+                    "text":"Path X:",
+                    "section":"OSC / Accelerometer",
+                    "initVal":"---"
+                },
+                {
+                    "name":"osc_path_y",
+                    "text":"Path Y:",
+                    "section":"OSC / Accelerometer",
+                    "initVal":"---"
+                },
+                {
+                    "name":"osc_path_z",
+                    "text":"Path Z:",
+                    "section":"OSC / Accelerometer",
+                    "initVal":"---"
                 }
             ],
                 numRows: 8,
                 numCols: 8,
+                // pixelMap/synthSliderValues/presetType below hold ONLY the
+                // currently-viewed preset's data (a single 8x8 grid / 8
+                // sliders / one type) - not all 16 presets at once. See
+                // getNodeData()/refreshPresetsDisplay(): each preset's full
+                // content is fetched from its own node lazily, on demand,
+                // rather than every preset for every node up front.
                 pixelMap: [
-                    [[0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0]],
-                    [[0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0]],
-                    [[0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0]],
-                    [[0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0]],
-                    [[0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0],
-                    [0,0,0,0,0,0,0,0]],
+                    [0,0,0,0,0,0,0,0]
                 ],
                 colorMap: [
                     [0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0],
                     [255,250,245,240,235,230,225,220,215,210,205,200,195,190,185,180,175,170,165,160,155,150,145,140,135,130,125,120,115,110,105,100,95,90,85,80,75,70,65,60,55,50,45,40,35,30,25,20,15,10,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,10,15,20,25,30,35,40,45,50,55,60,65,70,75,80,85,90,95,100,105,110,115,120,125,130,135,140,145,150,155,160,165,170,175,180,185,190,195,200,205,210,215,220,225,230,235,240,245,250,255,0]
                 ],
-                presetTypes: ["pixel","pixel","pixel","synth","synth"],
-                synthSliderValues: [
-                    [128, 128, 128, 128, 128, 128, 128, 128],
-                    [128, 128, 128, 128, 128, 128, 128, 128],
-                    [128, 128, 128, 128, 128, 128, 128, 128],
-                    [128, 128, 128, 128, 128, 128, 128, 128],
-                    [128, 128, 128, 128, 128, 128, 128, 128]
-                ],
+                presetType: "pixel",
+                synthSliderValues: [128, 128, 128, 128, 128, 128, 128, 128],
                 selectedColor:1,
-                selectedPreset: 1,
+                numPresets: 16,
+                selectedPreset: 1, // 1-indexed, GLOBAL/fleet-wide - see selectPresetEverywhere()
+                presetBankSize: 4,
+                presetBankStart: 0, // 0-indexed start of the 4 preset-number buttons currently shown
                 mouseButtonState: 0,
                 needToUpdatePixelMap: false,
                 needToUpdateLedPresets: false,
                 socketConnectivityCheck: new Date().getTime(),
                 presetValueDebounceTime: new Date().getTime(),
-                // Per-node preset/pixel data, keyed by hostname - see
+                // Per-node preset data, keyed by hostname - see
                 // getNodeData()/refreshPresetsDisplay(). The flat
-                // synthSliderValues/pixelMap/presetTypes/selectedPreset
-                // fields above remain the DISPLAY cache (what's currently
-                // rendered), recomputed from this whenever the selection
-                // changes or a node's data loads.
+                // synthSliderValues/pixelMap/presetType fields above remain
+                // the DISPLAY cache for whichever single preset is currently
+                // being viewed, recomputed whenever the selection/viewed
+                // preset changes or a node's data loads.
                 nodeData: {},
                 mixedSliderMask: null,
                 mixedPixelMask: null,
                 selfSelectionSeeded: false,
                 lastKnownPeers: [],
+                copyModeEnabled: false,
+                copySource: null, // {type:'preset'|'node', value:<1-indexed preset index or hostname>}
             }
 
             window.onload = function(){
@@ -999,28 +1098,78 @@
                 resizePages();
             };
 
+            // Which 1-indexed preset number a given bank slot (1..4) is
+            // currently showing.
+            function presetNumberForSlot(slot){
+                return globals.presetBankStart + slot;
+            }
+
+            function copySourceMatches(type, value){
+                return globals.copySource && globals.copySource.type==type && globals.copySource.value==value;
+            }
+
+            // The Scenes page is nothing but a full grid of preset-number
+            // buttons - same colors/behavior as the Presets page's own
+            // preset-number row (including copy mode), just without the
+            // 4-at-a-time bank pagination since there's room to show all of
+            // them at once.
+            function renderScenesPage(){
+                var container=document.getElementById('scenesGridContainer');
+                if(!container){
+                    return;
+                }
+                container.innerHTML='';
+                for(var i=1;i<=globals.numPresets;i++){
+                    var btn=document.createElement('button');
+                    btn.id='sceneButton'+i;
+                    var isSource=copySourceMatches('preset', i);
+                    btn.className='sceneButton'+((!isSource && i==globals.selectedPreset) ? ' selected' : '');
+                    if(isSource){
+                        btn.style.backgroundColor='#f2a93c';
+                        btn.style.color='#2a1d08';
+                        btn.style.borderColor='#f2a93c';
+                    }
+                    btn.innerHTML=i;
+                    btn.onclick=(function(num){
+                        return function(){ handleSelectedPresetButton(num, 'numberbutton'); };
+                    })(i);
+                    container.appendChild(btn);
+                }
+            }
+
             function syncView(){
                 // pixel map grid
                 for(var x=0;x<globals.numRows;x++){
                     for(var y=0; y<globals.numCols;y++){
                         var pixelMixed=globals.mixedPixelMask && globals.mixedPixelMask[x][y];
-                        document.getElementById("pixel_"+x+"_"+y).setValue(globals.pixelMap[globals.selectedPreset-1][x][y], pixelMixed);
+                        document.getElementById("pixel_"+x+"_"+y).setValue(globals.pixelMap[x][y], pixelMixed);
                     }
                 }
                 // color picker
                 document.getElementById("cpCanvas").setValue(globals.colorMap[0].length-globals.selectedColor);
-                // selected preset
-                for(var x=1;x<6;x++){
-                    if(x!=globals.selectedPreset){
-                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='var(--bg-elevated)';
-                        document.getElementById("selectedPresetButton"+x).style.color='var(--text-primary)';
+                // preset-number bank: 4 visible slots out of globals.numPresets
+                for(var slot=1;slot<5;slot++){
+                    var presetNum=presetNumberForSlot(slot);
+                    var btn=document.getElementById("selectedPresetButtonSlot"+slot);
+                    btn.innerHTML=presetNum;
+                    if(copySourceMatches('preset', presetNum)){
+                        btn.style.backgroundColor='#f2a93c';
+                        btn.style.color='#2a1d08';
+                        btn.style.borderColor='#f2a93c';
+                    }else if(presetNum!=globals.selectedPreset){
+                        btn.style.backgroundColor='var(--bg-elevated)';
+                        btn.style.color='var(--text-primary)';
+                        btn.style.borderColor='var(--border-subtle)';
                     }else{
-                        document.getElementById("selectedPresetButton"+x).style.backgroundColor='var(--accent)';
-                        document.getElementById("selectedPresetButton"+x).style.color='var(--accent-contrast)';
+                        btn.style.backgroundColor='var(--accent)';
+                        btn.style.color='var(--accent-contrast)';
+                        btn.style.borderColor='var(--border-subtle)';
                     }
                 }
+                document.getElementById('presetBankLeftArrow').disabled=(globals.presetBankStart<=0);
+                document.getElementById('presetBankRightArrow').disabled=(globals.presetBankStart+globals.presetBankSize>=globals.numPresets);
                 // selected preset type
-                if(globals.presetTypes[globals.selectedPreset-1]=="synth"){
+                if(globals.presetType=="synth"){
                     document.getElementById("synthTypeButton").style.backgroundColor='var(--accent)';
                     document.getElementById("synthTypeButton").style.color='var(--accent-contrast)';
                     document.getElementById("pixelTypeButton").style.backgroundColor='var(--bg-elevated)';
@@ -1029,7 +1178,7 @@
                     document.getElementById("pixelMapContainer").style.display='none';
                     document.getElementById("colorPickerContainer").style.display='none';
                 }else{
-                    if(globals.presetTypes[globals.selectedPreset-1]=="pixel"){
+                    if(globals.presetType=="pixel"){
                         document.getElementById("synthTypeButton").style.backgroundColor='var(--bg-elevated)';
                         document.getElementById("synthTypeButton").style.color='var(--text-primary)';
                         document.getElementById("pixelTypeButton").style.backgroundColor='var(--accent)';
@@ -1042,10 +1191,151 @@
                 // synth slider values
                 for(var x=1; x<9; x++){
                     var sliderMixed=globals.mixedSliderMask && globals.mixedSliderMask[x-1];
-                    document.getElementById("slider"+x).setValue(globals.synthSliderValues[globals.selectedPreset-1][x-1], sliderMixed);
+                    document.getElementById("slider"+x).setValue(globals.synthSliderValues[x-1], sliderMixed);
                 }
+                renderScenesPage();
                 // resize all
                 resizePages();
+            }
+
+            // Jumps the visible 4-preset bank to whichever one contains a
+            // given (1-indexed) preset number - used whenever the Presets
+            // page is (re)loaded, and whenever the active preset changes
+            // via the physical button/websocket.
+            function showBankContaining(presetNum){
+                globals.presetBankStart = Math.floor((presetNum-1)/globals.presetBankSize)*globals.presetBankSize;
+            }
+
+            function shiftPresetBank(direction){
+                var next = globals.presetBankStart + direction*globals.presetBankSize;
+                if(next<0 || next>=globals.numPresets){
+                    return;
+                }
+                globals.presetBankStart = next;
+                syncView();
+            }
+
+            // Copy mode: while enabled, clicking a node or preset-number
+            // button no longer selects it - the first click marks a source
+            // (highlighted the same dull yellow as the header logo), and
+            // the second marks a destination and performs the copy. Shared
+            // between the Presets page's node column/preset-number row and
+            // the Scenes page's preset buttons - all three call through
+            // handleCopyModeClick.
+            function toggleCopyMode(){
+                globals.copyModeEnabled=!globals.copyModeEnabled;
+                globals.copySource=null;
+                syncView();
+                renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
+            }
+
+            function handleCopyModeClick(type, value){
+                if(!globals.copySource || (globals.copySource.type==type && globals.copySource.value==value)){
+                    // First pick, or clicking the same source again - (re)arm it.
+                    globals.copySource=globals.copySource ? null : {type:type, value:value};
+                    syncView();
+                    renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
+                    return;
+                }
+                var source=globals.copySource;
+                if(source.type!=type){
+                    // One node, one preset number - not a valid pair. Take
+                    // no action beyond clearing the source.
+                    globals.copySource=null;
+                    syncView();
+                    renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
+                    return;
+                }
+                if(type=='preset'){
+                    copyPresetToPreset(source.value, value);
+                }else{
+                    copyNodeToNode(source.value, value);
+                }
+            }
+
+            function findPresetNodeButtonByHostname(hostname){
+                var container=document.getElementById('presetNodeSelectorContainer');
+                if(!container){
+                    return null;
+                }
+                var btns=container.querySelectorAll('.presetNodeButton');
+                for(var i=0;i<btns.length;i++){
+                    if(btns[i].dataset.hostname==hostname){
+                        return btns[i];
+                    }
+                }
+                return null;
+            }
+
+            // Briefly flashes the given elements a dull green (matching the
+            // Save button's own success flash), then clears the copy source
+            // and re-renders everything back to normal.
+            function flashCopyResult(elements){
+                elements.forEach(function(el){
+                    if(!el){
+                        return;
+                    }
+                    el.style.backgroundColor='#3f7d52';
+                    el.style.color='var(--text-primary)';
+                    el.style.borderColor='#3f7d52';
+                });
+                setTimeout(function(){
+                    globals.copySource=null;
+                    syncView();
+                    renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
+                },900);
+            }
+
+            // Copies one preset's content to another, for every known node
+            // (each node keeps its own data - this copies within each node,
+            // not between nodes). Fetches each node's own current source
+            // data fresh rather than trusting the cache, since accuracy
+            // matters more here than avoiding one extra request per node.
+            function copyPresetToPreset(sourceIndex, destIndex){
+                (globals.lastKnownPeers || []).forEach(function(peer){
+                    var hostname=peer.hostname;
+                    fetchPresetForCopy(hostname, sourceIndex, function(srcData){
+                        var destEntry=getNodePresetEntry(hostname, destIndex);
+                        destEntry.ledPresets=srcData.ledPresets.slice();
+                        destEntry.pixelMap=srcData.pixelMap.map(function(row){ return row.slice(); });
+                        destEntry.presetType=srcData.presetType;
+                        destEntry.loaded=true;
+                        getNodeData(hostname).presetTypes[destIndex-1]=srcData.presetType;
+                        postToHost(resolveNodeAddress(hostname), '/updateLedPresets', {"index":destIndex-1, "ledPresets":destEntry.ledPresets, "presetType":destEntry.presetType});
+                        postToHost(resolveNodeAddress(hostname), '/updatePixelMap', {"index":destIndex-1, "pixelMap":destEntry.pixelMap});
+                        if(destIndex==globals.selectedPreset){
+                            refreshPresetsDisplay();
+                        }
+                    });
+                });
+                flashCopyResult([
+                    document.getElementById('selectedPresetButtonSlot'+(sourceIndex-globals.presetBankStart)),
+                    document.getElementById('selectedPresetButtonSlot'+(destIndex-globals.presetBankStart)),
+                    document.getElementById('sceneButton'+sourceIndex),
+                    document.getElementById('sceneButton'+destIndex),
+                ]);
+            }
+
+            // Copies one node's data for the currently-viewed preset only
+            // to another node.
+            function copyNodeToNode(sourceHostname, destHostname){
+                fetchPresetForCopy(sourceHostname, globals.selectedPreset, function(srcData){
+                    var destEntry=getNodePresetEntry(destHostname, globals.selectedPreset);
+                    destEntry.ledPresets=srcData.ledPresets.slice();
+                    destEntry.pixelMap=srcData.pixelMap.map(function(row){ return row.slice(); });
+                    destEntry.presetType=srcData.presetType;
+                    destEntry.loaded=true;
+                    getNodeData(destHostname).presetTypes[globals.selectedPreset-1]=srcData.presetType;
+                    postToHost(resolveNodeAddress(destHostname), '/updateLedPresets', {"index":globals.selectedPreset-1, "ledPresets":destEntry.ledPresets, "presetType":destEntry.presetType});
+                    postToHost(resolveNodeAddress(destHostname), '/updatePixelMap', {"index":globals.selectedPreset-1, "pixelMap":destEntry.pixelMap});
+                    if(globals.selectedNodeIds.indexOf(destHostname)!=-1 || globals.selectedNodeIds.indexOf(sourceHostname)!=-1){
+                        refreshPresetsDisplay();
+                    }
+                });
+                flashCopyResult([
+                    findPresetNodeButtonByHostname(sourceHostname),
+                    findPresetNodeButtonByHostname(destHostname),
+                ]);
             }
 
             function adjustSettingsPageHeight(){
@@ -1103,7 +1393,7 @@
                 for (let i = 0; i < pages.length; i++) {
                     console.log(pages.item(i).id)
                     if(pages.item(i).id==pageName){
-                        if(pageName=="settingsPage" || pageName=="nodesPage"){
+                        if(pageName=="settingsPage" || pageName=="nodesPage" || pageName=="scenesPage"){
                             pages.item(i).style.display='block';
                         }else{
                             pages.item(i).style.display='grid';
@@ -1117,12 +1407,17 @@
                 document.getElementById('navSettings').classList.toggle('active', pageName=='settingsPage');
                 document.getElementById('navData').classList.toggle('active', pageName=='dataPage');
                 document.getElementById('navNodes').classList.toggle('active', pageName=='nodesPage');
+                document.getElementById('navScenes').classList.toggle('active', pageName=='scenesPage');
                 document.getElementById('navMenuPresets').classList.toggle('active', pageName=='presetsPage');
                 document.getElementById('navMenuSettings').classList.toggle('active', pageName=='settingsPage');
                 document.getElementById('navMenuData').classList.toggle('active', pageName=='dataPage');
                 document.getElementById('navMenuNodes').classList.toggle('active', pageName=='nodesPage');
+                document.getElementById('navMenuScenes').classList.toggle('active', pageName=='scenesPage');
                 if(pageName=='nodesPage'){
                     makeGetLanPeersCall();
+                }
+                if(pageName=='presetsPage'){
+                    showBankContaining(globals.selectedPreset);
                 }
                 syncView();
             }
@@ -1135,14 +1430,19 @@
 
             function handleSelectedPresetButton(inputValue, buttonType){
                 if(buttonType=="typebutton"){
-                    globals.presetTypes[globals.selectedPreset-1]=inputValue;
-                    applyToSelectedNodes(function(nd){ nd.presetTypes[globals.selectedPreset-1]=inputValue; });
+                    globals.presetType=inputValue;
+                    (globals.selectedNodeIds || []).forEach(function(hostname){
+                        setNodePresetType(hostname, globals.selectedPreset, inputValue);
+                    });
+                    makeUpdateLedPresetsCall();
+                    refreshPresetsDisplay();
                 }else if(buttonType=="numberbutton"){
-                    globals.selectedPreset=inputValue;
-                    applyToSelectedNodes(function(nd){ nd.selectedPreset=inputValue; });
+                    if(globals.copyModeEnabled){
+                        handleCopyModeClick('preset', inputValue);
+                        return;
+                    }
+                    selectPresetEverywhere(inputValue);
                 }
-                makeUpdateLedPresetsCall();
-                refreshPresetsDisplay();
             }
 
 			function requestFullScreen() {
@@ -1294,8 +1594,8 @@
                             input.type='password';
                         }else if(field.type=='number'){
                             input.type='number';
-                            input.min=field.min;
-                            input.max=field.max;
+                            if(field.min!==undefined){ input.min=field.min; }
+                            if(field.max!==undefined){ input.max=field.max; }
                         }else{
                             input.type='text';
                         }
@@ -1307,6 +1607,11 @@
                         input.onchange=function(){
                             updateControlModeDot(this.value);
                             updateNodesTabVisibility(this.value);
+                        }
+                    }
+                    if(field.name=='accelerometer_mode' || field.name=='send_osc'){
+                        input.onchange=function(){
+                            updateOscFieldsAvailability();
                         }
                     }
                     row.appendChild(input);
@@ -1387,12 +1692,12 @@
                                 this.style.backgroundColor = "rgb("+globals.colorMap[0][globals.colorMap[0].length-1]+","+globals.colorMap[1][globals.colorMap[0].length-1]+","+globals.colorMap[2][globals.colorMap[0].length-1]+")";
                                 this.value=globals.colorMap[0].length-1;
                             }
-                            globals.pixelMap[globals.selectedPreset-1][this.x][this.y]=this.value;
+                            globals.pixelMap[this.x][this.y]=this.value;
                             if(globals.mixedPixelMask){
                                 globals.mixedPixelMask[this.x][this.y]=false;
                             }
-                            var cellX=this.x, cellY=this.y, cellValue=this.value, presetIdx=globals.selectedPreset-1;
-                            applyToSelectedNodes(function(nd){ nd.pixelMap[presetIdx][cellX][cellY]=cellValue; });
+                            var cellX=this.x, cellY=this.y, cellValue=this.value;
+                            applyToSelectedNodes(function(entry){ entry.pixelMap[cellX][cellY]=cellValue; });
                             globals.needToUpdatePixelMap=true;
                         }
                         canvas.onmousedown=function(event){
@@ -1545,7 +1850,7 @@
                         this.width=parseInt(document.getElementById("slidersDiv").offsetWidth/8);
                         this.height=parseInt(document.getElementById("slidersDiv").offsetHeight*.8);
                         var mixed=globals.mixedSliderMask && globals.mixedSliderMask[this.num-1];
-                        this.setValue(globals.synthSliderValues[globals.selectedPreset-1][this.num-1], mixed);
+                        this.setValue(globals.synthSliderValues[this.num-1], mixed);
                     }
                     canvas.updateValue=function(event){
                         var value=255-parseInt(event.offsetY/this.offsetHeight*255);
@@ -1555,14 +1860,14 @@
                         this.setValue(value, false);
                         for(var y=1;y<9;y++){
                             if(this.num==y){
-                                globals.synthSliderValues[globals.selectedPreset-1][y-1]=value;
+                                globals.synthSliderValues[y-1]=value;
                             }
                         }
                         if(globals.mixedSliderMask){
                             globals.mixedSliderMask[this.num-1]=false;
                         }
-                        var sliderIdx=this.num-1, presetIdx=globals.selectedPreset-1;
-                        applyToSelectedNodes(function(nd){ nd.ledPresets[presetIdx][sliderIdx]=value; });
+                        var sliderIdx=this.num-1;
+                        applyToSelectedNodes(function(entry){ entry.ledPresets[sliderIdx]=value; });
                         globals.needToUpdateLedPresets=true;
                     }
                     canvas.onmouseup=function(event){
@@ -1661,6 +1966,115 @@
                 dot.title = isArtnet ? 'Control Source: ArtNet / DMX' : 'Control Source: GUI Presets';
             }
 
+            function setFieldDeemphasized(fieldName, deemphasized){
+                var input=document.getElementById(fieldName);
+                if(!input){
+                    return;
+                }
+                input.parentElement.classList.toggle('rowDeemphasized', deemphasized);
+                input.disabled=deemphasized;
+            }
+
+            // Send OSC only makes sense when the ESP itself is reading its
+            // own accelerometer - Mobile mode can't actually transmit OSC
+            // (browsers have no API to send raw UDP/OSC packets - see
+            // startMobileAccelerometer()), so it's greyed out the same as
+            // Disabled. The OSC IP/Port/Path fields additionally depend on
+            // Send OSC itself being enabled.
+            function updateOscFieldsAvailability(){
+                var accelInput=document.getElementById('accelerometer_mode');
+                var sendOscInput=document.getElementById('send_osc');
+                if(!accelInput || !sendOscInput){
+                    return;
+                }
+                var isAccelEnabled=(accelInput.value=='1');
+                setFieldDeemphasized('send_osc', !isAccelEnabled);
+                var oscFieldsAvailable = isAccelEnabled && sendOscInput.value=='1';
+                ['osc_ip','osc_port','osc_path_x','osc_path_y','osc_path_z'].forEach(function(name){
+                    setFieldDeemphasized(name, !oscFieldsAvailable);
+                });
+            }
+
+            var mobileMotionListenerActive=false;
+
+            function updateAccelerometerMode(mode){
+                globals.accelerometerMode=String(mode);
+                if(globals.accelerometerMode=='2'){
+                    startMobileAccelerometer();
+                }else{
+                    stopMobileAccelerometer();
+                }
+            }
+
+            // Browsers have no API to send raw OSC/UDP packets, so Mobile
+            // mode can only ever feed the Data-page graphs locally - it
+            // can't be relayed onward as OSC (see updateOscFieldsAvailability,
+            // which greys Send OSC out whenever accelerometer isn't set to
+            // Enabled/ESP-sourced).
+            function startMobileAccelerometer(){
+                if(mobileMotionListenerActive){
+                    return;
+                }
+                if(typeof DeviceMotionEvent === 'undefined'){
+                    console.log('DeviceMotionEvent not supported on this browser - cannot use Mobile accelerometer mode here.');
+                    return;
+                }
+                if(typeof DeviceMotionEvent.requestPermission === 'function'){
+                    // iOS 13+ requires this to be called from within a user
+                    // gesture - the Settings page Save button click
+                    // qualifies. If this runs outside one (e.g. on page
+                    // load, before the user has saved Mobile mode from this
+                    // browser this session), the browser silently declines
+                    // and motion events simply won't fire until the next
+                    // gesture-triggered attempt (e.g. hitting Save again).
+                    DeviceMotionEvent.requestPermission().then(function(state){
+                        if(state=='granted'){
+                            window.addEventListener('devicemotion', handleMobileDeviceMotion);
+                            mobileMotionListenerActive=true;
+                        }else{
+                            console.log('Device motion permission not granted.');
+                        }
+                    }).catch(function(e){
+                        console.log('Device motion permission request failed.', e);
+                    });
+                }else{
+                    window.addEventListener('devicemotion', handleMobileDeviceMotion);
+                    mobileMotionListenerActive=true;
+                }
+            }
+
+            function stopMobileAccelerometer(){
+                if(!mobileMotionListenerActive){
+                    return;
+                }
+                window.removeEventListener('devicemotion', handleMobileDeviceMotion);
+                mobileMotionListenerActive=false;
+            }
+
+            function handleMobileDeviceMotion(event){
+                var accel=event.accelerationIncludingGravity || event.acceleration;
+                if(!accel){
+                    return;
+                }
+                // Rough normalization of raw m/s^2 readings (including
+                // gravity, so roughly -20..+20 in practice) into the 0..1
+                // range the existing graphs/buffer expect - there's no way
+                // to match the ESP's own sensor/scaling exactly, this is
+                // only an approximation for visual purposes.
+                function normalize(v){
+                    var out=((v||0)+20)/40;
+                    if(out<0){ out=0; }
+                    if(out>1){ out=1; }
+                    return out;
+                }
+                rotateDataHistoryBuffer([
+                    normalize(accel.x),
+                    normalize(accel.y),
+                    normalize(accel.z),
+                    parseFloat(parseInt(globals.selectedPreset-1)/5)+.05
+                ]);
+            }
+
             // The Nodes tab makes sense only while GUI Presets (not
             // ArtNet/DMX) are actually driving the LEDs - targeting presets
             // to specific devices has no effect when DMX data is what's
@@ -1671,9 +2085,14 @@
                 var isAvailable = !isArtnet;
                 document.getElementById('navNodes').classList.toggle('navTabHidden', !isAvailable);
                 document.getElementById('navMenuNodes').classList.toggle('navTabHidden', !isAvailable);
+                // Scenes is just another way to select a preset - equally
+                // meaningless in ArtNet/DMX mode, so it follows the same
+                // availability rule as the Nodes tab.
+                document.getElementById('navScenes').classList.toggle('navTabHidden', !isAvailable);
+                document.getElementById('navMenuScenes').classList.toggle('navTabHidden', !isAvailable);
                 if(!isAvailable){
                     globals.selectedNodeIds=[];
-                    if(globals.currentPage=='nodesPage'){
+                    if(globals.currentPage=='nodesPage' || globals.currentPage=='scenesPage'){
                         goToPage('presetsPage');
                     }
                 }
@@ -1691,6 +2110,8 @@
                     }
                     updateControlModeDot(getResponse['control_mode']);
                     updateNodesTabVisibility(getResponse['control_mode']);
+                    updateOscFieldsAvailability();
+                    updateAccelerometerMode(getResponse['accelerometer_mode']);
                     globals.lanSelfHostname=getResponse['ap_name'];
                     // Self starts selected by default (see the Nodes page),
                     // but only seed that once - after that it's up to the
@@ -1701,7 +2122,7 @@
                             globals.selectedNodeIds.push(globals.lanSelfHostname);
                         }
                     }
-                    makeGetLedPresetsCall();
+                    loadInitialPresetState();
                 }
                 };
                 xhttp.open('GET', urlString, true);
@@ -1787,38 +2208,33 @@
                 xhttp.send(JSON.stringify(payload));
                 updateControlModeDot(payload['control_mode']);
                 updateNodesTabVisibility(payload['control_mode']);
+                updateOscFieldsAvailability();
+                updateAccelerometerMode(payload['accelerometer_mode']);
             }
 
-            function makeGetLedPresetsCall(){
-                var urlString='http://'+location.host + '/getLedPresets'
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200){
-                        var getResponse=JSON.parse(this.response);
-                        console.log(JSON.parse(this.response));
-                        for(var x=0;x<5;x++){
-                            for(var y=0; y<8; y++){
-                                globals.synthSliderValues[x][y]=getResponse["ledPresets"][x][y];
-                                document.getElementById('slider'+parseInt(y+1)).setValue(globals.synthSliderValues[x][y]);
-                            }
-                        }
-                        for(var x=0;x<5;x++){
-                            if(getResponse["presetTypes"][x]==1){
-                                globals.presetTypes[x]="pixel";
-                            }else{
-                                globals.presetTypes[x]="synth";
-                            }
-                        }
-                        var selfData=getNodeData(globals.lanSelfHostname);
-                        selfData.ledPresets=globals.synthSliderValues.map(function(row){ return row.slice(); });
-                        selfData.presetTypes=globals.presetTypes.slice();
-                        selfData.selectedPreset=parseInt(getResponse["selectedPreset"])+1;
-                        handleSelectedPresetButton(parseInt(getResponse["selectedPreset"]+1),"numberbutton");
-                        makeGetPixelMapCall();
+            // Fetches every preset's whole-fleet active index + per-slot
+            // types up front (tiny - a couple dozen ints), then this
+            // device's own currently-active preset's full content. Replaces
+            // the old whole-bank fetch: none of the OTHER 15 presets'
+            // content is ever transferred unless something actually needs
+            // to view/edit them.
+            function loadInitialPresetState(){
+                var urlString='http://'+location.host+'/getPresetIndex';
+                var xhttp=new XMLHttpRequest();
+                xhttp.onreadystatechange=function(){
+                    if(this.readyState==4 && this.status==200){
+                        var resp=JSON.parse(this.response);
+                        globals.selectedPreset=parseInt(resp["selectedPreset"])+1;
+                        globals.numPresets=resp["presetTypes"].length;
+                        showBankContaining(globals.selectedPreset);
+                        var selfNd=getNodeData(globals.lanSelfHostname);
+                        selfNd.presetTypes=resp["presetTypes"];
+                        selfNd.indexLoaded=true;
+                        ensureNodePresetLoaded(globals.lanSelfHostname, globals.selectedPreset);
+                        refreshPresetsDisplay();
                     }
                 };
                 xhttp.open('GET', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
                 xhttp.send();
             }
 
@@ -1849,142 +2265,185 @@
 
             function makeEmptyPixelMap(){
                 var pixelMap=[];
-                for(var p=0;p<5;p++){
-                    var preset=[];
-                    for(var x=0;x<8;x++){
-                        var row=[];
-                        for(var y=0;y<8;y++){ row.push(0); }
-                        preset.push(row);
-                    }
-                    pixelMap.push(preset);
+                for(var x=0;x<8;x++){
+                    var row=[];
+                    for(var y=0;y<8;y++){ row.push(0); }
+                    pixelMap.push(row);
                 }
                 return pixelMap;
             }
 
-            function makeDefaultLedPresets(){
+            function makeDefaultLedPresetValues(){
                 var ledPresets=[];
-                for(var p=0;p<5;p++){
-                    var row=[];
-                    for(var s=0;s<8;s++){ row.push(128); }
-                    ledPresets.push(row);
-                }
+                for(var s=0;s<8;s++){ ledPresets.push(128); }
                 return ledPresets;
             }
 
-            // Per-node preset/pixel data store - see the comment on
-            // globals.nodeData. A fresh, not-yet-loaded stub is created on
-            // first reference so a node can be selected/edited immediately
-            // even before its real values have been fetched.
+            // Per-node data store - see the comment on globals.nodeData.
+            // presetTypes covers all globals.numPresets slots (fetched via
+            // /getPresetIndex - cheap), while each slot's full content
+            // lives in presets{}, populated lazily on demand.
             function getNodeData(hostname){
                 if(!globals.nodeData[hostname]){
+                    var defaultTypes=[];
+                    for(var i=0;i<globals.numPresets;i++){ defaultTypes.push(1); }
                     globals.nodeData[hostname]={
-                        ledPresets: makeDefaultLedPresets(),
-                        presetTypes: ["pixel","pixel","pixel","synth","synth"],
-                        pixelMap: makeEmptyPixelMap(),
-                        selectedPreset: 1,
-                        loaded: false,
-                        loading: false,
+                        presetTypes: defaultTypes,
+                        indexLoaded: false,
+                        indexLoading: false,
+                        presets: {},
                     };
                 }
                 return globals.nodeData[hostname];
             }
 
-            // Fetches a node's current preset/pixel-map bank the first time
-            // it's identified (see renderLanPeersList), so its own values
-            // are ready to show/recall as soon as it's selected. Skips the
-            // Content-Type header deliberately - these are simple GETs with
-            // no body, and adding it would turn a same-origin-or-not GET
-            // into a CORS preflight-triggering request for no benefit.
-            function ensureNodeDataLoaded(hostname){
+            // A single (node, preset index) content record - {ledPresets,
+            // pixelMap, presetType}. Created as an unloaded stub on first
+            // reference so it's always safe to read/write immediately.
+            function getNodePresetEntry(hostname, presetIndex){
                 var nd=getNodeData(hostname);
-                if(nd.loaded || nd.loading){
-                    return;
+                if(!nd.presets[presetIndex]){
+                    nd.presets[presetIndex]={
+                        ledPresets: makeDefaultLedPresetValues(),
+                        pixelMap: makeEmptyPixelMap(),
+                        presetType: 1,
+                        loaded: false,
+                        loading: false,
+                    };
                 }
-                nd.loading=true;
-                var address=resolveNodeAddress(hostname);
-                var ledDone=false, pixelDone=false;
-                function checkDone(){
-                    if(ledDone && pixelDone){
-                        nd.loading=false;
-                        nd.loaded=true;
-                        refreshPresetsDisplay();
-                    }
-                }
-                var ledXhr=new XMLHttpRequest();
-                ledXhr.onreadystatechange=function(){
-                    if(this.readyState==4){
-                        if(this.status==200){
-                            try{
-                                var resp=JSON.parse(this.response);
-                                nd.ledPresets=resp["ledPresets"];
-                                nd.presetTypes=resp["presetTypes"].map(function(t){ return t==1 ? "pixel" : "synth"; });
-                                nd.selectedPreset=parseInt(resp["selectedPreset"])+1;
-                            }catch(e){}
-                        }
-                        ledDone=true;
-                        checkDone();
-                    }
-                };
-                ledXhr.open('GET', 'http://'+address+'/getLedPresets', true);
-                ledXhr.send();
-                var pixelXhr=new XMLHttpRequest();
-                pixelXhr.onreadystatechange=function(){
-                    if(this.readyState==4){
-                        if(this.status==200){
-                            try{
-                                var resp=JSON.parse(this.response);
-                                nd.pixelMap=resp["pixelMap"];
-                            }catch(e){}
-                        }
-                        pixelDone=true;
-                        checkDone();
-                    }
-                };
-                pixelXhr.open('GET', 'http://'+address+'/getPixelMapPresets', true);
-                pixelXhr.send();
+                return nd.presets[presetIndex];
             }
 
-            // Applies a live edit (slider drag, pixel paint, preset
-            // type/number change) to every currently-selected node's own
-            // stored bank, so each node keeps its own values instead of all
-            // selected nodes being forced to match whichever one is shown.
+            function setNodePresetType(hostname, presetIndex, typeStr){
+                var typeInt=(typeStr=="pixel") ? 1 : 0;
+                getNodeData(hostname).presetTypes[presetIndex-1]=typeInt;
+                getNodePresetEntry(hostname, presetIndex).presetType=typeInt;
+            }
+
+            // Retrieves a node's preset-type index (cheap) the first time
+            // it's identified (see renderLanPeersList), then its currently-
+            // active preset's full content, so a newly-discovered node's
+            // current values are ready to show/recall as soon as it's
+            // selected. Skips the Content-Type header deliberately - these
+            // are simple GETs with no body, and adding it would turn a
+            // same-origin-or-not GET into a CORS preflight-triggering
+            // request for no benefit.
+            function ensureNodeIndexLoaded(hostname){
+                var nd=getNodeData(hostname);
+                if(nd.indexLoaded || nd.indexLoading){
+                    return;
+                }
+                nd.indexLoading=true;
+                var address=resolveNodeAddress(hostname);
+                var xhr=new XMLHttpRequest();
+                xhr.onreadystatechange=function(){
+                    if(this.readyState==4){
+                        nd.indexLoading=false;
+                        if(this.status==200){
+                            try{
+                                var resp=JSON.parse(this.response);
+                                nd.presetTypes=resp["presetTypes"];
+                                nd.indexLoaded=true;
+                            }catch(e){}
+                        }
+                        ensureNodePresetLoaded(hostname, globals.selectedPreset);
+                        refreshPresetsDisplay();
+                    }
+                };
+                xhr.open('GET', 'http://'+address+'/getPresetIndex', true);
+                xhr.send();
+            }
+
+            function ensureNodePresetLoaded(hostname, presetIndex){
+                var entry=getNodePresetEntry(hostname, presetIndex);
+                if(entry.loaded || entry.loading){
+                    return;
+                }
+                entry.loading=true;
+                var address=resolveNodeAddress(hostname);
+                var xhr=new XMLHttpRequest();
+                xhr.onreadystatechange=function(){
+                    if(this.readyState==4){
+                        entry.loading=false;
+                        if(this.status==200){
+                            try{
+                                var resp=JSON.parse(this.response);
+                                entry.ledPresets=resp["ledPresets"];
+                                entry.pixelMap=resp["pixelMap"];
+                                entry.presetType=resp["presetType"];
+                                entry.loaded=true;
+                            }catch(e){}
+                        }
+                        refreshPresetsDisplay();
+                    }
+                };
+                xhr.open('GET', 'http://'+address+'/getPreset?index='+(presetIndex-1), true);
+                xhr.send();
+            }
+
+            // Fetches a specific (hostname, presetIndex) preset fresh
+            // (bypassing the cache) and hands it to callback - used by copy
+            // mode, where acting on stale cached data would be wrong.
+            function fetchPresetForCopy(hostname, presetIndex, callback){
+                var address=resolveNodeAddress(hostname);
+                var xhr=new XMLHttpRequest();
+                xhr.onreadystatechange=function(){
+                    if(this.readyState==4 && this.status==200){
+                        try{
+                            var resp=JSON.parse(this.response);
+                            callback({ledPresets:resp["ledPresets"], pixelMap:resp["pixelMap"], presetType:resp["presetType"]});
+                        }catch(e){}
+                    }
+                };
+                xhr.open('GET', 'http://'+address+'/getPreset?index='+(presetIndex-1), true);
+                xhr.send();
+            }
+
+            // Applies a live edit (slider drag, pixel paint) to every
+            // currently-selected node's own stored copy of the preset
+            // currently being viewed, so each node keeps its own values
+            // instead of all selected nodes being forced to match whichever
+            // one is shown.
             function applyToSelectedNodes(fn){
                 (globals.selectedNodeIds || []).forEach(function(hostname){
-                    fn(getNodeData(hostname));
+                    fn(getNodePresetEntry(hostname, globals.selectedPreset), hostname);
                 });
             }
 
             // Recomputes the flat display fields (what syncView() renders)
-            // from the current selection's per-node data. With exactly one
-            // node effectively selected, shows that node's own values
-            // as-is. With more than one, values the selected nodes disagree
-            // on are masked out (see mixedSliderMask/mixedPixelMask) so a
-            // single arbitrary value is never shown as if it were shared.
+            // from the current selection's per-node data, for whichever
+            // preset is currently selected/viewed. With exactly one node
+            // effectively selected, shows that node's own values as-is.
+            // With more than one, values the selected nodes disagree on are
+            // masked out (see mixedSliderMask/mixedPixelMask) so a single
+            // arbitrary value is never shown as if it were shared.
             function refreshPresetsDisplay(){
                 var selected=(globals.selectedNodeIds || []).slice();
                 var representative=selected.length>0 ? selected[0] : globals.lanSelfHostname;
                 if(!representative){
                     return;
                 }
-                ensureNodeDataLoaded(representative);
-                var repData=getNodeData(representative);
-                globals.selectedPreset=repData.selectedPreset || globals.selectedPreset;
-                globals.presetTypes=repData.presetTypes.slice();
-                globals.synthSliderValues=repData.ledPresets.map(function(row){ return row.slice(); });
-                globals.pixelMap=repData.pixelMap.map(function(preset){ return preset.map(function(row){ return row.slice(); }); });
+                ensureNodeIndexLoaded(representative);
+                ensureNodePresetLoaded(representative, globals.selectedPreset);
+                var repEntry=getNodePresetEntry(representative, globals.selectedPreset);
+                globals.presetType = (repEntry.presetType==1) ? "pixel" : "synth";
+                globals.synthSliderValues = repEntry.ledPresets.slice();
+                globals.pixelMap = repEntry.pixelMap.map(function(row){ return row.slice(); });
                 if(selected.length>1){
-                    selected.forEach(ensureNodeDataLoaded);
-                    var presetIdx=globals.selectedPreset-1;
+                    selected.forEach(function(h){
+                        ensureNodeIndexLoaded(h);
+                        ensureNodePresetLoaded(h, globals.selectedPreset);
+                    });
                     globals.mixedSliderMask=[];
                     for(var s=0;s<8;s++){
-                        var sliderVals=selected.map(function(h){ return getNodeData(h).ledPresets[presetIdx][s]; });
+                        var sliderVals=selected.map(function(h){ return getNodePresetEntry(h, globals.selectedPreset).ledPresets[s]; });
                         globals.mixedSliderMask[s]=sliderVals.some(function(v){ return v!=sliderVals[0]; });
                     }
                     globals.mixedPixelMask=[];
                     for(var px=0;px<8;px++){
                         globals.mixedPixelMask[px]=[];
                         for(var py=0;py<8;py++){
-                            var pixelVals=selected.map(function(h){ return getNodeData(h).pixelMap[presetIdx][px][py]; });
+                            var pixelVals=selected.map(function(h){ return getNodePresetEntry(h, globals.selectedPreset).pixelMap[px][py]; });
                             globals.mixedPixelMask[px][py]=pixelVals.some(function(v){ return v!=pixelVals[0]; });
                         }
                     }
@@ -1996,15 +2455,14 @@
             }
 
             function sendLedPresetsToNode(hostname){
-                var nd=getNodeData(hostname);
-                var tempPresetTypes=nd.presetTypes.map(function(t){ return t=="pixel" ? 1 : 0; });
-                var payload={"ledPresets":nd.ledPresets, "selectedPreset":parseInt(nd.selectedPreset-1), "presetTypes": tempPresetTypes};
+                var entry=getNodePresetEntry(hostname, globals.selectedPreset);
+                var payload={"index":globals.selectedPreset-1, "ledPresets":entry.ledPresets, "presetType":entry.presetType};
                 postToHost(resolveNodeAddress(hostname), '/updateLedPresets', payload);
             }
 
             function sendPixelMapToNode(hostname){
-                var nd=getNodeData(hostname);
-                var payload={"pixelMap":nd.pixelMap};
+                var entry=getNodePresetEntry(hostname, globals.selectedPreset);
+                var payload={"index":globals.selectedPreset-1, "pixelMap":entry.pixelMap};
                 postToHost(resolveNodeAddress(hostname), '/updatePixelMap', payload);
             }
 
@@ -2013,34 +2471,66 @@
                 (globals.selectedNodeIds || []).forEach(sendLedPresetsToNode);
             }
 
-            function makeGetPixelMapCall(){
-                var urlString='http://'+location.host + '/getPixelMapPresets'
-                var xhttp = new XMLHttpRequest();
-                xhttp.onreadystatechange = function() {
-                    if(this.readyState == 4 && this.status == 200){
-                        var getResponse=JSON.parse(this.response);
-                        console.log(JSON.parse(this.response));
-                        for(var x=0;x<5;x++){
-                            for(var y=0; y<8;y++){
-                                for(var z=0; z<8;z++){
-                                    globals.pixelMap[x][y][z]=getResponse["pixelMap"][x][y][z];
-                                }
-                            }
-                        }
-                        var selfData=getNodeData(globals.lanSelfHostname);
-                        selfData.pixelMap=globals.pixelMap.map(function(preset){ return preset.map(function(row){ return row.slice(); }); });
-                        selfData.loading=false;
-                        selfData.loaded=true;
-                        refreshPresetsDisplay();
-                    }
-                };
-                xhttp.open('GET', urlString, true);
-                xhttp.setRequestHeader('Content-Type', 'application/json')
-                xhttp.send();
-            }
-
             function makeUpdatPixelMapCall(){
                 (globals.selectedNodeIds || []).forEach(sendPixelMapToNode);
+            }
+
+            // The Scenes-page Save button: (re-)persists the currently
+            // selected preset's synth/pixel data to every known node's own
+            // file (see preset_store.h), for that node's own already-cached
+            // copy of this preset - not just whichever nodes happen to be
+            // selected. Skips any node whose data for this preset was never
+            // actually fetched (still the default stub) - sending that
+            // would overwrite the node's real stored data with placeholder
+            // defaults instead of saving anything real.
+            function saveCurrentPresetToAllNodes(){
+                (globals.lastKnownPeers || []).forEach(function(peer){
+                    var entry=getNodePresetEntry(peer.hostname, globals.selectedPreset);
+                    if(!entry.loaded){
+                        return;
+                    }
+                    sendLedPresetsToNode(peer.hostname);
+                    sendPixelMapToNode(peer.hostname);
+                });
+                var btn=document.getElementById('scenesSaveButton');
+                if(!btn){
+                    return;
+                }
+                btn.style.backgroundColor='#3f7d52';
+                btn.style.borderColor='#3f7d52';
+                setTimeout(function(){
+                    btn.style.backgroundColor='';
+                    btn.style.borderColor='';
+                },900);
+            }
+
+            // Selecting a preset (Presets or Scenes page) is fleet-wide by
+            // design, unlike editing a preset's content - every known node
+            // is told to switch, regardless of the Nodes-page selection.
+            // The command itself is just an index (see /selectPreset), not
+            // any preset's content, so this stays cheap no matter how many
+            // nodes or presets exist.
+            function selectPresetEverywhere(presetNum){
+                // Same debounce guard the websocket handler already checks
+                // for slider/pixel edits - without it, the device's own
+                // periodic websocket broadcast (still reporting the OLD
+                // active preset until the /selectPreset POST below actually
+                // reaches and is processed by every node) races this local
+                // update, briefly reverting the display back to the old
+                // preset before the broadcast catches up and corrects it.
+                globals.presetValueDebounceTime=new Date().getTime();
+                globals.selectedPreset=presetNum;
+                showBankContaining(presetNum);
+                var payload={"index":presetNum-1};
+                var targets={};
+                targets[location.host]=true;
+                (globals.lastKnownPeers || []).forEach(function(peer){
+                    targets[resolveNodeAddress(peer.hostname)]=true;
+                });
+                Object.keys(targets).forEach(function(address){
+                    postToHost(address, '/selectPreset', payload);
+                });
+                refreshPresetsDisplay();
             }
 
             // Only drops a selected id after it's been missing for several
@@ -2107,8 +2597,15 @@
                 var labelEls=[];
                 entries.forEach(function(peer){
                     var btn=document.createElement('button');
-                    btn.className='presetNodeButton'+(globals.selectedNodeIds.indexOf(peer.hostname)!=-1 ? ' selected' : '');
+                    var isSource=copySourceMatches('node', peer.hostname);
+                    btn.className='presetNodeButton'+((!isSource && globals.selectedNodeIds.indexOf(peer.hostname)!=-1) ? ' selected' : '');
+                    if(isSource){
+                        btn.style.backgroundColor='#f2a93c';
+                        btn.style.color='#2a1d08';
+                        btn.style.borderColor='#f2a93c';
+                    }
                     btn.title=peer.hostname;
+                    btn.dataset.hostname=peer.hostname;
                     var label=document.createElement('span');
                     label.className='presetNodeButtonLabel';
                     label.innerHTML=peer.hostname;
@@ -2139,9 +2636,32 @@
                 if(anyOverflows){
                     labelEls.forEach(function(label, i){ label.innerHTML=(i+1); });
                 }
+                // Copy toggle - lives in the same column as the node
+                // buttons above, pinned to the bottom (margin-top:auto)
+                // regardless of how many node buttons there are, so its
+                // bottom always lines up with the sliders/color picker.
+                var copyBtn=document.createElement('button');
+                copyBtn.id='copyModeButton';
+                copyBtn.className='presetNodeButton copyToggleButton'+(globals.copyModeEnabled ? ' selected' : '');
+                var copyLabel=document.createElement('span');
+                copyLabel.className='presetNodeButtonLabel';
+                copyLabel.id='copyModeButtonLabel';
+                copyLabel.innerHTML='Copy';
+                copyBtn.appendChild(copyLabel);
+                copyBtn.onclick=function(){ toggleCopyMode(); };
+                container.appendChild(copyBtn);
+                var copyStyle=window.getComputedStyle(copyBtn);
+                var copyAvailable=copyBtn.clientWidth - parseFloat(copyStyle.paddingLeft) - parseFloat(copyStyle.paddingRight);
+                if(anyOverflows || measureNaturalLabelWidth('Copy', copyLabel) > copyAvailable){
+                    copyLabel.innerHTML='C';
+                }
             }
 
             function toggleNodeSelection(nodeId){
+                if(globals.copyModeEnabled){
+                    handleCopyModeClick('node', nodeId);
+                    return;
+                }
                 var idx=globals.selectedNodeIds.indexOf(nodeId);
                 if(idx==-1){
                     globals.selectedNodeIds.push(nodeId);
@@ -2157,6 +2677,9 @@
             }
 
             function selectAllNodes(){
+                if(globals.copyModeEnabled){
+                    return;
+                }
                 globals.selectedNodeIds=(globals.lastKnownNodeIds || []).slice();
                 renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
                 refreshPresetsDisplay();
@@ -2164,6 +2687,9 @@
             }
 
             function clearNodeSelection(){
+                if(globals.copyModeEnabled){
+                    return;
+                }
                 globals.selectedNodeIds=[];
                 renderPresetNodeSelectorButtons(globals.lastKnownPeers || []);
                 refreshPresetsDisplay();
@@ -2206,7 +2732,7 @@
                 pruneStaleSelection(globals.lastKnownNodeIds);
                 // Retrieve each newly-identified node's current values so
                 // they're ready to show/recall as soon as it's selected.
-                peers.forEach(function(p){ ensureNodeDataLoaded(p.hostname); });
+                peers.forEach(function(p){ ensureNodeIndexLoaded(p.hostname); });
                 renderPresetNodeSelectorButtons(peers);
                 refreshPresetsDisplay();
                 var container=document.getElementById('nodesListContainer');
@@ -2227,10 +2753,19 @@
                     checkbox.type='checkbox';
                     checkbox.className='nodeRowCheckbox';
                     checkbox.checked=(globals.selectedNodeIds.indexOf(peer.hostname)!=-1);
+                    // Disabled during copy mode - its native checked state
+                    // would otherwise flip on click even though selection
+                    // itself isn't what a click means right now (see
+                    // toggleNodeSelection/handleCopyModeClick).
+                    checkbox.disabled=globals.copyModeEnabled;
                     checkbox.onchange=(function(hostname){
                         return function(){ toggleNodeSelection(hostname); };
                     })(peer.hostname);
                     row.appendChild(checkbox);
+                    if(copySourceMatches('node', peer.hostname)){
+                        row.style.backgroundColor='#f2a93c';
+                        row.style.color='#2a1d08';
+                    }
 
                     var hostname=document.createElement('span');
                     hostname.className='nodeRowHostname';
@@ -2378,12 +2913,23 @@
                     console.log('Received data from websocket: '+e.data);
                     globals.socketConnectivityCheck=new Date().getTime();
                     var incomingData=e.data.split(',');
-                    var incomingPreset=parseInt(incomingData[incomingData.length-1])%5;
-                    rotateDataHistoryBuffer([parseFloat(incomingData[0]),parseFloat(incomingData[1]),parseFloat(incomingData[2]),parseFloat(parseInt(incomingData[3])/5)+.05 ]);
+                    var incomingPreset=parseInt(incomingData[incomingData.length-1])%globals.numPresets;
+                    // Only plot the ESP's own accelerometer data when that's
+                    // actually the active source - in Mobile mode the graphs
+                    // are driven by handleMobileDeviceMotion() instead, and
+                    // in Disabled mode neither source should update them.
+                    if(globals.accelerometerMode=='1'){
+                        rotateDataHistoryBuffer([parseFloat(incomingData[0]),parseFloat(incomingData[1]),parseFloat(incomingData[2]),parseFloat(parseInt(incomingData[3])/5)+.05 ]);
+                    }
                     if( (new Date().getTime()-globals.presetValueDebounceTime) > 2000){
                         if(globals.selectedPreset!=(incomingPreset+1)){
+                            // The physical button was pressed on whichever
+                            // device is serving this page - jump straight
+                            // to the bank containing the newly-active
+                            // preset, same as loading the Presets page does.
                             globals.selectedPreset=(incomingPreset+1);
-                            syncView();
+                            showBankContaining(globals.selectedPreset);
+                            refreshPresetsDisplay();
                             console.log('socket change');
                         }
                     }

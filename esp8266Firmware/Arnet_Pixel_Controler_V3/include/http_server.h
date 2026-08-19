@@ -13,7 +13,7 @@ static AsyncWebServer server(80);
 void handleGetSettings(){
   server.on("/getSettings", HTTP_GET, [](AsyncWebServerRequest *request) {
     EEPROM.get(0,epdata);
-    StaticJsonDocument<768> data;
+    StaticJsonDocument<1024> data;
     data["ssid"]=epdata.ssid;
     data["password"]=epdata.password;
     data["universe"]=epdata.universe;
@@ -27,6 +27,13 @@ void handleGetSettings(){
     data["control_mode"]=epdata.control_mode;
     data["max_brightness_percent"]=epdata.max_brightness_percent;
     data["enable_led_yield"]=epdata.enable_led_yield;
+    data["accelerometer_mode"]=epdata.accelerometer_mode;
+    data["send_osc"]=epdata.send_osc;
+    data["osc_ip"]=epdata.osc_ip;
+    data["osc_port"]=epdata.osc_port;
+    data["osc_path_x"]=epdata.osc_path_x;
+    data["osc_path_y"]=epdata.osc_path_y;
+    data["osc_path_z"]=epdata.osc_path_z;
     String response;
     serializeJson(data, response);
     request->send(200, "application/json", response);
@@ -47,6 +54,13 @@ void apply_settings_update(JsonVariant data){
   epdata.control_mode=int(data["control_mode"]);
   epdata.max_brightness_percent=int(data["max_brightness_percent"]);
   epdata.enable_led_yield=int(data["enable_led_yield"]);
+  epdata.accelerometer_mode=int(data["accelerometer_mode"]);
+  epdata.send_osc=int(data["send_osc"]);
+  data["osc_ip"].as<String>().toCharArray(epdata.osc_ip,32);
+  epdata.osc_port=int(data["osc_port"]);
+  data["osc_path_x"].as<String>().toCharArray(epdata.osc_path_x,32);
+  data["osc_path_y"].as<String>().toCharArray(epdata.osc_path_y,32);
+  data["osc_path_z"].as<String>().toCharArray(epdata.osc_path_z,32);
   EEPROM.put(0,epdata);
   EEPROM.commit();
   Serial.println("Updated EEPROM values");
@@ -56,7 +70,7 @@ void apply_settings_update(JsonVariant data){
 
 void handleUpdateSettings(){
   AsyncCallbackJsonWebHandler *updateSettingsProcessor = new AsyncCallbackJsonWebHandler("/updateSettings", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    StaticJsonDocument<768> data;
+    StaticJsonDocument<1024> data;
     if (json.is<JsonArray>())
     {
       data = json.as<JsonArray>();
@@ -74,151 +88,155 @@ void handleUpdateSettings(){
   server.addHandler(updateSettingsProcessor);
 }
 
-void handleGetLedPresets(){
-  server.on("/getLedPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
-    Serial.println("handleGetLedPresets");
-    // Built via plain string concatenation instead of ArduinoJson - v7's
-    // document model allocates dynamically per element (confirmed via a
-    // captured crash: a heap-exhaustion null-pointer write inside
-    // AsyncWebServerResponse's constructor, with an ArduinoJson
-    // MemberProxy::getOrCreateData() call on the same stack), which adds up
-    // for this shape under tight heap conditions. This is simple, regular
-    // data - string-building it directly is much lighter.
+// Lightweight index of every preset's type + which one is active, without
+// paying for any preset's full content (in particular, none of the pixel
+// maps) - lets the frontend know the whole fleet's preset shape up front
+// while staying tiny regardless of how many presets exist.
+void handleGetPresetIndex(){
+  server.on("/getPresetIndex", HTTP_GET, [](AsyncWebServerRequest *request) {
     String response;
-    response.reserve(280);
-    response += "{\"ledPresets\":[";
-    for(int x=0;x<5;x++){
-      response += "[";
-      for(int y=0;y<8;y++){
-        response += String(epdata.ledPresets[x][y]);
-        if(y<7) response += ",";
-      }
-      response += "]";
-      if(x<4) response += ",";
+    response.reserve(32 + NUM_PRESETS*2);
+    response += "{\"selectedPreset\":" + String(selectedMode) + ",\"presetTypes\":[";
+    for(int i=0;i<NUM_PRESETS;i++){
+      response += String(preset_store_read_type(i));
+      if(i<NUM_PRESETS-1) response += ",";
     }
-    response += "],\"presetTypes\":[";
-    for(int x=0;x<5;x++){
-      response += String(epdata.presetTypes[x]);
-      if(x<4) response += ",";
-    }
-    response += "],\"selectedPreset\":" + String(selectedMode%5) + "}";
-    // CORS-scoped like the update handlers - the Nodes/Presets-page node
-    // selector fetches each peer's own current values directly from that
-    // peer's address, which is cross-origin from the page's perspective.
+    response += "]}";
     AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", response);
     resp->addHeader("Access-Control-Allow-Origin", "*");
     request->send(resp);
   });
 }
 
-void apply_led_presets_update(JsonVariant data){
-  for(int x=0;x<5;x++){
-    for(int y=0;y<8;y++){
-      epdata.ledPresets[x][y]=data["ledPresets"][x][y];
+// Returns exactly one preset's full content (?index=N) - the only place a
+// pixel map's worth of data is ever transferred, and only for the one
+// preset actually being viewed/edited, rather than the whole bank.
+void handleGetPreset(){
+  server.on("/getPreset", HTTP_GET, [](AsyncWebServerRequest *request) {
+    int index = 0;
+    if(request->hasParam("index")){
+      index = request->getParam("index")->value().toInt();
     }
+    if(index<0 || index>=NUM_PRESETS){
+      index = 0;
+    }
+    PresetRecord r;
+    if(index==activePresetIndex){
+      r = activePreset;
+    }else if(!preset_store_read(index, r)){
+      preset_store_default(index, r);
+    }
+    String response;
+    response.reserve(1500);
+    response += "{\"index\":" + String(index) + ",\"ledPresets\":[";
+    for(int i=0;i<8;i++){
+      response += String(r.ledPresets[i]);
+      if(i<7) response += ",";
+    }
+    response += "],\"pixelMap\":[";
+    for(int x=0;x<8;x++){
+      response += "[";
+      for(int y=0;y<8;y++){
+        response += String(r.pixelMap[x][y]);
+        if(y<7) response += ",";
+      }
+      response += "]";
+      if(x<7) response += ",";
+    }
+    response += "],\"presetType\":" + String(r.presetType) + "}";
+    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", response);
+    resp->addHeader("Access-Control-Allow-Origin", "*");
+    request->send(resp);
+  });
+}
+
+// Switches which preset is actively driving the LEDs. Deliberately just an
+// index, not a preset's content - "select preset N" is a fleet-wide,
+// broadcast-to-every-node action (see the frontend), so keeping it tiny
+// matters more here than almost anywhere else in this API.
+void handleSelectPreset(){
+  AsyncCallbackJsonWebHandler *selectPresetProcessor = new AsyncCallbackJsonWebHandler("/selectPreset", [](AsyncWebServerRequest *request, JsonVariant &json) {
+    StaticJsonDocument<64> data;
+    if(json.is<JsonObject>()){
+      data = json.as<JsonObject>();
+    }
+    int index = ((int(data["index"]) % NUM_PRESETS) + NUM_PRESETS) % NUM_PRESETS;
+    selectedMode = index;
+    load_active_preset(selectedMode);
+    Serial.println("handleSelectPreset: "+String(selectedMode));
+    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", "{\"status\":\"ok\"}");
+    resp->addHeader("Access-Control-Allow-Origin", "*");
+    request->send(resp);
+  });
+  server.addHandler(selectPresetProcessor);
+}
+
+// Updates one preset's synth (ledPresets) content and type - a
+// read-modify-write against its file record, preserving that preset's own
+// pixel map untouched. Refreshes the in-RAM active-preset cache too if this
+// happens to be the currently-active preset, so the LEDs reflect the edit
+// immediately without waiting on a file re-read.
+void apply_led_preset_update(int index, JsonVariant data){
+  PresetRecord r;
+  if(!preset_store_read(index, r)){
+    preset_store_default(index, r);
   }
-  for(int x=0;x<5;x++){
-    epdata.presetTypes[x]=data["presetTypes"][x];
+  for(int i=0;i<8;i++){
+    r.ledPresets[i] = data["ledPresets"][i];
   }
-  selectedMode=int(data["selectedPreset"])%5;
-  // EEPROM.put(0,epdata);
-  // EEPROM.commit();
-  // Serial.println("Updated EEPROM values");
+  r.presetType = int(data["presetType"]);
+  preset_store_write(index, r);
+  if(index==activePresetIndex){
+    activePreset = r;
+  }
 }
 
 void handleUpdateLedPresets(){
   AsyncCallbackJsonWebHandler *updateLedPresetsProcessor = new AsyncCallbackJsonWebHandler("/updateLedPresets", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    // 1560 fits ledPresets/presetTypes/selectedPreset (see handleGetLedPresets).
-    StaticJsonDocument<1560> data;
-    if (json.is<JsonArray>())
-    {
-      data = json.as<JsonArray>();
-    }
-    else if (json.is<JsonObject>())
-    {
+    StaticJsonDocument<256> data;
+    if(json.is<JsonObject>()){
       data = json.as<JsonObject>();
     }
-    Serial.println("handleUpdateLedPresets");
-    apply_led_presets_update(data);
-    String response;
-    serializeJson(data, response);
-    // The CORS header is added only on this specific response (not via
-    // DefaultHeaders, which applies to every response) since standalone/LAN
-    // targeted requests (browser fanning out to each selected device's own
-    // address) are the only ones ever cross-origin.
-    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", response);
+    int index = ((int(data["index"]) % NUM_PRESETS) + NUM_PRESETS) % NUM_PRESETS;
+    Serial.println("handleUpdateLedPresets: index="+String(index));
+    apply_led_preset_update(index, data);
+    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", "{\"status\":\"ok\"}");
     resp->addHeader("Access-Control-Allow-Origin", "*");
     request->send(resp);
-    Serial.println(response);
   });
   server.addHandler(updateLedPresetsProcessor);
 }
 
-void handleGetPixelMapPresets(){
-  server.on("/getPixelMapPresets", HTTP_GET, [](AsyncWebServerRequest *request) {
-    Serial.println("handleGetPixelMap");
-    // Built via plain string concatenation instead of ArduinoJson - see the
-    // comment in handleGetLedPresets. This is by far the biggest of these
-    // responses (5x8x8 = 320 values), so the heaviest place ArduinoJson's
-    // per-element dynamic allocation was adding up.
-    String response;
-    response.reserve(1400);
-    response += "{\"pixelMap\":[";
-    for(int x=0;x<5;x++){
-      response += "[";
-      for(int y=0;y<8;y++){
-        response += "[";
-        for(int z=0;z<8;z++){
-          response += String(epdata.pixelMap[x][y][z]);
-          if(z<7) response += ",";
-        }
-        response += "]";
-        if(y<7) response += ",";
-      }
-      response += "]";
-      if(x<4) response += ",";
-    }
-    response += "]}";
-    // See handleGetLedPresets - CORS-scoped for the same cross-origin
-    // node-selector fetches.
-    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", response);
-    resp->addHeader("Access-Control-Allow-Origin", "*");
-    request->send(resp);
-  });
-}
-
-void apply_pixel_map_update(JsonVariant data){
-  for(int x=0;x<5;x++){
+// Same read-modify-write approach as apply_led_preset_update, for the pixel
+// map half of a preset's record.
+void apply_pixel_map_preset_update(int index, JsonVariant data){
+  PresetRecord r;
+  if(!preset_store_read(index, r)){
+    preset_store_default(index, r);
+  }
+  for(int x=0;x<8;x++){
     for(int y=0;y<8;y++){
-      for(int z=0;z<8;z++){
-        epdata.pixelMap[x][y][z]=data["pixelMap"][x][y][z];
-      }
+      r.pixelMap[x][y] = data["pixelMap"][x][y];
     }
+  }
+  preset_store_write(index, r);
+  if(index==activePresetIndex){
+    activePreset = r;
   }
 }
 
 void handleUpdatePixelMapPresets(){
   AsyncCallbackJsonWebHandler *updatePixelMapProcessor = new AsyncCallbackJsonWebHandler("/updatePixelMap", [](AsyncWebServerRequest *request, JsonVariant &json) {
-    // 1560 fits pixelMap alone (see handleGetPixelMapPresets).
-    StaticJsonDocument<1560> data;
-    if (json.is<JsonArray>())
-    {
-      data = json.as<JsonArray>();
-    }
-    else if (json.is<JsonObject>())
-    {
+    StaticJsonDocument<512> data;
+    if(json.is<JsonObject>()){
       data = json.as<JsonObject>();
     }
-    Serial.println("handleUpdatePixelMap");
-    apply_pixel_map_update(data);
-    String response;
-    serializeJson(data, response);
-    // See handleUpdateLedPresets - CORS header scoped to just this response,
-    // not applied globally via DefaultHeaders.
-    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", response);
+    int index = ((int(data["index"]) % NUM_PRESETS) + NUM_PRESETS) % NUM_PRESETS;
+    Serial.println("handleUpdatePixelMap: index="+String(index));
+    apply_pixel_map_preset_update(index, data);
+    AsyncWebServerResponse *resp = request->beginResponse(200, "application/json", "{\"status\":\"ok\"}");
     resp->addHeader("Access-Control-Allow-Origin", "*");
     request->send(resp);
-    Serial.println(response);
   });
   server.addHandler(updatePixelMapProcessor);
 }
@@ -260,11 +278,13 @@ void setup_http_server(){
   handleIndex();
   handleFavicon();
   handleGetSettings();
-  handleGetLedPresets();
   handleUpdateSettings();
+  handleGetPresetIndex();
+  handleGetPreset();
+  handleSelectPreset();
   handleUpdateLedPresets();
-  handleGetPixelMapPresets();
   handleUpdatePixelMapPresets();
+  handleCorsPreflight("/selectPreset");
   handleCorsPreflight("/updateLedPresets");
   handleCorsPreflight("/updatePixelMap");
   server.begin();
