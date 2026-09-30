@@ -149,7 +149,7 @@
                 <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearRolandSettingsButton">Clear Roland</div>
                 <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearLkButton">Clear LK</div>
                 <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="clearAllButton">Clear All</div>
-                <div class="grid-item" id="setting15">Etc</div>
+                <div class="grid-item" onclick="handleButtonClick(this);" onmousemove="this.onclick();" id="padModeBtn2c">Mutes</div>
                 <div class="grid-item" id="deviceStatus0">Novation Circuit</div>
                 <div class="grid-item" id="deviceStatus1">Roland Boutiq</div>
                 <div class="grid-item" id="deviceStatus2">LK Mini MIDI</div>
@@ -332,6 +332,11 @@
                     frontendInctState.padMode=2;
                     frontendInctState.looperModeBank=1;
                     sendEvent("setLooperBankB");
+                }
+                if(buttonElem.id=="padModeBtn2c"){
+                    frontendInctState.padMode=2;
+                    frontendInctState.looperModeBank=2;
+                    sendEvent("setLooperBankC");
                 }
                 if(buttonElem.id=="padModeBtn3"){
                     frontendInctState.padMode=3;
@@ -573,7 +578,7 @@
         }
 
         function updatePadModeUI(){
-            var padModeBtns=["padModeBtn0","padModeBtn1","padModeBtn2a","padModeBtn2b","padModeBtn3"];
+            var padModeBtns=["padModeBtn0","padModeBtn1","padModeBtn2a","padModeBtn2b","padModeBtn2c","padModeBtn3"];
             for(var i=0; i<padModeBtns.length; i++){
                 var btn=document.getElementById(padModeBtns[i]);
                 if(btn){ btn.style.backgroundColor=config.buttonBackgroundColor; }
@@ -583,6 +588,7 @@
             else if(frontendInctState.padMode==1){ activeId="padModeBtn1"; }
             else if(frontendInctState.padMode==2 && frontendInctState.looperModeBank==0){ activeId="padModeBtn2a"; }
             else if(frontendInctState.padMode==2 && frontendInctState.looperModeBank==1){ activeId="padModeBtn2b"; }
+            else if(frontendInctState.padMode==2 && frontendInctState.looperModeBank==2){ activeId="padModeBtn2c"; }
             else if(frontendInctState.padMode==3){ activeId="padModeBtn3"; }
             if(activeId){ document.getElementById(activeId).style.backgroundColor=config.buttonSelectedColor; }
         }
